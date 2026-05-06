@@ -1,0 +1,17 @@
+{
+  "MAP": {
+    "Grade 5": {
+      "Reading Comprehension": {
+        "example": "Passage: The Arctic fox changes its fur color...\nQuestion: What can be inferred about the fox?\nA. ...\nB. ...\nC. ...\nD. ..."
+      },
+      "Vocabulary": {
+  "Easy": { "example": "\nQuestion: Which of the following are opposites of 'beneath'? \nA. above,over \nB. under,below \nC. at,in \nD. from,of..." },
+  "Medium": {
+          "example": "Read the paragraph:\nThis boy always crosses the line. Last week he came to school with blue hair! He was admonished by the principal, but you can be sure he'll come up with something new this week.\n\nQuestion: Which of the following can replace the word 'admonished'?\nA. reprimanded\nB. investigated\nC. requested\nD. fired"
+        },
+  "Hard": {  "example": "Read the paragraph:\nHaving spent all his money on a new stereo system for his car, Jonah could not pay his rent. Full of remorse, he headed to his parents' house and beseeched them to give him money for rent. 'This is the sixth time this year, Jonah,' said his mother, 'and every time you sound sadder and sadder. Rent should be the first thing you pay, not the last. I do feel sorry for you though. Please do not cry over it; just be smarter next time.'\n\nQuestion: Which of the following can replace the word 'admonished'?\nA. demand\nB. beg\nC. steal\nD. make"
+        }
+}
+    }
+  }
+}
