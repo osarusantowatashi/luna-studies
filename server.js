@@ -96,30 +96,229 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
       to: email,
       subject: "We received your Luna Education enquiry",
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2>Thank you for your enquiry</h2>
-    
-          <p>Hi ${name},</p>
-    
-          <p>
-            Thank you for contacting Luna Education.
-            We have received your enquiry and our team
-            will get back to you soon.
-          </p>
-    
-          <p><strong>Subject:</strong> ${subject || "-"}</p>
-          <p><strong>Grade:</strong> ${grade || "-"}</p>
-    
-          <p><strong>Your message:</strong></p>
-          <p>${message || "-"}</p>
-    
-          <hr />
-    
-          <p>
-            Best regards,<br />
-            Luna Education Team
-          </p>
-        </div>
+      <table
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        style="
+          background:#f4f4f4;
+          padding:40px 0;
+          font-family:Arial,sans-serif;
+        "
+      >
+        <tr>
+          <td align="center">
+
+            <table
+              width="680"
+              cellpadding="0"
+              cellspacing="0"
+              style="
+                background:#ffffff;
+                border-radius:24px;
+                overflow:hidden;
+                box-shadow:0 10px 30px rgba(0,0,0,0.06);
+              "
+            >
+
+              <!-- HEADER -->
+              <tr>
+                <td
+                  align="center"
+                  style="
+                    padding:50px 40px 30px;
+                    background:#ffffff;
+                  "
+                >
+
+                  <img
+                    src="https://lunastudies.com/lunalogo.png"
+                    width="120"
+                    style="margin-bottom:20px;"
+                  />
+
+                  <h1 style="
+                    margin:0;
+                    color:#08275c;
+                    font-size:34px;
+                    font-weight:700;
+                  ">
+                    Thank You For Your Enquiry
+                  </h1>
+
+                  <p style="
+                    margin-top:18px;
+                    color:#666;
+                    font-size:18px;
+                    line-height:1.8;
+                    max-width:520px;
+                  ">
+                    We have successfully received your enquiry.
+                    Our team will review your request and
+                    get back to you as soon as possible.
+                  </p>
+
+                </td>
+              </tr>
+
+              <!-- CONTENT -->
+              <tr>
+                <td style="padding:0 50px 40px;">
+
+                  <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    style="
+                      background:#fafafa;
+                      border-radius:18px;
+                      padding:30px;
+                    "
+                  >
+
+                    <tr>
+                      <td style="
+                        color:#08275c;
+                        font-size:16px;
+                        font-weight:bold;
+                        padding-bottom:18px;
+                      ">
+                        Enquiry Details
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding-bottom:14px;">
+                        <strong>Name:</strong> ${name}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding-bottom:14px;">
+                        <strong>Email:</strong> ${email}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding-bottom:14px;">
+                        <strong>Subject:</strong> ${subject || "-"}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding-bottom:14px;">
+                        <strong>Grade:</strong> ${grade || "-"}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <strong>Message:</strong><br /><br />
+                        ${message || "-"}
+                      </td>
+                    </tr>
+
+                  </table>
+
+                </td>
+              </tr>
+
+              <!-- CONTACT SECTION -->
+              <tr>
+                <td style="
+                  background:#f8f8f8;
+                  padding:35px;
+                ">
+
+                  <table width="100%">
+                    <tr>
+
+                      <!-- WECHAT -->
+                      <td align="center" width="33%">
+                        <img
+                          src="https://lunastudies.com/wechat.png"
+                          width="34"
+                          style="margin-bottom:10px;"
+                        />
+
+                        <p style="
+                          margin:0;
+                          font-size:16px;
+                          font-weight:bold;
+                          color:#08275c;
+                        ">
+                          WeChat ID
+                        </p>
+
+                        <p style="
+                          margin-top:8px;
+                          color:#555;
+                        ">
+                          luna.education
+                        </p>
+                      </td>
+
+                      <!-- WHATSAPP -->
+                      <td align="center" width="33%">
+                        <img
+                          src="https://lunastudies.com/whatsapp.jpg"
+                          width="34"
+                          style="margin-bottom:10px;"
+                        />
+
+                        <p style="
+                          margin:0;
+                          font-size:16px;
+                          font-weight:bold;
+                          color:#08275c;
+                        ">
+                          WhatsApp
+                        </p>
+
+                        <p style="
+                          margin-top:8px;
+                          color:#555;
+                        ">
+                          +65 XXXX XXXX
+                        </p>
+                      </td>
+
+                      <!-- WEBSITE -->
+                      <td align="center" width="33%">
+                        <img
+                          src="https://lunastudies.com/website.png"
+                          width="34"
+                          style="margin-bottom:10px;"
+                        />
+
+                        <p style="
+                          margin:0;
+                          font-size:16px;
+                          font-weight:bold;
+                          color:#08275c;
+                        ">
+                          Website
+                        </p>
+
+                        <p style="
+                          margin-top:8px;
+                          color:#555;
+                        ">
+                          lunastudies.com
+                        </p>
+                      </td>
+
+                    </tr>
+                  </table>
+
+                </td>
+              </tr>
+
+            </table>
+
+          </td>
+        </tr>
+      </table>
       `,
     });
     

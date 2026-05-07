@@ -26,6 +26,8 @@ type Lesson = {
   student_id: string;
   lesson_date: string;
   hours: number;
+  rescheduled_date?: string | null;
+  reschedule_reason?: string | null;
   lesson_contents?: string | null;
   additional_remarks?: string | null;
   status: LessonStatus;
@@ -34,8 +36,11 @@ type Lesson = {
 
 export default function TutorLessons() {
   const [students, setStudents] = useState<any[]>([]);
+  const [filterStudentId, setFilterStudentId] = useState("all");
   const [selectedStudentId, setSelectedStudentId] = useState("");
-
+  const [showReschedule, setShowReschedule] = useState(false);
+const [rescheduledDate, setRescheduledDate] = useState("");
+const [rescheduleReason, setRescheduleReason] = useState("");
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
@@ -100,6 +105,7 @@ export default function TutorLessons() {
       setSelectedStudentId(studentData[0].id);
     }
   };
+  
 
   const fetchLessons = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -141,14 +147,9 @@ export default function TutorLessons() {
     const tutor = userData.user;
     if (!tutor) return;
 
-    const selectedStudent = students.find(
-      (student) => student.id === selectedStudentId
-    );
-
     const { error } = await supabase.from("tutor_lessons").insert({
       tutor_id: tutor.id,
       student_id: selectedStudentId,
-      student_name: selectedStudent?.name || selectedStudentId,
       lesson_date: lessonDate,
       hours: Number(hours),
       lesson_contents: lessonContents.trim() || null,
@@ -190,28 +191,115 @@ export default function TutorLessons() {
     }
 
     setLessons((prev) =>
-      prev.map((lesson) =>
-        lesson.id === lessonId
-          ? {
-              ...lesson,
-              status: newStatus,
-              checked_off_at: new Date().toISOString(),
-            }
-          : lesson
-      )
-    );
+  prev.map((lesson) =>
+    lesson.id === lessonId
+      ? {
+          ...lesson,
+          status: newStatus,
+          checked_off_at: new Date().toISOString(),
+        }
+      : lesson
+  )
+);
 
     setSelectedLesson(null);
     setCheckoffNote("");
   };
 
   const completed = lessons.filter(
-    (lesson) => lesson.status === "completed"
-  ).length;
+  (lesson) =>
+    lesson.status === "completed" ||
+    lesson.status === "student_absent"
+).length;
 
+  const submitReschedule = async () => {
+  if (!selectedLesson || !rescheduledDate) {
+    alert("Please select a new date.");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("tutor_lessons")
+    .update({
+      status: "reschedule_requested",
+      rescheduled_date: rescheduledDate,
+      reschedule_reason: rescheduleReason.trim() || null,
+      checked_off_at: new Date().toISOString(),
+    })
+    .eq("id", selectedLesson.id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  setLessons((prev) =>
+    prev.map((lesson) =>
+      lesson.id === selectedLesson.id
+        ? {
+            ...lesson,
+            status: "reschedule_requested",
+            rescheduled_date: rescheduledDate,
+            reschedule_reason: rescheduleReason,
+          }
+        : lesson
+    )
+  );
+
+setSelectedLesson(null);
+setShowReschedule(false);
+setRescheduledDate("");
+setRescheduleReason("");
+};
   const pending = lessons.filter(
-    (lesson) => lesson.status === "pending"
-  ).length;
+  (lesson) =>
+    lesson.status === "pending" ||
+    lesson.status === "reschedule_requested"
+).length;
+  const getStudentName = (studentId: string) => {
+  const student = students.find((s) => s.id === studentId);
+  return student?.name || studentId;
+};
+
+
+const filteredLessons =
+  filterStudentId === "all"
+    ? lessons
+    : lessons.filter(
+        (lesson) => lesson.student_id === filterStudentId
+      );
+
+      const totalHours = filteredLessons.reduce(
+  (sum, lesson) => sum + Number(lesson.hours || 0),
+  0
+);
+
+const completed = filteredLessons.filter(
+  (lesson) =>
+    lesson.status === "completed" ||
+    lesson.status === "student_absent"
+).length;
+
+const pending = filteredLessons.filter(
+  (lesson) =>
+    lesson.status === "pending" ||
+    lesson.status === "reschedule_requested"
+).length;
+const sortedLessons = [...filteredLessons].sort((a, b) => {
+  const isDoneA =
+    a.status === "completed" || a.status === "student_absent";
+  const isDoneB =
+    b.status === "completed" || b.status === "student_absent";
+
+  // completed / absent lessons go bottom
+  if (isDoneA !== isDoneB) return isDoneA ? 1 : -1;
+
+  // use rescheduled date first if it exists
+  const dateA = a.rescheduled_date || a.lesson_date;
+  const dateB = b.rescheduled_date || b.lesson_date;
+
+  return new Date(dateA).getTime() - new Date(dateB).getTime();
+});
 
   return (
     <div className="min-h-screen bg-[#f7f9fc] px-6 py-10">
@@ -252,6 +340,25 @@ export default function TutorLessons() {
             value={pending}
           />
         </div>
+        <div className="mb-8 flex items-center gap-4">
+  <p className="text-sm font-semibold text-[#0b234a]">
+    Filter by Student
+  </p>
+
+  <select
+    value={filterStudentId}
+    onChange={(e) => setFilterStudentId(e.target.value)}
+    className="border border-[#dbe5f0] rounded-2xl px-4 py-3 bg-white outline-none"
+  >
+    <option value="all">All Students</option>
+
+    {students.map((student) => (
+      <option key={student.id} value={student.id}>
+        {student.name}
+      </option>
+    ))}
+  </select>
+</div>
 
         <div className="flex flex-wrap gap-4 mb-8">
           <button
@@ -261,16 +368,6 @@ export default function TutorLessons() {
             <Plus size={18} />
             Add Lesson
           </button>
-
-          <button className="bg-white border border-[#dbe5f0] text-[#0b234a] px-6 py-4 rounded-2xl font-semibold flex items-center gap-2">
-            <Copy size={18} />
-            Copy Last Week
-          </button>
-
-          <button className="bg-white border border-[#dbe5f0] text-[#0b234a] px-6 py-4 rounded-2xl font-semibold flex items-center gap-2">
-            <RotateCcw size={18} />
-            Reschedule List
-          </button>
         </div>
 
         <div className="space-y-5">
@@ -279,18 +376,21 @@ export default function TutorLessons() {
               No lessons added yet.
             </div>
           ) : (
-            lessons.map((lesson) => (
+            sortedLessons.map((lesson) => (
               <div
                 key={lesson.id}
                 className="bg-white border border-[#dbe5f0] rounded-[28px] p-6 flex flex-col lg:flex-row justify-between gap-6"
               >
                 <div>
-                  <p className="text-sm text-[#f7c600] font-semibold mb-2">
-                    {lesson.lesson_date} · {lesson.hours} hour(s)
-                  </p>
-
+                 <p className="text-sm text-[#f7c600] font-semibold mb-2">
+  {lesson.status === "reschedule_requested" &&
+  lesson.rescheduled_date
+    ? lesson.rescheduled_date
+    : lesson.lesson_date}{" "}
+  · {lesson.hours} hour(s)
+</p>
                   <h3 className="text-2xl font-semibold text-[#0b234a]">
-                    {lesson.student_name}
+                    {getStudentName(lesson.student_id)}
                   </h3>
 
                   <div className="flex gap-3 mt-4 flex-wrap">
@@ -305,6 +405,11 @@ export default function TutorLessons() {
                         {lesson.additional_remarks}
                       </span>
                     )}
+                    {lesson.status === "reschedule_requested" && lesson.rescheduled_date && (
+  <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm">
+    Rescheduled: {lesson.lesson_date} → {lesson.rescheduled_date}
+  </span>
+)}
 
                     <StatusBadge status={lesson.status} />
                   </div>
@@ -406,16 +511,17 @@ export default function TutorLessons() {
         </Modal>
       )}
 
-      {selectedLesson && (
+
+      {selectedLesson && !showReschedule && (
         <Modal onClose={() => setSelectedLesson(null)}>
           <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
             Check Off Lesson
           </h2>
 
           <p className="text-slate-500 mb-6">
-            {selectedLesson.student_name} · {selectedLesson.lesson_date} ·{" "}
-            {selectedLesson.hours} hour(s)
-          </p>
+  {getStudentName(selectedLesson.student_id)} ·{" "}
+  {selectedLesson.lesson_date} · {selectedLesson.hours} hour(s)
+</p>
 
           <div className="space-y-3 mb-5">
             <button
@@ -435,13 +541,13 @@ export default function TutorLessons() {
             </button>
 
             <button
-              onClick={() =>
-                checkOffLesson(selectedLesson.id, "reschedule_requested")
-              }
-              className="w-full text-left px-5 py-4 rounded-2xl border border-blue-300 bg-blue-50 text-blue-700"
-            >
-              Reschedule Requested
-            </button>
+  onClick={() => {
+    setShowReschedule(true);
+  }}
+  className="w-full text-left px-5 py-4 rounded-2xl border border-blue-300 bg-blue-50 text-blue-700"
+>
+  Reschedule Lesson
+</button>
           </div>
 
           <textarea
@@ -452,9 +558,44 @@ export default function TutorLessons() {
           />
         </Modal>
       )}
+      {showReschedule && selectedLesson && (
+  <Modal onClose={() => setShowReschedule(false)}>
+    <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
+      Reschedule Lesson
+    </h2>
+
+    <p className="text-slate-500 mb-6">
+      {getStudentName(selectedLesson.student_id)} · Original Date:{" "}
+      {selectedLesson.lesson_date}
+    </p>
+
+    <DateInput
+      label="New Lesson Date"
+      value={rescheduledDate}
+      onChange={setRescheduledDate}
+    />
+
+    <div className="mt-4">
+      <TextAreaInput
+        label="Reschedule Reason"
+        placeholder="Reason for rescheduling..."
+        optional
+        value={rescheduleReason}
+        onChange={setRescheduleReason}
+      />
+    </div>
+
+    <button
+      onClick={submitReschedule}
+      className="w-full mt-6 bg-[#0b234a] text-white py-4 rounded-2xl font-semibold"
+    >
+      Submit Reschedule
+    </button>
+  </Modal>)}
     </div>
   );
 }
+
 
 function StatCard({ icon, title, value }: any) {
   return (
