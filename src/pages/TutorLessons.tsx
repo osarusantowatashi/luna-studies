@@ -2,8 +2,8 @@
 // CREATE FILE:
 // src/pages/TutorLessons.tsx
 // ==========================================
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import {
   Calendar,
   CheckCircle2,
@@ -14,6 +14,41 @@ import {
   X,
 } from "lucide-react";
 
+const [students, setStudents] = useState<any[]>([]);
+const [selectedStudentId, setSelectedStudentId] = useState("");
+useEffect(() => {
+  const fetchAssignedStudents = async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData.session?.user;
+
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("student_tutors")
+      .select(`
+        student_id,
+        students (
+          id,
+          name,
+          grade,
+          is_active
+        )
+      `)
+      .eq("tutor_id", user.id);
+
+    if (error) {
+      console.error("Failed to fetch assigned students:", error);
+      return;
+    }
+
+    const assignedStudents =
+      data?.map((item: any) => item.students).filter(Boolean) || [];
+
+    setStudents(assignedStudents);
+  };
+
+  fetchAssignedStudents();
+}, []);
 const initialLessons = [
   {
     id: 1,
@@ -206,7 +241,27 @@ export default function TutorLessons() {
 
           <div className="space-y-4">
 
-            <Input label="Student" placeholder="Ryan Ng" />
+            <div>
+  <p className="text-sm font-semibold text-[#0b234a] mb-2">
+    Student
+  </p>
+
+  <select
+    value={selectedStudentId}
+    onChange={(e) => setSelectedStudentId(e.target.value)}
+    className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white"
+  >
+    <option value="">Select student</option>
+
+    {students.map((student) => (
+      <option key={student.id} value={student.id}>
+        {student.name || student.id}
+        {student.grade ? ` (${student.grade})` : ""}
+        {student.is_active === false ? " - Inactive" : ""}
+      </option>
+    ))}
+  </select>
+</div>
             <Input label="Date" placeholder="May 10, 2025" />
             <Input label="Start Time" placeholder="4:00 PM" />
             <Input label="End Time" placeholder="5:30 PM" />
