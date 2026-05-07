@@ -5,6 +5,12 @@ import OpenAI from "openai";
 import { Resend } from "resend";
 import fs from "fs";
 import path from "path";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 dotenv.config();
 console.log("RESEND KEY:", process.env.RESEND_API_KEY);
@@ -657,6 +663,16 @@ if (skill === "Vocabulary") {
   }
 }
 
+app.post("/api/send-lesson-reminders", async (req, res) => {
+  // 找 lesson_date <= 昨天
+  // status = pending
+  // reminder_sent_at is null
+  // 按 tutor_id group
+  // 每个 tutor 发一封 email
+  // 发完 update reminder_sent_at
+});
+
+
     const prompt = `
 You are a professional exam question writer.
 
@@ -841,6 +857,168 @@ return res.json({ text: JSON.stringify(finalData) });
     console.error("GENERATION ERROR:", err);
     return res.status(500).json({
       error: err.message || "Failed to generate questions",
+    });
+  }
+});
+
+
+app.post("/api/send-lesson-reminders", async (req, res) => {
+  try {
+    console.log("📌 Lesson reminder API hit");
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const yesterdayDate = yesterday.toISOString().split("T")[0];
+
+    const { data: lessons, error } = await supabaseAdmin
+      .from("tutor_lessons")
+      .select(`
+        id,
+        tutor_id,
+        student_id,
+        lesson_date,
+        hours,
+        status,
+        reminder_sent_at
+      `)
+      .eq("status", "pending")
+      .is("reminder_sent_at", null)
+      .lte("lesson_date", yesterdayDate);
+
+    if (error) {
+      console.error("Lesson reminder fetch error:", error);
+      return res.status(500).json({ success: false, error });
+    }
+
+    if (!lessons || lessons.length === 0) {
+      return res.json({
+        success: true,
+        message: "No pending lesson reminders.",
+      });
+    }
+
+    const tutorIds = [...new Set(lessons.map((l) => l.tutor_id))];
+    const studentIds = [...new Set(lessons.map((l) => l.student_id))];
+
+    const { data: tutors } = await supabaseAdmin
+      .from("profiles")
+      .select("id, name, email")
+      .in("id", tutorIds);
+
+    const { data: students } = await supabaseAdmin
+      .from("profiles")
+      .select("id, name")
+      .in("id", studentIds);
+
+    const tutorMap = new Map(tutors?.map((t) => [t.id, t]));
+    const studentMap = new Map(students?.map((s) => [s.id, s]));
+
+    const groupedByTutor = lessons.reduce((acc, lesson) => {
+      if (!acc[lesson.tutor_id]) acc[lesson.tutor_id] = [];
+      acc[lesson.tutor_id].push(lesson);
+      return acc;
+    }, {});
+
+    const sentResults = [];
+
+    for (const tutorId of Object.keys(groupedByTutor)) {
+      const tutor = tutorMap.get(tutorId);
+      const tutorLessons = groupedByTutor[tutorId];
+
+      if (!tutor?.email) {
+        console.log("No tutor email found:", tutorId);
+        continue;
+      }
+
+      const lessonRows = tutorLessons
+        .map((lesson) => {
+          const student = studentMap.get(lesson.student_id);
+          return `
+            <tr>
+              <td style="padding:10px;border-bottom:1px solid #e5e7eb;">
+                ${lesson.lesson_date}
+              </td>
+              <td style="padding:10px;border-bottom:1px solid #e5e7eb;">
+                ${student?.name || lesson.student_id}
+              </td>
+              <td style="padding:10px;border-bottom:1px solid #e5e7eb;">
+                ${lesson.hours} hour(s)
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      const emailResult = await sendEmailWithRetry({
+        from: "Luna Education <admin@lunastudies.com>",
+        to: tutor.email,
+        subject: "Lesson Check-off Reminder",
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2>Lesson Check-off Reminder</h2>
+
+            <p>Hi ${tutor.name || "Tutor"},</p>
+
+            <p>
+              You have ${tutorLessons.length} pending lesson record(s)
+              that have not been updated yet.
+            </p>
+
+            <table style="border-collapse:collapse;width:100%;margin-top:20px;">
+              <thead>
+                <tr>
+                  <th align="left" style="padding:10px;border-bottom:2px solid #0b234a;">Date</th>
+                  <th align="left" style="padding:10px;border-bottom:2px solid #0b234a;">Student</th>
+                  <th align="left" style="padding:10px;border-bottom:2px solid #0b234a;">Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${lessonRows}
+              </tbody>
+            </table>
+
+            <p style="margin-top:24px;">
+              Please log in to Luna Education and check off these lesson records.
+            </p>
+
+            <p>
+              Best regards,<br/>
+              Luna Education Team
+            </p>
+          </div>
+        `,
+      });
+
+      if (emailResult.error) {
+        console.error("Reminder email error:", emailResult.error);
+        continue;
+      }
+
+      const lessonIds = tutorLessons.map((l) => l.id);
+
+      await supabaseAdmin
+        .from("tutor_lessons")
+        .update({ reminder_sent_at: new Date().toISOString() })
+        .in("id", lessonIds);
+
+      sentResults.push({
+        tutor_id: tutorId,
+        tutor_email: tutor.email,
+        lesson_count: tutorLessons.length,
+      });
+    }
+
+    return res.json({
+      success: true,
+      sent: sentResults,
+    });
+  } catch (err) {
+    console.error("Lesson reminder API error:", err);
+    return res.status(500).json({
+      success: false,
+      error: err.message,
     });
   }
 });

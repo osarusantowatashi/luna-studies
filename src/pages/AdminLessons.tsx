@@ -383,6 +383,25 @@ const purchasedHours = studentPackages.reduce(
 
 if (studentPackages.length === 0) return null;
 
+const deletePackage = async (packageId: string) => {
+  const confirmed = window.confirm(
+    "Delete this package?"
+  );
+
+  if (!confirmed) return;
+
+  const { error } = await supabase
+    .from("student_packages")
+    .delete()
+    .eq("id", packageId);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  fetchPackages();
+};
 const usedHours = lessons
   .filter(
     (lesson) =>
@@ -427,6 +446,35 @@ if (!showCompletedPackages && isFinished) return null;
 
             <p className="text-slate-500 text-sm">
              {studentPackages.length} package(s)
+             <div className="mt-2 space-y-1">
+  {studentPackages.map((pkg) => (
+    <div key={pkg.id} className="text-xs text-slate-500">
+      {Number(pkg.package_hours).toFixed(2)}h ·{" "}
+      {pkg.purchased_at || "No date"} ·{" "}
+      {pkg.package_name || "Package"}
+      <button
+        onClick={() => {
+          setEditingPackageId(pkg.id);
+          setPackageStudentId(student.id);
+          setPackageHours(String(pkg.package_hours || ""));
+          setPackageName(pkg.package_name || "");
+          setPackagePurchasedAt(pkg.purchased_at || "");
+          setShowAddPackage(true);
+        }}
+        className="ml-2 text-[#0b234a] underline"
+      >
+        Edit
+      </button>
+      <button
+  onClick={() => deletePackage(pkg.id)}
+  className="ml-2 text-red-500 underline"
+>
+  Delete
+</button>
+    </div>
+    
+  ))}
+</div>
             </p>
           </div>
 
@@ -461,22 +509,7 @@ if (!showCompletedPackages && isFinished) return null;
   </p>
 )}
 </div>
-          <button
-  onClick={() => {
-    setEditingPackageId(latestPackage.id);
-    setPackageStudentId(student.id);
-    setPackageHours(String(latestPackage.package_hours || ""));
-    setPackageName(latestPackage.package_name || "");
-    setPackagePurchasedAt(latestPackage.purchased_at || "");
-    setShowAddPackage(true);
-  }}
-  className="mt-2 rounded-xl border border-[#dbe5f0] px-4 py-2 text-sm font-semibold text-[#0b234a]"
->
-  Edit Package
-</button>
-<p className="text-slate-400 text-xs mt-1">
-  Purchased: {latestPackage?.purchased_at || "Not set"}
-</p>
+        
         </div>
         
       );
