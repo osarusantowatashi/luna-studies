@@ -286,11 +286,7 @@ const fetchAssignedStudents = async () => {
   ))}
 </select>
             </div>
-
-            <Input
-              label="Date"
-              placeholder="May 10, 2025"
-            />
+<DateInput label="Lesson Date" />
             <NumberInput
             label="Number of Hours"
             placeholder="1.5"
@@ -444,6 +440,20 @@ function TextAreaInput({ label, placeholder, optional }: any) {
       <textarea
         placeholder={placeholder}
         className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 min-h-28 outline-none resize-none"
+      />
+    </div>
+  );
+}
+function DateInput({ label }: any) {
+  return (
+    <div>
+      <p className="text-sm font-semibold text-[#0b234a] mb-2">
+        {label}
+      </p>
+
+      <input
+        type="date"
+        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white text-[#0b234a]"
       />
     </div>
   );
