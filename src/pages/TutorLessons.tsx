@@ -291,26 +291,22 @@ const fetchAssignedStudents = async () => {
               label="Date"
               placeholder="May 10, 2025"
             />
-
-            <Input
-              label="Start Time"
-              placeholder="4:00 PM"
+            <NumberInput
+            label="Number of Hours"
+            placeholder="1.5"
             />
 
-            <Input
-              label="End Time"
-              placeholder="5:30 PM"
-            />
+        <TextAreaInput
+         label="Lesson Contents"
+         placeholder="Reading comprehension, grammar review, MAP vocabulary..."
+        optional
+        />
 
-            <Input
-              label="Subject"
-              placeholder="Math"
-            />
-
-            <Input
-              label="Topic"
-              placeholder="Fractions"
-            />
+        <TextAreaInput
+        label="Additional Remarks"
+            placeholder="Any extra notes for admin..."
+            optional
+        />
 
           </div>
 
@@ -413,6 +409,43 @@ function Option({ text, active }: any) {
     >
       {text}
     </button>
+  );
+}
+function NumberInput({ label, placeholder }: any) {
+  return (
+    <div>
+      <p className="text-sm font-semibold text-[#0b234a] mb-2">
+        {label}
+      </p>
+
+      <input
+        type="number"
+        step="0.25"
+        min="0"
+        placeholder={placeholder}
+        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none"
+      />
+    </div>
+  );
+}
+
+function TextAreaInput({ label, placeholder, optional }: any) {
+  return (
+    <div>
+      <p className="text-sm font-semibold text-[#0b234a] mb-2">
+        {label}
+        {optional && (
+          <span className="ml-2 text-xs font-normal text-slate-400">
+            Optional
+          </span>
+        )}
+      </p>
+
+      <textarea
+        placeholder={placeholder}
+        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 min-h-28 outline-none resize-none"
+      />
+    </div>
   );
 }
 
