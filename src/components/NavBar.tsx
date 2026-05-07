@@ -20,6 +20,7 @@ const [name, setName] = useState(
     "/mistakes",
     "/redo-mistakes",
     "/generate",
+    "/tutor/lessons",
     "/admin",
     "/studentoverview",
   ];
@@ -68,6 +69,7 @@ const [name, setName] = useState(
       ? [
           ["Dashboard", "/dashboard"],
           ["Mistakes", "/tutor/mistakes"],
+          ["Lessons", "/tutor/lessons"],
         ]
       : role === "student"
       ? [

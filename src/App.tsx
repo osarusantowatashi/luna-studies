@@ -25,6 +25,7 @@ import AdminProgress from "./pages/AdminProgress";
 import Layout from "./pages/Layout";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import TutorLessons from "./pages/TutorLessons";
 
 const App = () => {
   return (
@@ -138,6 +139,18 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/tutor/lessons"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "tutor"]}>
+              <Layout>
+                <TutorLessons />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
 
         <Route
           path="/practice"
