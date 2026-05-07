@@ -114,17 +114,35 @@ const fetchAssignedStudents = async () => {
     (lesson) => lesson.status === "pending"
   ).length;
 
-  const checkOffLesson = (id: number) => {
-    setLessons((prev) =>
-      prev.map((lesson) =>
-        lesson.id === id
-          ? { ...lesson, status: "completed" }
-          : lesson
-      )
-    );
+  const checkOffLesson = async (
+  lessonId: number,
+  newStatus: "completed" | "student_absent" | "reschedule_requested"
+) => {
+  const { error } = await supabase
+    .from("tutor_lessons")
+    .update({
+      status: newStatus,
+      checked_off_at: new Date().toISOString(),
+    })
+    .eq("id", lessonId);
 
-    setSelectedLesson(null);
-  };
+  if (error) {
+    console.error(error);
+    alert("Failed to update lesson.");
+    return;
+  }
+
+  setLessons((prev) =>
+    prev.map((lesson) =>
+        
+      lesson.id === lessonId
+        ? { ...lesson, status: newStatus }
+        : lesson
+    )
+  );
+
+  setSelectedLesson(null);
+};
 
   return (
     <div className="min-h-screen bg-[#f7f9fc] px-6 py-10">

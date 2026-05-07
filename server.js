@@ -71,7 +71,7 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
     const response = await sendEmailWithRetry({
       from: "Luna Education <admin@lunastudies.com>",
       to: process.env.ENQUIRY_TO_EMAIL || "enquiries@lunastudies.com",
-      reply_:email,
+      reply_to: email,
       subject: `New Luna Enquiry${subject ? `: ${subject}` : ""}`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -87,6 +87,30 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
 
           <p><strong>Message:</strong></p>
           <p>${message || "-"}</p>
+        </div>
+      `,
+    });
+
+    const userConfirmation = await sendEmailWithRetry({
+      from: "Luna Education <admin@lunastudies.com>",
+      to: email,
+      subject: "We received your Luna Education enquiry",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2>Thank you for your enquiry</h2>
+    
+          <p>Hi ${name},</p>
+    
+          <p>Thank you for contacting Luna Education. We have received your enquiry and our team will get back to you soon.</p>
+    
+          <p><strong>Subject:</strong> ${subject || "-"}</p>
+          <p><strong>Grade:</strong> ${grade || "-"}</p>
+          <p><strong>Your message:</strong></p>
+          <p>${message || "-"}</p>
+    
+          <hr />
+    
+          <p>Best regards,<br/>Luna Education Team</p>
         </div>
       `,
     });
@@ -108,6 +132,7 @@ if (response.error) {
 return res.json({
   success: true,
   response,
+ userConfirmation,
 });
 
   } catch (error) {
