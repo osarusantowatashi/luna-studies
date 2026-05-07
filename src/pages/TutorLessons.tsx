@@ -1,7 +1,7 @@
 // ==========================================
-// CREATE FILE:
 // src/pages/TutorLessons.tsx
 // ==========================================
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import {
@@ -13,8 +13,6 @@ import {
   RotateCcw,
   X,
 } from "lucide-react";
-
-
 
 const initialLessons = [
   {
@@ -47,44 +45,53 @@ const initialLessons = [
 ];
 
 export default function TutorLessons() {
-    const [students, setStudents] = useState<any[]>([]);
-const [selectedStudentId, setSelectedStudentId] = useState("");
-    useEffect(() => {
-  const fetchAssignedStudents = async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData.session?.user;
+  const [students, setStudents] = useState<any[]>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState("");
 
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from("student_tutors")
-      .select(`
-        student_id,
-        students (
-          id,
-          name,
-          grade,
-          is_active
-        )
-      `)
-      .eq("tutor_id", user.id);
-
-    if (error) {
-      console.error("Failed to fetch assigned students:", error);
-      return;
-    }
-
-    const assignedStudents =
-      data?.map((item: any) => item.students).filter(Boolean) || [];
-
-    setStudents(assignedStudents);
-  };
-
-  fetchAssignedStudents();
-}, []);
   const [lessons, setLessons] = useState(initialLessons);
   const [showAdd, setShowAdd] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchAssignedStudents = async () => {
+      const { data: sessionData } =
+        await supabase.auth.getSession();
+
+      const user = sessionData.session?.user;
+
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("student_tutors")
+        .select(`
+          student_id,
+          students (
+            id,
+            name,
+            grade,
+            is_active
+          )
+        `)
+        .eq("tutor_id", user.id);
+
+      if (error) {
+        console.error(
+          "Failed to fetch assigned students:",
+          error
+        );
+        return;
+      }
+
+      const assignedStudents =
+        data
+          ?.map((item: any) => item.students)
+          .filter(Boolean) || [];
+
+      setStudents(assignedStudents);
+    };
+
+    fetchAssignedStudents();
+  }, []);
 
   const completed = lessons.filter(
     (lesson) => lesson.status === "completed"
@@ -243,32 +250,64 @@ const [selectedStudentId, setSelectedStudentId] = useState("");
 
           <div className="space-y-4">
 
+            {/* Student Dropdown */}
             <div>
-  <p className="text-sm font-semibold text-[#0b234a] mb-2">
-    Student
-  </p>
+              <p className="text-sm font-semibold text-[#0b234a] mb-2">
+                Student
+              </p>
 
-  <select
-    value={selectedStudentId}
-    onChange={(e) => setSelectedStudentId(e.target.value)}
-    className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white"
-  >
-    <option value="">Select student</option>
+              <select
+                value={selectedStudentId}
+                onChange={(e) =>
+                  setSelectedStudentId(e.target.value)
+                }
+                className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white"
+              >
+                <option value="">
+                  Select student
+                </option>
 
-    {students.map((student) => (
-      <option key={student.id} value={student.id}>
-        {student.name || student.id}
-        {student.grade ? ` (${student.grade})` : ""}
-        {student.is_active === false ? " - Inactive" : ""}
-      </option>
-    ))}
-  </select>
-</div>
-            <Input label="Date" placeholder="May 10, 2025" />
-            <Input label="Start Time" placeholder="4:00 PM" />
-            <Input label="End Time" placeholder="5:30 PM" />
-            <Input label="Subject" placeholder="Math" />
-            <Input label="Topic" placeholder="Fractions" />
+                {students.map((student) => (
+                  <option
+                    key={student.id}
+                    value={student.id}
+                  >
+                    {student.name || student.id}
+                    {student.grade
+                      ? ` (${student.grade})`
+                      : ""}
+                    {student.is_active === false
+                      ? " - Inactive"
+                      : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <Input
+              label="Date"
+              placeholder="May 10, 2025"
+            />
+
+            <Input
+              label="Start Time"
+              placeholder="4:00 PM"
+            />
+
+            <Input
+              label="End Time"
+              placeholder="5:30 PM"
+            />
+
+            <Input
+              label="Subject"
+              placeholder="Math"
+            />
+
+            <Input
+              label="Topic"
+              placeholder="Fractions"
+            />
 
           </div>
 
@@ -291,7 +330,8 @@ const [selectedStudentId, setSelectedStudentId] = useState("");
           </h2>
 
           <p className="text-slate-500 mb-6">
-            {selectedLesson.student} · {selectedLesson.time}
+            {selectedLesson.student} ·{" "}
+            {selectedLesson.time}
           </p>
 
           <div className="space-y-3 mb-5">
@@ -308,7 +348,9 @@ const [selectedStudentId, setSelectedStudentId] = useState("");
           />
 
           <button
-            onClick={() => checkOffLesson(selectedLesson.id)}
+            onClick={() =>
+              checkOffLesson(selectedLesson.id)
+            }
             className="w-full mt-5 bg-[#f7c600] text-[#0b234a] py-4 rounded-2xl font-semibold"
           >
             Submit
@@ -331,7 +373,9 @@ function StatCard({ icon, title, value }: any) {
         {icon}
       </div>
 
-      <p className="text-slate-500 mb-1">{title}</p>
+      <p className="text-slate-500 mb-1">
+        {title}
+      </p>
 
       <h3 className="text-5xl font-serif text-[#0b234a]">
         {value}
