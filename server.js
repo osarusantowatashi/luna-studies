@@ -236,7 +236,7 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
                       <!-- WECHAT -->
                       <td align="center" width="33%">
                         <img
-                          src="https://lunastudies.com/wechat.png"
+                          src="https://cdn-icons-png.flaticon.com/512/5968/5968847.png"
                           width="34"
                           style="margin-bottom:10px;"
                         />
@@ -261,7 +261,7 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
                       <!-- WHATSAPP -->
                       <td align="center" width="33%">
                         <img
-                          src="https://lunastudies.com/whatsapp.jpg"
+                          src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
                           width="34"
                           style="margin-bottom:10px;"
                         />
@@ -286,7 +286,7 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
                       <!-- WEBSITE -->
                       <td align="center" width="33%">
                         <img
-                          src="https://lunastudies.com/website.png"
+                          src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png"
                           width="34"
                           style="margin-bottom:10px;"
                         />

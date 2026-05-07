@@ -28,6 +28,7 @@ type Lesson = {
 export default function AdminLessons() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
+  
   const [editingPackageId, setEditingPackageId] = useState("");
 const [packagePurchasedAt, setPackagePurchasedAt] = useState("");
 const [links, setLinks] = useState<any[]>([]);
@@ -39,6 +40,7 @@ const [links, setLinks] = useState<any[]>([]);
 const [packageStudentId, setPackageStudentId] = useState("");
 const [packageHours, setPackageHours] = useState("");
 const [packageName, setPackageName] = useState("");
+const [showCompletedPackages, setShowCompletedPackages] = useState(false);
 
 
   useEffect(() => {
@@ -158,15 +160,8 @@ const updatePackage = async () => {
     .reduce((sum, lesson) => sum + Number(lesson.hours || 0), 0);
 };
 
-const getRemainingHours = (studentId: string) => {
-  const activePackage = packages.find(
-    (pkg) => pkg.student_id === studentId && pkg.is_active
-  );
 
-  if (!activePackage) return null;
 
-  return Number(activePackage.package_hours) - getUsedHours(studentId);
-};
   const fetchLessons = async () => {
     const { data, error } = await supabase
       .from("tutor_lessons")
@@ -243,11 +238,17 @@ const students =
     );
   });
 
-  const totalHours = filteredLessons.reduce(
-    (sum, lesson) => sum + Number(lesson.hours || 0),
+ const totalHours = filteredLessons
+  .filter(
+    (lesson) =>
+      lesson.status === "completed" ||
+      lesson.status === "student_absent"
+  )
+  .reduce(
+    (sum, lesson) =>
+      sum + Number(lesson.hours || 0),
     0
   );
-
   const completed = filteredLessons.filter(
     (lesson) =>
       lesson.status === "completed" ||
@@ -264,6 +265,7 @@ const students =
     (lesson) =>
       lesson.status === "reschedule_requested"
   ).length;
+
 
   return (
     
@@ -359,6 +361,7 @@ const students =
       <h2 className="text-3xl font-serif text-[#0b234a]">
         Remaining Hours
       </h2>
+      
     </div>
 
     <button
@@ -367,62 +370,123 @@ const students =
     >
       Add Package
     </button>
+    
+    <button
+  onClick={() => setShowCompletedPackages(!showCompletedPackages)}
+  className="border border-[#dbe5f0] text-[#0b234a] px-5 py-3 rounded-2xl font-semibold"
+>
+  {showCompletedPackages ? "Hide Completed" : "Show Completed Packages"}
+</button>
   </div>
+  
 
   <div className="space-y-4">
 
     {allStudents.map((student) => {
-      const activePackage = packages.find(
-        (pkg) =>
-          pkg.student_id === student.id &&
-          pkg.is_active
-      );
+      const studentPackages = packages.filter(
+  (pkg) =>
+    pkg.student_id === student.id &&
+    pkg.is_active
+);
 
-      if (!activePackage) return null;
+const purchasedHours = studentPackages.reduce(
+  (sum, pkg) => sum + Number(pkg.package_hours || 0),
+  0
+);
 
-      const usedHours = lessons
-        .filter(
-          (lesson) =>
-            lesson.student_id === student.id &&
-            (lesson.status === "completed" ||
-              lesson.status === "student_absent")
-        )
-        .reduce(
-          (sum, lesson) =>
-            sum + Number(lesson.hours || 0),
-          0
-        );
+if (studentPackages.length === 0) return null;
 
-      const remaining =
-        Number(activePackage.package_hours) -
-        usedHours;
+const usedHours = lessons
+  .filter(
+    (lesson) =>
+      lesson.student_id === student.id &&
+      (lesson.status === "completed" ||
+        lesson.status === "student_absent")
+  )
+  .reduce(
+    (sum, lesson) => sum + Number(lesson.hours || 0),
+    0
+  );
+
+const remaining = purchasedHours - usedHours;
+
+const latestPackage = studentPackages[studentPackages.length - 1];
+
+const isLow = remaining > 0 && remaining <= 2;
+const isFinished = remaining <= 0;
+
+if (!showCompletedPackages && isFinished) return null;
 
       return (
         <div
-          key={student.id}
-          className="border border-[#eef4fb] rounded-2xl p-4 flex justify-between items-center"
-        >
+  key={student.id}
+  className={`border rounded-2xl p-4 flex justify-between items-center ${
+    isFinished
+      ? "border-slate-200 bg-slate-50 opacity-70"
+      : isLow
+      ? "border-orange-200 bg-orange-50"
+      : "border-[#eef4fb]"
+  }`}
+>
           <div>
             <p className="font-semibold text-[#0b234a] text-lg">
               {student.name}
             </p>
 
             <p className="text-slate-500 text-sm">
-              {activePackage.package_name ||
-                "Lesson Package"}
+             {studentPackages.length} package(s)
             </p>
           </div>
 
-          <div className="text-right">
-            <p className="text-2xl font-serif text-[#0b234a]">
-              {remaining.toFixed(1)}h
-            </p>
+         <div className="text-right space-y-1">
 
-            <p className="text-sm text-slate-500">
-              remaining
-            </p>
-          </div>
+  <p className="text-sm text-slate-500">
+    Purchased:{" "}
+    <span className="font-semibold text-[#0b234a]">
+      {purchasedHours.toFixed(2)}h
+    </span>
+  </p>
+
+  <p className="text-sm text-slate-500">
+    Used:{" "}
+    <span className="font-semibold text-[#0b234a]">
+      {usedHours.toFixed(2)}h
+    </span>
+  </p>
+
+  <p className="text-lg font-serif text-[#0b234a]">
+    Remaining: {remaining.toFixed(2)}h
+  </p>
+  {isLow && (
+  <p className="mt-1 text-sm font-semibold text-orange-600">
+    ⚠ Low balance
+  </p>
+)}
+
+{isFinished && (
+  <p className="mt-1 text-sm font-semibold text-red-600">
+    Package finished
+  </p>
+)}
+</div>
+          <button
+  onClick={() => {
+    setEditingPackageId(latestPackage.id);
+    setPackageStudentId(student.id);
+    setPackageHours("");
+    setPackageName("");
+    setPackagePurchasedAt("");
+    setShowAddPackage(true);
+  }}
+  className="mt-2 rounded-xl border border-[#dbe5f0] px-4 py-2 text-sm font-semibold text-[#0b234a]"
+>
+  Edit Package
+</button>
+<p className="text-slate-400 text-xs mt-1">
+  Purchased: {latestPackage?.purchased_at || "Not set"}
+</p>
         </div>
+        
       );
     })}
 
@@ -575,6 +639,12 @@ const students =
       placeholder="Package hours, e.g. 10"
       className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none mb-4"
     />
+    <input
+  type="date"
+  value={packagePurchasedAt}
+  onChange={(e) => setPackagePurchasedAt(e.target.value)}
+  className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none mb-4"
+/>
 
     <input
       value={packageName}
@@ -584,10 +654,10 @@ const students =
     />
 
     <button
-      onClick={addPackage}
+      onClick={editingPackageId ? updatePackage : addPackage}
       className="w-full mt-6 bg-[#0b234a] text-white py-4 rounded-2xl font-semibold"
     >
-      Save Package
+      {editingPackageId ? "Update Package" : "Save package"}
     </button>
   </Modal>
 )}
