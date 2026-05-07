@@ -206,11 +206,7 @@ const [rescheduleReason, setRescheduleReason] = useState("");
     setCheckoffNote("");
   };
 
-  const completed = lessons.filter(
-  (lesson) =>
-    lesson.status === "completed" ||
-    lesson.status === "student_absent"
-).length;
+
 
   const submitReschedule = async () => {
   if (!selectedLesson || !rescheduledDate) {
@@ -251,15 +247,11 @@ setShowReschedule(false);
 setRescheduledDate("");
 setRescheduleReason("");
 };
-  const pending = lessons.filter(
-  (lesson) =>
-    lesson.status === "pending" ||
-    lesson.status === "reschedule_requested"
-).length;
   const getStudentName = (studentId: string) => {
   const student = students.find((s) => s.id === studentId);
   return student?.name || studentId;
 };
+
 
 
 const filteredLessons =
@@ -268,8 +260,7 @@ const filteredLessons =
     : lessons.filter(
         (lesson) => lesson.student_id === filterStudentId
       );
-
-      const totalHours = filteredLessons.reduce(
+const totalHours = filteredLessons.reduce(
   (sum, lesson) => sum + Number(lesson.hours || 0),
   0
 );
@@ -285,6 +276,7 @@ const pending = filteredLessons.filter(
     lesson.status === "pending" ||
     lesson.status === "reschedule_requested"
 ).length;
+      
 const sortedLessons = [...filteredLessons].sort((a, b) => {
   const isDoneA =
     a.status === "completed" || a.status === "student_absent";
@@ -321,12 +313,17 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <StatCard
             icon={<Calendar size={22} />}
             title="Total Lessons"
-            value={lessons.length}
+            value={filteredLessons.length}
           />
+          <StatCard
+  icon={<Clock size={22} />}
+  title="Total Hours"
+  value={totalHours}
+/>
 
           <StatCard
             icon={<CheckCircle2 size={22} />}
