@@ -1023,6 +1023,190 @@ app.post("/api/send-lesson-reminders", async (req, res) => {
   }
 });
 
+app.post("/api/send-package-low-balance-reminders", async (req, res) => {
+  try {
+    console.log("📦 Package low balance reminder API hit");
+
+    const { data: packages, error: packageError } = await supabaseAdmin
+      .from("student_packages")
+      .select("id, student_id, package_hours, package_name, purchased_at, low_balance_reminder_sent_at")
+      .is("low_balance_reminder_sent_at", null);
+
+    if (packageError) {
+      return res.status(500).json({ success: false, error: packageError });
+    }
+
+    if (!packages || packages.length === 0) {
+      return res.json({
+        success: true,
+        message: "No packages to check.",
+      });
+    }
+
+    const studentIds = [...new Set(packages.map((pkg) => pkg.student_id))];
+
+    const { data: lessons, error: lessonError } = await supabaseAdmin
+      .from("tutor_lessons")
+      .select("student_id, hours, status")
+      .in("student_id", studentIds)
+      .in("status", ["completed", "student_absent"]);
+
+    if (lessonError) {
+      return res.status(500).json({ success: false, error: lessonError });
+    }
+
+    const { data: students, error: studentError } = await supabaseAdmin
+      .from("profiles")
+      .select("id, name, email")
+      .in("id", studentIds);
+
+    if (studentError) {
+      return res.status(500).json({ success: false, error: studentError });
+    }
+
+    const usedHoursByStudent = new Map();
+
+    for (const lesson of lessons || []) {
+      const current = usedHoursByStudent.get(lesson.student_id) || 0;
+      usedHoursByStudent.set(
+        lesson.student_id,
+        current + Number(lesson.hours || 0)
+      );
+    }
+
+    const studentMap = new Map(students?.map((student) => [student.id, student]));
+
+    const packageGroupsByStudent = new Map();
+
+    for (const pkg of packages) {
+      if (!packageGroupsByStudent.has(pkg.student_id)) {
+        packageGroupsByStudent.set(pkg.student_id, []);
+      }
+      packageGroupsByStudent.get(pkg.student_id).push(pkg);
+    }
+
+    const lowBalanceStudents = [];
+
+    for (const [studentId, studentPackages] of packageGroupsByStudent.entries()) {
+      const purchasedHours = studentPackages.reduce(
+        (sum, pkg) => sum + Number(pkg.package_hours || 0),
+        0
+      );
+
+      const usedHours = usedHoursByStudent.get(studentId) || 0;
+      const remaining = purchasedHours - usedHours;
+
+      if (remaining > 0 && remaining <= 2) {
+        const student = studentMap.get(studentId);
+
+        lowBalanceStudents.push({
+          student_id: studentId,
+          student_name: student?.name || studentId,
+          purchased_hours: purchasedHours,
+          used_hours: usedHours,
+          remaining_hours: remaining,
+          package_ids: studentPackages.map((pkg) => pkg.id),
+        });
+      }
+    }
+
+    if (lowBalanceStudents.length === 0) {
+      return res.json({
+        success: true,
+        message: "No low balance packages.",
+      });
+    }
+
+    const rows = lowBalanceStudents
+      .map(
+        (student) => `
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #e5e7eb;">
+              ${student.student_name}
+            </td>
+            <td style="padding:10px;border-bottom:1px solid #e5e7eb;">
+              ${student.purchased_hours.toFixed(2)}h
+            </td>
+            <td style="padding:10px;border-bottom:1px solid #e5e7eb;">
+              ${student.used_hours.toFixed(2)}h
+            </td>
+            <td style="padding:10px;border-bottom:1px solid #e5e7eb;color:#b45309;font-weight:bold;">
+              ${student.remaining_hours.toFixed(2)}h
+            </td>
+          </tr>
+        `
+      )
+      .join("");
+
+    const emailResult = await sendEmailWithRetry({
+      from: "Luna Education <admin@lunastudies.com>",
+      to: "admin@lunastudies.com",
+      subject: "Low Balance Student Package Reminder",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2>Low Balance Student Package Reminder</h2>
+
+          <p>
+            The following student package balance(s) are less than or equal to 2 hours.
+          </p>
+
+          <table style="border-collapse:collapse;width:100%;margin-top:20px;">
+            <thead>
+              <tr>
+                <th align="left" style="padding:10px;border-bottom:2px solid #0b234a;">Student</th>
+                <th align="left" style="padding:10px;border-bottom:2px solid #0b234a;">Purchased</th>
+                <th align="left" style="padding:10px;border-bottom:2px solid #0b234a;">Used</th>
+                <th align="left" style="padding:10px;border-bottom:2px solid #0b234a;">Remaining</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+
+          <p style="margin-top:24px;">
+            Please contact the parent/student to renew or extend lesson hours.
+          </p>
+
+          <p>
+            Best regards,<br/>
+            Luna Education System
+          </p>
+        </div>
+      `,
+    });
+
+    if (emailResult.error) {
+      return res.status(500).json({
+        success: false,
+        error: emailResult.error,
+      });
+    }
+
+    const allPackageIds = lowBalanceStudents.flatMap((student) => student.package_ids);
+
+    await supabaseAdmin
+      .from("student_packages")
+      .update({
+        low_balance_reminder_sent_at: new Date().toISOString(),
+      })
+      .in("id", allPackageIds);
+
+    return res.json({
+      success: true,
+      sent_to: "admin@lunastudies.com",
+      low_balance_count: lowBalanceStudents.length,
+      low_balance_students: lowBalanceStudents,
+    });
+  } catch (err) {
+    console.error("Package reminder API error:", err);
+    return res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
 /* =========================
    START SERVER
 ========================= */

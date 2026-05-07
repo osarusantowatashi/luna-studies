@@ -1,7 +1,20 @@
 import { Link } from "react-router-dom";
 import NavBar from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ArrowRight, Sparkles } from "lucide-react";
+import {
+  CheckCircle,
+  ArrowRight,
+  Sparkles,
+  BookOpen,
+  Target,
+  BarChart3,
+  Globe2,
+  Trophy,
+  Star,
+  Users,
+  GraduationCap,
+  Heart,
+} from "lucide-react";
 
 const tutors = [
   {
@@ -12,7 +25,6 @@ const tutors = [
     desc: "Specialises in MAP Reading, TOEFL speaking, and international school admissions.",
     highlight: "MAP · TOEFL · Admissions",
   },
-
   {
     name: "Grace",
     role: "English Tutor",
@@ -21,7 +33,6 @@ const tutors = [
     desc: "Focuses on structured problem solving and exam confidence building.",
     highlight: "IB · CAT4 · AEIS",
   },
-
   {
     name: "Francis",
     role: "Japanese Language Tutor",
@@ -32,103 +43,262 @@ const tutors = [
   },
 ];
 
+const HeroFeature = ({
+  icon: Icon,
+  title,
+  subtitle,
+}: {
+  icon: any;
+  title: string;
+  subtitle: string;
+}) => (
+  <div className="group">
+    <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/10 bg-white/80 shadow-[0_12px_35px_rgba(15,23,42,0.08)] backdrop-blur transition group-hover:-translate-y-1">
+      <Icon className="h-6 w-6 text-accent" />
+    </div>
+    <p className="text-sm font-bold text-primary">{title}</p>
+    <p className="mt-1 text-xs leading-5 text-muted-foreground">{subtitle}</p>
+  </div>
+);
+
+const ResultBadge = ({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+}) => (
+  <div className="min-w-[138px] rounded-2xl border border-primary/10 bg-white/90 px-5 py-4 shadow-[0_18px_50px_rgba(15,23,42,0.12)] backdrop-blur">
+    <p className="text-xs font-bold uppercase tracking-widest text-primary/70">
+      {label}
+    </p>
+    <p className="mt-1 font-serif text-3xl text-primary">{value}</p>
+    <p className="text-xs text-muted-foreground">{sub}</p>
+  </div>
+);
+
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
       <NavBar />
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-hero px-6 py-28">
-        <div className="absolute left-10 top-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
-        <div className="absolute bottom-10 right-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <section className="relative min-h-[calc(100vh-80px)] overflow-hidden bg-[#fbfaf6] px-6 py-20">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_20%,rgba(255,197,82,0.22),transparent_28%),radial-gradient(circle_at_82%_68%,rgba(10,36,84,0.10),transparent_30%),linear-gradient(90deg,#fffdf8_0%,#fffaf0_40%,#f7fbff_100%)]" />
+        <div className="absolute left-8 top-20 h-72 w-72 rounded-full bg-accent/15 blur-3xl" />
+        <div className="absolute right-0 top-0 h-[520px] w-[520px] rounded-full bg-primary/10 blur-3xl" />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
-          <div>
-            <p className="mb-6 text-sm font-semibold uppercase tracking-[0.3em] text-accent">
-              Luna Education
-            </p>
+        <div className="relative mx-auto max-w-7xl">
+          <div className="grid min-h-[720px] items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
+            {/* LEFT */}
+            <div className="relative z-20 pt-10">
+              <div className="mb-6 flex items-center gap-3">
+                <span className="h-px w-10 bg-accent" />
+                <p className="text-sm font-bold uppercase tracking-[0.28em] text-accent">
+                  Personalised 1–1 Tutoring
+                </p>
+              </div>
 
-            <h1 className="max-w-3xl font-serif text-5xl font-medium leading-[1.05] text-primary md:text-7xl">
-              Build confidence.
-              <br />
-              Improve results.
-              <br />
-              Enjoy learning again.
-            </h1>
+              <h1 className="max-w-2xl font-serif text-5xl font-medium leading-[1.04] text-primary md:text-7xl">
+                Helping international students think clearly.
+                <span className="relative mt-2 block italic text-accent">
+                  Learn confidently.
+                  <span className="absolute -bottom-2 left-0 h-[10px] w-[360px] max-w-full rounded-full bg-accent/20" />
+                </span>
+              </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-              Personalised 1–1 tutoring for international students who need
-              clearer guidance, stronger study habits, and more confident
-              academic performance.
-            </p>
+              <p className="mt-8 max-w-xl text-lg leading-8 text-slate-600 md:text-xl">
+                Personalised support that builds clarity, stronger study habits,
+                and real academic results.
+              </p>
 
-            <p className="mt-4 text-sm font-medium text-primary">
-              Trial lesson available · Online & offline support · English /
-              Chinese / Japanese
-            </p>
+              <div className="mt-9 grid max-w-xl grid-cols-2 gap-6 sm:grid-cols-4">
+                <HeroFeature
+                  icon={BookOpen}
+                  title="Expert Tutors"
+                  subtitle="Top international graduates"
+                />
+                <HeroFeature
+                  icon={Target}
+                  title="Personalised"
+                  subtitle="Learning plans just for you"
+                />
+                <HeroFeature
+                  icon={BarChart3}
+                  title="Proven Results"
+                  subtitle="Better habits, better outcomes"
+                />
+                <HeroFeature
+                  icon={Globe2}
+                  title="Multilingual"
+                  subtitle="EN / 中文 / 日本語"
+                />
+              </div>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Link to="/enquiry">
-                <Button size="lg" className="h-12 px-8 text-base shadow-elegant">
-                  Enquire now
-                </Button>
-              </Link>
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <Link to="/enquiry">
+                  <Button
+                    size="lg"
+                    className="h-14 rounded-2xl bg-primary px-9 text-base shadow-[0_18px_45px_rgba(10,36,84,0.22)]"
+                  >
+                    Enquire now
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
 
-              <Link to="/subjects">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 bg-white px-8 text-base"
-                >
-                  Explore programs
-                </Button>
-              </Link>
+                <Link to="/subjects">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-14 rounded-2xl border-primary/20 bg-white/80 px-9 text-base text-primary shadow-sm backdrop-blur"
+                  >
+                    Explore programs
+                  </Button>
+                </Link>
+              </div>
+
+              <p className="mt-7 text-sm font-medium text-primary/70">
+                Online & offline support · Trial lesson available
+              </p>
+            </div>
+
+            {/* RIGHT VISUAL */}
+            <div className="relative z-10 min-h-[720px]">
+              <img
+  src="/hero/luna_hero_girl.png"
+  alt="Luna Education student studying"
+  className="
+    absolute
+    z-0
+    bottom-[-10px]
+    left-[56%]
+    h-[880px]
+    w-[980px]
+    -translate-x-1/2
+    object-cover
+    object-bottom
+    drop-shadow-[0_35px_70px_rgba(15,23,42,0.16)]
+  "
+/>
+<div className="absolute right-20 top-40 h-[400px] w-[400px] rounded-full bg-[#f7d58a]/30 blur-3xl" />
+
+              <div className="absolute left-2 top-24 hidden rotate-[-8deg] font-serif text-2xl italic leading-8 text-primary md:block">
+                Better ♡
+                <br />
+                understanding.
+                <br />
+                <span className="text-accent">Better me.</span>
+              </div>
+
+              <div className="absolute [-30px] top-8 w-[380px] rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_25px_90px_rgba(15,23,42,0.14)] backdrop-blur-xl">
+                <p className="text-sm font-bold uppercase tracking-[0.18em] text-accent">
+                  Student Transformation
+                </p>
+
+                <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-5">
+                  <div>
+                    <p className="text-xs font-bold uppercase text-primary">
+                      Before
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">
+                      Confused notes
+                      <br />
+                      Scattered ideas
+                      <br />
+                      Low confidence
+                    </p>
+                    <div className="mt-5 h-16 w-16 rounded-full border border-primary/15 bg-[radial-gradient(circle,transparent_35%,rgba(10,36,84,0.15)_36%,transparent_38%)]" />
+                  </div>
+
+                  <ArrowRight className="h-8 w-8 text-accent" />
+
+                  <div>
+                    <p className="text-xs font-bold uppercase text-accent">
+                      After
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">
+                      Clear structure
+                      <br />
+                      Confident answers
+                      <br />
+                      Stronger results
+                    </p>
+                    <div className="mt-5 h-16 w-16 rounded-full border-2 border-accent/50" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute bottom-24 right-[-10px] w-[380px] rounded-[2rem] border border-white/80 bg-white/85 p-7 shadow-[0_25px_90px_rgba(15,23,42,0.14)] backdrop-blur-xl">
+                <p className="font-serif text-4xl text-accent">“</p>
+                <p className="mt-2 text-sm leading-7 text-primary/80">
+                  Luna Education helped me organise my thoughts and explain
+                  answers clearly. I finally enjoy learning!
+                </p>
+                <p className="mt-4 text-sm font-semibold text-primary">
+                  — Chloe, Grade 11
+                </p>
+                <div className="mt-4 flex gap-1 text-accent">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+              </div>
+
+              <div className="absolute bottom-12 left-0 hidden gap-3 lg:flex">
+                <ResultBadge label="IELTS" value="8.5" sub="Overall" />
+                <ResultBadge label="SAT" value="1500" sub="+310 points" />
+                <ResultBadge label="TOEFL" value="114" sub="+19 points" />              </div>
             </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -left-10 top-16 h-72 w-72 rounded-full bg-yellow-300/20 blur-3xl" />
-
-            <div className="relative rounded-[2rem] border bg-white/90 p-8 shadow-elegant backdrop-blur">
-              <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-accent">
-                Student Growth
-              </p>
-
-              <h3 className="font-serif text-3xl text-primary">
-                From unsure to confident
-              </h3>
-
-              <div className="mt-8 grid gap-5">
-                <div className="rounded-2xl border bg-secondary/40 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    Before
-                  </p>
-                  <p className="mt-2 text-lg text-primary">
-                    Struggles to organise ideas and explain answers clearly.
-                  </p>
+          {/* BOTTOM STATS */}
+          <div className="relative z-30 -mt-4 grid gap-4 rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl md:grid-cols-5">
+            {[
+              {
+                icon: Users,
+                value: "500+",
+                title: "Students supported",
+              },
+              {
+                icon: Star,
+                value: "95%",
+                title: "Students improve within 3 months",
+              },
+              {
+                icon: Globe2,
+                value: "10+",
+                title: "Countries represented",
+              },
+              {
+                icon: GraduationCap,
+                value: "Top Uni",
+                title: "UK / US / JP / SG support",
+              },
+              {
+                icon: Heart,
+                value: "4.9/5",
+                title: "Average parent rating",
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="flex items-center gap-4 border-primary/10 md:border-r md:last:border-r-0"
+              >
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-secondary/70">
+                  <item.icon className="h-6 w-6 text-primary" />
                 </div>
-
-                <div className="rounded-2xl border bg-card p-5 shadow-soft">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                    After
+                <div>
+                  <p className="font-serif text-3xl text-primary">
+                    {item.value}
                   </p>
-                  <p className="mt-2 text-lg font-semibold text-primary">
-                    Gives structured answers with confidence and clearer
-                    reasoning.
+                  <p className="text-sm leading-5 text-muted-foreground">
+                    {item.title}
                   </p>
                 </div>
               </div>
-
-              <div className="mt-7 rounded-2xl border bg-background p-5">
-                <p className="text-sm text-muted-foreground">
-                  “My child finally understands how to approach questions, not
-                  just memorise answers.”
-                </p>
-                <p className="mt-3 text-sm font-semibold text-primary">
-                  — Parent feedback
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -138,95 +308,60 @@ const Landing = () => {
         <div className="absolute left-0 top-10 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
         <div className="absolute right-0 bottom-10 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-6 mb-12">
+        <div className="relative mx-auto mb-12 max-w-7xl px-6">
           <div className="flex items-center gap-2 text-accent">
             <Sparkles className="h-4 w-4" />
-            <p className="text-sm uppercase tracking-[0.3em] font-semibold">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em]">
               Meet Our Tutors
             </p>
           </div>
 
-          <h2 className="mt-4 max-w-4xl font-serif text-4xl md:text-6xl text-primary leading-tight">
+          <h2 className="mt-4 max-w-4xl font-serif text-4xl leading-tight text-primary md:text-6xl">
             Learn from tutors who make progress feel possible
           </h2>
 
-          <p className="mt-5 max-w-2xl text-muted-foreground leading-7">
+          <p className="mt-5 max-w-2xl leading-7 text-muted-foreground">
             Experienced multilingual tutors with strong academic backgrounds,
             structured lesson planning, and real student-support experience.
           </p>
         </div>
 
-        <div className="relative overflow-hidden py-8 group">
+        <div className="group relative overflow-hidden py-8">
           <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-40 bg-gradient-to-r from-background to-transparent" />
           <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-40 bg-gradient-to-l from-background to-transparent" />
 
-          <div className="flex w-max gap-8 animate-infinite-scroll group-hover:[animation-play-state:paused]">
+          <div className="flex w-max animate-infinite-scroll gap-8 group-hover:[animation-play-state:paused]">
             {[...tutors, ...tutors, ...tutors].map((tutor, i) => (
               <div
                 key={i}
-                className="
-                  w-[380px] h-[500px] shrink-0
-                  overflow-hidden rounded-[2.5rem]
-                  border border-white/70
-                  bg-white
-                  shadow-[0_25px_80px_rgba(15,23,42,0.10)]
-                  transition-all duration-500
-                  hover:-translate-y-3
-                  hover:shadow-[0_35px_100px_rgba(15,23,42,0.18)]
-                  flex flex-col
-                "
+                className="flex h-[500px] w-[380px] shrink-0 flex-col overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_25px_80px_rgba(15,23,42,0.10)] transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_35px_100px_rgba(15,23,42,0.18)]"
               >
-                {/* IMAGE AREA */}
-<div className="relative h-[250px] overflow-hidden">
-  
-  {/* IMAGE */}
-  <img
-    src={tutor.image}
-    alt={tutor.name}
-    className="
-      h-full
-      w-full
-      object-cover
-      transition-transform
-      duration-700
-      hover:scale-105
-    "
-  />
+                <div className="relative h-[250px] overflow-hidden">
+                  <img
+                    src={tutor.image}
+                    alt={tutor.name}
+                    className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
 
-  {/* DARK OVERLAY */}
-  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
 
-  {/* TOP TAG */}
-  <div className="absolute left-5 top-5">
-    <span
-      className="
-        rounded-full
-        bg-white/90
-        px-4
-        py-2
-        text-xs
-        font-semibold
-        text-[#9f6d2f]
-        backdrop-blur-md
-      "
-    >
-      {tutor.highlight}
-    </span>
-  </div>
+                  <div className="absolute left-5 top-5">
+                    <span className="rounded-full bg-white/90 px-4 py-2 text-xs font-semibold text-[#9f6d2f] backdrop-blur-md">
+                      {tutor.highlight}
+                    </span>
+                  </div>
 
-  {/* NAME AREA */}
-  <div className="absolute bottom-6 left-6">
-    <h3 className="font-serif text-5xl text-white leading-none drop-shadow-lg">
-      {tutor.name}
-    </h3>
+                  <div className="absolute bottom-6 left-6">
+                    <h3 className="font-serif text-5xl leading-none text-white drop-shadow-lg">
+                      {tutor.name}
+                    </h3>
 
-    <p className="mt-2 text-sm font-semibold text-white/90">
-      {tutor.role}
-    </p>
-  </div>
-</div>
+                    <p className="mt-2 text-sm font-semibold text-white/90">
+                      {tutor.role}
+                    </p>
+                  </div>
+                </div>
 
-                {/* CONTENT */}
                 <div className="flex flex-1 flex-col p-7">
                   <div className="flex flex-wrap gap-2">
                     {tutor.tags.map((tag, idx) => (
@@ -239,7 +374,7 @@ const Landing = () => {
                     ))}
                   </div>
 
-                  <p className="mt-6 text-sm leading-7 text-muted-foreground line-clamp-3">
+                  <p className="mt-6 line-clamp-3 text-sm leading-7 text-muted-foreground">
                     {tutor.desc}
                   </p>
 
