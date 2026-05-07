@@ -26,6 +26,30 @@ const tutors = [
     languages: "English / Mandarin",
     bio: "Focuses on clear explanations, mistake review, and building strong foundations.",
   },
+  {
+    name: "Tutor C",
+    role: "Math Tutor",
+    subjects: ["Math", "Problem Solving", "AEIS"],
+    education: "STEM background",
+    languages: "English / Mandarin",
+    bio: "Focuses on clear explanations, mistake review, and building strong foundations.",
+  },
+  {
+    name: "Tutor D",
+    role: "Math Tutor",
+    subjects: ["Math", "Problem Solving", "AEIS"],
+    education: "STEM background",
+    languages: "English / Mandarin",
+    bio: "Focuses on clear explanations, mistake review, and building strong foundations.",
+  },
+  {
+    name: "Tutor E",
+    role: "Math Tutor",
+    subjects: ["Math", "Problem Solving", "AEIS"],
+    education: "STEM background",
+    languages: "English / Mandarin",
+    bio: "Focuses on clear explanations, mistake review, and building strong foundations.",
+  },
 ];
 
 const Tutors = () => {

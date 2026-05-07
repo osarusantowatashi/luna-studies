@@ -69,8 +69,9 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
     }
 
     const response = await sendEmailWithRetry({
-      from: "Luna Education <noreply@lunastudies.com>",
+      from: "Luna Education <admin@lunastudies.com>",
       to: process.env.ENQUIRY_TO_EMAIL || "enquiries@lunastudies.com",
+      reply_:email,
       subject: `New Luna Enquiry${subject ? `: ${subject}` : ""}`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -381,18 +382,7 @@ app.post("/api/generate-questions", async (req, res) => {
       format: "- Create realistic exam-style questions for the selected skill.",
     };
 
-const passageLengthRule = structureRules[skill]?.needsPassage
-  ? `
-PASSAGE LENGTH REQUIREMENT (STRICT):
-- Passage MUST be at least ${passageLength}
-- Minimum word count MUST be followed
-- Count words internally before returning
-- If passage is too short → REWRITE before returning
-`
-  : `
-NO PASSAGE:
-- "passage" must be null
-`;
+
 let passageLength = "No passage needed.";
 
 if (
@@ -401,19 +391,19 @@ if (
   skill === "Detail Questions"
 ) {
   if (difficulty === "Easy") {
-    passageLength = "Passage must be 120-180 words.";
+    passageLength = "Passage must be 200-380 words.";
   }
 
   else if (difficulty === "Medium") {
-    passageLength = "Passage must be 200-300 words.";
+    passageLength = "Passage must be 300-400 words.";
   }
 
   else if (difficulty === "Hard") {
-    passageLength = "Passage must be 350-500 words.";
+    passageLength = "Passage must be 550-700 words.";
   }
 
   else if (difficulty === "Advanced") {
-    passageLength = "Passage must be 500-700 words.";
+    passageLength = "Passage must be 600-800 words.";
   }
 }
 
@@ -434,6 +424,7 @@ if (skill === "Vocabulary") {
     passageLength = "Passage must be 250-400 words.";
   }
 }
+
     const prompt = `
 You are a professional exam question writer.
 
@@ -530,7 +521,25 @@ const cleanJSON = (text) =>
   text.replace(/```json/g, "").replace(/```/g, "").trim();
 
 const needsPassage = selectedStructure.needsPassage;
-const minWords = skill === "Vocabulary" ? 120 : 250;
+const getMinWords = (skill, difficulty) => {
+  if (!selectedStructure.needsPassage) return 0;
+
+  if (skill === "Vocabulary") {
+  if (difficulty === "Easy") return 50;
+  if (difficulty === "Medium") return 80;
+  if (difficulty === "Hard") return 100;
+  if (difficulty === "Advanced") return 120;
+}
+
+  if (difficulty === "Easy") return 200;
+  if (difficulty === "Medium") return 300;
+  if (difficulty === "Hard") return 500;
+  if (difficulty === "Advanced") return 650;
+
+  return 250;
+};
+
+const minWords = getMinWords(skill, difficulty);
 
 let finalData = null;
 let retryPrompt = prompt;

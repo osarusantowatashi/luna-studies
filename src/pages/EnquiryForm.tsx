@@ -69,9 +69,11 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
     console.log("✅ Enquiry saved to Supabase");
 
     // 2. Try sending email, but don't block enquiry success
+    const API_URL = import.meta.env.VITE_API_URL;
+
     try {
       const emailResponse = await fetch(
-        "http://localhost:8080/api/send-enquiry-confirmation",
+        `${API_URL}/api/send-admin-enquiry-email`,
         {
           method: "POST",
           headers: {

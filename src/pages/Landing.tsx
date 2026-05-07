@@ -339,7 +339,7 @@ const tutors = [
 
       <div className="space-y-2 text-sm text-muted-foreground">
         <p>✔ Reading comprehension</p>
-        <p>✔ Essay structure (PEEL)</p>
+        <p>✔ Essay structure</p>
         <p>✔ Vocabulary building</p>
       </div>
 

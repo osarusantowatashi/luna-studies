@@ -115,7 +115,7 @@ const Enquire = () => {
         </p>
 
         <p className="mt-2 text-primary font-medium">
-          WeChat: hellumiin · Email: enquiries@lunastudies.com
+          WeChat: lunaeducation · Email: enquiries@lunastudies.com
         </p>
       </section>
     </div>
