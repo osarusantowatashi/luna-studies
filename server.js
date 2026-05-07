@@ -101,39 +101,47 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
     
           <p>Hi ${name},</p>
     
-          <p>Thank you for contacting Luna Education. We have received your enquiry and our team will get back to you soon.</p>
+          <p>
+            Thank you for contacting Luna Education.
+            We have received your enquiry and our team
+            will get back to you soon.
+          </p>
     
           <p><strong>Subject:</strong> ${subject || "-"}</p>
           <p><strong>Grade:</strong> ${grade || "-"}</p>
+    
           <p><strong>Your message:</strong></p>
           <p>${message || "-"}</p>
     
           <hr />
     
-          <p>Best regards,<br/>Luna Education Team</p>
+          <p>
+            Best regards,<br />
+            Luna Education Team
+          </p>
         </div>
       `,
     });
-
+    
     if (response.error) {
-  return res.status(500).json({
-    success: false,
-    error: response.error,
-  });
-}
-
-if (response.error) {
-  return res.status(500).json({
-    success: false,
-    error: response.error,
-  });
-}
-
-return res.json({
-  success: true,
-  response,
- userConfirmation,
-});
+      return res.status(500).json({
+        success: false,
+        error: response.error,
+      });
+    }
+    
+    if (userConfirmation.error) {
+      return res.status(500).json({
+        success: false,
+        error: userConfirmation.error,
+      });
+    }
+    
+    return res.json({
+      success: true,
+      response,
+      userConfirmation,
+    });
 
   } catch (error) {
     console.error("ADMIN ENQUIRY EMAIL ERROR:", error);

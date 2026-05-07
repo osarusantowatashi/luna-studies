@@ -14,98 +14,197 @@ import {
   X,
 } from "lucide-react";
 
-const initialLessons = [
-  {
-    id: 1,
-    student: "Ryan Ng",
-    grade: "G5",
-    time: "4:00 PM - 5:30 PM",
-    subject: "Math",
-    topic: "Fractions",
-    status: "pending",
-  },
-  {
-    id: 2,
-    student: "Evelyn Tan",
-    grade: "G6",
-    time: "5:30 PM - 7:00 PM",
-    subject: "English",
-    topic: "Reading Comprehension",
-    status: "completed",
-  },
-  {
-    id: 3,
-    student: "Brendan Lim",
-    grade: "G3",
-    time: "7:00 PM - 8:00 PM",
-    subject: "Chinese",
-    topic: "说明文练习",
-    status: "pending",
-  },
-];
+type LessonStatus =
+  | "pending"
+  | "completed"
+  | "student_absent"
+  | "reschedule_requested";
+
+type Lesson = {
+  id: string;
+  tutor_id?: string;
+  student_id: string;
+  lesson_date: string;
+  hours: number;
+  lesson_contents?: string | null;
+  additional_remarks?: string | null;
+  status: LessonStatus;
+  checked_off_at?: string | null;
+};
 
 export default function TutorLessons() {
   const [students, setStudents] = useState<any[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState("");
 
-  const [lessons, setLessons] = useState(initialLessons);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
   const [showAdd, setShowAdd] = useState(false);
-  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+
+  const [lessonDate, setLessonDate] = useState("");
+  const [hours, setHours] = useState("");
+  const [lessonContents, setLessonContents] = useState("");
+  const [additionalRemarks, setAdditionalRemarks] = useState("");
+  const [checkoffNote, setCheckoffNote] = useState("");
 
   useEffect(() => {
-  fetchAssignedStudents();
-}, []);
+    fetchAssignedStudents();
+    fetchLessons();
+  }, []);
 
-const fetchAssignedStudents = async () => {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const fetchAssignedStudents = async () => {
+    const { data: userData, error: userError } =
+      await supabase.auth.getUser();
 
-  if (userError) {
-    console.error("User error:", userError);
-    return;
-  }
+    if (userError) {
+      console.error("User error:", userError);
+      return;
+    }
 
-  const tutor = userData.user;
-  if (!tutor) return;
+    const tutor = userData.user;
+    if (!tutor) return;
 
-  const { data: links, error: linkError } = await supabase
-    .from("tutor_student_links")
-    .select("student_id")
-    .eq("tutor_id", tutor.id);
+    const { data: links, error: linkError } = await supabase
+      .from("tutor_student_links")
+      .select("student_id")
+      .eq("tutor_id", tutor.id);
 
-  if (linkError) {
-    console.error("Link error:", linkError);
-    alert(linkError.message);
-    return;
-  }
+    if (linkError) {
+      console.error("Link error:", linkError);
+      alert(linkError.message);
+      return;
+    }
 
-  if (!links || links.length === 0) {
-    setStudents([]);
-    setSelectedStudentId("");
-    return;
-  }
+    const studentIds = links?.map((link) => link.student_id) || [];
 
-  const studentIds = links.map((link) => link.student_id);
+    if (studentIds.length === 0) {
+      setStudents([]);
+      setSelectedStudentId("");
+      return;
+    }
 
-  const { data: studentData, error: studentError } = await supabase
-    .from("profiles")
-    .select("id, name, role, is_active")
-    .in("id", studentIds)
-    .eq("role", "student");
+    const { data: studentData, error: studentError } = await supabase
+      .from("profiles")
+      .select("id, name, is_active")
+      .in("id", studentIds)
+      .eq("role", "student");
 
-  if (studentError) {
-    console.error("Student fetch error:", studentError);
-    alert(studentError.message);
-    return;
-  }
+    if (studentError) {
+      console.error("Student fetch error:", studentError);
+      alert(studentError.message);
+      return;
+    }
 
-  setStudents(studentData || []);
+    setStudents(studentData || []);
 
-  if (studentData && studentData.length > 0) {
-    setSelectedStudentId(studentData[0].id);
-  } else {
-    setSelectedStudentId("");
-  }
-};
+    if (studentData && studentData.length > 0) {
+      setSelectedStudentId(studentData[0].id);
+    }
+  };
+
+  const fetchLessons = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    const tutor = userData.user;
+    if (!tutor) return;
+
+    const { data, error } = await supabase
+      .from("tutor_lessons")
+      .select("*")
+      .eq("tutor_id", tutor.id)
+      .order("lesson_date", { ascending: true });
+
+    if (error) {
+      console.error("Lesson fetch error:", error);
+      alert(error.message);
+      return;
+    }
+
+    setLessons(data || []);
+  };
+
+  const addLesson = async () => {
+    if (!selectedStudentId) {
+      alert("Please select a student.");
+      return;
+    }
+
+    if (!lessonDate) {
+      alert("Please select a lesson date.");
+      return;
+    }
+
+    if (!hours || Number(hours) <= 0) {
+      alert("Please enter number of hours.");
+      return;
+    }
+
+    const { data: userData } = await supabase.auth.getUser();
+    const tutor = userData.user;
+    if (!tutor) return;
+
+    const selectedStudent = students.find(
+      (student) => student.id === selectedStudentId
+    );
+
+    const { error } = await supabase.from("tutor_lessons").insert({
+      tutor_id: tutor.id,
+      student_id: selectedStudentId,
+      student_name: selectedStudent?.name || selectedStudentId,
+      lesson_date: lessonDate,
+      hours: Number(hours),
+      lesson_contents: lessonContents.trim() || null,
+      additional_remarks: additionalRemarks.trim() || null,
+      status: "pending",
+    });
+
+    if (error) {
+      console.error("Add lesson error:", error);
+      alert(error.message);
+      return;
+    }
+
+    setShowAdd(false);
+    setLessonDate("");
+    setHours("");
+    setLessonContents("");
+    setAdditionalRemarks("");
+    fetchLessons();
+  };
+
+  const checkOffLesson = async (
+    lessonId: string,
+    newStatus: LessonStatus
+  ) => {
+    const { error } = await supabase
+      .from("tutor_lessons")
+      .update({
+        status: newStatus,
+        checkoff_note: checkoffNote.trim() || null,
+        checked_off_at: new Date().toISOString(),
+      })
+      .eq("id", lessonId);
+
+    if (error) {
+      console.error("Check-off error:", error);
+      alert(error.message);
+      return;
+    }
+
+    setLessons((prev) =>
+      prev.map((lesson) =>
+        lesson.id === lessonId
+          ? {
+              ...lesson,
+              status: newStatus,
+              checked_off_at: new Date().toISOString(),
+            }
+          : lesson
+      )
+    );
+
+    setSelectedLesson(null);
+    setCheckoffNote("");
+  };
+
   const completed = lessons.filter(
     (lesson) => lesson.status === "completed"
   ).length;
@@ -114,41 +213,9 @@ const fetchAssignedStudents = async () => {
     (lesson) => lesson.status === "pending"
   ).length;
 
-  const checkOffLesson = async (
-  lessonId: number,
-  newStatus: "completed" | "student_absent" | "reschedule_requested"
-) => {
-  const { error } = await supabase
-    .from("tutor_lessons")
-    .update({
-      status: newStatus,
-      checked_off_at: new Date().toISOString(),
-    })
-    .eq("id", lessonId);
-
-  if (error) {
-    console.error(error);
-    alert("Failed to update lesson.");
-    return;
-  }
-
-  setLessons((prev) =>
-    prev.map((lesson) =>
-        
-      lesson.id === lessonId
-        ? { ...lesson, status: newStatus }
-        : lesson
-    )
-  );
-
-  setSelectedLesson(null);
-};
-
   return (
     <div className="min-h-screen bg-[#f7f9fc] px-6 py-10">
       <div className="max-w-7xl mx-auto">
-
-        {/* Header */}
         <div className="bg-white rounded-[32px] border border-[#dbe5f0] p-10 mb-8">
           <p className="text-[#f7c600] uppercase tracking-[3px] font-semibold text-sm mb-4">
             Tutor Lessons
@@ -161,17 +228,15 @@ const fetchAssignedStudents = async () => {
           </h1>
 
           <p className="text-slate-500 mt-5 text-lg max-w-2xl">
-            Add lessons, record completed sessions,
-            and keep monthly tracking accurate.
+            Add lessons, record completed sessions, and keep monthly tracking
+            accurate.
           </p>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
           <StatCard
             icon={<Calendar size={22} />}
-            title="Today's Lessons"
+            title="Total Lessons"
             value={lessons.length}
           />
 
@@ -186,12 +251,9 @@ const fetchAssignedStudents = async () => {
             title="Pending"
             value={pending}
           />
-
         </div>
 
-        {/* Buttons */}
         <div className="flex flex-wrap gap-4 mb-8">
-
           <button
             onClick={() => setShowAdd(true)}
             className="bg-[#0b234a] text-white px-6 py-4 rounded-2xl font-semibold flex items-center gap-2"
@@ -207,70 +269,72 @@ const fetchAssignedStudents = async () => {
 
           <button className="bg-white border border-[#dbe5f0] text-[#0b234a] px-6 py-4 rounded-2xl font-semibold flex items-center gap-2">
             <RotateCcw size={18} />
-            Reschedule Request
+            Reschedule List
           </button>
-
         </div>
 
-        {/* Lessons */}
         <div className="space-y-5">
+          {lessons.length === 0 ? (
+            <div className="bg-white border border-[#dbe5f0] rounded-[28px] p-8 text-slate-500">
+              No lessons added yet.
+            </div>
+          ) : (
+            lessons.map((lesson) => (
+              <div
+                key={lesson.id}
+                className="bg-white border border-[#dbe5f0] rounded-[28px] p-6 flex flex-col lg:flex-row justify-between gap-6"
+              >
+                <div>
+                  <p className="text-sm text-[#f7c600] font-semibold mb-2">
+                    {lesson.lesson_date} · {lesson.hours} hour(s)
+                  </p>
 
-          {lessons.map((lesson) => (
-            <div
-              key={lesson.id}
-              className="bg-white border border-[#dbe5f0] rounded-[28px] p-6 flex flex-col lg:flex-row justify-between gap-6"
-            >
+                  <h3 className="text-2xl font-semibold text-[#0b234a]">
+                    {lesson.student_name}
+                  </h3>
 
-              <div>
-                <p className="text-sm text-[#f7c600] font-semibold mb-2">
-                  {lesson.time}
-                </p>
+                  <div className="flex gap-3 mt-4 flex-wrap">
+                    {lesson.lesson_contents && (
+                      <span className="bg-[#eef4fb] px-4 py-2 rounded-full text-sm text-[#0b234a]">
+                        {lesson.lesson_contents}
+                      </span>
+                    )}
 
-                <h3 className="text-2xl font-semibold text-[#0b234a]">
-                  {lesson.student}
-                  <span className="text-slate-400 ml-2 text-lg">
-                    ({lesson.grade})
-                  </span>
-                </h3>
+                    {lesson.additional_remarks && (
+                      <span className="bg-[#fff7d6] px-4 py-2 rounded-full text-sm text-[#0b234a]">
+                        {lesson.additional_remarks}
+                      </span>
+                    )}
 
-                <div className="flex gap-3 mt-4 flex-wrap">
+                    <StatusBadge status={lesson.status} />
+                  </div>
+                </div>
 
-                  <span className="bg-[#eef4fb] px-4 py-2 rounded-full text-sm text-[#0b234a]">
-                    {lesson.subject}
-                  </span>
-
-                  <span className="bg-[#eef4fb] px-4 py-2 rounded-full text-sm text-[#0b234a]">
-                    {lesson.topic}
-                  </span>
-
+                <div className="flex items-center">
+                  {lesson.status === "pending" ? (
+                    <button
+                      onClick={() => setSelectedLesson(lesson)}
+                      className="bg-[#f7c600] text-[#0b234a] px-6 py-4 rounded-2xl font-semibold"
+                    >
+                      Check Off
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setSelectedLesson(lesson)}
+                      className="bg-white border border-[#dbe5f0] text-[#0b234a] px-6 py-4 rounded-2xl font-semibold"
+                    >
+                      View / Update
+                    </button>
+                  )}
                 </div>
               </div>
-
-              <div className="flex items-center">
-
-                {lesson.status === "completed" ? (
-                  <div className="bg-green-100 text-green-700 px-5 py-3 rounded-2xl font-semibold">
-                    Completed
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setSelectedLesson(lesson)}
-                    className="bg-[#f7c600] text-[#0b234a] px-6 py-4 rounded-2xl font-semibold"
-                  >
-                    Check Off
-                  </button>
-                )}
-
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
-      {/* Add Lesson Modal */}
       {showAdd && (
         <Modal onClose={() => setShowAdd(false)}>
-
           <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
             Add Lesson
           </h2>
@@ -280,104 +344,117 @@ const fetchAssignedStudents = async () => {
           </p>
 
           <div className="space-y-4">
-
-            {/* Student Dropdown */}
             <div>
               <p className="text-sm font-semibold text-[#0b234a] mb-2">
                 Student
               </p>
 
               <select
-  value={selectedStudentId}
-  onChange={(e) => setSelectedStudentId(e.target.value)}
-  className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white"
->
-  {students.length === 0 && (
-    <option value="">No assigned students</option>
-  )}
+                value={selectedStudentId}
+                onChange={(e) => setSelectedStudentId(e.target.value)}
+                className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white"
+              >
+                {students.length === 0 && (
+                  <option value="">No assigned students</option>
+                )}
 
-  {students.map((student) => (
-    <option key={student.id} value={student.id}>
-      {student.name || student.id}
-      {student.is_active === false ? " (Inactive)" : ""}
-    </option>
-  ))}
-</select>
+                {students.map((student) => (
+                  <option key={student.id} value={student.id}>
+                    {student.name || student.id}
+                    {student.is_active === false ? " (Inactive)" : ""}
+                  </option>
+                ))}
+              </select>
             </div>
-<DateInput label="Lesson Date" />
-            <NumberInput
-            label="Number of Hours"
-            placeholder="1.5"
+
+            <DateInput
+              label="Lesson Date"
+              value={lessonDate}
+              onChange={setLessonDate}
             />
 
-        <TextAreaInput
-         label="Lesson Contents"
-         placeholder="Reading comprehension, grammar review, MAP vocabulary..."
-        optional
-        />
+            <NumberInput
+              label="Number of Hours"
+              placeholder="1.5"
+              value={hours}
+              onChange={setHours}
+            />
 
-        <TextAreaInput
-        label="Additional Remarks"
-            placeholder="Any extra notes for admin..."
-            optional
-        />
+            <TextAreaInput
+              label="Lesson Contents"
+              placeholder="Reading comprehension, grammar review, MAP vocabulary..."
+              optional
+              value={lessonContents}
+              onChange={setLessonContents}
+            />
 
+            <TextAreaInput
+              label="Additional Remarks"
+              placeholder="Any extra notes for admin..."
+              optional
+              value={additionalRemarks}
+              onChange={setAdditionalRemarks}
+            />
           </div>
 
           <button
             className="w-full mt-6 bg-[#0b234a] text-white py-4 rounded-2xl font-semibold"
-            onClick={() => setShowAdd(false)}
+            onClick={addLesson}
           >
             Save Lesson
           </button>
-
         </Modal>
       )}
 
-      {/* Check Off Modal */}
       {selectedLesson && (
         <Modal onClose={() => setSelectedLesson(null)}>
-
           <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
             Check Off Lesson
           </h2>
 
           <p className="text-slate-500 mb-6">
-            {selectedLesson.student} ·{" "}
-            {selectedLesson.time}
+            {selectedLesson.student_name} · {selectedLesson.lesson_date} ·{" "}
+            {selectedLesson.hours} hour(s)
           </p>
 
           <div className="space-y-3 mb-5">
+            <button
+              onClick={() => checkOffLesson(selectedLesson.id, "completed")}
+              className="w-full text-left px-5 py-4 rounded-2xl border border-green-300 bg-green-50 text-green-700"
+            >
+              Completed
+            </button>
 
-            <Option text="Completed" active />
-            <Option text="Student Absent" />
-            <Option text="Rescheduled" />
+            <button
+              onClick={() =>
+                checkOffLesson(selectedLesson.id, "student_absent")
+              }
+              className="w-full text-left px-5 py-4 rounded-2xl border border-orange-300 bg-orange-50 text-orange-700"
+            >
+              Student Absent
+            </button>
 
+            <button
+              onClick={() =>
+                checkOffLesson(selectedLesson.id, "reschedule_requested")
+              }
+              className="w-full text-left px-5 py-4 rounded-2xl border border-blue-300 bg-blue-50 text-blue-700"
+            >
+              Reschedule Requested
+            </button>
           </div>
 
           <textarea
-            placeholder="Optional notes..."
+            placeholder="Optional check-off note..."
+            value={checkoffNote}
+            onChange={(e) => setCheckoffNote(e.target.value)}
             className="w-full border border-[#dbe5f0] rounded-2xl p-4 min-h-28 outline-none"
           />
-
-          <button
-            onClick={() =>
-              checkOffLesson(selectedLesson.id)
-            }
-            className="w-full mt-5 bg-[#f7c600] text-[#0b234a] py-4 rounded-2xl font-semibold"
-          >
-            Submit
-          </button>
-
         </Modal>
       )}
     </div>
   );
 }
-
-// ==========================================
-// COMPONENTS
-// ==========================================
 
 function StatCard({ icon, title, value }: any) {
   return (
@@ -386,56 +463,61 @@ function StatCard({ icon, title, value }: any) {
         {icon}
       </div>
 
-      <p className="text-slate-500 mb-1">
-        {title}
-      </p>
+      <p className="text-slate-500 mb-1">{title}</p>
 
-      <h3 className="text-5xl font-serif text-[#0b234a]">
-        {value}
-      </h3>
+      <h3 className="text-5xl font-serif text-[#0b234a]">{value}</h3>
     </div>
   );
 }
 
-function Input({ label, placeholder }: any) {
+function StatusBadge({ status }: { status: LessonStatus }) {
+  const styles: Record<LessonStatus, string> = {
+    pending: "bg-slate-100 text-slate-600",
+    completed: "bg-green-100 text-green-700",
+    student_absent: "bg-orange-100 text-orange-700",
+    reschedule_requested: "bg-blue-100 text-blue-700",
+  };
+
+  const labels: Record<LessonStatus, string> = {
+    pending: "Pending",
+    completed: "Completed",
+    student_absent: "Student Absent",
+    reschedule_requested: "Reschedule Requested",
+  };
+
+  return (
+    <span className={`px-4 py-2 rounded-full text-sm ${styles[status]}`}>
+      {labels[status]}
+    </span>
+  );
+}
+
+function DateInput({ label, value, onChange }: any) {
   return (
     <div>
-      <p className="text-sm font-semibold text-[#0b234a] mb-2">
-        {label}
-      </p>
+      <p className="text-sm font-semibold text-[#0b234a] mb-2">{label}</p>
 
       <input
-        placeholder={placeholder}
-        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none"
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white text-[#0b234a]"
       />
     </div>
   );
 }
 
-function Option({ text, active }: any) {
-  return (
-    <button
-      className={`w-full text-left px-5 py-4 rounded-2xl border ${
-        active
-          ? "border-green-300 bg-green-50 text-green-700"
-          : "border-[#dbe5f0]"
-      }`}
-    >
-      {text}
-    </button>
-  );
-}
-function NumberInput({ label, placeholder }: any) {
+function NumberInput({ label, placeholder, value, onChange }: any) {
   return (
     <div>
-      <p className="text-sm font-semibold text-[#0b234a] mb-2">
-        {label}
-      </p>
+      <p className="text-sm font-semibold text-[#0b234a] mb-2">{label}</p>
 
       <input
         type="number"
         step="0.25"
         min="0"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none"
       />
@@ -443,7 +525,13 @@ function NumberInput({ label, placeholder }: any) {
   );
 }
 
-function TextAreaInput({ label, placeholder, optional }: any) {
+function TextAreaInput({
+  label,
+  placeholder,
+  optional,
+  value,
+  onChange,
+}: any) {
   return (
     <div>
       <p className="text-sm font-semibold text-[#0b234a] mb-2">
@@ -456,22 +544,10 @@ function TextAreaInput({ label, placeholder, optional }: any) {
       </p>
 
       <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 min-h-28 outline-none resize-none"
-      />
-    </div>
-  );
-}
-function DateInput({ label }: any) {
-  return (
-    <div>
-      <p className="text-sm font-semibold text-[#0b234a] mb-2">
-        {label}
-      </p>
-
-      <input
-        type="date"
-        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white text-[#0b234a]"
       />
     </div>
   );
@@ -481,7 +557,6 @@ function Modal({ children, onClose }: any) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-[32px] p-8 w-full max-w-lg relative">
-
         <button
           onClick={onClose}
           className="absolute top-5 right-5 text-slate-400"
