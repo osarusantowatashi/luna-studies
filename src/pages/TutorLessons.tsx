@@ -16,7 +16,39 @@ import {
 
 const [students, setStudents] = useState<any[]>([]);
 const [selectedStudentId, setSelectedStudentId] = useState("");
-useEffect(() => {
+
+const initialLessons = [
+  {
+    id: 1,
+    student: "Ryan Ng",
+    grade: "G5",
+    time: "4:00 PM - 5:30 PM",
+    subject: "Math",
+    topic: "Fractions",
+    status: "pending",
+  },
+  {
+    id: 2,
+    student: "Evelyn Tan",
+    grade: "G6",
+    time: "5:30 PM - 7:00 PM",
+    subject: "English",
+    topic: "Reading Comprehension",
+    status: "completed",
+  },
+  {
+    id: 3,
+    student: "Brendan Lim",
+    grade: "G3",
+    time: "7:00 PM - 8:00 PM",
+    subject: "Chinese",
+    topic: "说明文练习",
+    status: "pending",
+  },
+];
+
+export default function TutorLessons() {
+    useEffect(() => {
   const fetchAssignedStudents = async () => {
     const { data: sessionData } = await supabase.auth.getSession();
     const user = sessionData.session?.user;
@@ -49,37 +81,6 @@ useEffect(() => {
 
   fetchAssignedStudents();
 }, []);
-const initialLessons = [
-  {
-    id: 1,
-    student: "Ryan Ng",
-    grade: "G5",
-    time: "4:00 PM - 5:30 PM",
-    subject: "Math",
-    topic: "Fractions",
-    status: "pending",
-  },
-  {
-    id: 2,
-    student: "Evelyn Tan",
-    grade: "G6",
-    time: "5:30 PM - 7:00 PM",
-    subject: "English",
-    topic: "Reading Comprehension",
-    status: "completed",
-  },
-  {
-    id: 3,
-    student: "Brendan Lim",
-    grade: "G3",
-    time: "7:00 PM - 8:00 PM",
-    subject: "Chinese",
-    topic: "说明文练习",
-    status: "pending",
-  },
-];
-
-export default function TutorLessons() {
   const [lessons, setLessons] = useState(initialLessons);
   const [showAdd, setShowAdd] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
