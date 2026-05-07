@@ -72,7 +72,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
     const API_URL = import.meta.env.VITE_API_URL;
 
     console.log("API URL:", API_URL);
-    
+
     try {
       const emailResponse = await fetch(
         `${API_URL}/api/send-admin-enquiry-email`,
@@ -85,6 +85,8 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
             name,
             email,
             subject: selectedSubject,
+            grade,
+            message,
           }),
         }
       );

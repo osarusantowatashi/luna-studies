@@ -28,16 +28,112 @@ type Lesson = {
 export default function AdminLessons() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
-
+  const [editingPackageId, setEditingPackageId] = useState("");
+const [packagePurchasedAt, setPackagePurchasedAt] = useState("");
+const [links, setLinks] = useState<any[]>([]);
   const [selectedTutor, setSelectedTutor] = useState("all");
   const [selectedStudent, setSelectedStudent] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [packages, setPackages] = useState<any[]>([]);
+  const [showAddPackage, setShowAddPackage] = useState(false);
+const [packageStudentId, setPackageStudentId] = useState("");
+const [packageHours, setPackageHours] = useState("");
+const [packageName, setPackageName] = useState("");
+
 
   useEffect(() => {
     fetchProfiles();
     fetchLessons();
+    fetchLinks();
+    fetchPackages();
   }, []);
 
+  const addPackage = async () => {
+  if (!packageStudentId) {
+    alert("Please select a student.");
+    return;
+  }
+
+  if (!packageHours || Number(packageHours) <= 0) {
+    alert("Please enter package hours.");
+    return;
+  }
+
+  const { error } = await supabase.from("student_packages").insert({
+  student_id: packageStudentId,
+  package_hours: Number(packageHours),
+  package_name: packageName.trim() || null,
+  purchased_at: packagePurchasedAt || new Date().toISOString().slice(0, 10),
+  is_active: true,
+});
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  setShowAddPackage(false);
+  setPackageStudentId("");
+  setPackageHours("");
+  setPackageName("");
+  fetchPackages();
+};
+
+const updatePackage = async () => {
+  if (!editingPackageId) return;
+
+  if (!packageHours || Number(packageHours) <= 0) {
+    alert("Please enter package hours.");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("student_packages")
+    .update({
+      package_hours: Number(packageHours),
+      package_name: packageName.trim() || null,
+      purchased_at: packagePurchasedAt || null,
+    })
+    .eq("id", editingPackageId);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  setShowAddPackage(false);
+  setEditingPackageId("");
+  setPackageStudentId("");
+  setPackageHours("");
+  setPackageName("");
+  setPackagePurchasedAt("");
+  fetchPackages();
+};
+  const fetchPackages = async () => {
+  const { data, error } = await supabase
+    .from("student_packages")
+    .select("*");
+
+  if (error) {
+    console.error("Package fetch error:", error);
+    return;
+  }
+
+  setPackages(data || []);
+};
+  
+  const fetchLinks = async () => {
+  const { data, error } = await supabase
+    .from("tutor_student_links")
+    .select("tutor_id, student_id");
+
+  if (error) {
+    console.error("Links fetch error:", error);
+    return;
+  }
+
+  setLinks(data || []);
+};
   const fetchProfiles = async () => {
     const { data, error } = await supabase
       .from("profiles")
@@ -51,6 +147,26 @@ export default function AdminLessons() {
     setProfiles(data || []);
   };
 
+  const getUsedHours = (studentId: string) => {
+  return lessons
+    .filter(
+      (lesson) =>
+        lesson.student_id === studentId &&
+        (lesson.status === "completed" ||
+          lesson.status === "student_absent")
+    )
+    .reduce((sum, lesson) => sum + Number(lesson.hours || 0), 0);
+};
+
+const getRemainingHours = (studentId: string) => {
+  const activePackage = packages.find(
+    (pkg) => pkg.student_id === studentId && pkg.is_active
+  );
+
+  if (!activePackage) return null;
+
+  return Number(activePackage.package_hours) - getUsedHours(studentId);
+};
   const fetchLessons = async () => {
     const { data, error } = await supabase
       .from("tutor_lessons")
@@ -66,7 +182,18 @@ export default function AdminLessons() {
   };
 
   const tutors = profiles.filter((p) => p.role === "tutor");
-  const students = profiles.filter((p) => p.role === "student");
+  const allStudents = profiles.filter((p) => p.role === "student");
+
+const students =
+  selectedTutor === "all"
+    ? allStudents
+    : allStudents.filter((student) =>
+        links.some(
+          (link) =>
+            link.tutor_id === selectedTutor &&
+            link.student_id === student.id
+        )
+      );
 
   const getProfileName = (id: string) => {
     const profile = profiles.find((p) => p.id === id);
@@ -139,6 +266,8 @@ export default function AdminLessons() {
   ).length;
 
   return (
+    
+    
     <div className="min-h-screen bg-[#f7f9fc] px-6 py-10">
       <div className="max-w-7xl mx-auto">
 
@@ -156,15 +285,16 @@ export default function AdminLessons() {
             and rescheduling activity.
           </p>
         </div>
-
+        
         {/* FILTERS */}
         <div className="bg-white border border-[#dbe5f0] rounded-[28px] p-6 mb-8 flex flex-wrap gap-4">
 
           <select
             value={selectedTutor}
-            onChange={(e) =>
-              setSelectedTutor(e.target.value)
-            }
+            onChange={(e) => {
+  setSelectedTutor(e.target.value);
+  setSelectedStudent("all");
+}}
             className="border border-[#dbe5f0] rounded-2xl px-4 py-3 bg-white outline-none"
           >
             <option value="all">All Tutors</option>
@@ -217,6 +347,87 @@ export default function AdminLessons() {
           </select>
 
         </div>
+        {/* PACKAGE OVERVIEW */}
+<div className="bg-white border border-[#dbe5f0] rounded-[28px] p-6 mb-8">
+
+  <div className="flex items-center justify-between mb-5">
+    <div>
+      <p className="text-[#f7c600] uppercase tracking-[3px] font-semibold text-sm mb-2">
+        Student Packages
+      </p>
+
+      <h2 className="text-3xl font-serif text-[#0b234a]">
+        Remaining Hours
+      </h2>
+    </div>
+
+    <button
+      onClick={() => setShowAddPackage(true)}
+      className="bg-[#0b234a] text-white px-5 py-3 rounded-2xl font-semibold"
+    >
+      Add Package
+    </button>
+  </div>
+
+  <div className="space-y-4">
+
+    {allStudents.map((student) => {
+      const activePackage = packages.find(
+        (pkg) =>
+          pkg.student_id === student.id &&
+          pkg.is_active
+      );
+
+      if (!activePackage) return null;
+
+      const usedHours = lessons
+        .filter(
+          (lesson) =>
+            lesson.student_id === student.id &&
+            (lesson.status === "completed" ||
+              lesson.status === "student_absent")
+        )
+        .reduce(
+          (sum, lesson) =>
+            sum + Number(lesson.hours || 0),
+          0
+        );
+
+      const remaining =
+        Number(activePackage.package_hours) -
+        usedHours;
+
+      return (
+        <div
+          key={student.id}
+          className="border border-[#eef4fb] rounded-2xl p-4 flex justify-between items-center"
+        >
+          <div>
+            <p className="font-semibold text-[#0b234a] text-lg">
+              {student.name}
+            </p>
+
+            <p className="text-slate-500 text-sm">
+              {activePackage.package_name ||
+                "Lesson Package"}
+            </p>
+          </div>
+
+          <div className="text-right">
+            <p className="text-2xl font-serif text-[#0b234a]">
+              {remaining.toFixed(1)}h
+            </p>
+
+            <p className="text-sm text-slate-500">
+              remaining
+            </p>
+          </div>
+        </div>
+      );
+    })}
+
+  </div>
+</div>
 
         {/* STATS */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
@@ -311,18 +522,92 @@ export default function AdminLessons() {
                     <StatusBadge
                       status={lesson.status}
                     />
+                    
 
                   </div>
+                  
+                  
 
                 </div>
+                
 
               </div>
+              
 
             </div>
           ))}
+          
 
         </div>
+        
 
+      </div>
+      
+      {showAddPackage && (
+  <Modal onClose={() => setShowAddPackage(false)}>
+    <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
+      Add Student Package
+    </h2>
+
+    <p className="text-slate-500 mb-6">
+      Input the lesson package purchased by a student.
+    </p>
+
+    <select
+      value={packageStudentId}
+      onChange={(e) => setPackageStudentId(e.target.value)}
+      className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 bg-white outline-none mb-4"
+    >
+      <option value="">Select student</option>
+      {allStudents.map((student) => (
+        <option key={student.id} value={student.id}>
+          {student.name || student.id}
+        </option>
+      ))}
+    </select>
+
+    <input
+      type="number"
+      step="0.5"
+      min="0"
+      value={packageHours}
+      onChange={(e) => setPackageHours(e.target.value)}
+      placeholder="Package hours, e.g. 10"
+      className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none mb-4"
+    />
+
+    <input
+      value={packageName}
+      onChange={(e) => setPackageName(e.target.value)}
+      placeholder="Package name optional"
+      className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none"
+    />
+
+    <button
+      onClick={addPackage}
+      className="w-full mt-6 bg-[#0b234a] text-white py-4 rounded-2xl font-semibold"
+    >
+      Save Package
+    </button>
+  </Modal>
+)}
+    </div>
+    
+    
+  );
+}
+function Modal({ children, onClose }: any) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="relative w-full max-w-lg rounded-[32px] bg-white p-8 shadow-xl">
+        <button
+          onClick={onClose}
+          className="absolute right-5 top-5 text-slate-400 hover:text-slate-700"
+        >
+          ×
+        </button>
+
+        {children}
       </div>
     </div>
   );
@@ -342,6 +627,7 @@ function StatCard({ icon, title, value }: any) {
       <h3 className="text-5xl font-serif text-[#0b234a]">
         {value}
       </h3>
+      
     </div>
   );
 }
