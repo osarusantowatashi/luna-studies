@@ -21,6 +21,7 @@ const [name, setName] = useState(
     "/redo-mistakes",
     "/generate",
     "/tutor/lessons",
+    "/admin/lessons",
     "/admin",
     "/studentoverview",
   ];
@@ -63,6 +64,7 @@ const [name, setName] = useState(
           ["Dashboard", "/admin/dashboard"],
           ["Generate", "/generate"],
           ["Assign", "/admin/assign"],
+          ["Lessons", "/admin/lessons"],
           ["Questions", "/admin/questions"],
         ]
       : role === "tutor"
