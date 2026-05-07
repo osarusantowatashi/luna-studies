@@ -14,8 +14,7 @@ import {
   X,
 } from "lucide-react";
 
-const [students, setStudents] = useState<any[]>([]);
-const [selectedStudentId, setSelectedStudentId] = useState("");
+
 
 const initialLessons = [
   {
@@ -48,6 +47,8 @@ const initialLessons = [
 ];
 
 export default function TutorLessons() {
+    const [students, setStudents] = useState<any[]>([]);
+const [selectedStudentId, setSelectedStudentId] = useState("");
     useEffect(() => {
   const fetchAssignedStudents = async () => {
     const { data: sessionData } = await supabase.auth.getSession();
