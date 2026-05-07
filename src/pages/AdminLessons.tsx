@@ -94,7 +94,8 @@ const updatePackage = async () => {
     .update({
       package_hours: Number(packageHours),
       package_name: packageName.trim() || null,
-      purchased_at: packagePurchasedAt || null,
+      purchased_at:
+  packagePurchasedAt || new Date().toISOString().slice(0, 10),
     })
     .eq("id", editingPackageId);
 
@@ -148,17 +149,6 @@ const updatePackage = async () => {
 
     setProfiles(data || []);
   };
-
-  const getUsedHours = (studentId: string) => {
-  return lessons
-    .filter(
-      (lesson) =>
-        lesson.student_id === studentId &&
-        (lesson.status === "completed" ||
-          lesson.status === "student_absent")
-    )
-    .reduce((sum, lesson) => sum + Number(lesson.hours || 0), 0);
-};
 
 
 
@@ -384,11 +374,8 @@ const students =
 
     {allStudents.map((student) => {
       const studentPackages = packages.filter(
-  (pkg) =>
-    pkg.student_id === student.id &&
-    pkg.is_active
+  (pkg) => pkg.student_id === student.id
 );
-
 const purchasedHours = studentPackages.reduce(
   (sum, pkg) => sum + Number(pkg.package_hours || 0),
   0
@@ -410,7 +397,12 @@ const usedHours = lessons
 
 const remaining = purchasedHours - usedHours;
 
-const latestPackage = studentPackages[studentPackages.length - 1];
+const latestPackage =
+  [...studentPackages].sort(
+    (a, b) =>
+      new Date(b.purchased_at || b.created_at).getTime() -
+      new Date(a.purchased_at || a.created_at).getTime()
+  )[0];
 
 const isLow = remaining > 0 && remaining <= 2;
 const isFinished = remaining <= 0;
@@ -473,9 +465,9 @@ if (!showCompletedPackages && isFinished) return null;
   onClick={() => {
     setEditingPackageId(latestPackage.id);
     setPackageStudentId(student.id);
-    setPackageHours("");
-    setPackageName("");
-    setPackagePurchasedAt("");
+    setPackageHours(String(latestPackage.package_hours || ""));
+    setPackageName(latestPackage.package_name || "");
+    setPackagePurchasedAt(latestPackage.purchased_at || "");
     setShowAddPackage(true);
   }}
   className="mt-2 rounded-xl border border-[#dbe5f0] px-4 py-2 text-sm font-semibold text-[#0b234a]"

@@ -236,7 +236,7 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
                       <!-- WECHAT -->
                       <td align="center" width="33%">
                         <img
-                          src="https://cdn-icons-png.flaticon.com/512/5968/5968847.png"
+                          src="https://cdn.simpleicons.org/wechat/07C160"
                           width="34"
                           style="margin-bottom:10px;"
                         />
