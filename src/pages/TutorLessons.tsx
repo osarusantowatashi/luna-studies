@@ -53,46 +53,59 @@ export default function TutorLessons() {
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
 
   useEffect(() => {
-    const fetchAssignedStudents = async () => {
-      const { data: sessionData } =
-        await supabase.auth.getSession();
+  fetchAssignedStudents();
+}, []);
 
-      const user = sessionData.session?.user;
+const fetchAssignedStudents = async () => {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
 
-      if (!user) return;
+  if (userError) {
+    console.error("User error:", userError);
+    return;
+  }
 
-      const { data, error } = await supabase
-        .from("student_tutors")
-        .select(`
-          student_id,
-          students (
-            id,
-            name,
-            grade,
-            is_active
-          )
-        `)
-        .eq("tutor_id", user.id);
+  const tutor = userData.user;
+  if (!tutor) return;
 
-      if (error) {
-        console.error(
-          "Failed to fetch assigned students:",
-          error
-        );
-        return;
-      }
+  const { data: links, error: linkError } = await supabase
+    .from("tutor_student_links")
+    .select("student_id")
+    .eq("tutor_id", tutor.id);
 
-      const assignedStudents =
-        data
-          ?.map((item: any) => item.students)
-          .filter(Boolean) || [];
+  if (linkError) {
+    console.error("Link error:", linkError);
+    alert(linkError.message);
+    return;
+  }
 
-      setStudents(assignedStudents);
-    };
+  if (!links || links.length === 0) {
+    setStudents([]);
+    setSelectedStudentId("");
+    return;
+  }
 
-    fetchAssignedStudents();
-  }, []);
+  const studentIds = links.map((link) => link.student_id);
 
+  const { data: studentData, error: studentError } = await supabase
+    .from("profiles")
+    .select("id, name, role, is_active")
+    .in("id", studentIds)
+    .eq("role", "student");
+
+  if (studentError) {
+    console.error("Student fetch error:", studentError);
+    alert(studentError.message);
+    return;
+  }
+
+  setStudents(studentData || []);
+
+  if (studentData && studentData.length > 0) {
+    setSelectedStudentId(studentData[0].id);
+  } else {
+    setSelectedStudentId("");
+  }
+};
   const completed = lessons.filter(
     (lesson) => lesson.status === "completed"
   ).length;
@@ -257,31 +270,21 @@ export default function TutorLessons() {
               </p>
 
               <select
-                value={selectedStudentId}
-                onChange={(e) =>
-                  setSelectedStudentId(e.target.value)
-                }
-                className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white"
-              >
-                <option value="">
-                  Select student
-                </option>
+  value={selectedStudentId}
+  onChange={(e) => setSelectedStudentId(e.target.value)}
+  className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white"
+>
+  {students.length === 0 && (
+    <option value="">No assigned students</option>
+  )}
 
-                {students.map((student) => (
-                  <option
-                    key={student.id}
-                    value={student.id}
-                  >
-                    {student.name || student.id}
-                    {student.grade
-                      ? ` (${student.grade})`
-                      : ""}
-                    {student.is_active === false
-                      ? " - Inactive"
-                      : ""}
-                  </option>
-                ))}
-              </select>
+  {students.map((student) => (
+    <option key={student.id} value={student.id}>
+      {student.name || student.id}
+      {student.is_active === false ? " (Inactive)" : ""}
+    </option>
+  ))}
+</select>
             </div>
 
             <Input
