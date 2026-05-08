@@ -9,7 +9,6 @@ import {
   BookOpen,
   CheckCircle,
 } from "lucide-react";
-
 import Footer from "@/components/Footer";
 
 const WhyLuna = () => {
@@ -386,6 +385,7 @@ const WhyLuna = () => {
           </Button>
         </Link>
       </section>
+      <Footer />
     </div>
   );
 };

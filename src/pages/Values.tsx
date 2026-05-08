@@ -110,6 +110,7 @@ const Values = () => {
           </Button>
         </Link>
       </section>
+      <Footer />
     </div>
   );
 };

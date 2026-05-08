@@ -122,6 +122,8 @@ const Tutors = () => {
           ))}
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

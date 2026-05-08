@@ -55,7 +55,7 @@ export default function Footer() {
   
                 <div className="flex items-center gap-3">
                   <img
-                    src="/wechat.png"
+                    src="/Wechat.png"
                     alt="WeChat"
                     className="w-5 h-5 object-contain"
                   />
@@ -65,7 +65,7 @@ export default function Footer() {
   
                 <div className="flex items-center gap-3">
                   <img
-                    src="/whatsapp.png"
+                    src="/Whatsapp.png"
                     alt="WhatsApp"
                     className="w-5 h-5 object-contain"
                   />
@@ -75,7 +75,7 @@ export default function Footer() {
   
                 <div className="flex items-center gap-3">
                   <img
-                    src="/website.png"
+                    src="/websitepu.jpeg"
                     alt="Email"
                     className="w-5 h-5 object-contain"
                   />

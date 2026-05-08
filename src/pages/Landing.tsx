@@ -87,35 +87,12 @@ const Landing = () => {
       <NavBar />
 
      {/* HERO */}
-<section className="relative overflow-hidden bg-[#fbfaf6] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-  <div className="absolute inset-0 bg-[linear-gradient(90deg,#fffdf8_0%,#fffaf0_48%,#f7fbff_100%)]" />
+<section className="relative overflow-hidden bg-[#fbfaf6] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+  <div className="absolute inset-0 bg-[linear-gradient(90deg,#fffdf8_0%,#fffaf2_48%,#f7fbff_100%)]" />
 
-  <div className="relative mx-auto min-h-[620px] w-full max-w-[1440px] overflow-hidden rounded-[2.5rem] bg-[#fffdf8] md:min-h-[680px] lg:min-h-[720px]">
-    
-    {/* IMAGE BACKGROUND */}
-    <img
-      src="/hero/luna_hero_girl.png"
-      alt="Luna Education student studying"
-      className="
-        absolute
-        inset-y-0
-        right-0
-        h-full
-        w-[72%]
-        object-cover
-        object-[45%_42%]
-        opacity-95
-        max-md:w-full
-        max-md:opacity-25
-      "
-    />
-
-    {/* BLEND */}
-    <div className="absolute inset-0 bg-gradient-to-r from-[#fffdf8] via-[#fffdf8]/85 to-transparent md:via-[#fffdf8]/55" />
-    <div className="absolute inset-0 bg-gradient-to-t from-[#fbfaf6]/80 via-transparent to-transparent" />
-
-    {/* LEFT CONTENT */}
-    <div className="relative z-20 w-full max-w-[620px] px-6 py-10 sm:px-10 md:px-12 lg:px-14 lg:py-16">
+  <div className="relative mx-auto grid max-w-[1440px] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+    {/* LEFT */}
+    <div className="relative z-20 max-w-2xl">
       <div className="mb-5 flex items-center gap-3">
         <span className="h-px w-10 bg-accent" />
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-accent sm:text-sm">
@@ -123,15 +100,15 @@ const Landing = () => {
         </p>
       </div>
 
-      <h1 className="font-serif text-[clamp(2.3rem,4.7vw,5.1rem)] font-medium leading-[1.04] text-primary">
+      <h1 className="font-serif text-[clamp(2.5rem,5vw,5.2rem)] font-medium leading-[1.04] text-primary">
         Helping international students think clearly.
         <span className="relative mt-2 block italic text-accent">
           Learn confidently.
-          <span className="absolute -bottom-2 left-0 h-[10px] w-[min(320px,100%)] rounded-full bg-accent/20" />
+          <span className="absolute -bottom-2 left-0 h-[10px] w-[min(340px,100%)] rounded-full bg-accent/20" />
         </span>
       </h1>
 
-      <p className="mt-7 max-w-lg text-base leading-8 text-slate-600 sm:text-lg">
+      <p className="mt-7 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
         Personalised support that builds clarity, stronger study habits, and
         real academic results.
       </p>
@@ -152,58 +129,41 @@ const Landing = () => {
         </Link>
 
         <Link to="/subjects">
-          <Button variant="outline" className="h-14 w-full rounded-2xl border-primary/20 bg-white/80 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto">
+          <Button
+            variant="outline"
+            className="h-14 w-full rounded-2xl border-primary/20 bg-white/80 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto"
+          >
             Explore programs
           </Button>
         </Link>
       </div>
 
-      <p className="mt-7 text-sm font-medium texprimary/70">
+      <p className="mt-7 text-sm font-medium text-primary/70">
         Online & offline support · Trial lesson available
       </p>
     </div>
 
-    {/* FLOATING CARDS */}
-    <div className="absolute right-[6%] top-[16%] z-20 hidden w-[390px] rounded-[1.8rem] border border-white/80 bg-white/85 p-5 shadow-[0_25px_80px_rgba(15,23,42,0.14)] backdrop-blur-2xl md:block lg:right-[10%]">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">
-        Student Transformation
-      </p>
+    {/* RIGHT IMAGE */}
+    <div className="relative h-[clamp(420px,58vh,640px)] overflow-hidden rounded-[2.5rem]">
+      <img
+        src="/hero/luna_hero_girl.png"
+        alt="Luna Education student studying"
+        className="absolute inset-0 h-full w-full object-cover object-[50%_center]"
+      />
 
-      <div className="mt-4 grid grid-cols-[1fr_auto_1fr] gap-3">
-        <div>
-          <p className="text-xs font-bold uppercase text-primary">Before</p>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Confused notes<br />Scattered ideas<br />Low confidence
-          </p>
-        </div>
+      {/* soft fade into page */}
+      <div className="absolute inset-y-0 left-0 w-[34%] bg-gradient-to-r from-[#fbfaf6] via-[#fbfaf6]/75 to-transparent" />
+      <div className="absolute inset-y-0 right-0 w-[16%] bg-gradient-to-l from-[#fbfaf6] via-[#fbfaf6]/60 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-[24%] bg-gradient-to-t from-[#fbfaf6] to-transparent" />
 
-        <ArrowRight className="mt-9 h-6 w-6 text-accent" />
-
-        <div>
-          <p className="text-xs font-bold uppercase text-accent">After</p>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Clear structure<br />Confident answers<br />Stronger results
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div className="absolute bottom-[12%] right-[22%] z-20 hidden w-[330px] rounded-[1.8rem] border border-white/80 bg-white/85 p-5 shadow-[0_25px_80px_rgba(15,23,42,0.14)] backdrop-blur-2xl md:block lg:right-[30%]">
-      <p className="font-serif text-3xl text-accent">“</p>
-
-      <p className="mt-1 text-sm leading-7 text-primary/80">
-        Luna Education helped me organise my thoughts and explain answers clearly.
-        I finally enjoy learning!
-      </p>
-
-      <p className="mt-3 text-sm font-semibold text-primary">
-        — Chloe, Grade 11
-      </p>
-
-      <div className="mt-3 flex gap-1 text-accent">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <Star key={i} className="h-4 w-4 fill-current" />
-        ))}
+      {/* one clean badge only */}
+      <div className="absolute bottom-8 left-8 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-[0_20px_60px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">
+          Student Transformation
+        </p>
+        <p className="mt-2 text-sm text-primary/80">
+          Clear structure · Confident answers · Stronger results
+        </p>
       </div>
     </div>
   </div>
@@ -217,7 +177,10 @@ const Landing = () => {
       { icon: GraduationCap, value: "Top Uni", title: "Worldwide support" },
       { icon: Heart, value: "4.9/5", title: "Average parent rating" },
     ].map((item) => (
-      <div key={item.title} className="flex min-w-0 items-center gap-4 lg:border-r lg:border-primary/10 lg:last:border-r-0">
+      <div
+        key={item.title}
+        className="flex min-w-0 items-center gap-4 lg:border-r lg:border-primary/10 lg:last:border-r-0"
+      >
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 sm:h-14 sm:w-14">
           <item.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
         </div>

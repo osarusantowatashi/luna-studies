@@ -705,7 +705,8 @@ function Modal({ children, onClose }: any) {
 
         {children}
       </div>
-      <Footer />
     </div>
   );
+  <Footer />
+  
 }

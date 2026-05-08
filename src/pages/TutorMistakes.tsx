@@ -250,6 +250,7 @@ const TutorMistakes = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };
