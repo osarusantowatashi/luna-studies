@@ -7,6 +7,7 @@ import Subjects from "./pages/Subjects";
 import WhyLuna from "./pages/WhyLuna";
 import Tutors from "./pages/Tutors";
 import Enquire from "./pages/Enquire";
+import Page from "./pages/Page";
 
 import TutorDashboard from "./pages/TutorDashboard";
 import TutorMistakes from "./pages/TutorMistakes";
@@ -81,6 +82,17 @@ const App = () => {
             <ProtectedRoute allowedRoles={["admin"]}>
               <Layout>
                 <AdminLessons />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/page"
+          element={
+            <ProtectedRoute allowedRoles={["admin","tutor","student"]}>
+              <Layout>
+                <Page />
               </Layout>
             </ProtectedRoute>
           }

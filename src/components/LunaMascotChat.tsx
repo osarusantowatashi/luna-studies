@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Send } from "lucide-react";
 
@@ -12,28 +12,46 @@ const initialMessage = {
 
 const LunaMascotChat = () => {
   const [open, setOpen] = useState(false);
-
-  const [messages, setMessages] = useState([
-    initialMessage,
-  ]);
-
+  const [messages, setMessages] = useState([initialMessage]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  /* =========================
-     SEND QUICK REPLY
-  ========================= */
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadName, setLeadName] = useState("");
+  const [leadContact, setLeadContact] = useState("");
+  const [leadGrade, setLeadGrade] = useState("");
+  const [leadGoal, setLeadGoal] = useState("");
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages, isLoading, showLeadForm]);
+
+  const shouldShowCTA = (text: string) => {
+    const lowerText = text.toLowerCase();
+
+    return (
+      lowerText.includes("assessment") ||
+      lowerText.includes("consultation") ||
+      lowerText.includes("enquiry") ||
+      lowerText.includes("contact") ||
+      lowerText.includes("trial") ||
+      lowerText.includes("whatsapp")
+    );
+  };
 
   const sendQuickReply = async (text: string) => {
-    if (isLoading) return;
+    if (isLoading || leadSubmitting) return;
 
-    const updatedMessages = [
-      ...messages,
-      { role: "user", text },
-    ];
+    const updatedMessages = [...messages, { role: "user", text }];
 
     setMessages(updatedMessages);
     setInput("");
+    setShowLeadForm(false);
     setIsLoading(true);
 
     try {
@@ -53,9 +71,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text:
-            data.reply ||
-            "Sorry, I could not generate a reply.",
+          text: data.reply || "Sorry, I could not generate a reply.",
         },
       ]);
     } catch (error) {
@@ -63,8 +79,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text:
-            "Sorry, Luna is taking a short moon nap 🌙 Please try again.",
+          text: "Sorry, Luna is taking a short moon nap 🌙 Please try again.",
         },
       ]);
     } finally {
@@ -72,22 +87,15 @@ const LunaMascotChat = () => {
     }
   };
 
-  /* =========================
-     SEND MESSAGE
-  ========================= */
-
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || leadSubmitting) return;
 
     const userMessage = input.trim();
-
-    const updatedMessages = [
-      ...messages,
-      { role: "user", text: userMessage },
-    ];
+    const updatedMessages = [...messages, { role: "user", text: userMessage }];
 
     setMessages(updatedMessages);
     setInput("");
+    setShowLeadForm(false);
     setIsLoading(true);
 
     try {
@@ -107,9 +115,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text:
-            data.reply ||
-            "Sorry, I could not generate a reply.",
+          text: data.reply || "Sorry, I could not generate a reply.",
         },
       ]);
     } catch (error) {
@@ -117,26 +123,82 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text:
-            "Sorry, Luna is taking a short moon nap 🌙 Please try again.",
+          text: "Sorry, Luna is taking a short moon nap 🌙 Please try again.",
         },
       ]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const submitLeadForm = async () => {
+    if (!leadName.trim() || !leadContact.trim()) {
+      alert("Please enter your name and contact.");
+      return;
+    }
+
+    setLeadSubmitting(true);
+
+    try {
+      const res = await fetch(`${API_URL}/api/send-admin-enquiry-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject: "AI Chatbox Enquiry",
+          name: leadName.trim(),
+          email: leadContact.trim(),
+          grade: leadGrade.trim(),
+          message:
+            leadGoal.trim() ||
+            "Submitted from Luna AI chatbox. No learning goal provided.",
+          created_at: new Date().toISOString(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to submit enquiry.");
+      }
+
+      setShowLeadForm(false);
+      setLeadName("");
+      setLeadContact("");
+      setLeadGrade("");
+      setLeadGoal("");
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          text: "Thank you. Your enquiry has been submitted successfully. Our team will contact you soon.",
+        },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          text: "Sorry, we could not submit the enquiry. Please contact us via WhatsApp or try again later.",
+        },
+      ]);
+    } finally {
+      setLeadSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[999] hidden md:block">
+    <div className="fixed bottom-8 right-6 z-[999] hidden md:block">
       <AnimatePresence>
         {open && (
           <motion.div
-            className="mb-4 w-[360px] overflow-hidden rounded-[28px] border border-[#E8D8B5] bg-white shadow-[0_25px_80px_rgba(8,42,85,0.25)]"
+            className="mb-4 w-[min(360px,calc(100vw-48px))] overflow-hidden rounded-[28px] border border-[#E8D8B5] bg-white shadow-[0_25px_80px_rgba(8,42,85,0.25)]"
             initial={{ opacity: 0, y: 20, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.92 }}
           >
-            {/* HEADER */}
             <div className="flex items-center justify-between bg-[#082A55] px-5 py-4 text-white">
               <div>
                 <div className="flex items-center gap-2 font-semibold">
@@ -154,59 +216,124 @@ const LunaMascotChat = () => {
               </button>
             </div>
 
-            {/* CHAT BODY */}
-            <div className="flex h-[360px] flex-col bg-[#FAF8F3]">
-
-              {/* SCROLL AREA */}
+            <div className="flex h-[390px] flex-col bg-[#FAF8F3]">
               <div className="flex-1 space-y-3 overflow-y-auto p-4">
-
                 {messages.map((msg, index) => (
                   <div
                     key={index}
                     className={`flex ${
-                      msg.role === "user"
-                        ? "justify-end"
-                        : "justify-start"
+                      msg.role === "user" ? "justify-end" : "justify-start"
                     }`}
                   >
                     <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${
+                      className={`max-w-[82%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${
                         msg.role === "user"
                           ? "bg-[#082A55] text-white"
                           : "bg-white text-slate-700 shadow-sm"
                       }`}
                     >
                       {msg.text}
+
+                      {msg.role === "assistant" && shouldShowCTA(msg.text) && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <button
+                            onClick={() => setShowLeadForm(true)}
+                            className="rounded-full bg-[#082A55] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#123A70]"
+                          >
+                            Submit Enquiry
+                          </button>
+
+                          <a
+                            href="https://wa.me/6594235165"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-full border border-[#082A55] bg-white px-4 py-2 text-xs font-medium text-[#082A55] transition hover:bg-[#F8FAFF]"
+                          >
+                            WhatsApp Team
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
 
-                {/* LOADING */}
                 {isLoading && (
                   <div className="flex justify-start">
                     <div className="rounded-2xl bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
                       <div className="flex items-center gap-2">
-
                         <div className="flex gap-1">
                           <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55]" />
                           <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55] [animation-delay:0.15s]" />
                           <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55] [animation-delay:0.3s]" />
                         </div>
 
-                        <span>
-                          Preparing personalised guidance
-                        </span>
+                        <span>Preparing personalised guidance</span>
                       </div>
                     </div>
                   </div>
                 )}
+
+                {showLeadForm && (
+                  <div className="rounded-2xl border border-[#E8D8B5] bg-white p-4 shadow-sm">
+                    <p className="mb-3 text-sm font-semibold text-[#082A55]">
+                      Submit an enquiry
+                    </p>
+
+                    <div className="space-y-2">
+                      <input
+                        value={leadName}
+                        onChange={(e) => setLeadName(e.target.value)}
+                        placeholder="Parent / Student name"
+                        className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
+                      />
+
+                      <input
+                        value={leadContact}
+                        onChange={(e) => setLeadContact(e.target.value)}
+                        placeholder="Email or WhatsApp"
+                        className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
+                      />
+
+                      <input
+                        value={leadGrade}
+                        onChange={(e) => setLeadGrade(e.target.value)}
+                        placeholder="Student grade / year level"
+                        className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
+                      />
+
+                      <textarea
+                        value={leadGoal}
+                        onChange={(e) => setLeadGoal(e.target.value)}
+                        placeholder="Learning goal / exam / subject"
+                        className="min-h-[80px] w-full resize-none rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
+                      />
+                    </div>
+
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        onClick={submitLeadForm}
+                        disabled={leadSubmitting}
+                        className="flex-1 rounded-full bg-[#082A55] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#123A70] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {leadSubmitting ? "Submitting..." : "Submit"}
+                      </button>
+
+                      <button
+                        onClick={() => setShowLeadForm(false)}
+                        className="rounded-full border border-[#E8D8B5] px-4 py-2 text-xs text-slate-500 transition hover:bg-[#FAF8F3]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div ref={messagesEndRef} />
               </div>
 
-              {/* QUICK REPLIES */}
-              {messages.length <= 1 && !isLoading && (
+              {messages.length <= 1 && !isLoading && !showLeadForm && (
                 <div className="border-t border-[#E8D8B5] bg-[#FAF8F3] px-4 py-3">
                   <div className="flex flex-wrap gap-2">
-
                     {[
                       "English improvement",
                       "MAP preparation",
@@ -222,23 +349,19 @@ const LunaMascotChat = () => {
                         {item}
                       </button>
                     ))}
-
                   </div>
                 </div>
               )}
             </div>
 
-            {/* INPUT */}
             <div className="flex items-center gap-2 border-t border-[#E8D8B5] bg-white p-3">
               <input
                 className="flex-1 rounded-full bg-slate-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B] disabled:cursor-not-allowed disabled:opacity-60"
                 placeholder={
-                  isLoading
-                    ? "Luna is replying..."
-                    : "Ask about MAP, TOEFL, CAT4..."
+                  isLoading ? "Luna is replying..." : "Ask about MAP, TOEFL, CAT4..."
                 }
                 value={input}
-                disabled={isLoading}
+                disabled={isLoading || leadSubmitting}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -249,7 +372,7 @@ const LunaMascotChat = () => {
 
               <button
                 onClick={sendMessage}
-                disabled={isLoading}
+                disabled={isLoading || leadSubmitting}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-[#082A55] text-white transition hover:bg-[#123A70] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Send className="h-4 w-4" />
@@ -259,7 +382,6 @@ const LunaMascotChat = () => {
         )}
       </AnimatePresence>
 
-      {/* MASCOT BUTTON */}
       <motion.button
         onClick={() => setOpen(true)}
         className="relative flex h-[170px] w-[170px] items-center justify-center rounded-full bg-white shadow-[0_25px_70px_rgba(8,42,85,0.25)]"
@@ -283,19 +405,8 @@ const LunaMascotChat = () => {
             fill="#082A55"
           />
 
-          <circle
-            cx="113"
-            cy="105"
-            r="6"
-            fill="#F6C65B"
-          />
-
-          <circle
-            cx="138"
-            cy="105"
-            r="6"
-            fill="#F6C65B"
-          />
+          <circle cx="113" cy="105" r="6" fill="#F6C65B" />
+          <circle cx="138" cy="105" r="6" fill="#F6C65B" />
 
           <path
             d="M115 126C123 134 132 134 140 126"
@@ -323,12 +434,7 @@ const LunaMascotChat = () => {
               fill="none"
             />
 
-            <circle
-              cx="194"
-              cy="130"
-              r="9"
-              fill="#F6C65B"
-            />
+            <circle cx="194" cy="130" r="9" fill="#F6C65B" />
           </motion.g>
 
           <path
