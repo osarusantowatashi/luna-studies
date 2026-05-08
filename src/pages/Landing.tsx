@@ -73,7 +73,7 @@ const Landing = () => {
         {/* RIGHT IMAGE AS BACKGROUND */}
         <div className="absolute inset-0 h-full w-full object-cover object-[42%_center]">
           <img
-            src="/hero/luna_girl.jpeg"
+            src="/hero/hero-student.png"
             alt="Luna Education student studying"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />

@@ -244,7 +244,7 @@ const LunaMascotChat = () => {
                           </button>
 
                           <a
-                            href="https://wa.me/6594235165"
+                            href="https://api.whatsapp.com/send?phone=6594235165"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="rounded-full border border-[#082A55] bg-white px-4 py-2 text-xs font-medium text-[#082A55] transition hover:bg-[#F8FAFF]"

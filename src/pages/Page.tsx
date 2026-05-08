@@ -75,80 +75,65 @@ export default function Page() {
               </p>
             </div>
           </div>
-
-          {/* RIGHT VISUAL */}
-<div className="relative h-[720px] overflow-visible">
-  {/* soft background */}
-  <div className="absolute right-[90px] top-[-10px] h-[680px] w-[620px] rounded-t-full bg-[#dceaf8]/50 blur-xl" />
-
-
-  
-  {/* aquarium pasted first */}
-  <div className="absolute left-[40px] top-[40px] z-10 h-[610px] w-[520px] overflow-hidden rounded-t-full opacity-70 animate-paste-1">
+{/* RIGHT VISUAL */}
+<div className="relative h-[820px] overflow-visible">
+  {/* MAIN ARCH COLLAGE */}
+  <div className="absolute right-[30px] top-[-90px] h-[760px] w-[760px] overflow-hidden rounded-t-full rounded-br-[46px] rounded-bl-[18px] bg-[#dceaf8] shadow-[0_35px_100px_rgba(7,27,58,0.14)]">
+    {/* Aquarium background */}
     <img
       src="/hero/aquarium.jpeg"
-      className="h-full w-full scale-110 object-cover opacity-55"
+      className="absolute left-0 top-0 h-full w-[72%] object-cover opacity-90"
     />
-    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#fbf7ef]/45" />
+
+    {/* Sky/light area */}
+    <div className="absolute right-0 top-0 h-full w-[48%] bg-gradient-to-b from-[#cfe7f7] to-[#f7efe2]" />
+
+    {/* Europe photo right */}
+    <img
+      src="/hero/europe.jpeg"
+      className="absolute right-[-20px] bottom-[90px] h-[310px] w-[250px] object-cover opacity-95"
+    />
+
+    {/* City photo bottom */}
+    <img
+      src="/hero/city.jpeg"
+      className="absolute bottom-[60px] left-[120px] h-[180px] w-[310px] object-cover opacity-95 shadow-xl"
+    />
+
+    {/* Soft cream overlay for expensive feel */}
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-[#fbf7ef]/25" />
+
+    {/* Thin gold orbit */}
+    <div className="absolute bottom-[-100px] left-[40px] h-[430px] w-[430px] rounded-full border border-[#caa24a]/45" />
   </div>
 
- {/* europe photo - topmost */}
-<img
-  src="/hero/europe.jpeg"
-  className="
-    absolute
-    right-[35px]
-    top-[15px]
-    z-50
-    h-[170px]
-    w-[250px]
-    rotate-[5deg]
-    rounded-md
-    object-cover
-    shadow-2xl
-    animate-paste-2
-  "
-/>
+  {/* GIRL SUBJECT ONLY */}
+  <img
+    src="/hero/hero-student.png"
+    className="absolute right-[150px] z-30 h-[660px] object-contain drop-shadow-2xl"
+  />
 
-{/* city photo - under europe but above girl */}
-<img
-  src="/hero/city.jpeg"
-  className="
-    absolute
-    right-[120px]
-    top-[120px]
-    z-45
-    h-[160px]
-    w-[235px]
-    rotate-[-4deg]
-    rounded-md
-    object-cover
-    opacity-95
-    shadow-2xl
-    animate-paste-3
-  "
-/>
-
-{/* main girl */}
-<img
-  src="/hero/hero-student.jpeg"
-  className="
-    absolute
-    bottom-[-25px]
-    right-[90px]
-    z-40
-    h-[620px]
-    w-[440px]
-    rounded-[34px]
-    object-cover
-    shadow-2xl
-    animate-fade-in
-  "
-/>
-
+  {/* Departure card top right */}
+  <div className="absolute right-[35px] top-[65px] z-40 w-[210px] rotate-[-6deg] rounded-xl border border-white/60 bg-white/75 p-5 shadow-xl backdrop-blur-2xl">
+    <p className="text-sm font-semibold">✈ Departures</p>
+    <div className="mt-3 space-y-2 text-[11px] text-[#071b3a]/70">
+      <div className="flex justify-between"><span>08:40</span><span>London</span><span>7</span></div>
+      <div className="flex justify-between"><span>09:15</span><span>Singapore</span><span>12</span></div>
+      <div className="flex justify-between"><span>09:30</span><span>Toronto</span><span>3</span></div>
+      <div className="flex justify-between"><span>09:55</span><span>Melbourne</span><span>8</span></div>
+    </div>
+    <p className="mt-5 font-serif italic text-lg leading-5">
+      The world is
+      <br />
+      wider than
+      <br />
+      we imagine.
+    </p>
+    <div className="mt-2 h-[2px] w-24 bg-[#caa24a]" />
+  </div>
 
   {/* TOEFL card */}
-  <div className="absolute left-[150px] top-[250px] z-50 rounded-2xl border border-white/50 bg-white/70 px-7 py-6 shadow-xl backdrop-blur-2xl animate-card-1">
+  <div className="absolute left-[130px] top-[300px] z-40 rounded-2xl border border-white/60 bg-white/75 px-7 py-6 shadow-xl backdrop-blur-2xl">
     <p className="text-xs tracking-wide text-[#071b3a]/70">TOEFL iBT</p>
     <p className="mt-2 font-serif text-4xl text-[#071b3a]">117</p>
     <p className="mt-1 text-xs text-[#071b3a]/55">Total Score</p>
@@ -158,26 +143,14 @@ export default function Page() {
   </div>
 
   {/* Waseda card */}
-  <div className="absolute right-[30px] top-[165px] z-50 w-64 rotate-[1deg] rounded-2xl border border-white/50 bg-white/70 px-7 py-6 shadow-xl backdrop-blur-2xl animate-card-2">
+  <div className="absolute bottom-[215px] left-[45px] z-40 w-64 rounded-2xl border border-white/60 bg-white/75 px-7 py-6 shadow-xl backdrop-blur-2xl">
     <p className="text-sm text-[#071b3a]/70">Waseda University</p>
-    <p className="mt-1 text-xl font-semibold text-[#071b3a]">SILS 合格</p>
-    <p className="mt-5 text-xs text-[#071b3a]/50">Congratulations!</p>
+    <p className="mt-1 text-lg font-semibold text-[#071b3a]">SILS 合格</p>
+    <p className="mt-4 text-xs text-[#071b3a]/50">Congratulations!</p>
   </div>
 
-  {/* paper note */}
-  <div className="absolute bottom-[230px] left-[170px] z-50 rotate-[-4deg] bg-[#fffdf8] px-7 py-5 shadow-xl animate-card-3">
-    <p className="font-serif italic text-xl leading-7 text-[#071b3a]">
-      The world is
-      <br />
-      wider than
-      <br />
-      we imagine.
-    </p>
-    <div className="mt-2 h-[2px] w-28 bg-[#caa24a]" />
-  </div>
-
-  {/* countries card */}
-  <div className="absolute bottom-[180px] right-[0px] z-50 w-72 rounded-2xl border border-white/50 bg-white/60 px-7 py-6 shadow-xl backdrop-blur-2xl animate-card-4">
+  {/* Countries card */}
+  <div className="absolute bottom-[255px] right-[10px] z-40 w-72 rounded-2xl border border-white/60 bg-white/75 px-7 py-6 shadow-xl backdrop-blur-2xl">
     <p className="text-sm text-[#071b3a]/70">Students across</p>
     <p className="mt-2 font-serif text-3xl text-[#071b3a]">12+ countries</p>
     <div className="mt-4 flex gap-2 text-base">
