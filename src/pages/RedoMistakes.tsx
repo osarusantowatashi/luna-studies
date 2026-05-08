@@ -120,7 +120,6 @@ const RedoMistakes = () => {
           </Button>
         )}
       </div>
-      <Footer />
     </div>
   );
 };

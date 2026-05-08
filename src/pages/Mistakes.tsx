@@ -207,8 +207,7 @@ const Mistakes = () => {
           </div>
         )}
       </div>
-      <Footer />
-      
+
     </div>
   );
 };

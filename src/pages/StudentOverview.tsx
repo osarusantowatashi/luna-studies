@@ -288,7 +288,6 @@ const StudentOverview = () => {
           </a>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

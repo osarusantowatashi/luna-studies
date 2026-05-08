@@ -578,8 +578,8 @@ const TutorDashboard = () => {
           </>
         )}
       </div>
-      <Footer />
     </div>
+    
   );
 };
 

@@ -509,7 +509,6 @@ const Practice = () => {
           </Button>
         )}
       </div>
-      <Footer />
     
     </div>
   );

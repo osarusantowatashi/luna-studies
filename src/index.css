@@ -110,7 +110,7 @@
 }
 .marquee-track {
   width: max-content;
-  animation: scrollLoop 38s linear infinite;
+  animation: scrollLoop 20s linear infinite;
   will-change: transform;
 }
 
@@ -129,7 +129,7 @@
 }
 
 .animate-scroll {
-  animation: scroll 30s linear infinite;
+  animation: scroll 15s linear infinite;
 }
 
 @layer base {

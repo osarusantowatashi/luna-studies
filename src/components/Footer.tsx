@@ -1,3 +1,6 @@
+
+import { FaWhatsapp, FaWeixin } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 export default function Footer() {
     return (
       <footer className="mt-20 border-t border-[#e7edf5] bg-white">
@@ -44,50 +47,62 @@ export default function Footer() {
                 <p>Contact</p>
               </div>
             </div>
-  
-            {/* RIGHT */}
-            <div>
-              <h3 className="text-[#0b234a] font-semibold mb-5">
-                Contact
-              </h3>
-  
-              <div className="space-y-4 text-slate-500">
-  
-                <div className="flex items-center gap-3">
-                  <img
-                    src="/Wechat.png"
-                    alt="WeChat"
-                    className="w-5 h-5 object-contain"
-                  />
-  
-                  <p>WeChat ID: luna.education</p>
-                </div>
-  
-                <div className="flex items-center gap-3">
-                  <img
-                    src="/Whatsapp.png"
-                    alt="WhatsApp"
-                    className="w-5 h-5 object-contain"
-                  />
-  
-                  <p>WhatsApp: +65 XXXX XXXX</p>
-                </div>
-  
-                <div className="flex items-center gap-3">
-                  <img
-                    src="/websitepu.jpeg"
-                    alt="Email"
-                    className="w-5 h-5 object-contain"
-                  />
-  
-                  <p>admin@lunastudies.com</p>
-                </div>
-  
-              </div>
-            </div>
-  
-          </div>
-  
+  {/* RIGHT */}
+<div>
+  <h3 className="text-[#0b234a] font-semibold mb-5">
+    Contact
+  </h3>
+
+  <div className="space-y-5">
+
+    {/* WeChat */}
+    <div className="flex items-center gap-4">
+      <FaWeixin className="shrink-0 text-[24px] text-[#07C160]" />
+
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+          WeChat
+        </p>
+
+        <p className="text-base text-[#0b234a]">
+          luna.education
+        </p>
+      </div>
+    </div>
+
+    {/* WhatsApp */}
+    <div className="flex items-center gap-4">
+      <FaWhatsapp className="shrink-0 text-[22px] text-[#25D366]" />
+
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+          WhatsApp
+        </p>
+
+        <p className="text-base text-[#0b234a]">
+          +65 94235165
+        </p>
+      </div>
+    </div>
+
+    {/* Email */}
+    <div className="flex items-center gap-4">
+      <MdEmail className="shrink-0 text-[20px] text-slate-500" />
+
+      <div className="min-w-0">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+          Email
+        </p>
+
+        <p className="break-all text-base text-[#0b234a]">
+          admin@lunastudies.com
+        </p>
+      </div>
+    </div>
+
+  </div>
+  </div>
+</div>
           <div className="border-t border-[#eef2f7] mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
   
             <p className="text-sm text-slate-400">
@@ -95,7 +110,7 @@ export default function Footer() {
             </p>
   
             <p className="text-sm text-slate-400">
-              Singapore · Tokyo · Online
+              Singapore · Tokyo · China · Online 
             </p>
   
           </div>

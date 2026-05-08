@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import NavBar from "@/components/NavBar";
+import LunaMascotChat from "@/components/LunaMascotChat";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle,
   ArrowRight,
-  Sparkles,
   BookOpen,
   Target,
   BarChart3,
@@ -61,230 +61,206 @@ const HeroFeature = ({
   </div>
 );
 
-const ResultBadge = ({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: string;
-  sub: string;
-}) => (
-  <div className="min-w-[120px] rounded-2xl border border-primary/10 bg-white/92 px-4 py-3 shadow-[0_18px_50px_rgba(15,23,42,0.12)] backdrop-blur-2xl xl:min-w-[138px] xl:px-5 xl:py-4">
-    <p className="text-[10px] font-bold uppercase tracking-widest text-primary/70">
-      {label}
-    </p>
-    <p className="mt-1 font-serif text-2xl text-primary xl:text-3xl">
-      {value}
-    </p>
-    <p className="text-xs text-muted-foreground">{sub}</p>
-  </div>
-);
-
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
       <NavBar />
 
-     {/* HERO */}
-<section className="relative overflow-hidden bg-[#fbfaf6] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-  <div className="absolute inset-0 bg-[linear-gradient(90deg,#fffdf8_0%,#fffaf2_48%,#f7fbff_100%)]" />
+      {/* HERO */}
+      <section className="relative overflow-hidden bg-[#fbfaf6] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#fffdf8_0%,#fffaf2_48%,#f7fbff_100%)]" />
 
-  <div className="relative mx-auto grid max-w-[1440px] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-    {/* LEFT */}
-    <div className="relative z-20 max-w-2xl">
-      <div className="mb-5 flex items-center gap-3">
-        <span className="h-px w-10 bg-accent" />
-        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-accent sm:text-sm">
-          Personalised 1–1 Tutoring
-        </p>
-      </div>
-
-      <h1 className="font-serif text-[clamp(2.5rem,5vw,5.2rem)] font-medium leading-[1.04] text-primary">
-        Helping international students think clearly.
-        <span className="relative mt-2 block italic text-accent">
-          Learn confidently.
-          <span className="absolute -bottom-2 left-0 h-[10px] w-[min(340px,100%)] rounded-full bg-accent/20" />
-        </span>
-      </h1>
-
-      <p className="mt-7 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
-        Personalised support that builds clarity, stronger study habits, and
-        real academic results.
-      </p>
-
-      <div className="mt-8 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-4">
-        <HeroFeature icon={BookOpen} title="Expert Tutors" subtitle="Top international graduates" />
-        <HeroFeature icon={Target} title="Personalised" subtitle="Learning plans just for you" />
-        <HeroFeature icon={BarChart3} title="Proven Results" subtitle="Better habits, better outcomes" />
-        <HeroFeature icon={Globe2} title="Multilingual" subtitle="EN / 中文 / 日本語" />
-      </div>
-
-      <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-        <Link to="/enquiry">
-          <Button className="h-14 w-full rounded-2xl bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.22)] sm:w-auto">
-            Enquire now
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
-
-        <Link to="/subjects">
-          <Button
-            variant="outline"
-            className="h-14 w-full rounded-2xl border-primary/20 bg-white/80 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto"
-          >
-            Explore programs
-          </Button>
-        </Link>
-      </div>
-
-      <p className="mt-7 text-sm font-medium text-primary/70">
-        Online & offline support · Trial lesson available
-      </p>
-    </div>
-
-    {/* RIGHT IMAGE */}
-    <div className="relative h-[clamp(420px,58vh,640px)] overflow-hidden rounded-[2.5rem]">
-      <img
-        src="/hero/luna_hero_girl.png"
-        alt="Luna Education student studying"
-        className="absolute inset-0 h-full w-full object-cover object-[50%_center]"
-      />
-
-      {/* soft fade into page */}
-      <div className="absolute inset-y-0 left-0 w-[34%] bg-gradient-to-r from-[#fbfaf6] via-[#fbfaf6]/75 to-transparent" />
-      <div className="absolute inset-y-0 right-0 w-[16%] bg-gradient-to-l from-[#fbfaf6] via-[#fbfaf6]/60 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-[24%] bg-gradient-to-t from-[#fbfaf6] to-transparent" />
-
-      {/* one clean badge only */}
-      <div className="absolute bottom-8 left-8 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-[0_20px_60px_rgba(15,23,42,0.12)] backdrop-blur-xl">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">
-          Student Transformation
-        </p>
-        <p className="mt-2 text-sm text-primary/80">
-          Clear structure · Confident answers · Stronger results
-        </p>
-      </div>
-    </div>
-  </div>
-
-  {/* BOTTOM STATS */}
-  <div className="relative z-30 mx-auto mt-8 grid max-w-[1440px] gap-4 rounded-[2rem] border border-white/80 bg-white/85 p-5 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-5">
-    {[
-      { icon: Users, value: "500+", title: "Students supported" },
-      { icon: Star, value: "95%", title: "Students improve within 3 months" },
-      { icon: Globe2, value: "10+", title: "Countries represented" },
-      { icon: GraduationCap, value: "Top Uni", title: "Worldwide support" },
-      { icon: Heart, value: "4.9/5", title: "Average parent rating" },
-    ].map((item) => (
-      <div
-        key={item.title}
-        className="flex min-w-0 items-center gap-4 lg:border-r lg:border-primary/10 lg:last:border-r-0"
-      >
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 sm:h-14 sm:w-14">
-          <item.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
-        </div>
-
-        <div className="min-w-0">
-          <p className="font-serif text-2xl text-primary sm:text-3xl">
-            {item.value}
-          </p>
-          <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
-            {item.title}
-          </p>
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
-      <div className="group relative overflow-hidden py-10">
-  <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-20 bg-gradient-to-r from-background to-transparent md:w-40" />
-  <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-20 bg-gradient-to-l from-background to-transparent md:w-40" />
-
-  <div className="marquee-track flex items-stretch gap-6 will-change-transform">
-    {[...tutors, ...tutors, ...tutors].map((tutor, i) => (
-      <div
-        key={i}
-        className="
-          flex
-          shrink-0
-          flex-col
-          overflow-hidden
-          rounded-[2rem]
-          border
-          border-white/70
-          bg-white
-          shadow-[0_20px_60px_rgba(15,23,42,0.08)]
-          transition-all
-          duration-500
-          hover:-translate-y-2
-          hover:shadow-[0_30px_80px_rgba(15,23,42,0.14)]
-
-          w-[280px]
-          sm:w-[320px]
-          lg:w-[360px]
-
-          min-h-[470px]
-        "
-      >
-        {/* IMAGE */}
-        <div className="relative aspect-[4/3] overflow-hidden">
+        {/* RIGHT IMAGE AS BACKGROUND */}
+        <div className="absolute inset-0 h-full w-full object-cover object-[42%_center]">
           <img
-            src={tutor.image}
-            alt={tutor.name}
+            src="/hero/luna_girl.jpeg"
+            alt="Luna Education student studying"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-
-          <div className="absolute left-4 top-4">
-            <span className="rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-semibold text-[#9f6d2f] backdrop-blur-md">
-              {tutor.highlight}
-            </span>
-          </div>
-
-          <div className="absolute bottom-5 left-5">
-            <h3 className="font-serif text-4xl leading-none text-white drop-shadow-lg">
-              {tutor.name}
-            </h3>
-
-            <p className="mt-2 text-sm font-semibold text-white/90">
-              {tutor.role}
-            </p>
-          </div>
+          <div className="absolute inset-y-0 left-0 w-[44%] bg-gradient-to-r from-[#fbfaf6] via-[#fbfaf6]/90 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-[#fbfaf6] via-[#fbfaf6]/80 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-[16%] bg-gradient-to-b from-[#fbfaf6]/90 to-transparent" />
         </div>
 
-        {/* CONTENT */}
-        <div className="flex flex-1 flex-col p-6">
-          <div className="flex flex-wrap gap-2">
-            {tutor.tags.map((tag, idx) => (
-              <span
-                key={idx}
-                className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary"
+        <div className="relative z-10 mx-auto max-w-[1440px]">
+          <div className="grid min-h-[660px] items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+            {/* LEFT */}
+            <div className="relative z-20 max-w-3xl">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="h-px w-10 bg-accent" />
+                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-accent sm:text-sm">
+                  Personalised 1–1 Tutoring
+                </p>
+              </div>
+
+              <h1 className="max-w-[850px] font-serif text-[clamp(2.7rem,4.3vw,5.1rem)] font-medium leading-[1.03] tracking-[-0.035em] text-primary">
+                Helping international students think clearly.
+                <span className="relative mt-2 block italic text-accent">
+                  Learn confidently.
+                  <span className="absolute -bottom-2 left-0 h-[10px] w-[min(340px,100%)] rounded-full bg-accent/20" />
+                </span>
+              </h1>
+
+              <p className="mt-7 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
+                Personalised support that builds clarity, stronger study habits,
+                and real academic results.
+              </p>
+
+              <div className="mt-8 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-4">
+                <HeroFeature icon={BookOpen} title="Expert Tutors" subtitle="Top international graduates" />
+                <HeroFeature icon={Target} title="Personalised" subtitle="Learning plans just for you" />
+                <HeroFeature icon={BarChart3} title="Proven Results" subtitle="Better habits, better outcomes" />
+                <HeroFeature icon={Globe2} title="Multilingual" subtitle="EN / 中文 / 日本語" />
+              </div>
+
+              <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+                <Link to="/enquiry">
+                  <Button className="h-14 w-full rounded-2xl bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.22)] sm:w-auto">
+                    Enquire now
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+
+                <Link to="/subjects">
+                  <Button
+                    variant="outline"
+                    className="h-14 w-full rounded-2xl border-primary/20 bg-white/80 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto"
+                  >
+                    Explore programs
+                  </Button>
+                </Link>
+              </div>
+
+              <p className="mt-7 text-sm font-medium text-primary/70">
+                Online & offline support · Trial lesson available
+              </p>
+            </div>
+
+            {/* RIGHT SIDE FLOATING CARD */}
+            <div className="relative hidden h-full lg:block">
+              <div className="absolute bottom-[25%] left-[10%] w-[72%] max-w-[620px] rounded-[28px] border border-white/70 bg-white/72 px-7 py-5 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#0B1B4D]">
+                  Student Transformation
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-primary/80 sm:text-base">
+                  Clear structure · Confident answers · Stronger results
+                </p>
+              </div>
+            </div>
+
+            {/* MOBILE IMAGE ONLY */}
+            <div className="relative overflow-hidden rounded-[2rem] lg:hidden">
+              <img
+                src="/hero/luna_girl.jpeg"
+                alt="Luna Education student studying"
+                className="w-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* BOTTOM STATS */}
+          <div className="relative z-30 mx-auto grid max-w-[1440px] gap-4 rounded-[2rem] border border-white/80 bg-white/85 p-5 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-5">
+            {[
+              { icon: Users, value: "500+", title: "Students supported" },
+              {
+                icon: Star,
+                value: "95%",
+                title: "Students improve within 3 months",
+              },
+              { icon: Globe2, value: "10+", title: "Countries represented" },
+              { icon: GraduationCap, value: "Top Uni", title: "Worldwide support" },
+              { icon: Heart, value: "4.97/5", title: "Average parent rating" },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="flex min-w-0 items-center gap-4 lg:border-r lg:border-primary/10 lg:last:border-r-0"
               >
-                {tag}
-              </span>
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 sm:h-14 sm:w-14">
+                  <item.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
+                </div>
+
+                <div className="min-w-0">
+                  <p className="font-serif text-2xl text-primary sm:text-3xl">
+                    {item.value}
+                  </p>
+                  <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
+                    {item.title}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <p className="mt-5 flex-1 text-sm leading-7 text-muted-foreground">
-            {tutor.desc}
-          </p>
+      <div className="group relative overflow-hidden py-10">
+        <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-20 bg-gradient-to-r from-background to-transparent md:w-40" />
+        <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-20 bg-gradient-to-l from-background to-transparent md:w-40" />
 
-          <div className="mt-6 flex items-center justify-between border-t pt-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-              Luna Tutor
-            </p>
+        <div className="marquee-track flex items-stretch gap-6 will-change-transform">
+          {[...tutors, ...tutors, ...tutors].map((tutor, i) => (
+            <div
+              key={i}
+              className="flex shrink-0 flex-col overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_80px_rgba(15,23,42,0.14)] w-[280px] sm:w-[320px] lg:w-[360px] min-h-[470px]"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <img
+                  src={tutor.image}
+                  alt={tutor.name}
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
 
-            <span className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white">
-              1:1 Support
-            </span>
-          </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+
+                <div className="absolute left-4 top-4">
+                  <span className="rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-semibold text-[#9f6d2f] backdrop-blur-md">
+                    {tutor.highlight}
+                  </span>
+                </div>
+
+                <div className="absolute bottom-5 left-5">
+                  <h3 className="font-serif text-4xl leading-none text-white drop-shadow-lg">
+                    {tutor.name}
+                  </h3>
+
+                  <p className="mt-2 text-sm font-semibold text-white/90">
+                    {tutor.role}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-1 flex-col p-6">
+                <div className="flex flex-wrap gap-2">
+                  {tutor.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="mt-5 flex-1 text-sm leading-7 text-muted-foreground">
+                  {tutor.desc}
+                </p>
+
+                <div className="mt-6 flex items-center justify-between border-t pt-4">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+                    Luna Tutor
+                  </p>
+
+                  <span className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white">
+                    1:1 Support
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
 
       {/* TRUST STRIP */}
       <section className="border-y bg-secondary/40 px-6 py-10">
@@ -446,6 +422,8 @@ const Landing = () => {
           ))}
         </div>
       </section>
+
+      <LunaMascotChat />
 
       {/* CTA */}
       <section className="bg-hero px-6 py-24 text-center">
