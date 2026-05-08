@@ -32,13 +32,31 @@ export default function Page() {
         <div className="grid min-h-[760px] grid-cols-1 items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           {/* LEFT TEXT */}
           <div className="relative z-20">
-            <h1 className="max-w-[650px] font-poppins text-[88px] leading-[0.95] tracking-[-0.04em] text-[#061a39] xl:text-[108px]">
-              Your future
-              <br />
-              <span className="font-light italic tracking-[0.08em]">seems to be</span>
-              <br />
-              <span className="font-serif italic text-[#caa24a]">travelling.</span>
-            </h1>
+            <h1 className="max-w-[720px] leading-[0.9] tracking-[-0.06em] text-[#061a39]">
+  <span className="block overflow-hidden">
+    <span className="block animate-title-1 font-sans text-[102px] font-medium">
+      Your future
+    </span>
+  </span>
+
+  <span className="mt-[-10px] block overflow-hidden">
+    <span className="block animate-title-2 font-sans text-[110px] italic font-light">
+      seems to
+    </span>
+  </span>
+
+  <span className="mt-[-20px] block overflow-hidden">
+    <span className="block animate-title-3 font-sans text-[110px] italic font-light">
+      be
+    </span>
+  </span>
+
+  <span className="mt-[-10px] block overflow-hidden">
+    <span className="block animate-title-4 font-serif text-[115px] italic text-[#caa24a]">
+      travelling.
+    </span>
+  </span>
+</h1>
 
             <div className="mt-3 h-[2px] w-[360px] bg-[#caa24a]" />
 
@@ -50,11 +68,11 @@ export default function Page() {
 
             <div className="mt-9 flex flex-wrap gap-5">
               <button className="rounded-full bg-[#071b3a] px-9 py-4 text-white shadow-xl transition hover:-translate-y-1">
-                無料体験を予約する
+                Enquire now
                 <ArrowRight className="ml-4 inline h-4 w-4" />
               </button>
               <button className="rounded-full border border-[#071b3a]/40 bg-white/50 px-9 py-4 font-medium backdrop-blur transition hover:bg-white">
-                プログラムを見る
+                View Programs
               </button>
             </div>
 
@@ -81,9 +99,10 @@ export default function Page() {
   <div className="absolute right-[30px] top-[-90px] h-[760px] w-[760px] overflow-hidden rounded-t-full rounded-br-[46px] rounded-bl-[18px] bg-[#dceaf8] shadow-[0_35px_100px_rgba(7,27,58,0.14)]">
     {/* Aquarium background */}
     <img
-      src="/hero/aquarium.jpeg"
-      className="absolute left-0 top-0 h-full w-[72%] object-cover opacity-90"
-    />
+  src="/hero/aquarium.jpeg"
+  className="h-full w-full object-cover animate-aquarium"
+/>
+    
 
     {/* Sky/light area */}
     <div className="absolute right-0 top-0 h-full w-[48%] bg-gradient-to-b from-[#cfe7f7] to-[#f7efe2]" />
@@ -106,11 +125,12 @@ export default function Page() {
     {/* Thin gold orbit */}
     <div className="absolute bottom-[-100px] left-[40px] h-[430px] w-[430px] rounded-full border border-[#caa24a]/45" />
   </div>
+  <div className="absolute inset-0 bg-gradient-to-t from-[#f8f4ec]/10 via-transparent to-[#f8f4ec]/15 rounded-[34px]" />
 
   {/* GIRL SUBJECT ONLY */}
   <img
     src="/hero/hero-student.png"
-    className="absolute right-[150px] z-30 h-[660px] object-contain drop-shadow-2xl"
+    className="absolute right-[150px] z-30 h-[670px] object-contain drop-shadow-2xl"
   />
 
   {/* Departure card top right */}

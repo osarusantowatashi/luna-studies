@@ -12,6 +12,55 @@
 
    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 
+   @keyframes titleReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(120%);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+    filter: blur(0px);
+  }
+}
+
+.animate-title-1 {
+  animation: titleReveal 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-title-2 {
+  animation: titleReveal 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.15s;
+}
+
+.animate-title-3 {
+  animation: titleReveal 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.3s;
+}
+
+.animate-title-4 {
+  animation: titleReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.5s;
+}
+@keyframes floatAquarium {
+  0% {
+    transform: scale(1.08) translateY(0px);
+  }
+
+  50% {
+    transform: scale(1.1) translateY(-8px);
+  }
+
+  100% {
+    transform: scale(1.08) translateY(0px);
+  }
+}
+
+.animate-aquarium {
+  animation: floatAquarium 12s ease-in-out infinite;
+}
    @keyframes pasteIn {
   0% {
     opacity: 0;
