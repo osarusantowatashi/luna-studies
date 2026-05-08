@@ -190,7 +190,7 @@ const LunaMascotChat = () => {
   };
 
   return (
-    <div className="fixed bottom-8 right-6 z-[999] hidden md:block">
+    <div className="fixed bottom-8 right-6 z-[999] hidden flex-col items-end md:flex">
       <AnimatePresence>
         {open && (
           <motion.div

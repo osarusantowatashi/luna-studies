@@ -81,6 +81,12 @@ export default function Page() {
   {/* soft background */}
   <div className="absolute right-[90px] top-[-10px] h-[680px] w-[620px] rounded-t-full bg-[#dceaf8]/50 blur-xl" />
 
+
+  {/* main girl photo */}
+  <img
+    src="/hero/hero-student.jpeg"
+    className="absolute bottom-[55px] right-[120px] z-40 h-[560px] w-[430px] rounded-[34px] object-cover shadow-2xl animate-fade-in"
+  />
   {/* aquarium pasted first */}
   <div className="absolute left-[40px] top-[40px] z-10 h-[610px] w-[520px] overflow-hidden rounded-t-full opacity-70 animate-paste-1">
     <img
@@ -90,23 +96,43 @@ export default function Page() {
     <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#fbf7ef]/45" />
   </div>
 
-  {/* europe pasted second */}
-  <img
-    src="/hero/europe.jpeg"
-    className="absolute right-[-10px] bottom-[115px] z-20 h-[310px] w-[250px] rotate-[2deg] rounded-xl object-cover opacity-70 shadow-xl animate-paste-2"
-  />
+  {/* europe photo - top layer */}
+<img
+  src="/hero/europe.jpeg"
+  className="
+    absolute
+    right-[40px]
+    top-[20px]
+    z-40
+    h-[170px]
+    w-[250px]
+    rotate-[4deg]
+    rounded-md
+    object-cover
+    shadow-2xl
+    animate-paste-2
+  "
+/>
 
-  {/* city pasted third */}
-  <img
-    src="/hero/city.jpeg"
-    className="absolute bottom-[80px] left-[170px] z-30 h-[135px] w-[235px] rotate-[-3deg] rounded-md object-cover opacity-70 shadow-xl animate-paste-3"
-  />
+{/* city photo - underneath europe */}
+<img
+  src="/hero/city.jpeg"
+  className="
+    absolute
+    right-[120px]
+    top-[130px]
+    z-30
+    h-[160px]
+    w-[240px]
+    rotate-[-3deg]
+    rounded-md
+    object-cover
+    opacity-90
+    shadow-2xl
+    animate-paste-1
+  "
+/>
 
-  {/* main girl photo */}
-  <img
-    src="/hero/hero-student.jpeg"
-    className="absolute bottom-[55px] right-[120px] z-40 h-[560px] w-[430px] rounded-[34px] object-cover shadow-2xl animate-fade-in"
-  />
 
   {/* TOEFL card */}
   <div className="absolute left-[150px] top-[250px] z-50 rounded-2xl border border-white/50 bg-white/70 px-7 py-6 shadow-xl backdrop-blur-2xl animate-card-1">
