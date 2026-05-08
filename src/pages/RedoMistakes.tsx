@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 const RedoMistakes = () => {
   const [questions, setQuestions] = useState<any[]>([]);
@@ -119,6 +120,7 @@ const RedoMistakes = () => {
           </Button>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

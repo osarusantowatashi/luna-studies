@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import Footer from "@/components/Footer";
 
 const GenerateQuestions = () => {
   const [examType, setExamType] = useState("MAP");

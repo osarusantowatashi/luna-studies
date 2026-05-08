@@ -108,6 +108,25 @@
     transform: translateX(-50%);
   }
 }
+.marquee-track {
+  width: max-content;
+  animation: scrollLoop 38s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollLoop {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-33.333%);
+  }
+}
 
 .animate-scroll {
   animation: scroll 30s linear infinite;

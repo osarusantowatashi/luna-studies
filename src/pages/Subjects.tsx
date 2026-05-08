@@ -13,6 +13,7 @@ import {
   Languages,
   ArrowRight,
 } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const subjects = [
   {
@@ -173,6 +174,7 @@ const Subjects = () => {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 };

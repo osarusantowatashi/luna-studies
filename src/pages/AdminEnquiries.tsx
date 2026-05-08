@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Footer from "@/components/Footer";
 
 const AdminEnquiries = () => {
   const [enquiries, setEnquiries] = useState<any[]>([]);

@@ -10,6 +10,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 
+import Footer from "@/components/Footer";
+
 const WhyLuna = () => {
   const highlights = [
     "1–1 personalised tutoring",

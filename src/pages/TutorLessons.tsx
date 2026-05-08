@@ -13,6 +13,7 @@ import {
   RotateCcw,
   X,
 } from "lucide-react";
+import Footer from "@/components/Footer";
 
 type LessonStatus =
   | "pending"
@@ -704,6 +705,7 @@ function Modal({ children, onClose }: any) {
 
         {children}
       </div>
+      <Footer />
     </div>
   );
 }

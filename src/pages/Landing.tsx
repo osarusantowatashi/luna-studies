@@ -9,12 +9,12 @@ import {
   Target,
   BarChart3,
   Globe2,
-  Trophy,
   Star,
   Users,
   GraduationCap,
   Heart,
 } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const tutors = [
   {
@@ -53,8 +53,8 @@ const HeroFeature = ({
   subtitle: string;
 }) => (
   <div className="group">
-    <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/10 bg-white/80 shadow-[0_12px_35px_rgba(15,23,42,0.08)] backdrop-blur transition group-hover:-translate-y-1">
-      <Icon className="h-6 w-6 text-accent" />
+    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/10 bg-white/85 shadow-[0_12px_35px_rgba(15,23,42,0.08)] backdrop-blur transition group-hover:-translate-y-1 sm:h-14 sm:w-14">
+      <Icon className="h-5 w-5 text-accent sm:h-6 sm:w-6" />
     </div>
     <p className="text-sm font-bold text-primary">{title}</p>
     <p className="mt-1 text-xs leading-5 text-muted-foreground">{subtitle}</p>
@@ -70,11 +70,13 @@ const ResultBadge = ({
   value: string;
   sub: string;
 }) => (
-  <div className="min-w-[138px] rounded-2xl border border-primary/10 bg-white/90 px-5 py-4 shadow-[0_18px_50px_rgba(15,23,42,0.12)] backdrop-blur">
-    <p className="text-xs font-bold uppercase tracking-widest text-primary/70">
+  <div className="min-w-[120px] rounded-2xl border border-primary/10 bg-white/92 px-4 py-3 shadow-[0_18px_50px_rgba(15,23,42,0.12)] backdrop-blur-2xl xl:min-w-[138px] xl:px-5 xl:py-4">
+    <p className="text-[10px] font-bold uppercase tracking-widest text-primary/70">
       {label}
     </p>
-    <p className="mt-1 font-serif text-3xl text-primary">{value}</p>
+    <p className="mt-1 font-serif text-2xl text-primary xl:text-3xl">
+      {value}
+    </p>
     <p className="text-xs text-muted-foreground">{sub}</p>
   </div>
 );
@@ -84,315 +86,242 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <NavBar />
 
-      {/* HERO */}
-      <section className="relative min-h-[calc(100vh-80px)] overflow-hidden bg-[#fbfaf6] px-6 py-20">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_20%,rgba(255,197,82,0.22),transparent_28%),radial-gradient(circle_at_82%_68%,rgba(10,36,84,0.10),transparent_30%),linear-gradient(90deg,#fffdf8_0%,#fffaf0_40%,#f7fbff_100%)]" />
-        <div className="absolute left-8 top-20 h-72 w-72 rounded-full bg-accent/15 blur-3xl" />
-        <div className="absolute right-0 top-0 h-[520px] w-[520px] rounded-full bg-primary/10 blur-3xl" />
+     {/* HERO */}
+<section className="relative overflow-hidden bg-[#fbfaf6] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+  <div className="absolute inset-0 bg-[linear-gradient(90deg,#fffdf8_0%,#fffaf0_48%,#f7fbff_100%)]" />
 
-        <div className="relative mx-auto max-w-7xl">
-          <div className="grid min-h-[720px] items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
-            {/* LEFT */}
-            <div className="relative z-20 pt-10">
-              <div className="mb-6 flex items-center gap-3">
-                <span className="h-px w-10 bg-accent" />
-                <p className="text-sm font-bold uppercase tracking-[0.28em] text-accent">
-                  Personalised 1–1 Tutoring
-                </p>
-              </div>
+  <div className="relative mx-auto min-h-[620px] w-full max-w-[1440px] overflow-hidden rounded-[2.5rem] bg-[#fffdf8] md:min-h-[680px] lg:min-h-[720px]">
+    
+    {/* IMAGE BACKGROUND */}
+    <img
+      src="/hero/luna_hero_girl.png"
+      alt="Luna Education student studying"
+      className="
+        absolute
+        inset-y-0
+        right-0
+        h-full
+        w-[72%]
+        object-cover
+        object-[45%_42%]
+        opacity-95
+        max-md:w-full
+        max-md:opacity-25
+      "
+    />
 
-              <h1 className="max-w-2xl font-serif text-5xl font-medium leading-[1.04] text-primary md:text-7xl">
-                Helping international students think clearly.
-                <span className="relative mt-2 block italic text-accent">
-                  Learn confidently.
-                  <span className="absolute -bottom-2 left-0 h-[10px] w-[360px] max-w-full rounded-full bg-accent/20" />
-                </span>
-              </h1>
+    {/* BLEND */}
+    <div className="absolute inset-0 bg-gradient-to-r from-[#fffdf8] via-[#fffdf8]/85 to-transparent md:via-[#fffdf8]/55" />
+    <div className="absolute inset-0 bg-gradient-to-t from-[#fbfaf6]/80 via-transparent to-transparent" />
 
-              <p className="mt-8 max-w-xl text-lg leading-8 text-slate-600 md:text-xl">
-                Personalised support that builds clarity, stronger study habits,
-                and real academic results.
-              </p>
+    {/* LEFT CONTENT */}
+    <div className="relative z-20 w-full max-w-[620px] px-6 py-10 sm:px-10 md:px-12 lg:px-14 lg:py-16">
+      <div className="mb-5 flex items-center gap-3">
+        <span className="h-px w-10 bg-accent" />
+        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-accent sm:text-sm">
+          Personalised 1–1 Tutoring
+        </p>
+      </div>
 
-              <div className="mt-9 grid max-w-xl grid-cols-2 gap-6 sm:grid-cols-4">
-                <HeroFeature
-                  icon={BookOpen}
-                  title="Expert Tutors"
-                  subtitle="Top international graduates"
-                />
-                <HeroFeature
-                  icon={Target}
-                  title="Personalised"
-                  subtitle="Learning plans just for you"
-                />
-                <HeroFeature
-                  icon={BarChart3}
-                  title="Proven Results"
-                  subtitle="Better habits, better outcomes"
-                />
-                <HeroFeature
-                  icon={Globe2}
-                  title="Multilingual"
-                  subtitle="EN / 中文 / 日本語"
-                />
-              </div>
+      <h1 className="font-serif text-[clamp(2.3rem,4.7vw,5.1rem)] font-medium leading-[1.04] text-primary">
+        Helping international students think clearly.
+        <span className="relative mt-2 block italic text-accent">
+          Learn confidently.
+          <span className="absolute -bottom-2 left-0 h-[10px] w-[min(320px,100%)] rounded-full bg-accent/20" />
+        </span>
+      </h1>
 
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <Link to="/enquiry">
-                  <Button
-                    size="lg"
-                    className="h-14 rounded-2xl bg-primary px-9 text-base shadow-[0_18px_45px_rgba(10,36,84,0.22)]"
-                  >
-                    Enquire now
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
+      <p className="mt-7 max-w-lg text-base leading-8 text-slate-600 sm:text-lg">
+        Personalised support that builds clarity, stronger study habits, and
+        real academic results.
+      </p>
 
-                <Link to="/subjects">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-14 rounded-2xl border-primary/20 bg-white/80 px-9 text-base text-primary shadow-sm backdrop-blur"
-                  >
-                    Explore programs
-                  </Button>
-                </Link>
-              </div>
+      <div className="mt-8 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-4">
+        <HeroFeature icon={BookOpen} title="Expert Tutors" subtitle="Top international graduates" />
+        <HeroFeature icon={Target} title="Personalised" subtitle="Learning plans just for you" />
+        <HeroFeature icon={BarChart3} title="Proven Results" subtitle="Better habits, better outcomes" />
+        <HeroFeature icon={Globe2} title="Multilingual" subtitle="EN / 中文 / 日本語" />
+      </div>
 
-              <p className="mt-7 text-sm font-medium text-primary/70">
-                Online & offline support · Trial lesson available
-              </p>
-            </div>
+      <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+        <Link to="/enquiry">
+          <Button className="h-14 w-full rounded-2xl bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.22)] sm:w-auto">
+            Enquire now
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </Link>
 
-            {/* RIGHT VISUAL */}
-            <div className="relative z-10 min-h-[720px]">
-              <img
-  src="/hero/luna_hero_girl.png"
-  alt="Luna Education student studying"
-  className="
-    absolute
-    z-0
-    bottom-[-10px]
-    left-[56%]
-    h-[880px]
-    w-[980px]
-    -translate-x-1/2
-    object-cover
-    object-bottom
-    drop-shadow-[0_35px_70px_rgba(15,23,42,0.16)]
-  "
-/>
-<div className="absolute right-20 top-40 h-[400px] w-[400px] rounded-full bg-[#f7d58a]/30 blur-3xl" />
+        <Link to="/subjects">
+          <Button variant="outline" className="h-14 w-full rounded-2xl border-primary/20 bg-white/80 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto">
+            Explore programs
+          </Button>
+        </Link>
+      </div>
 
-              <div className="absolute left-2 top-24 hidden rotate-[-8deg] font-serif text-2xl italic leading-8 text-primary md:block">
-                Better ♡
-                <br />
-                understanding.
-                <br />
-                <span className="text-accent">Better me.</span>
-              </div>
+      <p className="mt-7 text-sm font-medium texprimary/70">
+        Online & offline support · Trial lesson available
+      </p>
+    </div>
 
-              <div className="absolute [-30px] top-8 w-[380px] rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_25px_90px_rgba(15,23,42,0.14)] backdrop-blur-xl">
-                <p className="text-sm font-bold uppercase tracking-[0.18em] text-accent">
-                  Student Transformation
-                </p>
+    {/* FLOATING CARDS */}
+    <div className="absolute right-[6%] top-[16%] z-20 hidden w-[390px] rounded-[1.8rem] border border-white/80 bg-white/85 p-5 shadow-[0_25px_80px_rgba(15,23,42,0.14)] backdrop-blur-2xl md:block lg:right-[10%]">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">
+        Student Transformation
+      </p>
 
-                <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-5">
-                  <div>
-                    <p className="text-xs font-bold uppercase text-primary">
-                      Before
-                    </p>
-                    <p className="mt-3 text-sm leading-7 text-slate-600">
-                      Confused notes
-                      <br />
-                      Scattered ideas
-                      <br />
-                      Low confidence
-                    </p>
-                    <div className="mt-5 h-16 w-16 rounded-full border border-primary/15 bg-[radial-gradient(circle,transparent_35%,rgba(10,36,84,0.15)_36%,transparent_38%)]" />
-                  </div>
-
-                  <ArrowRight className="h-8 w-8 text-accent" />
-
-                  <div>
-                    <p className="text-xs font-bold uppercase text-accent">
-                      After
-                    </p>
-                    <p className="mt-3 text-sm leading-7 text-slate-600">
-                      Clear structure
-                      <br />
-                      Confident answers
-                      <br />
-                      Stronger results
-                    </p>
-                    <div className="mt-5 h-16 w-16 rounded-full border-2 border-accent/50" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute bottom-24 right-[-10px] w-[380px] rounded-[2rem] border border-white/80 bg-white/85 p-7 shadow-[0_25px_90px_rgba(15,23,42,0.14)] backdrop-blur-xl">
-                <p className="font-serif text-4xl text-accent">“</p>
-                <p className="mt-2 text-sm leading-7 text-primary/80">
-                  Luna Education helped me organise my thoughts and explain
-                  answers clearly. I finally enjoy learning!
-                </p>
-                <p className="mt-4 text-sm font-semibold text-primary">
-                  — Chloe, Grade 11
-                </p>
-                <div className="mt-4 flex gap-1 text-accent">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-              </div>
-
-              <div className="absolute bottom-12 left-0 hidden gap-3 lg:flex">
-                <ResultBadge label="IELTS" value="8.5" sub="Overall" />
-                <ResultBadge label="SAT" value="1500" sub="+310 points" />
-                <ResultBadge label="TOEFL" value="114" sub="+19 points" />              </div>
-            </div>
-          </div>
-
-          {/* BOTTOM STATS */}
-          <div className="relative z-30 -mt-4 grid gap-4 rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl md:grid-cols-5">
-            {[
-              {
-                icon: Users,
-                value: "500+",
-                title: "Students supported",
-              },
-              {
-                icon: Star,
-                value: "95%",
-                title: "Students improve within 3 months",
-              },
-              {
-                icon: Globe2,
-                value: "10+",
-                title: "Countries represented",
-              },
-              {
-                icon: GraduationCap,
-                value: "Top Uni",
-                title: "UK / US / JP / SG support",
-              },
-              {
-                icon: Heart,
-                value: "4.9/5",
-                title: "Average parent rating",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="flex items-center gap-4 border-primary/10 md:border-r md:last:border-r-0"
-              >
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-secondary/70">
-                  <item.icon className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-serif text-3xl text-primary">
-                    {item.value}
-                  </p>
-                  <p className="text-sm leading-5 text-muted-foreground">
-                    {item.title}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TUTOR MARQUEE */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-background via-secondary/20 to-background py-28">
-        <div className="absolute left-0 top-10 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
-        <div className="absolute right-0 bottom-10 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-
-        <div className="relative mx-auto mb-12 max-w-7xl px-6">
-          <div className="flex items-center gap-2 text-accent">
-            <Sparkles className="h-4 w-4" />
-            <p className="text-sm font-semibold uppercase tracking-[0.3em]">
-              Meet Our Tutors
-            </p>
-          </div>
-
-          <h2 className="mt-4 max-w-4xl font-serif text-4xl leading-tight text-primary md:text-6xl">
-            Learn from tutors who make progress feel possible
-          </h2>
-
-          <p className="mt-5 max-w-2xl leading-7 text-muted-foreground">
-            Experienced multilingual tutors with strong academic backgrounds,
-            structured lesson planning, and real student-support experience.
+      <div className="mt-4 grid grid-cols-[1fr_auto_1fr] gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase text-primary">Before</p>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Confused notes<br />Scattered ideas<br />Low confidence
           </p>
         </div>
 
-        <div className="group relative overflow-hidden py-8">
-          <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-40 bg-gradient-to-r from-background to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-40 bg-gradient-to-l from-background to-transparent" />
+        <ArrowRight className="mt-9 h-6 w-6 text-accent" />
 
-          <div className="flex w-max animate-infinite-scroll gap-8 group-hover:[animation-play-state:paused]">
-            {[...tutors, ...tutors, ...tutors].map((tutor, i) => (
-              <div
-                key={i}
-                className="flex h-[500px] w-[380px] shrink-0 flex-col overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_25px_80px_rgba(15,23,42,0.10)] transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_35px_100px_rgba(15,23,42,0.18)]"
-              >
-                <div className="relative h-[250px] overflow-hidden">
-                  <img
-                    src={tutor.image}
-                    alt={tutor.name}
-                    className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-                  />
+        <div>
+          <p className="text-xs font-bold uppercase text-accent">After</p>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Clear structure<br />Confident answers<br />Stronger results
+          </p>
+        </div>
+      </div>
+    </div>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+    <div className="absolute bottom-[12%] right-[22%] z-20 hidden w-[330px] rounded-[1.8rem] border border-white/80 bg-white/85 p-5 shadow-[0_25px_80px_rgba(15,23,42,0.14)] backdrop-blur-2xl md:block lg:right-[30%]">
+      <p className="font-serif text-3xl text-accent">“</p>
 
-                  <div className="absolute left-5 top-5">
-                    <span className="rounded-full bg-white/90 px-4 py-2 text-xs font-semibold text-[#9f6d2f] backdrop-blur-md">
-                      {tutor.highlight}
-                    </span>
-                  </div>
+      <p className="mt-1 text-sm leading-7 text-primary/80">
+        Luna Education helped me organise my thoughts and explain answers clearly.
+        I finally enjoy learning!
+      </p>
 
-                  <div className="absolute bottom-6 left-6">
-                    <h3 className="font-serif text-5xl leading-none text-white drop-shadow-lg">
-                      {tutor.name}
-                    </h3>
+      <p className="mt-3 text-sm font-semibold text-primary">
+        — Chloe, Grade 11
+      </p>
 
-                    <p className="mt-2 text-sm font-semibold text-white/90">
-                      {tutor.role}
-                    </p>
-                  </div>
-                </div>
+      <div className="mt-3 flex gap-1 text-accent">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Star key={i} className="h-4 w-4 fill-current" />
+        ))}
+      </div>
+    </div>
+  </div>
 
-                <div className="flex flex-1 flex-col p-7">
-                  <div className="flex flex-wrap gap-2">
-                    {tutor.tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="rounded-full bg-secondary px-3.5 py-1.5 text-xs font-semibold text-primary"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+  {/* BOTTOM STATS */}
+  <div className="relative z-30 mx-auto mt-8 grid max-w-[1440px] gap-4 rounded-[2rem] border border-white/80 bg-white/85 p-5 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-5">
+    {[
+      { icon: Users, value: "500+", title: "Students supported" },
+      { icon: Star, value: "95%", title: "Students improve within 3 months" },
+      { icon: Globe2, value: "10+", title: "Countries represented" },
+      { icon: GraduationCap, value: "Top Uni", title: "Worldwide support" },
+      { icon: Heart, value: "4.9/5", title: "Average parent rating" },
+    ].map((item) => (
+      <div key={item.title} className="flex min-w-0 items-center gap-4 lg:border-r lg:border-primary/10 lg:last:border-r-0">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 sm:h-14 sm:w-14">
+          <item.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
+        </div>
 
-                  <p className="mt-6 line-clamp-3 text-sm leading-7 text-muted-foreground">
-                    {tutor.desc}
-                  </p>
+        <div className="min-w-0">
+          <p className="font-serif text-2xl text-primary sm:text-3xl">
+            {item.value}
+          </p>
+          <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
+            {item.title}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+      <div className="group relative overflow-hidden py-10">
+  <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-20 bg-gradient-to-r from-background to-transparent md:w-40" />
+  <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-20 bg-gradient-to-l from-background to-transparent md:w-40" />
 
-                  <div className="mt-auto flex items-center justify-between border-t pt-5">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                      Luna Tutor
-                    </p>
+  <div className="marquee-track flex items-stretch gap-6 will-change-transform">
+    {[...tutors, ...tutors, ...tutors].map((tutor, i) => (
+      <div
+        key={i}
+        className="
+          flex
+          shrink-0
+          flex-col
+          overflow-hidden
+          rounded-[2rem]
+          border
+          border-white/70
+          bg-white
+          shadow-[0_20px_60px_rgba(15,23,42,0.08)]
+          transition-all
+          duration-500
+          hover:-translate-y-2
+          hover:shadow-[0_30px_80px_rgba(15,23,42,0.14)]
 
-                    <span className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white">
-                      1:1 Support
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
+          w-[280px]
+          sm:w-[320px]
+          lg:w-[360px]
+
+          min-h-[470px]
+        "
+      >
+        {/* IMAGE */}
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <img
+            src={tutor.image}
+            alt={tutor.name}
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+
+          <div className="absolute left-4 top-4">
+            <span className="rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-semibold text-[#9f6d2f] backdrop-blur-md">
+              {tutor.highlight}
+            </span>
+          </div>
+
+          <div className="absolute bottom-5 left-5">
+            <h3 className="font-serif text-4xl leading-none text-white drop-shadow-lg">
+              {tutor.name}
+            </h3>
+
+            <p className="mt-2 text-sm font-semibold text-white/90">
+              {tutor.role}
+            </p>
           </div>
         </div>
-      </section>
+
+        {/* CONTENT */}
+        <div className="flex flex-1 flex-col p-6">
+          <div className="flex flex-wrap gap-2">
+            {tutor.tags.map((tag, idx) => (
+              <span
+                key={idx}
+                className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <p className="mt-5 flex-1 text-sm leading-7 text-muted-foreground">
+            {tutor.desc}
+          </p>
+
+          <div className="mt-6 flex items-center justify-between border-t pt-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+              Luna Tutor
+            </p>
+
+            <span className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white">
+              1:1 Support
+            </span>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
       {/* TRUST STRIP */}
       <section className="border-y bg-secondary/40 px-6 py-10">
@@ -571,6 +500,8 @@ const Landing = () => {
           </Button>
         </Link>
       </section>
+
+      <Footer />
     </div>
   );
 };

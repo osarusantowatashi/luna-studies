@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 const PAGE_SIZE = 10;
 

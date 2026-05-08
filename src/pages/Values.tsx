@@ -1,6 +1,7 @@
 import NavBar from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import Footer from "@/components/Footer";
 
 const Values = () => {
   const values = [

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 const TIME_FILTERS = [
   { label: "All", value: "all" },
@@ -577,6 +578,7 @@ const TutorDashboard = () => {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

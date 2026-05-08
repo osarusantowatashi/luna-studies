@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 
 const Login = () => {
   const [loginEmail, setLoginEmail] = useState("");
@@ -316,6 +317,9 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
+      
     </div>
   );
 };

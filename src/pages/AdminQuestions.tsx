@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 const AdminQuestions = () => {
   const [questions, setQuestions] = useState<any[]>([]);

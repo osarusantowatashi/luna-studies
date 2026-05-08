@@ -1,5 +1,6 @@
 import NavBar from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 const tutors = [
   {

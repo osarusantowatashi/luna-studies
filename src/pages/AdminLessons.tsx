@@ -6,6 +6,7 @@ import {
   Clock,
   RotateCcw,
 } from "lucide-react";
+import Footer from "@/components/Footer";
 
 type LessonStatus =
   | "pending"

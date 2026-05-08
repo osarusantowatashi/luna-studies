@@ -8,6 +8,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
+
 const ProgressChart = ({ data }: { data: any[] }) => {
   return (
     <div className="h-72 w-full">

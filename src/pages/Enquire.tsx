@@ -1,5 +1,6 @@
 import NavBar from "@/components/NavBar";
 import EnquiryForm from "@/pages/EnquiryForm";
+import Footer from "@/components/Footer";
 
 const Enquire = () => {
   return (
@@ -118,6 +119,8 @@ const Enquire = () => {
           WeChat: lunaeducation · Email: enquiries@lunastudies.com
         </p>
       </section>
+
+      <Footer />
     </div>
   );
 };
