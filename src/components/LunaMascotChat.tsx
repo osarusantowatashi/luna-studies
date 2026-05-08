@@ -190,11 +190,11 @@ const LunaMascotChat = () => {
   };
 
   return (
-    <div className="fixed bottom-8 right-6 z-[999] hidden flex-col items-end md:flex">
+    <div className="fixed bottom-8 right-6 z-[999] hidden w-[360px] max-w-[calc(100vw-48px)] md:block">
       <AnimatePresence>
         {open && (
           <motion.div
-            className="mb-4 w-[min(360px,calc(100vw-48px))] overflow-hidden rounded-[28px] border border-[#E8D8B5] bg-white shadow-[0_25px_80px_rgba(8,42,85,0.25)]"
+            className="mb-4 w-full overflow-hidden rounded-[28px] border border-[#E8D8B5] bg-white shadow-[0_25px_80px_rgba(8,42,85,0.25)]"
             initial={{ opacity: 0, y: 20, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.92 }}
@@ -356,7 +356,7 @@ const LunaMascotChat = () => {
 
             <div className="flex items-center gap-2 border-t border-[#E8D8B5] bg-white p-3">
               <input
-                className="flex-1 rounded-full bg-slate-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B] disabled:cursor-not-allowed disabled:opacity-60"
+                className="min-w-0 flex-1 rounded-full bg-slate-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B] disabled:cursor-not-allowed disabled:opacity-60"
                 placeholder={
                   isLoading ? "Luna is replying..." : "Ask about MAP, TOEFL, CAT4..."
                 }
@@ -384,7 +384,7 @@ const LunaMascotChat = () => {
 
       <motion.button
         onClick={() => setOpen(true)}
-        className="relative flex h-[170px] w-[170px] items-center justify-center rounded-full bg-white shadow-[0_25px_70px_rgba(8,42,85,0.25)]"
+        className="relative ml-auto flex h-[170px] w-[170px] items-center justify-center rounded-full bg-white shadow-[0_25px_70px_rgba(8,42,85,0.25)]"
         animate={{ y: [0, -10, 0] }}
         transition={{
           repeat: Infinity,

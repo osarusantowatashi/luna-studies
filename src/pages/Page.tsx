@@ -82,11 +82,7 @@ export default function Page() {
   <div className="absolute right-[90px] top-[-10px] h-[680px] w-[620px] rounded-t-full bg-[#dceaf8]/50 blur-xl" />
 
 
-  {/* main girl photo */}
-  <img
-    src="/hero/hero-student.jpeg"
-    className="absolute bottom-[55px] right-[120px] z-40 h-[560px] w-[430px] rounded-[34px] object-cover shadow-2xl animate-fade-in"
-  />
+  
   {/* aquarium pasted first */}
   <div className="absolute left-[40px] top-[40px] z-10 h-[610px] w-[520px] overflow-hidden rounded-t-full opacity-70 animate-paste-1">
     <img
@@ -96,17 +92,17 @@ export default function Page() {
     <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#fbf7ef]/45" />
   </div>
 
-  {/* europe photo - top layer */}
+ {/* europe photo - topmost */}
 <img
   src="/hero/europe.jpeg"
   className="
     absolute
-    right-[40px]
-    top-[20px]
-    z-40
+    right-[35px]
+    top-[15px]
+    z-50
     h-[170px]
     w-[250px]
-    rotate-[4deg]
+    rotate-[5deg]
     rounded-md
     object-cover
     shadow-2xl
@@ -114,22 +110,39 @@ export default function Page() {
   "
 />
 
-{/* city photo - underneath europe */}
+{/* city photo - under europe but above girl */}
 <img
   src="/hero/city.jpeg"
   className="
     absolute
     right-[120px]
-    top-[130px]
-    z-30
+    top-[120px]
+    z-45
     h-[160px]
-    w-[240px]
-    rotate-[-3deg]
+    w-[235px]
+    rotate-[-4deg]
     rounded-md
     object-cover
-    opacity-90
+    opacity-95
     shadow-2xl
-    animate-paste-1
+    animate-paste-3
+  "
+/>
+
+{/* main girl */}
+<img
+  src="/hero/hero-student.jpeg"
+  className="
+    absolute
+    bottom-[-25px]
+    right-[90px]
+    z-40
+    h-[620px]
+    w-[440px]
+    rounded-[34px]
+    object-cover
+    shadow-2xl
+    animate-fade-in
   "
 />
 
