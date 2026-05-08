@@ -94,7 +94,7 @@ const Landing = () => {
                 </p>
               </div>
 
-              <h1 className="max-w-[850px] font-serif text-[clamp(2.7rem,4.3vw,5.1rem)] font-medium leading-[1.03] tracking-[-0.035em] text-primary">
+              <h1 className="max-w-[850px] font-poppins text-[clamp(2.7rem,4.3vw,5.1rem)] font-medium leading-[1.03] tracking-[-0.035em] text-primary">
                 Helping international students think clearly.
                 <span className="relative mt-2 block italic text-accent">
                   Learn confidently.
@@ -182,7 +182,7 @@ const Landing = () => {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="font-serif text-2xl text-primary sm:text-3xl">
+                  <p className="font-poppins text-2xl text-primary sm:text-3xl">
                     {item.value}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
@@ -221,7 +221,7 @@ const Landing = () => {
                 </div>
 
                 <div className="absolute bottom-5 left-5">
-                  <h3 className="font-serif text-4xl leading-none text-white drop-shadow-lg">
+                  <h3 className="font-poppins text-4xl leading-none text-white drop-shadow-lg">
                     {tutor.name}
                   </h3>
 
@@ -287,7 +287,7 @@ const Landing = () => {
       {/* PROCESS */}
       <section className="container mx-auto px-6 py-24">
         <div className="mb-14 text-center">
-          <h2 className="font-serif text-4xl text-primary">
+          <h2 className="font-poppins text-4xl text-primary">
             A clear system for real improvement
           </h2>
         </div>
@@ -312,7 +312,7 @@ const Landing = () => {
       <section className="bg-secondary/30 px-6 py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
           <div>
-            <h2 className="font-serif text-4xl text-primary">
+            <h2 className="font-poppins text-4xl text-primary">
               Not just tuition. A structured learning system.
             </h2>
 
@@ -354,7 +354,7 @@ const Landing = () => {
             Programs
           </p>
 
-          <h2 className="font-serif text-4xl text-primary md:text-5xl">
+          <h2 className="font-poppins text-4xl text-primary md:text-5xl">
             Designed for international students
           </h2>
 
@@ -398,7 +398,7 @@ const Landing = () => {
               key={program.title}
               className="group relative rounded-3xl border bg-card p-8 shadow-soft transition hover:-translate-y-2 hover:shadow-elegant"
             >
-              <h3 className="mb-2 font-serif text-2xl text-primary">
+              <h3 className="mb-2 font-poppins text-2xl text-primary">
                 {program.title}
               </h3>
 
@@ -427,7 +427,7 @@ const Landing = () => {
 
       {/* CTA */}
       <section className="bg-hero px-6 py-24 text-center">
-        <h2 className="font-serif text-4xl text-primary">
+        <h2 className="font-poppins text-4xl text-primary">
           Start your child’s improvement journey
         </h2>
 
