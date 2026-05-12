@@ -40,7 +40,7 @@ const Login = () => {
     if (!user) return;
 
     if (!user.email_confirmed_at) {
-      alert("Please verify your email before signing in.");
+      alert(t("login.alerts.emailVerified"));
       await supabase.auth.signOut();
       return;
     }
@@ -102,7 +102,7 @@ const Login = () => {
     }
 
     if (profile.is_active === false) {
-      alert("Your account has been disabled. Please contact admin.");
+      alert(t("login.alerts.disabled"));
       await supabase.auth.signOut();
       return;
     }
@@ -126,7 +126,7 @@ const Login = () => {
 
   const handleSignup = async () => {
     if (!name || !signupEmail || !signupPassword || !inviteCode) {
-      alert("Please fill in all required fields.");
+      alert(t("login.alerts.fillAll"));
       return;
     }
 
@@ -146,19 +146,19 @@ const Login = () => {
     }
 
     if (!codeData) {
-      alert("Invalid, expired, or already used access code.");
+      alert(t("login.alerts.invalidCode"));
       return;
     }
 
     if (codeData.expires_at && new Date(codeData.expires_at) < new Date()) {
-      alert("This access code has expired.");
+      alert(t("login.alerts.expiredCode"));
       return;
     }
 
     const finalRole = codeData.role as "student" | "tutor" | "admin";
 
     if (finalRole !== "student" && finalRole !== "tutor") {
-      alert("Invalid access code role.");
+      alert(t("login.alerts.invalidRole"));
       return;
     }
 
@@ -181,7 +181,7 @@ const Login = () => {
       return;
     }
 
-    alert("Please check your email to verify your account.");
+    alert(t("login.alerts.checkEmail"));
 
     setName("");
     setSignupEmail("");
