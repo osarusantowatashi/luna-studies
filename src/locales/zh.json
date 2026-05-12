@@ -585,5 +585,44 @@
         ]
       }
     ]
+  },
+  "login": {
+  "hero": {
+    "title": "继续你的学习旅程",
+    "description": "登录您的学习系统，或使用邀请码创建新账号。"
+  },
+
+  "signin": {
+    "label": "已有账号",
+    "title": "登录",
+    "description": "欢迎回来，查看课程、学习进度与作业。"
+  },
+
+  "signup": {
+    "label": "新用户",
+    "title": "创建账号",
+    "description": "邀请码会自动分配您的账号类型。"
+  },
+
+  "fields": {
+    "name": "姓名",
+    "email": "邮箱",
+    "password": "密码",
+    "accessCode": "邀请码"
+  },
+
+  "placeholders": {
+    "name": "请输入姓名",
+    "email": "you@example.com",
+    "password": "请输入密码",
+    "createPassword": "创建密码",
+    "accessCode": "输入邀请码"
+  },
+
+  "buttons": {
+    "signin": "登录",
+    "create": "创建账号",
+    "forgotPassword": "忘记密码？"
   }
+}
 }

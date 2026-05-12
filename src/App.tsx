@@ -33,6 +33,9 @@ import ScrollToTop from "./components/ScrollToTop";
 
 import LunaMascotChat from "./components/LunaMascotChat";
 
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -225,6 +228,10 @@ const App = () => {
         />
 
         <Route path="*" element={<NotFound />} />
+
+        <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
+        <Route path="/:lang/reset-password" element={<ResetPassword />} />
+
       </Routes>
 
       <LunaMascotChat />

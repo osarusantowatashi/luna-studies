@@ -585,5 +585,44 @@
         ]
       }
     ]
+  },
+  "login": {
+  "hero": {
+    "title": "Continue your learning journey",
+    "description": "Sign in to your dashboard, or create a new account with your access code."
+  },
+
+  "signin": {
+    "label": "Existing user",
+    "title": "Sign in",
+    "description": "Welcome back. Access your lessons, progress, and assignments."
+  },
+
+  "signup": {
+    "label": "New user",
+    "title": "Create account",
+    "description": "Your access code will automatically assign your account type."
+  },
+
+  "fields": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "accessCode": "Access Code"
+  },
+
+  "placeholders": {
+    "name": "Your name",
+    "email": "you@example.com",
+    "password": "Enter password",
+    "createPassword": "Create password",
+    "accessCode": "Enter access code"
+  },
+
+  "buttons": {
+    "signin": "Sign in",
+    "create": "Create account",
+    "forgotPassword": "Forgot password?"
   }
+}
 }

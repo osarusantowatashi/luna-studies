@@ -3,10 +3,12 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import { useTranslation } from "react-i18next";
 
 
 const Login = () => {
-  
+  const { t } = useTranslation();
+
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
@@ -120,7 +122,7 @@ const Login = () => {
       window.location.href = "/studentoverview";
     }
   };
-  
+
 
   const handleSignup = async () => {
     if (!name || !signupEmail || !signupPassword || !inviteCode) {
@@ -197,10 +199,10 @@ const Login = () => {
             Luna Studies
           </p>
           <h1 className="font-serif text-4xl text-primary md:text-5xl">
-            Continue your learning journey
+            {t("login.hero.title")}
           </h1>
           <p className="mt-4 text-muted-foreground">
-            Sign in to your dashboard, or create a new account with your access code.
+            {t("login.hero.description")}
           </p>
         </div>
 
@@ -208,24 +210,24 @@ const Login = () => {
           <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
             <div className="mb-8">
               <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-                Existing user
+                {t("login.signin.label")}
               </p>
               <h2 className="mt-2 font-serif text-3xl text-primary">
-                Sign in
+                {t("login.signin.title")}
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Welcome back. Access your lessons, progress, and assignments.
+                {t("login.signin.description")}
               </p>
             </div>
 
             <div className="space-y-5">
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Email
+                  {t("login.fields.email")}
                 </label>
                 <input
                   className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder="you@example.com"
+                  placeholder={t("login.placeholders.email")}
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                 />
@@ -233,16 +235,22 @@ const Login = () => {
 
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Password
+                  {t("login.fields.password")}
                 </label>
                 <input
                   type="password"
                   className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder="Enter password"
+                  placeholder={t("login.placeholders.password")}
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                 />
               </div>
+              <a
+                href="/en/forgot-password"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Forgot password?
+              </a>
 
               <Button className="h-12 w-full rounded-2xl" onClick={handleLogin}>
                 Sign in
@@ -266,11 +274,11 @@ const Login = () => {
             <div className="space-y-5">
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Name
+                  {t("login.fields.name")}
                 </label>
                 <input
                   className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder="Your name"
+                  placeholder={t("login.placeholders.name")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -295,7 +303,7 @@ const Login = () => {
                 <input
                   type="password"
                   className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder="Create password"
+                  placeholder={t("login.placeholders.createPassword")}
                   value={signupPassword}
                   onChange={(e) => setSignupPassword(e.target.value)}
                 />
@@ -303,11 +311,11 @@ const Login = () => {
 
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Access Code
+                  {t("login.fields.accessCode")}
                 </label>
                 <input
                   className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder="Enter access code"
+                  placeholder={t("login.placeholders.accessCode")}
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value)}
                 />
