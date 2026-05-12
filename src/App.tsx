@@ -51,6 +51,8 @@ const App = () => {
         <Route path="/:lang/whyluna" element={<WhyLuna />} />
         <Route path="/:lang/tutors" element={<Tutors />} />
         <Route path="/:lang/enquiry" element={<Enquire />} />
+        <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
+        <Route path="/:lang/reset-password" element={<ResetPassword />} />
 
         {/* Old public links redirect */}
         <Route path="/login" element={<Navigate to="/en/login" replace />} />
@@ -228,9 +230,6 @@ const App = () => {
         />
 
         <Route path="*" element={<NotFound />} />
-
-        <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
-        <Route path="/:lang/reset-password" element={<ResetPassword />} />
 
       </Routes>
 

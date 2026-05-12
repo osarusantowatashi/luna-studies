@@ -634,5 +634,29 @@
   "invalidRole": "Invalid access code role.",
   "checkEmail": "Please check your email to verify your account."
 }
+},
+"forgotPassword": {
+  "label": "Password Reset",
+  "title": "Forgot your password?",
+  "description": "Enter your email and we'll send you a reset link.",
+  "placeholder": "you@example.com",
+  "button": "Send reset email",
+  "loading": "Sending...",
+  "alerts": {
+    "enterEmail": "Please enter your email.",
+    "success": "Password reset email sent. Please check your inbox."
+  }
+},
+"resetPassword": {
+  "label": "Reset Password",
+  "title": "Create a new password",
+  "description": "Enter your new password below.",
+  "placeholder": "New password",
+  "button": "Update password",
+  "loading": "Updating...",
+  "alerts": {
+    "enterPassword": "Please enter a new password.",
+    "success": "Password updated successfully."
+  }
 }
 }

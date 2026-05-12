@@ -2,25 +2,17 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import NavBar from "@/components/NavBar";
+import { useTranslation } from "react-i18next";
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
+
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleUpdatePassword = async () => {
-    if (!password || !confirmPassword) {
-      alert("Please fill in both fields.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
-
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters.");
+    if (!password.trim()) {
+      alert(t("resetPassword.alerts.enterPassword"));
       return;
     }
 
@@ -37,9 +29,11 @@ const ResetPassword = () => {
       return;
     }
 
-    alert("Password updated successfully. Please sign in again.");
-    await supabase.auth.signOut();
-    window.location.href = "/en/login";
+    alert(t("resetPassword.alerts.success"));
+
+    window.location.href = window.location.pathname.startsWith("/zh")
+      ? "/zh/login"
+      : "/en/login";
   };
 
   return (
@@ -49,32 +43,24 @@ const ResetPassword = () => {
       <div className="mx-auto max-w-xl px-6 py-24">
         <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-            New Password
+            {t("resetPassword.label")}
           </p>
 
           <h1 className="mt-2 font-serif text-4xl text-primary">
-            Reset your password
+            {t("resetPassword.title")}
           </h1>
 
           <p className="mt-3 text-sm text-muted-foreground">
-            Enter your new password below.
+            {t("resetPassword.description")}
           </p>
 
           <div className="mt-8 space-y-5">
             <input
               type="password"
               className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-              placeholder="New password"
+              placeholder={t("resetPassword.placeholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-            />
-
-            <input
-              type="password"
-              className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-              placeholder="Confirm new password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
             />
 
             <Button
@@ -82,7 +68,9 @@ const ResetPassword = () => {
               onClick={handleUpdatePassword}
               disabled={loading}
             >
-              {loading ? "Updating..." : "Update password"}
+              {loading
+                ? t("resetPassword.loading")
+                : t("resetPassword.button")}
             </Button>
           </div>
         </div>
