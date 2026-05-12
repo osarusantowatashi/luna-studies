@@ -623,6 +623,16 @@
     "signin": "Sign in",
     "create": "Create account",
     "forgotPassword": "Forgot password?"
-  }
+  },
+  "alerts": {
+  "emailVerified": "Email verified successfully. You can now sign in.",
+  "verifyEmail": "Please verify your email before signing in.",
+  "disabled": "Your account has been disabled. Please contact admin.",
+  "fillAll": "Please fill in all required fields.",
+  "invalidCode": "Invalid, expired, or already used access code.",
+  "expiredCode": "This access code has expired.",
+  "invalidRole": "Invalid access code role.",
+  "checkEmail": "Please check your email to verify your account."
+}
 }
 }

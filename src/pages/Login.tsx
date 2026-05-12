@@ -21,7 +21,7 @@ const Login = () => {
     const hash = window.location.hash;
 
     if (hash && hash.includes("access_token")) {
-      alert("Email verified successfully. You can now sign in.");
+      alert(t("login.alerts.emailVerified"));
     }
   }, []);
 
@@ -166,7 +166,7 @@ const Login = () => {
       email: signupEmail.trim(),
       password: signupPassword,
       options: {
-        emailRedirectTo: `${window.location.origin}/en/login`,
+        emailRedirectTo: `${window.location.origin}${window.location.pathname.startsWith("/zh") ? "/zh" : "/en"}/login`,
         data: {
           name: name.trim(),
           role: finalRole,
@@ -246,14 +246,18 @@ const Login = () => {
                 />
               </div>
               <a
-                href="/en/forgot-password"
+                href={window.location.pathname.startsWith("/zh") ? "/zh/forgot-password" : "/en/forgot-password"}
                 className="text-sm font-medium text-primary hover:underline"
               >
-                Forgot password?
+
+                {t("login.buttons.forgotPassword")}
+
               </a>
 
               <Button className="h-12 w-full rounded-2xl" onClick={handleLogin}>
-                Sign in
+
+                {t("login.buttons.signin")}
+
               </Button>
             </div>
           </div>
@@ -261,13 +265,17 @@ const Login = () => {
           <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
             <div className="mb-8">
               <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-                New user
+                {t("login.signup.label")}
               </p>
               <h2 className="mt-2 font-serif text-3xl text-primary">
-                Create account
+
+                {t("login.signup.title")}
+
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Your access code will automatically assign your account type.
+
+                {t("login.signup.description")}
+
               </p>
             </div>
 
@@ -286,11 +294,13 @@ const Login = () => {
 
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Email
+
+                  {t("login.fields.email")}
+
                 </label>
                 <input
                   className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder="you@example.com"
+                  placeholder={t("login.placeholders.email")}
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
                 />
@@ -298,7 +308,9 @@ const Login = () => {
 
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Password
+
+                  {t("login.fields.password")}
+
                 </label>
                 <input
                   type="password"
@@ -322,7 +334,8 @@ const Login = () => {
               </div>
 
               <Button className="h-12 w-full rounded-2xl" onClick={handleSignup}>
-                Create account
+
+                {t("login.buttons.create")}
               </Button>
             </div>
           </div>

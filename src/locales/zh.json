@@ -623,6 +623,16 @@
     "signin": "登录",
     "create": "创建账号",
     "forgotPassword": "忘记密码？"
-  }
+  },
+  "alerts": {
+  "emailVerified": "邮箱验证成功，现在可以登录了。",
+  "verifyEmail": "请先完成邮箱验证后再登录。",
+  "disabled": "您的账号已被禁用，请联系管理员。",
+  "fillAll": "请填写所有必填信息。",
+  "invalidCode": "邀请码无效、已过期或已被使用。",
+  "expiredCode": "该邀请码已过期。",
+  "invalidRole": "邀请码角色无效。",
+  "checkEmail": "请检查邮箱并完成账号验证。"
+}
 }
 }
