@@ -865,7 +865,7 @@ app.post("/api/luna-chat", async (req, res) => {
   try {
     console.log("🌙 LUNA CHAT HIT:", req.body);
 
-    const { messages } = req.body;
+    const { messages, language } = req.body;
 
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
@@ -1252,6 +1252,12 @@ app.post("/api/luna-chat", async (req, res) => {
               - consultation
               - assessment lesson
               - WhatsApp contact
+
+              LANGUAGE RULE:
+              - If language is "zh", reply in Simplified Chinese.
+              - If language is "en", reply in English.
+              - Match the user's language when possible.
+              - Keep replies concise in both languages.
           `,
         },
         ...messages.map((m) => ({

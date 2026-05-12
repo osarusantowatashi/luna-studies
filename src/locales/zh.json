@@ -1,0 +1,589 @@
+{
+  "nav": {
+    "home": "首页",
+    "whyLuna": "关于LUNA",
+    "subjects": "课程",
+    "tutors": "导师",
+    "enquire": "咨询",
+    "login": "登录",
+    "language": "English",
+    "getStarted": "注册"
+  },
+  "landing": {
+    "hero": {
+      "label": "个性化一对一辅导",
+      "title": "帮助学生清晰思考。",
+      "accent": "自信学习。",
+      "subtitle": "通过个性化支持，建立清晰思路、更强学习习惯和真实学术进步。",
+      "note": "线上课程为主 · 新加坡与东京可线下 · 可预约体验课"
+    },
+    "buttons": {
+      "enquire": "立即咨询",
+      "programs": "查看课程"
+    },
+    "features": {
+      "tutors": {
+        "title": "专业导师",
+        "subtitle": "国际背景优秀导师"
+      },
+      "personalised": {
+        "title": "个性化",
+        "subtitle": "专属学习规划"
+      },
+      "results": {
+        "title": "真实进步",
+        "subtitle": "习惯更好，结果更稳"
+      },
+      "language": {
+        "title": "多语言支持",
+        "subtitle": "英文 / 中文 / 日文"
+      }
+    },
+    "floating": {
+      "title": "学生成长转变",
+      "subtitle": "清晰结构 · 自信表达 · 更强成果"
+    },
+    "stats": {
+      "students": "辅导学生",
+      "improve": "3个月内明显进步",
+      "countries": "学生来自多个国家",
+      "worldwide": "全球升学支持",
+      "rating": "家长平均评分"
+    },
+    "headTutors": {
+      "label": "首席导师",
+      "title": "由经验丰富的导师提供学术指导。",
+      "desc": "我们的首席导师负责学生测评、学习规划与进度复盘，确保每位学生获得系统化支持。",
+      "button": "认识我们的导师",
+      "cardLabel": "首席导师",
+      "viewProfile": "查看资料",
+      "book": "预约咨询"
+    },
+    "trust": {
+      "schools": "国际学生",
+      "subjects": "课程方向",
+      "languages": "语言支持"
+    },
+    "process": {
+      "title": "清晰系统，带来真实进步",
+      "steps": [
+        "体验测评",
+        "综合报告",
+        "导师匹配",
+        "进度追踪",
+        "最终评估"
+      ]
+    },
+    "why": {
+      "title": "不只是补习，而是一套系统化学习方案。",
+      "desc": "我们结合个性化学习、结构化追踪与导师指导，帮助学生持续稳定进步。",
+      "button": "了解更多",
+      "points": [
+        "一对一个性化辅导",
+        "前测 / 中测 / 后测",
+        "导师匹配系统",
+        "学习反馈与进度追踪"
+      ]
+    },
+    "programs": {
+      "label": "课程项目",
+      "title": "为国际学生设计",
+      "desc": "从入学考试到语言能力提升，每个课程都围绕孩子的学术路径进行规划。",
+      "learnMore": "了解更多",
+      "items": [
+        {
+          "title": "入学考试",
+          "subtitle": "AEIS、CAT4、国际学校入学",
+          "points": [
+            "结构化备考规划",
+            "面试与笔试支持",
+            "真题风格练习"
+          ]
+        },
+        {
+          "title": "英语与学术能力",
+          "subtitle": "MAP、WIDA、写作、阅读",
+          "points": [
+            "阅读理解提升",
+            "作文结构训练",
+            "词汇能力建设"
+          ]
+        },
+        {
+          "title": "标化考试准备",
+          "subtitle": "TOEFL、IELTS、面试训练",
+          "points": [
+            "口语与写作训练",
+            "考试策略指导",
+            "模拟考试练习"
+          ]
+        }
+      ]
+    },
+    "cta": {
+      "title": "开启孩子的进步之路",
+      "desc": "告诉我们您的目标，我们会推荐个性化学习方案。",
+      "button": "立即咨询"
+    },
+    "tutors": {
+      "mimi": {
+        "role": "英语 · 日语导师",
+        "desc": "专注 MAP 阅读、TOEFL 口语及国际学校申请辅导。",
+        "education": "日本早稻田大学",
+        "languages": "日语 / 英语 / 中文",
+        "subjects": [
+          "日语",
+          "英语",
+          "TOEFL",
+          "IELTS",
+          "SAT",
+          "O Level"
+        ],
+        "experience": [
+          "日语 / 英语 / 中文三语教育",
+          "国际学校申请与入学辅导",
+          "TOEFL / IELTS / SAT / O Level 备考",
+          "个性化学习规划与学习策略制定"
+        ]
+      },
+      "grace": {
+        "role": "英语导师",
+        "desc": "注重结构化解题能力与考试信心建立。",
+        "education": "新加坡国立大学 NUS",
+        "languages": "英语 / 中文",
+        "subjects": [
+          "IB 英语",
+          "TOEFL",
+          "学术写作",
+          "听力",
+          "发音提升"
+        ],
+        "experience": [
+          "学术英语与 IB 英语辅导",
+          "TOEFL 口语与写作训练",
+          "双语教育支持",
+          "帮助学生建立学术表达自信"
+        ]
+      }
+    }
+  },
+  "footer": {
+    "description": "为新加坡、日本及全球国际学生提供个性化教育支持。",
+    "quickLinks": "快速导航",
+    "programmes": "课程项目",
+    "contact": "联系我们",
+    "copyright": "© 2026 Luna Education 版权所有。",
+    "locations": "新加坡 · 东京 · 中国 · 线上课程"
+  },
+  "subjects": {
+    "hero": {
+      "title": "适合不同学生的课程体系"
+    },
+    "learnMore": "了解更多",
+    "suitableFor": "适合学生：",
+    "close": "关闭",
+    "items": {
+      "assessments": {
+        "title": "MAP / WIDA / CAT4 备考",
+        "body": "针对国际学校测评的系统化备考。",
+        "details": "MAP、WIDA 和 CAT4 常用于国际学校评估学生的学术水平、语言能力和逻辑思维能力。",
+        "suitableFor": "正在申请国际学校，或已在国际学校就读的学生。"
+      },
+      "aeis": {
+        "title": "AEIS 备考",
+        "body": "新加坡 AEIS 英语与数学备考。",
+        "details": "AEIS 是国际学生申请新加坡政府学校的重要入学考试。",
+        "suitableFor": "计划申请新加坡政府学校的学生。"
+      },
+      "toefl": {
+        "title": "TOEFL / IELTS",
+        "body": "系统化英语考试备考。",
+        "details": "TOEFL 和 IELTS 是国际认可的英语能力考试，常用于学校申请、大学申请和语言能力证明。",
+        "suitableFor": "准备国际学校入学、大学申请或英语能力考试的学生。"
+      },
+      "speaking": {
+        "title": "口语与写作",
+        "body": "提升清晰表达与学术沟通能力。",
+        "details": "本课程通过结构化口语、写作、演讲和作文训练，提升学生的表达能力。",
+        "suitableFor": "需要提升表达能力、写作结构和口语自信的学生。"
+      },
+      "math": {
+        "title": "数学辅导",
+        "body": "年级数学练习与概念理解。",
+        "details": "我们的数学辅导注重概念理解、解题能力和考试信心的建立。",
+        "suitableFor": "需要数学支持，或希望巩固年级基础的学生。"
+      },
+      "japanese": {
+        "title": "日语课程",
+        "body": "初级至中级日语课程。",
+        "details": "我们提供初级至中级日语课程，涵盖语法、词汇、会话和 JLPT 风格训练。",
+        "suitableFor": "因学校、考试、交流或兴趣学习日语的学生。"
+      },
+      "foundation": {
+        "title": "英语基础提升",
+        "body": "语法、词汇与阅读基础支持。",
+        "details": "本课程强化英语核心能力，包括语法、词汇、句子结构和阅读理解。",
+        "suitableFor": "英语基础较弱，需要循序渐进支持的学生。"
+      }
+    }
+  },
+  "enquire": {
+    "hero": {
+      "label": "咨询",
+      "title": "开启你的学习提升之旅",
+      "description": "告诉我们您的需求，我们会推荐最适合的学习方案。",
+      "trial": "试听课 $60 起 · 无需长期绑定"
+    },
+    "trust": {
+      "response": "回复时间",
+      "responseValue": "24小时内回复",
+      "format": "上课形式",
+      "formatValue": "线上 · 线下",
+      "support": "学习支持",
+      "supportValue": "聊天咨询 + 导师指导"
+    },
+    "process": {
+      "title": "咨询后会发生什么",
+      "description": "清晰且系统化的流程，帮助学生真正提升。"
+    },
+    "steps": {
+      "step1": {
+        "title": "试听评估",
+        "text": "由 Head Tutor 进行初步评估，了解学生水平与学习方式。"
+      },
+      "step2": {
+        "title": "综合报告",
+        "text": "针对各项能力进行详细分析与评估。"
+      },
+      "step3": {
+        "title": "导师匹配",
+        "text": "根据学生需求与目标安排最适合的导师。"
+      },
+      "step4": {
+        "title": "学习追踪",
+        "text": "每三节课提供反馈，并持续调整学习计划。"
+      },
+      "step5": {
+        "title": "最终评估",
+        "text": "通过图表对比学生进步，并提供下一阶段建议。"
+      }
+    },
+    "contact": {
+      "title": "想直接联系我们？"
+    }
+  },
+  "enquiryForm": {
+    "enquireAbout": "咨询课程：",
+    "bookTrial": "预约试听课",
+    "description": "留下您的信息，我们会尽快联系您。",
+    "subject": "课程",
+    "submit": "提交咨询",
+    "submitting": "提交中...",
+    "success": "已收到您的咨询！确认邮件已发送。",
+    "placeholders": {
+      "name": "家长 / 学生姓名 *",
+      "email": "邮箱 *",
+      "grade": "年级（选填）",
+      "subjectHelp": "您希望在哪方面获得帮助：",
+      "generalHelp": "请告诉我们您需要什么帮助？"
+    },
+    "errors": {
+      "fillRequired": "请填写姓名和邮箱。",
+      "invalidEmail": "请输入正确的邮箱地址。",
+      "general": "发生错误，请稍后再试。"
+    }
+  },
+  "whyLuna": {
+    "hero": {
+      "label": "LUNA理念",
+      "title1": "高质量一对一辅导，",
+      "title2": "围绕真实成长而设计。",
+      "description": "LUNA Education 结合优秀导师、个性化规划、系统化评估与持续学习支持，让学生不只是上课，而是在清晰方向中真正进步。"
+    },
+    "buttons": {
+      "enquire": "立即咨询"
+    },
+    "highlights": {
+      "personalised": "一对一个性化辅导",
+      "tutors": "年轻且经验丰富的优秀导师",
+      "onlineOffline": "线上与线下课程支持",
+      "chat": "学习问题快速答疑",
+      "questionBanks": "注册学生可使用题库资源",
+      "tracking": "前测 / 中测 / 后测进度追踪"
+    },
+    "planCard": {
+      "label": "LUNA 学习计划",
+      "title": "学生成长路径",
+      "pretest": {
+        "title": "前测",
+        "desc": "评估当前水平"
+      },
+      "midtest": {
+        "title": "中测",
+        "desc": "检查学习进步"
+      },
+      "posttest": {
+        "title": "后测",
+        "desc": "确认成长成果"
+      },
+      "chat": {
+        "label": "学习咨询",
+        "message": "这道题可以问老师吗？"
+      }
+    },
+    "comparison": {
+      "label": "我们的不同之处",
+      "title": "不只是上课，而是一套完整学习体系。",
+      "typical": {
+        "title": "普通补习",
+        "point1": "练习内容随机，缺少清晰学习路径",
+        "point2": "课后支持有限",
+        "point3": "家长难以判断进步是否真实",
+        "point4": "统一教学方式，缺少个性化调整"
+      },
+      "luna": {
+        "title": "Luna Education",
+        "point1": "为每位学生制定一对一个性化学习规划",
+        "point2": "提供答疑支持与题库练习资源",
+        "point3": "通过前测、中测、后测追踪学习质量",
+        "point4": "根据学生需求、科目与导师背景进行匹配"
+      }
+    },
+    "values": {
+      "label": "我们的理念",
+      "title": "我们相信，学习应该这样发生",
+      "description": "在 Luna Education，我们不相信随机刷题或被动学习。我们重视清晰理解、系统结构和可衡量的真实进步。",
+      "items": {
+        "clarity": {
+          "title": "清晰理解",
+          "text": "学生应该理解答案为什么正确，而不是只靠记忆。"
+        },
+        "structure": {
+          "title": "系统结构",
+          "text": "学习应该有清晰路径、明确方向和具体目标。"
+        },
+        "growth": {
+          "title": "持续成长",
+          "text": "错误不是失败，而是发现问题和进步的信号。"
+        },
+        "responsibility": {
+          "title": "学习责任",
+          "text": "学生逐步建立主动性，导师负责引导、挑战和支持。"
+        }
+      },
+      "bullets": {
+        "point1": "课程遵循清晰结构，而不是随机安排主题",
+        "point2": "错误会被系统记录并复盘",
+        "point3": "学生学习如何解释答案，而不只是给出答案",
+        "point4": "家长能够获得清晰的学习进度反馈"
+      }
+    },
+    "focusArea": "重点提升",
+    "improving": "持续提升中",
+    "sections": {
+      "tutors": {
+        "title": "拥有国际背景的优秀导师",
+        "text": "我们的导师年轻、有热情，并经过严格筛选，具备优秀学术背景。我们会根据不同国家、学校体系与考试需求，为学生匹配最适合的导师。",
+        "tag": "导师匹配"
+      },
+      "planning": {
+        "title": "为每位学生制定个性化规划",
+        "text": "每位学生都会根据自身水平、目标学校、考试需求与弱项获得专属学习计划。课程并非随机安排，而是每一步都有明确目标。",
+        "tag": "一对一规划"
+      },
+      "progress": {
+        "title": "真正看得见的进步",
+        "text": "我们通过前测、中测与后测追踪学习质量与提升情况，让家长能够清楚了解学生的成长过程。",
+        "tag": "学习追踪"
+      },
+      "support": {
+        "title": "不仅仅是上课时间的支持",
+        "text": "注册学生可获得题库资源与学习答疑支持，让学习在课后依然持续进行。",
+        "tag": "持续支持"
+      }
+    },
+    "questionBank": {
+      "label": "注册学生福利",
+      "title": "免费使用精选题库资源",
+      "description": "注册学生可以根据目标练习系统化题库，导师也能够针对错误进行讲解与专项提升。",
+      "cardTitle": "题库系统",
+      "available": "可使用",
+      "items": {
+        "map": "MAP 阅读",
+        "toefl": "TOEFL 写作",
+        "aeis": "AEIS 数学",
+        "interview": "面试训练"
+      }
+    },
+    "cta": {
+      "title": "从个性化试听课开始",
+      "description": "我们会评估学生目前水平，并根据目标推荐最适合的学习方案。"
+    }
+  },
+  "chat": {
+    "initialMessage": "今天想了解哪方面的课程或学习支持？",
+    "header": {
+      "title": "Luna AI 助手",
+      "subtitle": "为家长与学生提供课程咨询"
+    },
+    "loading": "正在整理个性化建议",
+    "quick": {
+      "english": "英语提升",
+      "map": "MAP 备考",
+      "cat4": "CAT4 备考",
+      "admissions": "学校申请",
+      "toefl": "IELTS / TOEFL"
+    },
+    "input": {
+      "placeholder": "询问 MAP、TOEFL、CAT4...",
+      "loading": "Luna 正在回复..."
+    },
+    "buttons": {
+      "submitEnquiry": "提交咨询",
+      "whatsapp": "联系 WhatsApp"
+    },
+    "lead": {
+      "title": "提交咨询",
+      "name": "家长 / 学生姓名",
+      "contact": "邮箱或 WhatsApp",
+      "grade": "学生年级",
+      "goal": "学习目标 / 考试 / 科目",
+      "submit": "提交",
+      "submitting": "提交中...",
+      "cancel": "取消",
+      "alert": "请填写姓名和联系方式。",
+      "noGoal": "来自 Luna AI 聊天框的咨询，未填写具体学习目标。",
+      "success": "谢谢，您的咨询已成功提交。我们的团队会尽快联系您。",
+      "error": "抱歉，暂时无法提交咨询。请通过 WhatsApp 联系我们，或稍后再试。"
+    },
+    "errors": {
+      "noReply": "抱歉，暂时无法生成回复。",
+      "general": "抱歉，Luna 暂时开小差了 🌙 请稍后再试。"
+    }
+  },
+  "tutorsPage": {
+    "hero": {
+      "label": "导师团队",
+      "title": "认识 Luna Education 的导师团队",
+      "description": "我们的导师具备优秀学术背景、清晰表达能力，并能够根据每位学生的情况调整课程。"
+    },
+    "labels": {
+      "education": "教育背景",
+      "languages": "授课语言"
+    },
+    "popup": {
+      "label": "导师资料",
+      "about": "关于 {{name}}",
+      "experience": "教学经验",
+      "subjects": "教学科目",
+      "quote": "{{name}} 注重清晰讲解、系统化引导，并帮助学生一步一步建立学习自信。"
+    },
+    "items": [
+      {
+        "name": "Mimi",
+        "image": "/tutors/mimi_new.jpg",
+        "role": "三语教育导师 · 首席导师",
+        "subjects": [
+          "日语",
+          "英语",
+          "TOEFL",
+          "IELTS",
+          "SAT",
+          "O Level"
+        ],
+        "education": "日本早稻田大学",
+        "languages": "日语 / 英语 / 中文",
+        "bio": "专注三语教育、国际学校备考与个性化学术规划。",
+        "experience": [
+          "日语 / 英语 / 中文三语教育",
+          "国际学校申请与入学辅导",
+          "TOEFL / IELTS / SAT / O Level 备考",
+          "个性化学习规划与学习策略制定"
+        ]
+      },
+      {
+        "name": "Grace",
+        "image": "/tutors/grace_new.jpg",
+        "role": "学术英语与 IB 导师",
+        "subjects": [
+          "IB 英语",
+          "TOEFL",
+          "学术写作",
+          "听力",
+          "发音提升"
+        ],
+        "education": "新加坡国立大学 NUS",
+        "languages": "英语 / 中文",
+        "bio": "拥有双语教育与 IB 辅导经验，帮助学生建立学术英语能力与表达自信。",
+        "experience": [
+          "学术英语与 IB 英语辅导",
+          "TOEFL 口语与写作训练",
+          "双语教育支持",
+          "帮助学生建立学术表达自信"
+        ]
+      },
+      {
+        "name": "Francis",
+        "image": "/tutors/francis_new.png",
+        "role": "国际数学导师",
+        "subjects": [
+          "IGCSE 数学",
+          "A Level 数学",
+          "解题思维",
+          "AEIS 数学"
+        ],
+        "education": "澳大利亚悉尼大学",
+        "languages": "英语 / 中文",
+        "bio": "注重数学逻辑、结构化解题能力，并帮助学生适应国际课程体系。",
+        "experience": [
+          "IGCSE 与 A Level 数学辅导",
+          "结构化解题训练",
+          "AEIS 数学备考",
+          "国际课程体系适应指导"
+        ]
+      },
+      {
+        "name": "CJ",
+        "image": "/tutors/cj_new.png",
+        "role": "STEM 与新加坡课程导师",
+        "subjects": [
+          "AEIS",
+          "A Level 数学",
+          "英语",
+          "新加坡课程",
+          "学术支持"
+        ],
+        "education": "新加坡南洋理工大学",
+        "languages": "英语 / 中文",
+        "bio": "熟悉新加坡本地教育路径与双语教学，帮助学生适应英文学习环境，并建立 STEM 思维。",
+        "experience": [
+          "新加坡课程与 AEIS 备考",
+          "A Level 数学与 STEM 指导",
+          "英语与中文双语学术支持",
+          "帮助学生适应英文学习环境"
+        ]
+      },
+      {
+        "name": "Christine",
+        "image": "/tutors/christine_new.png",
+        "role": "英语基础导师",
+        "subjects": [
+          "英语",
+          "语法",
+          "写作",
+          "阅读",
+          "口语"
+        ],
+        "education": "中国福州大学",
+        "languages": "英语 / 中文",
+        "bio": "专注英语基础建设，通过耐心引导与结构化语言训练帮助学生稳步提升。",
+        "experience": [
+          "低龄学生英语基础建设",
+          "语法、阅读与写作辅导",
+          "系统化语言学习指导",
+          "耐心培养学生表达与沟通能力"
+        ]
+      }
+    ]
+  }
+}

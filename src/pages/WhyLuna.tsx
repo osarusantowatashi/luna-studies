@@ -1,6 +1,7 @@
 import NavBar from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   MessageCircle,
   Globe2,
@@ -12,39 +13,46 @@ import {
 import Footer from "@/components/Footer";
 
 const WhyLuna = () => {
+  const { t } = useTranslation();
+  const location = useLocation();
+
+  const currentLang = location.pathname.startsWith("/zh") ? "zh" : "en";
+
+  const withLang = (path: string) =>
+    `/${currentLang}${path === "/" ? "" : path}`;
   const highlights = [
-    "1–1 personalised tutoring",
-    "Young but experienced elite tutors",
-    "Online + offline lesson support",
-    "Chat support for quick questions",
-    "Free question banks for registered students",
-    "Pre-test / Mid-test / Post-test tracking",
+    t("whyLuna.highlights.personalised"),
+    t("whyLuna.highlights.tutors"),
+    t("whyLuna.highlights.onlineOffline"),
+    t("whyLuna.highlights.chat"),
+    t("whyLuna.highlights.questionBanks"),
+    t("whyLuna.highlights.tracking"),
   ];
 
   const sections = [
     {
-      title: "Elite tutors with international backgrounds",
-      text: "Our tutors are young, driven, and carefully selected from strong academic backgrounds. We match students with tutors who understand different school systems, countries, and exam expectations.",
+      title: t("whyLuna.sections.tutors.title"),
+      text: t("whyLuna.sections.tutors.text"),
       icon: Globe2,
-      tag: "Tutor Matching",
+      tag: t("whyLuna.sections.tutors.tag"),
     },
     {
-      title: "Personal planning for every student",
-      text: "Every student receives a customised plan based on their level, target school, exam, and weaknesses. Lessons are not random — each step is designed with a purpose.",
+      title: t("whyLuna.sections.planning.title"),
+      text: t("whyLuna.sections.planning.text"),
       icon: UserRound,
-      tag: "1–1 Planning",
+      tag: t("whyLuna.sections.planning.tag"),
     },
     {
-      title: "Progress you can actually see",
-      text: "We use pre-tests, mid-tests, and post-tests to check quality and improvement. Parents can clearly understand where the student started and how they are growing.",
+      title: t("whyLuna.sections.progress.title"),
+      text: t("whyLuna.sections.progress.text"),
       icon: BarChart3,
-      tag: "Quality Tracking",
+      tag: t("whyLuna.sections.progress.tag"),
     },
     {
-      title: "Support beyond lesson time",
-      text: "Registered students receive access to question banks and chat support for learning queries, so learning continues even outside class.",
+      title: t("whyLuna.sections.support.title"),
+      text: t("whyLuna.sections.support.text"),
       icon: MessageCircle,
-      tag: "Continuous Support",
+      tag: t("whyLuna.sections.support.tag"),
     },
   ];
 
@@ -60,19 +68,17 @@ const WhyLuna = () => {
         <div className="relative mx-auto grid max-w-6xl items-center gap-14 md:grid-cols-2">
           <div>
             <p className="mb-4 text-sm font-medium uppercase tracking-widest text-accent">
-              Why Luna
+              {t("whyLuna.hero.label")}
             </p>
 
             <h1 className="font-serif text-5xl leading-tight text-primary md:text-6xl">
-              Premium tutoring,
+              {t("whyLuna.hero.title1")}
               <br />
-              built around real growth.
+              {t("whyLuna.hero.title2")}
             </h1>
 
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              Luna Education combines elite tutors, personalised planning,
-              structured assessments, and continuous support — so students don’t
-              just attend lessons, they improve with direction.
+              {t("whyLuna.hero.description")}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -86,9 +92,9 @@ const WhyLuna = () => {
               ))}
             </div>
 
-            <Link to="/#enquiry">
+            <Link to={withLang("/enquiry")}>
               <Button size="lg" className="mt-10 h-12 px-10 shadow-elegant">
-                Enquire now
+                {t("whyLuna.buttons.enquire")}
               </Button>
             </Link>
           </div>
@@ -98,12 +104,12 @@ const WhyLuna = () => {
             <div className="rounded-[2rem] border bg-white/85 p-6 shadow-elegant backdrop-blur">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                    Luna Plan
-                  </p>
-                  <h3 className="mt-1 font-serif text-2xl text-primary">
-                    Student Growth Map
-                  </h3>
+                <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+  {t("whyLuna.planCard.label")}
+</p>
+<h3 className="mt-1 font-serif text-2xl text-primary">
+  {t("whyLuna.planCard.title")}
+</h3>
                 </div>
                 <div className="rounded-full bg-secondary px-3 py-1 text-xs">
                   1–1
@@ -111,11 +117,23 @@ const WhyLuna = () => {
               </div>
 
               <div className="grid gap-4">
-                {[
-                  ["Pre-test", "Identify current level", "35%"],
-                  ["Mid-test", "Check improvement", "68%"],
-                  ["Post-test", "Confirm growth", "86%"],
-                ].map(([label, text, score]) => (
+              {[
+  [
+    t("whyLuna.planCard.pretest.title"),
+    t("whyLuna.planCard.pretest.desc"),
+    "35%",
+  ],
+  [
+    t("whyLuna.planCard.midtest.title"),
+    t("whyLuna.planCard.midtest.desc"),
+    "68%",
+  ],
+  [
+    t("whyLuna.planCard.posttest.title"),
+    t("whyLuna.planCard.posttest.desc"),
+    "86%",
+  ],
+].map(([label, text, score]) => (
                   <div key={label} className="rounded-2xl border bg-card p-4">
                     <div className="flex justify-between text-sm">
                       <div>
@@ -137,10 +155,12 @@ const WhyLuna = () => {
             </div>
 
             <div className="absolute -bottom-6 -left-6 rounded-2xl border bg-white p-4 shadow-soft">
-              <p className="text-xs text-muted-foreground">Chat support</p>
-              <p className="mt-1 text-sm font-semibold text-primary">
-                “Can I ask about this question?”
-              </p>
+            <p className="text-xs text-muted-foreground">
+  {t("whyLuna.planCard.chat.label")}
+</p>
+<p className="mt-1 text-sm font-semibold text-primary">
+  “{t("whyLuna.planCard.chat.message")}”
+</p>
             </div>
           </div>
         </div>
@@ -157,83 +177,89 @@ const WhyLuna = () => {
           ))}
         </div>
       </section>
-      
+
       {/* COMPARISON */}
       <section className="container mx-auto px-6 py-24">
         <div className="mb-14 text-center">
           <p className="mb-4 text-sm font-medium uppercase tracking-widest text-accent">
-            What makes us different
+            {t("whyLuna.comparison.label")}
           </p>
           <h2 className="font-serif text-4xl text-primary md:text-5xl">
-            Not just lessons. A complete learning system.
+            {t("whyLuna.comparison.title")}
           </h2>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
           <div className="rounded-3xl border bg-secondary/40 p-8">
             <h3 className="font-serif text-2xl text-muted-foreground">
-              Typical tuition
+              {t("whyLuna.comparison.typical.title")}
             </h3>
 
             <ul className="mt-6 space-y-4 text-sm text-muted-foreground">
-              <li>Random worksheets without a clear learning path</li>
-              <li>Limited support outside class time</li>
-              <li>Parents unsure whether progress is real</li>
-              <li>One-size-fits-all lesson style</li>
+              {[
+                t("whyLuna.comparison.typical.point1"),
+                t("whyLuna.comparison.typical.point2"),
+                t("whyLuna.comparison.typical.point3"),
+                t("whyLuna.comparison.typical.point4"),
+              ].map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
 
           <div className="rounded-3xl border bg-card p-8 shadow-elegant">
             <h3 className="font-serif text-2xl text-primary">
-              Luna Education
+              {t("whyLuna.comparison.luna.title")}
             </h3>
 
             <ul className="mt-6 space-y-4 text-sm text-primary">
-              <li>Personalised 1–1 planning for each student</li>
-              <li>Chat support and question-bank access</li>
-              <li>Pre-test, mid-test, and post-test quality checks</li>
-              <li>Tutors matched by background, subject, and student needs</li>
+              {[
+                t("whyLuna.comparison.luna.point1"),
+                t("whyLuna.comparison.luna.point2"),
+                t("whyLuna.comparison.luna.point3"),
+                t("whyLuna.comparison.luna.point4"),
+              ].map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
         </div>
       </section>
-      
-        {/* VALUES */}
+
+      {/* VALUES */}
       <section className="bg-secondary/30 px-6 py-24">
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 text-center">
             <p className="mb-4 text-sm font-medium uppercase tracking-widest text-accent">
-              Our Values
+              {t("whyLuna.values.label")}
             </p>
 
             <h2 className="font-serif text-4xl text-primary md:text-5xl">
-              What we believe learning should be
+              {t("whyLuna.values.title")}
             </h2>
 
             <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground">
-              At Luna Education, we don’t believe in random practice or passive
-              learning. We focus on clarity, structure, and measurable
-              improvement.
+              {t("whyLuna.values.description")}
             </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {[
               {
-                title: "Clarity",
-                text: "Students should understand why an answer is correct, not just memorise it.",
+                title: t("whyLuna.values.items.clarity.title"),
+                text: t("whyLuna.values.items.clarity.text"),
               },
               {
-                title: "Structure",
-                text: "Learning should follow a clear path with direction and purpose.",
+                title: t("whyLuna.values.items.structure.title"),
+                text: t("whyLuna.values.items.structure.text"),
               },
               {
-                title: "Growth",
-                text: "Mistakes are not failures. They are signals for improvement.",
+                title: t("whyLuna.values.items.growth.title"),
+                text: t("whyLuna.values.items.growth.text"),
               },
               {
-                title: "Responsibility",
-                text: "Students take ownership while tutors guide and challenge them.",
+                title: t("whyLuna.values.items.responsibility.title"),
+                text: t("whyLuna.values.items.responsibility.text"),
               },
             ].map((value) => (
               <div
@@ -253,10 +279,10 @@ const WhyLuna = () => {
 
           <div className="mt-16 grid gap-6 md:grid-cols-2">
             {[
-              "Lessons follow a clear structure instead of random topics",
-              "Mistakes are tracked and reviewed systematically",
-              "Students learn how to explain answers, not just give them",
-              "Parents receive clear progress feedback",
+              t("whyLuna.values.bullets.point1"),
+              t("whyLuna.values.bullets.point2"),
+              t("whyLuna.values.bullets.point3"),
+              t("whyLuna.values.bullets.point4"),
             ].map((item) => (
               <div
                 key={item}
@@ -297,9 +323,9 @@ const WhyLuna = () => {
 
                 <div className="mt-6 rounded-2xl border bg-card p-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Focus Area</span>
+                    <span className="text-muted-foreground">{t("whyLuna.focusArea")}</span>
                     <span className="font-semibold text-primary">
-                      Improving
+                      {t("whyLuna.improving")}
                     </span>
                   </div>
                   <div className="mt-3 h-2 rounded-full bg-secondary">
@@ -329,15 +355,13 @@ const WhyLuna = () => {
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
           <div>
             <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-accent">
-              Registered Student Benefit
+              {t("whyLuna.questionBank.label")}
             </p>
             <h2 className="font-serif text-4xl text-primary">
-              Free access to curated question banks
+              {t("whyLuna.questionBank.title")}
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              Registered students can practise with structured question banks
-              matched to their goals. Tutors can then review mistakes and turn
-              practice into targeted improvement.
+              {t("whyLuna.questionBank.description")}
             </p>
           </div>
 
@@ -345,12 +369,17 @@ const WhyLuna = () => {
             <div className="mb-5 flex items-center gap-3">
               <BookOpen className="h-6 w-6 text-primary" />
               <h3 className="font-serif text-2xl text-primary">
-                Question Bank
+                {t("whyLuna.questionBank.cardTitle")}
               </h3>
             </div>
 
             <div className="grid gap-3">
-              {["MAP Reading", "TOEFL Writing", "AEIS Math", "Interview Practice"].map(
+              {[
+                t("whyLuna.questionBank.items.map"),
+                t("whyLuna.questionBank.items.toefl"),
+                t("whyLuna.questionBank.items.aeis"),
+                t("whyLuna.questionBank.items.interview"),
+              ].map(
                 (item) => (
                   <div
                     key={item}
@@ -358,7 +387,7 @@ const WhyLuna = () => {
                   >
                     <span className="text-sm text-primary">{item}</span>
                     <span className="rounded-full bg-secondary px-3 py-1 text-xs">
-                      Available
+                      {t("whyLuna.questionBank.available")}
                     </span>
                   </div>
                 )
@@ -371,17 +400,16 @@ const WhyLuna = () => {
       {/* CTA */}
       <section className="bg-hero px-6 py-24 text-center">
         <h2 className="font-serif text-4xl text-primary">
-          Start with a personalised trial lesson
+          {t("whyLuna.cta.title")}
         </h2>
 
         <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-          We’ll assess the student’s level and recommend the right plan based on
-          their goals.
+          {t("whyLuna.cta.description")}
         </p>
 
-        <Link to="/#enquiry">
+        <Link to={withLang("/enquiry")}>
           <Button size="lg" className="mt-10 h-12 px-10 shadow-elegant">
-            Enquire now
+            {t("whyLuna.buttons.enquire")}
           </Button>
         </Link>
       </section>

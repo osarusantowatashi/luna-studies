@@ -1,18 +1,21 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LogOut, Sparkles } from "lucide-react";
+import { LogOut, Sparkles } from "lucide-react";
 
 const NavBar = () => {
   const location = useLocation();
-  const [role, setRole] = useState<string | null>(
-  localStorage.getItem("role")
-);
+  const { t, i18n } = useTranslation();
 
-const [name, setName] = useState(
-  localStorage.getItem("userName") || ""
-);
+  const [role, setRole] = useState<string | null>(
+    localStorage.getItem("role")
+  );
+
+  const [name, setName] = useState(
+    localStorage.getItem("userName") || ""
+  );
 
   const appRoutes = [
     "/dashboard",
@@ -33,30 +36,53 @@ const [name, setName] = useState(
   const brandName = isApp ? "Luna Studies" : "Luna Education";
 
   useEffect(() => {
-  const syncUser = async () => {
-    const { data } = await supabase.auth.getSession();
-    const user = data.session?.user;
+    const syncUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      const user = data.session?.user;
 
-    if (!user) return;
+      if (!user) return;
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role, name")
-      .eq("id", user.id)
-      .maybeSingle();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role, name")
+        .eq("id", user.id)
+        .maybeSingle();
 
-    const isAdmin = user.email === "admin@lunastudies.com";
-    const finalRole = isAdmin ? "admin" : profile?.role || "student";
+      const isAdmin = user.email === "admin@lunastudies.com";
+      const finalRole = isAdmin ? "admin" : profile?.role || "student";
 
-    setRole(finalRole);
-    setName(profile?.name || user.email || "User");
+      setRole(finalRole);
+      setName(profile?.name || user.email || "User");
 
-    localStorage.setItem("role", finalRole);
-    localStorage.setItem("userName", profile?.name || user.email || "User");
-  };
+      localStorage.setItem("role", finalRole);
+      localStorage.setItem(
+        "userName",
+        profile?.name || user.email || "User"
+      );
+    };
 
-  syncUser();
+    syncUser();
   }, [location.pathname]);
+
+  const changeLanguage = () => {
+    if (isApp) return;
+  
+    const currentLang = location.pathname.startsWith("/zh") ? "zh" : "en";
+    const nextLang = currentLang === "zh" ? "en" : "zh";
+  
+    localStorage.setItem("luna_language", nextLang);
+  
+    const pathWithoutLang =
+      location.pathname.replace(/^\/(en|zh)/, "") || "/";
+  
+    window.location.href = `/${nextLang}${pathWithoutLang}`;
+  };
+  
+  const currentLang = location.pathname.startsWith("/zh") ? "zh" : "en";
+
+  const withLang = (path: string) =>
+    `/${currentLang}${path === "/" ? "" : path}`;
+
 
   const links =
     role === "admin"
@@ -81,10 +107,11 @@ const [name, setName] = useState(
           ["Redo", "/redo-mistakes"],
         ]
       : [
-          ["Why Luna", "/whyluna"],
-          ["Subjects", "/subjects"],
-          ["Tutors", "/tutors"],
-          ["Enquire", "/enquiry"],
+        [t("nav.home"), withLang("/")],
+        [t("nav.whyLuna"), withLang("/whyluna")],
+        [t("nav.subjects"), withLang("/subjects")],
+        [t("nav.tutors"), withLang("/tutors")],
+        [t("nav.enquire"), withLang("/enquiry")],
         ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -92,25 +119,23 @@ const [name, setName] = useState(
   const logout = async () => {
     await supabase.auth.signOut();
     localStorage.clear();
-    window.location.href = "/";
+    window.location.href = "/en";
   };
-
-  const showBackToDashboard =
-    role === "admin" && location.pathname !== "/admin/dashboard";
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        {/* LOGO */}
-        <Link to="/" className="flex items-center gap-3">
-          <img src="/lunalogo.png" className="h-10 w-10 object-contain" />
+        <Link to={withLang("/")} className="flex items-center gap-3">
+          <img
+            src="/lunalogo.png"
+            className="h-10 w-10 object-contain"
+          />
 
           <h1 className="font-serif text-xl tracking-wide text-primary">
             {brandName}
           </h1>
         </Link>
 
-        {/* LINKS */}
         <nav className="hidden rounded-full border bg-card/80 p-1 shadow-soft md:flex">
           {links.map(([label, path]) => {
             const active = isActive(path);
@@ -131,19 +156,27 @@ const [name, setName] = useState(
           })}
         </nav>
 
-        {/* RIGHT SIDE */}
         <div className="flex items-center gap-3">
+        {!isApp && (
+          <button
+            onClick={changeLanguage}
+            className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-primary shadow-soft transition hover:bg-secondary"
+          >
+            {t("nav.language")}
+          </button>
+        )}
+
           {role ? (
             <>
-            
-
               <div className="hidden items-center gap-3 rounded-full border bg-card px-4 py-2 shadow-soft md:flex">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary">
                   <Sparkles className="h-4 w-4 text-accent" />
                 </div>
 
                 <div className="leading-tight">
-                  <p className="text-sm font-medium text-primary">{name}</p>
+                  <p className="text-sm font-medium text-primary">
+                    {name}
+                  </p>
                   <p className="text-xs capitalize text-muted-foreground">
                     {role}
                   </p>
@@ -157,12 +190,14 @@ const [name, setName] = useState(
             </>
           ) : (
             <>
-              <Link to="/login">
-                <Button variant="ghost">Sign in</Button>
+              <Link to={withLang("/login")}>
+                <Button variant="ghost">{t("nav.login")}</Button>
               </Link>
 
-              <Link to="/login">
-                <Button className="shadow-elegant">Get started</Button>
+              <Link to={withLang("/login")}>
+                <Button className="shadow-elegant">
+                  {t("nav.getStarted")}
+                </Button>
               </Link>
             </>
           )}

@@ -1,75 +1,44 @@
 import NavBar from "@/components/NavBar";
-import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { ArrowRight } from "lucide-react";
+import TutorProfileModal from "@/components/TutorProfileModal";
 
-const tutors = [
-  {
-    name: "Mimi",
-    role: "Head Tutor",
-    subjects: ["Japanese", "English", "MAP", "WIDA", "TOEFL","O Level"],
-    education: "Waseda University",
-    languages: "Japanese / English / Mandarin",
-    bio: "Specialises in trilingual education, international school preparation, and structured learning plans.",
-  },
-  {
-    name: "Grace",
-    role: "English Tutor",
-    subjects: ["TOEFL", "IB", "Writing", "Listening","Accent reduction"],
-    education: "International education background",
-    languages: "English / Mandarin",
-    bio: "Supports students with academic English, specialises in bilingual education and confident speaking.",
-  },
-  {
-    name: "Tutor B",
-    role: "Math Tutor",
-    subjects: ["Math", "Problem Solving", "AEIS"],
-    education: "STEM background",
-    languages: "English / Mandarin",
-    bio: "Focuses on clear explanations, mistake review, and building strong foundations.",
-  },
-  {
-    name: "Tutor C",
-    role: "Math Tutor",
-    subjects: ["Math", "Problem Solving", "AEIS"],
-    education: "STEM background",
-    languages: "English / Mandarin",
-    bio: "Focuses on clear explanations, mistake review, and building strong foundations.",
-  },
-  {
-    name: "Tutor D",
-    role: "Math Tutor",
-    subjects: ["Math", "Problem Solving", "AEIS"],
-    education: "STEM background",
-    languages: "English / Mandarin",
-    bio: "Focuses on clear explanations, mistake review, and building strong foundations.",
-  },
-  {
-    name: "Tutor E",
-    role: "Math Tutor",
-    subjects: ["Math", "Problem Solving", "AEIS"],
-    education: "STEM background",
-    languages: "English / Mandarin",
-    bio: "Focuses on clear explanations, mistake review, and building strong foundations.",
-  },
-];
+
 
 const Tutors = () => {
+  const { t } = useTranslation();
+  const [selectedTutor, setSelectedTutor] = useState<any | null>(null);
+
+  const tutors = t("tutorsPage.items", { returnObjects: true }) as {
+    name: string;
+    image: string;
+    role: string;
+    subjects: string[];
+    education: string;
+    languages: string;
+    bio: string;
+    experience: string[];
+  }[];
+
   return (
     <div className="min-h-screen bg-background">
       <NavBar />
 
       <section className="px-6 py-24 text-center">
         <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-accent">
-          Our Tutors
+          {t("tutorsPage.hero.label")}
         </p>
 
         <h1 className="mx-auto max-w-3xl font-serif text-5xl text-primary">
-          Meet the tutors behind Luna Studies
+          {t("tutorsPage.hero.title")}
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl text-muted-foreground">
-          Our tutors are selected for strong academic backgrounds, clear communication,
-          and the ability to adapt lessons to each student.
+          {t("tutorsPage.hero.description")}
         </p>
       </section>
 
@@ -80,9 +49,13 @@ const Tutors = () => {
               key={tutor.name}
               className="rounded-3xl border bg-card p-7 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant"
             >
-              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-secondary font-serif text-2xl text-primary">
-                {tutor.name[0]}
-              </div>
+              <div className="mb-5 h-20 w-20 overflow-hidden rounded-full bg-secondary shadow-soft">
+  <img
+    src={tutor.image}
+    alt={tutor.name}
+    className="h-full w-full object-cover object-top"
+  />
+</div>
 
               <h2 className="font-serif text-3xl text-primary">
                 {tutor.name}
@@ -92,24 +65,28 @@ const Tutors = () => {
                 {tutor.role}
               </p>
 
-              <p className="mt-4 text-sm leading-6 text-muted-foreground">
+              <p className="mt-4 line-clamp-2 text-sm leading-6 text-muted-foreground">
                 {tutor.bio}
               </p>
 
               <div className="mt-5 space-y-3 text-sm">
                 <p>
-                  <span className="font-semibold text-primary">Education:</span>{" "}
+                  <span className="font-semibold text-primary">
+                    {t("tutorsPage.labels.education")}:
+                  </span>{" "}
                   {tutor.education}
                 </p>
 
                 <p>
-                  <span className="font-semibold text-primary">Languages:</span>{" "}
+                  <span className="font-semibold text-primary">
+                    {t("tutorsPage.labels.languages")}:
+                  </span>{" "}
                   {tutor.languages}
                 </p>
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2">
-                {tutor.subjects.map((subject) => (
+                {tutor.subjects.slice(0, 3).map((subject) => (
                   <span
                     key={subject}
                     className="rounded-full bg-secondary px-3 py-1 text-xs"
@@ -117,11 +94,42 @@ const Tutors = () => {
                     {subject}
                   </span>
                 ))}
+
+                {tutor.subjects.length > 3 && (
+                  <span className="rounded-full bg-secondary px-3 py-1 text-xs">
+                    ...
+                  </span>
+                )}
+              </div>
+              <div className="mt-6 flex flex-nowrap items-center gap-3">
+                <Button
+                  onClick={() => setSelectedTutor(tutor)}
+                  className="h-11 rounded-xl bg-primary px-6 text-sm"
+                >
+                  {t("landing.headTutors.viewProfile")}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+
+                <Link to="/enquiry">
+                  <Button
+                    variant="outline"
+                    className="h-11 rounded-xl border-[#b8873a]/30 bg-white px-6 text-sm text-[#b8873a]"
+                  >
+                    {t("landing.headTutors.book")}
+                  </Button>
+                </Link>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      <TutorProfileModal
+        tutor={selectedTutor}
+        onClose={() => setSelectedTutor(null)}
+      />
+
+      <Footer />
     </div>
   );
 };

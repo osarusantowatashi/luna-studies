@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 
+
 const Login = () => {
+  
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
@@ -118,6 +120,7 @@ const Login = () => {
       window.location.href = "/studentoverview";
     }
   };
+  
 
   const handleSignup = async () => {
     if (!name || !signupEmail || !signupPassword || !inviteCode) {
@@ -161,7 +164,7 @@ const Login = () => {
       email: signupEmail.trim(),
       password: signupPassword,
       options: {
-        emailRedirectTo: `${window.location.origin}/login`,
+        emailRedirectTo: `${window.location.origin}/en/login`,
         data: {
           name: name.trim(),
           role: finalRole,

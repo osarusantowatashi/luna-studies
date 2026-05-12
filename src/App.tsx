@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -28,19 +29,32 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import TutorLessons from "./pages/TutorLessons";
 import AdminLessons from "./pages/AdminLessons";
+import ScrollToTop from "./components/ScrollToTop";
+
+import LunaMascotChat from "./components/LunaMascotChat";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* Public Pages */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/subjects" element={<Subjects />} />
-        <Route path="/whyluna" element={<WhyLuna />} />
-        <Route path="/tutors" element={<Tutors />} />
-        <Route path="/enquiry" element={<Enquire />} />
+        <Route path="/" element={<Navigate to="/en" replace />} />
+
+        <Route path="/:lang" element={<Landing />} />
+        <Route path="/:lang/auth" element={<Auth />} />
+        <Route path="/:lang/login" element={<Login />} />
+        <Route path="/:lang/subjects" element={<Subjects />} />
+        <Route path="/:lang/whyluna" element={<WhyLuna />} />
+        <Route path="/:lang/tutors" element={<Tutors />} />
+        <Route path="/:lang/enquiry" element={<Enquire />} />
+
+        {/* Old public links redirect */}
+        <Route path="/login" element={<Navigate to="/en/login" replace />} />
+        <Route path="/subjects" element={<Navigate to="/en/subjects" replace />} />
+        <Route path="/whyluna" element={<Navigate to="/en/whyluna" replace />} />
+        <Route path="/tutors" element={<Navigate to="/en/tutors" replace />} />
+        <Route path="/enquiry" element={<Navigate to="/en/enquiry" replace />} />
 
         {/* Admin */}
         <Route
@@ -90,7 +104,7 @@ const App = () => {
         <Route
           path="/page"
           element={
-            <ProtectedRoute allowedRoles={["admin","tutor","student"]}>
+            <ProtectedRoute allowedRoles={["admin", "tutor", "student"]}>
               <Layout>
                 <Page />
               </Layout>
@@ -144,7 +158,7 @@ const App = () => {
           }
         />
         <Route
-          path="/tutor/mistakes"
+          path="/mistakes"
           element={
             <Layout>
               <TutorMistakes />
@@ -212,6 +226,8 @@ const App = () => {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      <LunaMascotChat />
     </BrowserRouter>
   );
 };

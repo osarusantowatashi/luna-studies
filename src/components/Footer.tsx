@@ -1,7 +1,19 @@
+import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { FaWhatsapp, FaWeixin } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+
 export default function Footer() {
+  const location = useLocation();
+  const { t } = useTranslation();
+
+  const currentLang = location.pathname.startsWith("/zh")
+    ? "zh"
+    : "en";
+
+  const withLang = (path: string) =>
+    `/${currentLang}${path === "/" ? "" : path}`;
     return (
       <footer className="mt-20 border-t border-[#e7edf5] bg-white">
         <div className="max-w-7xl mx-auto px-6 py-14">
@@ -29,28 +41,38 @@ export default function Footer() {
               </div>
   
               <p className="text-slate-500 leading-8 max-w-sm">
-                Personalized international education support
-                for students in Singapore, Japan, and beyond.
+                {t("footer.description")}
               </p>
             </div>
   
             {/* CENTER */}
             <div>
-              <h3 className="text-[#0b234a] font-semibold mb-5">
-                Quick Links
-              </h3>
-  
-              <div className="space-y-3 text-slate-500">
-                <p>Home</p>
-                <p>Tutors</p>
-                <p>Programmes</p>
-                <p>Contact</p>
-              </div>
+                <h3 className="text-[#0b234a] font-semibold mb-5">
+                  {t("footer.quickLinks")}
+                </h3>
+    
+                <div className="space-y-3 text-slate-500">
+                <Link to={withLang("/")}>
+                  <p>{t("nav.home")}</p>
+                </Link>
+
+                <Link to={withLang("/tutors")}>
+                  <p>{t("nav.tutors")}</p>
+                </Link>
+
+                <Link to={withLang("/subjects")}>
+                  <p>{t("footer.programmes")}</p>
+                </Link>
+
+                <Link to={withLang("/enquiry")}>
+                  <p>{t("footer.contact")}</p>
+                </Link>
+            </div>
             </div>
   {/* RIGHT */}
 <div>
   <h3 className="text-[#0b234a] font-semibold mb-5">
-    Contact
+    {t("footer.contact")}
   </h3>
 
   <div className="space-y-5">
@@ -65,7 +87,7 @@ export default function Footer() {
         </p>
 
         <p className="text-base text-[#0b234a]">
-          luna.education
+          luna-education
         </p>
       </div>
     </div>
@@ -106,11 +128,11 @@ export default function Footer() {
           <div className="border-t border-[#eef2f7] mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
   
             <p className="text-sm text-slate-400">
-              © 2026 Luna Education. All rights reserved.
+              {t("footer.copyright")}
             </p>
   
             <p className="text-sm text-slate-400">
-              Singapore · Tokyo · China · Online 
+              {t("footer.locations")}
             </p>
   
           </div>

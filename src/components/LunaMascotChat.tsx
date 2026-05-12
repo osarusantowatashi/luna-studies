@@ -1,18 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Send } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-const initialMessage = {
-  role: "assistant",
-  text: "What would you like help with today?",
-};
+
 
 const LunaMascotChat = () => {
-  const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([initialMessage]);
+  const { t, i18n } = useTranslation();
+const [open, setOpen] = useState(false);
+
+const [messages, setMessages] = useState<
+  { role: string; text: string }[]
+>(() => [
+  {
+    role: "assistant",
+    text: t("chat.initialMessage"),
+  },
+]);
+
+
+
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,6 +72,7 @@ const LunaMascotChat = () => {
         },
         body: JSON.stringify({
           messages: updatedMessages,
+          language: i18n.language,
         }),
       });
 
@@ -71,7 +82,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text: data.reply || "Sorry, I could not generate a reply.",
+          text: data.reply || t("chat.errors.noReply"),
         },
       ]);
     } catch (error) {
@@ -79,7 +90,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text: "Sorry, Luna is taking a short moon nap 🌙 Please try again.",
+          text: t("chat.errors.general"),
         },
       ]);
     } finally {
@@ -106,6 +117,7 @@ const LunaMascotChat = () => {
         },
         body: JSON.stringify({
           messages: updatedMessages,
+          language: i18n.language,
         }),
       });
 
@@ -115,7 +127,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text: data.reply || "Sorry, I could not generate a reply.",
+          text: data.reply || t("chat.errors.noReply"),
         },
       ]);
     } catch (error) {
@@ -123,7 +135,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text: "Sorry, Luna is taking a short moon nap 🌙 Please try again.",
+          text: t("chat.errors.general"),
         },
       ]);
     } finally {
@@ -133,7 +145,7 @@ const LunaMascotChat = () => {
 
   const submitLeadForm = async () => {
     if (!leadName.trim() || !leadContact.trim()) {
-      alert("Please enter your name and contact.");
+      alert(t("chat.lead.alert"))
       return;
     }
 
@@ -152,7 +164,7 @@ const LunaMascotChat = () => {
           grade: leadGrade.trim(),
           message:
             leadGoal.trim() ||
-            "Submitted from Luna AI chatbox. No learning goal provided.",
+            t("chat.lead.noGoal"),
           created_at: new Date().toISOString(),
         }),
       });
@@ -173,7 +185,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text: "Thank you. Your enquiry has been submitted successfully. Our team will contact you soon.",
+          text: t("chat.lead.success"),
         },
       ]);
     } catch (error) {
@@ -181,7 +193,7 @@ const LunaMascotChat = () => {
         ...prev,
         {
           role: "assistant",
-          text: "Sorry, we could not submit the enquiry. Please contact us via WhatsApp or try again later.",
+          text: t("chat.lead.error"),
         },
       ]);
     } finally {
@@ -203,11 +215,11 @@ const LunaMascotChat = () => {
               <div>
                 <div className="flex items-center gap-2 font-semibold">
                   <Sparkles className="h-4 w-4 text-[#F6C65B]" />
-                  Luna AI Assistant
+                  {t("chat.header.title")}
                 </div>
 
                 <p className="text-xs text-white/70">
-                  Course guidance for parents & students
+                  {t("chat.header.subtitle")}
                 </p>
               </div>
 
@@ -221,16 +233,14 @@ const LunaMascotChat = () => {
                 {messages.map((msg, index) => (
                   <div
                     key={index}
-                    className={`flex ${
-                      msg.role === "user" ? "justify-end" : "justify-start"
-                    }`}
+                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                      }`}
                   >
                     <div
-                      className={`max-w-[82%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${
-                        msg.role === "user"
+                      className={`max-w-[82%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${msg.role === "user"
                           ? "bg-[#082A55] text-white"
                           : "bg-white text-slate-700 shadow-sm"
-                      }`}
+                        }`}
                     >
                       {msg.text}
 
@@ -240,7 +250,7 @@ const LunaMascotChat = () => {
                             onClick={() => setShowLeadForm(true)}
                             className="rounded-full bg-[#082A55] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#123A70]"
                           >
-                            Submit Enquiry
+                            {t("chat.buttons.submitEnquiry")}
                           </button>
 
                           <a
@@ -249,7 +259,7 @@ const LunaMascotChat = () => {
                             rel="noopener noreferrer"
                             className="rounded-full border border-[#082A55] bg-white px-4 py-2 text-xs font-medium text-[#082A55] transition hover:bg-[#F8FAFF]"
                           >
-                            WhatsApp Team
+                            {t("chat.buttons.whatsapp")}
                           </a>
                         </div>
                       )}
@@ -267,7 +277,7 @@ const LunaMascotChat = () => {
                           <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55] [animation-delay:0.3s]" />
                         </div>
 
-                        <span>Preparing personalised guidance</span>
+                        <span>{t("chat.loading")}</span>
                       </div>
                     </div>
                   </div>
@@ -276,35 +286,35 @@ const LunaMascotChat = () => {
                 {showLeadForm && (
                   <div className="rounded-2xl border border-[#E8D8B5] bg-white p-4 shadow-sm">
                     <p className="mb-3 text-sm font-semibold text-[#082A55]">
-                      Submit an enquiry
+                      {t("chat.lead.title")}
                     </p>
 
                     <div className="space-y-2">
                       <input
                         value={leadName}
                         onChange={(e) => setLeadName(e.target.value)}
-                        placeholder="Parent / Student name"
+                        placeholder={t("chat.lead.name")}
                         className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
                       />
 
                       <input
                         value={leadContact}
                         onChange={(e) => setLeadContact(e.target.value)}
-                        placeholder="Email or WhatsApp"
+                        placeholder={t("chat.lead.contact")}
                         className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
                       />
 
                       <input
                         value={leadGrade}
                         onChange={(e) => setLeadGrade(e.target.value)}
-                        placeholder="Student grade / year level"
+                        placeholder={t("chat.lead.grade")}
                         className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
                       />
 
                       <textarea
                         value={leadGoal}
                         onChange={(e) => setLeadGoal(e.target.value)}
-                        placeholder="Learning goal / exam / subject"
+                        placeholder={t("chat.lead.goal")}
                         className="min-h-[80px] w-full resize-none rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
                       />
                     </div>
@@ -315,14 +325,14 @@ const LunaMascotChat = () => {
                         disabled={leadSubmitting}
                         className="flex-1 rounded-full bg-[#082A55] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#123A70] disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {leadSubmitting ? "Submitting..." : "Submit"}
+                        {leadSubmitting ? t("chat.lead.submitting") : t("chat.lead.submit")}
                       </button>
 
                       <button
                         onClick={() => setShowLeadForm(false)}
                         className="rounded-full border border-[#E8D8B5] px-4 py-2 text-xs text-slate-500 transition hover:bg-[#FAF8F3]"
                       >
-                        Cancel
+                        {t("chat.lead.cancel")}
                       </button>
                     </div>
                   </div>
@@ -335,11 +345,11 @@ const LunaMascotChat = () => {
                 <div className="border-t border-[#E8D8B5] bg-[#FAF8F3] px-4 py-3">
                   <div className="flex flex-wrap gap-2">
                     {[
-                      "English improvement",
-                      "MAP preparation",
-                      "CAT4 preparation",
-                      "School admissions",
-                      "IELTS / TOEFL",
+                      t("chat.quick.english"),
+                      t("chat.quick.map"),
+                      t("chat.quick.cat4"),
+                      t("chat.quick.admissions"),
+                      t("chat.quick.toefl"),
                     ].map((item) => (
                       <button
                         key={item}
@@ -358,7 +368,7 @@ const LunaMascotChat = () => {
               <input
                 className="min-w-0 flex-1 rounded-full bg-slate-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B] disabled:cursor-not-allowed disabled:opacity-60"
                 placeholder={
-                  isLoading ? "Luna is replying..." : "Ask about MAP, TOEFL, CAT4..."
+                  isLoading ? t("chat.input.loading") : t("chat.input.placeholder")
                 }
                 value={input}
                 disabled={isLoading || leadSubmitting}

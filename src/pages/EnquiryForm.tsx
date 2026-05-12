@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-
+import { useTranslation } from "react-i18next";
 
 const EnquiryForm = ({ subject }: { subject?: string }) => {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -36,14 +37,14 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
   setSuccess(false);
 
   if (!name || !email) {
-    setErrorMsg("Please fill in your name and email.");
+    setErrorMsg(t("enquiryForm.errors.fillRequired"));
     return;
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!emailRegex.test(email)) {
-    setErrorMsg("Please enter a valid email address.");
+    setErrorMsg(t("enquiryForm.errors.invalidEmail"));
     return;
   }
 
@@ -108,7 +109,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
     });
   } catch (err: any) {
     console.error("❌ Submit error:", err);
-    setErrorMsg("Something went wrong. Check console and server terminal.");
+    setErrorMsg(t("enquiryForm.errors.general"));
   }
 
   setLoading(false);
@@ -117,23 +118,25 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
   return (
     <div className="mx-auto max-w-2xl rounded-3xl border bg-card p-8 shadow-soft">
       <h2 className="mb-3 font-serif text-3xl text-primary">
-        {subject ? `Enquire about ${subject}` : "Book a Trial Lesson"}
+          {subject
+      ? `${t("enquiryForm.enquireAbout")} ${subject}`
+      : t("enquiryForm.bookTrial")}
       </h2>
 
       <p className="mb-6 text-muted-foreground">
-        Leave your details and we’ll contact you soon.
+        {t("enquiryForm.description")}
       </p>
 
       {subject && (
         <div className="mb-5 rounded-lg bg-secondary p-3 text-sm">
-          Subject:{" "}
+          {t("enquiryForm.subject")}:{" "}
           <span className="font-semibold text-primary">{subject}</span>
         </div>
       )}
 
       <div className="space-y-4">
         <input
-          placeholder="Parent / Student Name *"
+          placeholder={t("enquiryForm.placeholders.name")}
           className="w-full rounded-lg border p-3"
           value={form.name}
           onChange={(e) =>
@@ -145,7 +148,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
         />
 
         <input
-          placeholder="Email *"
+          placeholder={t("enquiryForm.placeholders.email")}
           className="w-full rounded-lg border p-3"
           value={form.email}
           onChange={(e) =>
@@ -157,7 +160,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
         />
 
         <input
-          placeholder="Grade (optional)"
+          placeholder={t("enquiryForm.placeholders.grade")}
           className="w-full rounded-lg border p-3"
           value={form.grade}
           onChange={(e) =>
@@ -171,8 +174,8 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
         <textarea
           placeholder={
             subject
-              ? `What do you need help with for ${subject}?`
-              : "What do you need help with?"
+              ? `${t("enquiryForm.placeholders.subjectHelp")} ${subject}?`
+              : t("enquiryForm.placeholders.generalHelp")
           }
           className="min-h-[120px] w-full rounded-lg border p-3"
           value={form.message}
@@ -192,7 +195,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
 
         {success && (
           <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-green-700">
-            ✅ Enquiry received! A confirmation email has been sent.
+            ✅ {t("enquiryForm.success")}
           </div>
         )}
 
@@ -201,7 +204,9 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? "Submitting..." : "Submit Enquiry"}
+          {loading
+          ? t("enquiryForm.submitting")
+          : t("enquiryForm.submit")}
         </Button>
       </div>
     </div>
