@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
 
 const PAGE_SIZE = 10;
 
@@ -35,7 +34,7 @@ const TutorMistakes = () => {
       .select("student_id")
       .eq("tutor_id", tutor.id);
 
-    
+
     if (!links || links.length === 0) return;
 
     const ids = links.map((l) => l.student_id);
@@ -93,41 +92,41 @@ const TutorMistakes = () => {
 
   const getCorrectAnswerText = (q: any) => {
     if (!q) return "No correct answer recorded";
-  
+
     const key = String(q.correct_answer || "")
       .trim()
       .toLowerCase()
       .replace(".", "");
-  
+
     const answerMap: any = {
       option_a: q.option_a,
       a: q.option_a,
       optiona: q.option_a,
-  
+
       option_b: q.option_b,
       b: q.option_b,
       optionb: q.option_b,
-  
+
       option_c: q.option_c,
       c: q.option_c,
       optionc: q.option_c,
-  
+
       option_d: q.option_d,
       d: q.option_d,
       optiond: q.option_d,
     };
-  
+
     return answerMap[key] || q.correct_answer || "No correct answer recorded";
   };
 
   return (
-    <div className="min-h-screen bg-background px-6 py-16">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-6xl space-y-8">
-        <div className="rounded-3xl border bg-card p-8 shadow-soft">
+        <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-8">
           <p className="text-sm uppercase tracking-widest text-accent">
             Tutor Review
           </p>
-          <h1 className="font-serif text-5xl text-primary">
+          <h1 className="font-serif text-3xl text-primary sm:text-5xl">
             Student Mistakes
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -136,14 +135,17 @@ const TutorMistakes = () => {
         </div>
 
         {/* Student Select */}
-        <div className="rounded-2xl border bg-card p-6">
+        <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-2xl sm:p-6">
           <label className="text-sm font-semibold">Select Student</label>
 
           <select
-            className="mt-2 w-full rounded-xl border p-3"
+            className="mt-2 w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
             value={selectedStudentId}
             onChange={(e) => setSelectedStudentId(e.target.value)}
-          >
+
+          > {students.length === 0 && (
+            <option value="">No assigned students</option>
+          )}
             {students.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -153,12 +155,17 @@ const TutorMistakes = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-3">
+        <div className="grid gap-3 sm:flex sm:flex-wrap">
           {["all", "24h", "7d", "30d"].map((f) => (
             <Button
+              type="button"
               key={f}
+              className="w-full rounded-2xl sm:w-auto"
               variant={timeFilter === f ? "default" : "outline"}
-              onClick={() => setTimeFilter(f)}
+              onClick={() => {
+                setTimeFilter(f);
+                setPage(1);
+              }}
             >
               {f}
             </Button>
@@ -168,7 +175,9 @@ const TutorMistakes = () => {
         {/* Mistakes */}
         <div className="space-y-6">
           {paginated.length === 0 ? (
-            <p className="text-muted-foreground">No mistakes found.</p>
+            <div className="rounded-[1.8rem] border bg-card p-6 text-center text-sm leading-7 text-muted-foreground shadow-soft">
+              No mistakes found.
+            </div>
           ) : (
             paginated.map((a, i) => {
               const q = a.questions;
@@ -176,7 +185,7 @@ const TutorMistakes = () => {
               return (
                 <div
                   key={a.id}
-                  className="rounded-2xl border bg-card p-6"
+                  className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-2xl sm:p-6"
                 >
                   <div className="mb-3 flex flex-wrap gap-2 text-xs">
                     <span className="bg-secondary px-3 py-1 rounded-full">
@@ -193,29 +202,29 @@ const TutorMistakes = () => {
                     </span>
                   </div>
 
-                  <p className="font-semibold text-primary">
+                  <p className="text-base font-semibold leading-7 text-primary">
                     {i + 1}. {q?.question_text}
                   </p>
 
-                  <div className="mt-3 grid gap-2 text-sm md:grid-cols-2">
+                  <div className="mt-3 grid gap-3 text-sm leading-7 md:grid-cols-2">
                     <p>A. {q?.option_a}</p>
                     <p>B. {q?.option_b}</p>
                     <p>C. {q?.option_c}</p>
                     <p>D. {q?.option_d}</p>
                   </div>
 
-                  <div className="mt-4 grid gap-3 md:grid-cols-2">
-                    <div className="bg-red-50 border border-red-200 p-3 rounded">
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-7 text-red-700">
                       Student: {a.selected_answer}
                     </div>
 
-                    <div className="bg-green-50 border border-green-200 p-3 rounded">
+                    <div className="rounded-2xl border border-green-200 bg-green-50 p-4 text-sm leading-7 text-green-700">
                       Correct: {getCorrectAnswerText(q)}
                     </div>
                   </div>
 
                   {q?.explanation && (
-                    <p className="mt-3 text-sm text-muted-foreground">
+                    <p className="mt-3 text-sm leading-7 text-muted-foreground">
                       {q.explanation}
                     </p>
                   )}
@@ -227,9 +236,11 @@ const TutorMistakes = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <Button
+              type="button"
               variant="outline"
+              className="rounded-2xl"
               disabled={page === 1}
               onClick={() => setPage(page - 1)}
             >
@@ -241,7 +252,9 @@ const TutorMistakes = () => {
             </span>
 
             <Button
+              type="button"
               variant="outline"
+              className="rounded-2xl"
               disabled={page === totalPages}
               onClick={() => setPage(page + 1)}
             >

@@ -11,8 +11,8 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
 
   const handleUpdatePassword = async () => {
-    if (!password.trim()) {
-      alert(t("resetPassword.alerts.enterPassword"));
+    if (password.length < 6) {
+      alert(t("resetPassword.alerts.passwordLength"));
       return;
     }
 
@@ -40,13 +40,13 @@ const ResetPassword = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#f7f6f3] via-[#f1eee7] to-[#e8e3d8]">
       <NavBar />
 
-      <div className="mx-auto max-w-xl px-6 py-24">
-        <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
+      <div className="mx-auto max-w-xl px-4 py-16 sm:px-6 sm:py-24">
+        <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">
             {t("resetPassword.label")}
           </p>
 
-          <h1 className="mt-2 font-serif text-4xl text-primary">
+          <h1 className="mt-2 font-serif text-3xl text-primary sm:text-4xl">
             {t("resetPassword.title")}
           </h1>
 
@@ -57,6 +57,7 @@ const ResetPassword = () => {
           <div className="mt-8 space-y-5">
             <input
               type="password"
+              autoComplete="new-password"
               className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
               placeholder={t("resetPassword.placeholder")}
               value={password}
@@ -64,13 +65,19 @@ const ResetPassword = () => {
             />
 
             <Button
+              type="button"
               className="h-12 w-full rounded-2xl"
               onClick={handleUpdatePassword}
               disabled={loading}
             >
-              {loading
-                ? t("resetPassword.loading")
-                : t("resetPassword.button")}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  {t("resetPassword.loading")}
+                </span>
+              ) : (
+                t("resetPassword.button")
+              )}
             </Button>
           </div>
         </div>

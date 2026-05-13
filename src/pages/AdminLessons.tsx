@@ -6,7 +6,6 @@ import {
   Clock,
   RotateCcw,
 } from "lucide-react";
-import Footer from "@/components/Footer";
 
 type LessonStatus =
   | "pending"
@@ -29,19 +28,19 @@ type Lesson = {
 export default function AdminLessons() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
-  
+
   const [editingPackageId, setEditingPackageId] = useState("");
-const [packagePurchasedAt, setPackagePurchasedAt] = useState("");
-const [links, setLinks] = useState<any[]>([]);
+  const [packagePurchasedAt, setPackagePurchasedAt] = useState("");
+  const [links, setLinks] = useState<any[]>([]);
   const [selectedTutor, setSelectedTutor] = useState("all");
   const [selectedStudent, setSelectedStudent] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [packages, setPackages] = useState<any[]>([]);
   const [showAddPackage, setShowAddPackage] = useState(false);
-const [packageStudentId, setPackageStudentId] = useState("");
-const [packageHours, setPackageHours] = useState("");
-const [packageName, setPackageName] = useState("");
-const [showCompletedPackages, setShowCompletedPackages] = useState(false);
+  const [packageStudentId, setPackageStudentId] = useState("");
+  const [packageHours, setPackageHours] = useState("");
+  const [packageName, setPackageName] = useState("");
+  const [showCompletedPackages, setShowCompletedPackages] = useState(false);
 
 
   useEffect(() => {
@@ -52,92 +51,92 @@ const [showCompletedPackages, setShowCompletedPackages] = useState(false);
   }, []);
 
   const addPackage = async () => {
-  if (!packageStudentId) {
-    alert("Please select a student.");
-    return;
-  }
+    if (!packageStudentId) {
+      alert("Please select a student.");
+      return;
+    }
 
-  if (!packageHours || Number(packageHours) <= 0) {
-    alert("Please enter package hours.");
-    return;
-  }
+    if (!packageHours || Number(packageHours) <= 0) {
+      alert("Please enter package hours.");
+      return;
+    }
 
-  const { error } = await supabase.from("student_packages").insert({
-  student_id: packageStudentId,
-  package_hours: Number(packageHours),
-  package_name: packageName.trim() || null,
-  purchased_at: packagePurchasedAt || new Date().toISOString().slice(0, 10),
-  is_active: true,
-});
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  setShowAddPackage(false);
-  setPackageStudentId("");
-  setPackageHours("");
-  setPackageName("");
-  fetchPackages();
-};
-
-const updatePackage = async () => {
-  if (!editingPackageId) return;
-
-  if (!packageHours || Number(packageHours) <= 0) {
-    alert("Please enter package hours.");
-    return;
-  }
-
-  const { error } = await supabase
-    .from("student_packages")
-    .update({
+    const { error } = await supabase.from("student_packages").insert({
+      student_id: packageStudentId,
       package_hours: Number(packageHours),
       package_name: packageName.trim() || null,
-      purchased_at:
-  packagePurchasedAt || new Date().toISOString().slice(0, 10),
-    })
-    .eq("id", editingPackageId);
+      purchased_at: packagePurchasedAt || new Date().toISOString().slice(0, 10),
+      is_active: true,
+    });
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+    if (error) {
+      alert(error.message);
+      return;
+    }
 
-  setShowAddPackage(false);
-  setEditingPackageId("");
-  setPackageStudentId("");
-  setPackageHours("");
-  setPackageName("");
-  setPackagePurchasedAt("");
-  fetchPackages();
-};
+    setShowAddPackage(false);
+    setPackageStudentId("");
+    setPackageHours("");
+    setPackageName("");
+    fetchPackages();
+  };
+
+  const updatePackage = async () => {
+    if (!editingPackageId) return;
+
+    if (!packageHours || Number(packageHours) <= 0) {
+      alert("Please enter package hours.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("student_packages")
+      .update({
+        package_hours: Number(packageHours),
+        package_name: packageName.trim() || null,
+        purchased_at:
+          packagePurchasedAt || new Date().toISOString().slice(0, 10),
+      })
+      .eq("id", editingPackageId);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setShowAddPackage(false);
+    setEditingPackageId("");
+    setPackageStudentId("");
+    setPackageHours("");
+    setPackageName("");
+    setPackagePurchasedAt("");
+    fetchPackages();
+  };
   const fetchPackages = async () => {
-  const { data, error } = await supabase
-    .from("student_packages")
-    .select("*");
+    const { data, error } = await supabase
+      .from("student_packages")
+      .select("*");
 
-  if (error) {
-    console.error("Package fetch error:", error);
-    return;
-  }
+    if (error) {
+      console.error("Package fetch error:", error);
+      return;
+    }
 
-  setPackages(data || []);
-};
-  
+    setPackages(data || []);
+  };
+
   const fetchLinks = async () => {
-  const { data, error } = await supabase
-    .from("tutor_student_links")
-    .select("tutor_id, student_id");
+    const { data, error } = await supabase
+      .from("tutor_student_links")
+      .select("tutor_id, student_id");
 
-  if (error) {
-    console.error("Links fetch error:", error);
-    return;
-  }
+    if (error) {
+      console.error("Links fetch error:", error);
+      return;
+    }
 
-  setLinks(data || []);
-};
+    setLinks(data || []);
+  };
   const fetchProfiles = async () => {
     const { data, error } = await supabase
       .from("profiles")
@@ -170,10 +169,10 @@ const updatePackage = async () => {
   const tutors = profiles.filter((p) => p.role === "tutor");
   const allStudents = profiles.filter((p) => p.role === "student");
 
-const students =
-  selectedTutor === "all"
-    ? allStudents
-    : allStudents.filter((student) =>
+  const students =
+    selectedTutor === "all"
+      ? allStudents
+      : allStudents.filter((student) =>
         links.some(
           (link) =>
             link.tutor_id === selectedTutor &&
@@ -229,17 +228,17 @@ const students =
     );
   });
 
- const totalHours = filteredLessons
-  .filter(
-    (lesson) =>
-      lesson.status === "completed" ||
-      lesson.status === "student_absent"
-  )
-  .reduce(
-    (sum, lesson) =>
-      sum + Number(lesson.hours || 0),
-    0
-  );
+  const totalHours = filteredLessons
+    .filter(
+      (lesson) =>
+        lesson.status === "completed" ||
+        lesson.status === "student_absent"
+    )
+    .reduce(
+      (sum, lesson) =>
+        sum + Number(lesson.hours || 0),
+      0
+    );
   const completed = filteredLessons.filter(
     (lesson) =>
       lesson.status === "completed" ||
@@ -259,36 +258,36 @@ const students =
 
 
   return (
-    
-    
-    <div className="min-h-screen bg-[#f7f9fc] px-6 py-10">
+
+
+    <div className="min-h-screen bg-[#f7f9fc] px-4 py-8 sm:px-6 sm:py-10">
       <div className="max-w-7xl mx-auto">
 
-        <div className="bg-white rounded-[32px] border border-[#dbe5f0] p-10 mb-8">
+        <div className="mb-8 rounded-[2rem] border border-[#dbe5f0] bg-white p-5 sm:rounded-[32px] sm:p-10">
           <p className="text-[#f7c600] uppercase tracking-[3px] font-semibold text-sm mb-4">
             Admin Lessons
           </p>
 
-          <h1 className="font-serif text-6xl text-[#0b234a] leading-tight">
+          <h1 className="font-serif text-3xl leading-tight text-[#0b234a] sm:text-6xl">
             Lesson Management
           </h1>
 
-          <p className="text-slate-500 mt-5 text-lg">
+          <p className="mt-4 text-sm leading-7 text-slate-500 sm:mt-5 sm:text-lg">
             Monitor tutors, students, attendance,
             and rescheduling activity.
           </p>
         </div>
-        
+
         {/* FILTERS */}
-        <div className="bg-white border border-[#dbe5f0] rounded-[28px] p-6 mb-8 flex flex-wrap gap-4">
+        <div className="mb-8 flex flex-col gap-4 rounded-[2rem] border border-[#dbe5f0] bg-white p-5 sm:flex-row sm:flex-wrap sm:rounded-[28px] sm:p-6">
 
           <select
             value={selectedTutor}
             onChange={(e) => {
-  setSelectedTutor(e.target.value);
-  setSelectedStudent("all");
-}}
-            className="border border-[#dbe5f0] rounded-2xl px-4 py-3 bg-white outline-none"
+              setSelectedTutor(e.target.value);
+              setSelectedStudent("all");
+            }}
+           className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10 sm:w-auto"
           >
             <option value="all">All Tutors</option>
 
@@ -307,7 +306,7 @@ const students =
             onChange={(e) =>
               setSelectedStudent(e.target.value)
             }
-            className="border border-[#dbe5f0] rounded-2xl px-4 py-3 bg-white outline-none"
+            className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 outline-none sm:w-auto"
           >
             <option value="all">All Students</option>
 
@@ -326,7 +325,7 @@ const students =
             onChange={(e) =>
               setSelectedStatus(e.target.value)
             }
-            className="border border-[#dbe5f0] rounded-2xl px-4 py-3 bg-white outline-none"
+            className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 outline-none sm:w-auto"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -341,186 +340,184 @@ const students =
 
         </div>
         {/* PACKAGE OVERVIEW */}
-<div className="bg-white border border-[#dbe5f0] rounded-[28px] p-6 mb-8">
+        <div className="mb-8 rounded-[2rem] border border-[#dbe5f0] bg-white p-5 sm:rounded-[28px] sm:p-6">
 
-  <div className="flex items-center justify-between mb-5">
-    <div>
-      <p className="text-[#f7c600] uppercase tracking-[3px] font-semibold text-sm mb-2">
-        Student Packages
-      </p>
+          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[#f7c600] uppercase tracking-[3px] font-semibold text-sm mb-2">
+                Student Packages
+              </p>
 
-      <h2 className="text-3xl font-serif text-[#0b234a]">
-        Remaining Hours
-      </h2>
-      
-    </div>
+              <h2 className="text-3xl font-serif text-[#0b234a]">
+                Remaining Hours
+              </h2>
 
-    <button
-      onClick={() => setShowAddPackage(true)}
-      className="bg-[#0b234a] text-white px-5 py-3 rounded-2xl font-semibold"
-    >
-      Add Package
-    </button>
-    
-    <button
-  onClick={() => setShowCompletedPackages(!showCompletedPackages)}
-  className="border border-[#dbe5f0] text-[#0b234a] px-5 py-3 rounded-2xl font-semibold"
->
-  {showCompletedPackages ? "Hide Completed" : "Show Completed Packages"}
-</button>
-  </div>
-  
+            </div>
 
-  <div className="space-y-4">
+            <button
+              type="button"
+              onClick={() => setShowAddPackage(true)}
+              className="w-full rounded-2xl bg-[#0b234a] px-5 py-3 font-semibold text-white sm:w-auto"
+            >
+              Add Package
+            </button>
 
-    {allStudents.map((student) => {
-      const studentPackages = packages.filter(
-  (pkg) => pkg.student_id === student.id
-);
-const purchasedHours = studentPackages.reduce(
-  (sum, pkg) => sum + Number(pkg.package_hours || 0),
-  0
-);
-
-if (studentPackages.length === 0) return null;
-
-const deletePackage = async (packageId: string) => {
-  const confirmed = window.confirm(
-    "Delete this package?"
-  );
-
-  if (!confirmed) return;
-
-  const { error } = await supabase
-    .from("student_packages")
-    .delete()
-    .eq("id", packageId);
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  fetchPackages();
-};
-const usedHours = lessons
-  .filter(
-    (lesson) =>
-      lesson.student_id === student.id &&
-      (lesson.status === "completed" ||
-        lesson.status === "student_absent")
-  )
-  .reduce(
-    (sum, lesson) => sum + Number(lesson.hours || 0),
-    0
-  );
-
-const remaining = purchasedHours - usedHours;
-
-const latestPackage =
-  [...studentPackages].sort(
-    (a, b) =>
-      new Date(b.purchased_at || b.created_at).getTime() -
-      new Date(a.purchased_at || a.created_at).getTime()
-  )[0];
-
-const isLow = remaining > 0 && remaining <= 2;
-const isFinished = remaining <= 0;
-
-if (!showCompletedPackages && isFinished) return null;
-
-      return (
-        <div
-  key={student.id}
-  className={`border rounded-2xl p-4 flex justify-between items-center ${
-    isFinished
-      ? "border-slate-200 bg-slate-50 opacity-70"
-      : isLow
-      ? "border-orange-200 bg-orange-50"
-      : "border-[#eef4fb]"
-  }`}
->
-          <div>
-            <p className="font-semibold text-[#0b234a] text-lg">
-              {student.name}
-            </p>
-
-            <p className="text-slate-500 text-sm">
-             {studentPackages.length} package(s)
-             <div className="mt-2 space-y-1">
-  {studentPackages.map((pkg) => (
-    <div key={pkg.id} className="text-xs text-slate-500">
-      {Number(pkg.package_hours).toFixed(2)}h ·{" "}
-      {pkg.purchased_at || "No date"} ·{" "}
-      {pkg.package_name || "Package"}
-      <button
-        onClick={() => {
-          setEditingPackageId(pkg.id);
-          setPackageStudentId(student.id);
-          setPackageHours(String(pkg.package_hours || ""));
-          setPackageName(pkg.package_name || "");
-          setPackagePurchasedAt(pkg.purchased_at || "");
-          setShowAddPackage(true);
-        }}
-        className="ml-2 text-[#0b234a] underline"
-      >
-        Edit
-      </button>
-      <button
-  onClick={() => deletePackage(pkg.id)}
-  className="ml-2 text-red-500 underline"
->
-  Delete
-</button>
-    </div>
-    
-  ))}
-</div>
-            </p>
+            <button
+              type="button"
+              onClick={() => setShowCompletedPackages(!showCompletedPackages)}
+              className="w-full rounded-2xl bg-[#0b234a] px-5 py-3 font-semibold text-white sm:w-auto"
+            >
+              {showCompletedPackages ? "Hide Completed" : "Show Completed Packages"}
+            </button>
           </div>
 
-         <div className="text-right space-y-1">
 
-  <p className="text-sm text-slate-500">
-    Purchased:{" "}
-    <span className="font-semibold text-[#0b234a]">
-      {purchasedHours.toFixed(2)}h
-    </span>
-  </p>
+          <div className="space-y-4">
 
-  <p className="text-sm text-slate-500">
-    Used:{" "}
-    <span className="font-semibold text-[#0b234a]">
-      {usedHours.toFixed(2)}h
-    </span>
-  </p>
+            {allStudents.map((student) => {
+              const studentPackages = packages.filter(
+                (pkg) => pkg.student_id === student.id
+              );
+              const purchasedHours = studentPackages.reduce(
+                (sum, pkg) => sum + Number(pkg.package_hours || 0),
+                0
+              );
 
-  <p className="text-lg font-serif text-[#0b234a]">
-    Remaining: {remaining.toFixed(2)}h
-  </p>
-  {isLow && (
-  <p className="mt-1 text-sm font-semibold text-orange-600">
-    ⚠ Low balance
-  </p>
-)}
+              if (studentPackages.length === 0) return null;
 
-{isFinished && (
-  <p className="mt-1 text-sm font-semibold text-red-600">
-    Package finished
-  </p>
-)}
-</div>
-        
+              const deletePackage = async (packageId: string) => {
+                const confirmed = window.confirm(
+                  "Delete this package?"
+                );
+
+                if (!confirmed) return;
+
+                const { error } = await supabase
+                  .from("student_packages")
+                  .delete()
+                  .eq("id", packageId);
+
+                if (error) {
+                  alert(error.message);
+                  return;
+                }
+
+                fetchPackages();
+              };
+              const usedHours = lessons
+                .filter(
+                  (lesson) =>
+                    lesson.student_id === student.id &&
+                    (lesson.status === "completed" ||
+                      lesson.status === "student_absent")
+                )
+                .reduce(
+                  (sum, lesson) => sum + Number(lesson.hours || 0),
+                  0
+                );
+
+              const remaining = purchasedHours - usedHours;
+
+              const isLow = remaining > 0 && remaining <= 2;
+              const isFinished = remaining <= 0;
+
+              if (!showCompletedPackages && isFinished) return null;
+
+              return (
+                <div
+                  key={student.id}
+                  className={`flex flex-col gap-5 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between ${isFinished
+                    ? "border-slate-200 bg-slate-50 opacity-70"
+                    : isLow
+                      ? "border-orange-200 bg-orange-50"
+                      : "border-[#eef4fb]"
+                    }`}
+                >
+                  <div>
+                    <p className="font-semibold text-[#0b234a] text-lg">
+                      {student.name}
+                    </p>
+
+                    <div className="text-sm text-slate-500">
+                      <p>{studentPackages.length} package(s)</p>
+
+                      <div className="mt-2 space-y-1">
+                        {studentPackages.map((pkg) => (
+                          <div key={pkg.id} className="text-xs text-slate-500">
+                            {Number(pkg.package_hours).toFixed(2)}h ·{" "}
+                            {pkg.purchased_at || "No date"} ·{" "}
+                            {pkg.package_name || "Package"}
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingPackageId(pkg.id);
+                                setPackageStudentId(student.id);
+                                setPackageHours(String(pkg.package_hours || ""));
+                                setPackageName(pkg.package_name || "");
+                                setPackagePurchasedAt(pkg.purchased_at || "");
+                                setShowAddPackage(true);
+                              }}
+                              className="ml-2 text-[#0b234a] underline"
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => deletePackage(pkg.id)}
+                              className="ml-2 text-red-500 underline"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-right space-y-1">
+
+                    <p className="text-sm text-slate-500">
+                      Purchased:{" "}
+                      <span className="font-semibold text-[#0b234a]">
+                        {purchasedHours.toFixed(2)}h
+                      </span>
+                    </p>
+
+                    <p className="text-sm text-slate-500">
+                      Used:{" "}
+                      <span className="font-semibold text-[#0b234a]">
+                        {usedHours.toFixed(2)}h
+                      </span>
+                    </p>
+
+                    <p className="text-lg font-serif text-[#0b234a]">
+                      Remaining: {remaining.toFixed(2)}h
+                    </p>
+                    {isLow && (
+                      <p className="mt-1 text-sm font-semibold text-orange-600">
+                        ⚠ Low balance
+                      </p>
+                    )}
+
+                    {isFinished && (
+                      <p className="mt-1 text-sm font-semibold text-red-600">
+                        Package finished
+                      </p>
+                    )}
+                  </div>
+
+                </div>
+
+              );
+            })}
+
+          </div>
         </div>
-        
-      );
-    })}
-
-  </div>
-</div>
 
         {/* STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 sm:gap-6">
 
           <StatCard
             icon={<Calendar size={22} />}
@@ -560,7 +557,7 @@ if (!showCompletedPackages && isFinished) return null;
           {sortedLessons.map((lesson) => (
             <div
               key={lesson.id}
-              className="bg-white border border-[#dbe5f0] rounded-[28px] p-6"
+              className="rounded-[2rem] border border-[#dbe5f0] bg-white p-5 sm:rounded-[28px] sm:p-6"
             >
 
               <div className="flex flex-col lg:flex-row justify-between gap-6">
@@ -570,13 +567,13 @@ if (!showCompletedPackages && isFinished) return null;
                   <p className="text-sm text-[#f7c600] font-semibold mb-2">
                     {lesson.status ===
                       "reschedule_requested" &&
-                    lesson.rescheduled_date
+                      lesson.rescheduled_date
                       ? lesson.rescheduled_date
                       : lesson.lesson_date}{" "}
                     · {lesson.hours} hour(s)
                   </p>
 
-                  <h3 className="text-2xl font-semibold text-[#0b234a]">
+                  <h3 className="text-xl font-semibold text-[#0b234a] sm:text-2xl">
                     {getProfileName(lesson.student_id)}
                   </h3>
 
@@ -602,101 +599,104 @@ if (!showCompletedPackages && isFinished) return null;
                     {lesson.status ===
                       "reschedule_requested" &&
                       lesson.rescheduled_date && (
-                      <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm">
-                        Rescheduled:{" "}
-                        {lesson.lesson_date} →{" "}
-                        {lesson.rescheduled_date}
-                      </span>
-                    )}
+                        <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm">
+                          Rescheduled:{" "}
+                          {lesson.lesson_date} →{" "}
+                          {lesson.rescheduled_date}
+                        </span>
+                      )}
 
                     <StatusBadge
                       status={lesson.status}
                     />
-                    
+
 
                   </div>
-                  
-                  
+
+
 
                 </div>
-                
+
 
               </div>
-              
+
 
             </div>
           ))}
-          
+
 
         </div>
-        
+
 
       </div>
-      
+
       {showAddPackage && (
-  <Modal onClose={() => setShowAddPackage(false)}>
-    <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
-      Add Student Package
-    </h2>
+        <Modal onClose={() => setShowAddPackage(false)}>
+          <h2 className="mb-2 font-serif text-2xl text-[#0b234a] sm:text-4xl">
+            Add Student Package
+          </h2>
 
-    <p className="text-slate-500 mb-6">
-      Input the lesson package purchased by a student.
-    </p>
+          <p className="text-slate-500 mb-6">
+            Input the lesson package purchased by a student.
+          </p>
 
-    <select
-      value={packageStudentId}
-      onChange={(e) => setPackageStudentId(e.target.value)}
-      className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 bg-white outline-none mb-4"
-    >
-      <option value="">Select student</option>
-      {allStudents.map((student) => (
-        <option key={student.id} value={student.id}>
-          {student.name || student.id}
-        </option>
-      ))}
-    </select>
+          <select
+            value={packageStudentId}
+            onChange={(e) => setPackageStudentId(e.target.value)}
+           className="mb-4 w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
+          >
+            <option value="">Select student</option>
+            {allStudents.map((student) => (
+              <option key={student.id} value={student.id}>
+                {student.name || student.id}
+              </option>
+            ))}
+          </select>
 
-    <input
-      type="number"
-      step="0.5"
-      min="0"
-      value={packageHours}
-      onChange={(e) => setPackageHours(e.target.value)}
-      placeholder="Package hours, e.g. 10"
-      className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none mb-4"
-    />
-    <input
-  type="date"
-  value={packagePurchasedAt}
-  onChange={(e) => setPackagePurchasedAt(e.target.value)}
-  className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none mb-4"
-/>
+          <input
+            type="number"
+            step="0.5"
+            min="0"
+            inputMode="decimal"
+            value={packageHours}
+            onChange={(e) => setPackageHours(e.target.value)}
+            placeholder="Package hours, e.g. 10"
+            className="mb-4 w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
+          />
+          <input
+            type="date"
+            value={packagePurchasedAt}
+            onChange={(e) => setPackagePurchasedAt(e.target.value)}
+            className="mb-4 w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
+          />
 
-    <input
-      value={packageName}
-      onChange={(e) => setPackageName(e.target.value)}
-      placeholder="Package name optional"
-      className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none"
-    />
+          <input
+            value={packageName}
+            onChange={(e) => setPackageName(e.target.value)}
+            placeholder="Package name optional"
+            className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
+          />
 
-    <button
-      onClick={editingPackageId ? updatePackage : addPackage}
-      className="w-full mt-6 bg-[#0b234a] text-white py-4 rounded-2xl font-semibold"
-    >
-      {editingPackageId ? "Update Package" : "Save package"}
-    </button>
-  </Modal>
-)}
+          <button
+            type="button"
+            onClick={editingPackageId ? updatePackage : addPackage}
+            className="mt-6 w-full rounded-2xl bg-[#0b234a] py-4 font-semibold text-white"
+          >
+            {editingPackageId ? "Update Package" : "Save package"}
+          </button>
+        </Modal>
+      )}
     </div>
-    
-    
+
+
   );
 }
 function Modal({ children, onClose }: any) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="relative w-full max-w-lg rounded-[32px] bg-white p-8 shadow-xl">
+      <div className="relative w-full max-w-lg rounded-[2rem] bg-white p-5 shadow-xl sm:rounded-[32px] sm:p-8">
         <button
+          type="button"
           onClick={onClose}
           className="absolute right-5 top-5 text-slate-400 hover:text-slate-700"
         >
@@ -711,7 +711,7 @@ function Modal({ children, onClose }: any) {
 
 function StatCard({ icon, title, value }: any) {
   return (
-    <div className="bg-white border border-[#dbe5f0] rounded-[28px] p-7">
+    <div className="rounded-[2rem] border border-[#dbe5f0] bg-white p-5 sm:rounded-[28px] sm:p-7">
       <div className="w-14 h-14 rounded-2xl bg-[#fff7d6] flex items-center justify-center text-[#0b234a] mb-5">
         {icon}
       </div>
@@ -720,10 +720,10 @@ function StatCard({ icon, title, value }: any) {
         {title}
       </p>
 
-      <h3 className="text-5xl font-serif text-[#0b234a]">
+      <h3 className="text-3xl font-serif text-[#0b234a] sm:text-5xl">
         {value}
       </h3>
-      
+
     </div>
   );
 }

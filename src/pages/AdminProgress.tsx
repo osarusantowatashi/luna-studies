@@ -104,10 +104,10 @@ const AdminProgress = () => {
   const latestTestKey = tests.post
     ? "post"
     : tests.mid
-    ? "mid"
-    : tests.pre
-    ? "pre"
-    : null;
+      ? "mid"
+      : tests.pre
+        ? "pre"
+        : null;
 
   const lastLessonScore = lessons.length
     ? lessonScores(lessons[lessons.length - 1]).total
@@ -266,15 +266,15 @@ const AdminProgress = () => {
   const homeworkScores = lessons.map((lesson) =>
     Number(lessonScores(lesson).homework.toFixed(1))
   );
-  
+
   const classworkScores = lessons.map((lesson) =>
     Number(lessonScores(lesson).classScore.toFixed(1))
   );
-  
+
   const understandingScores = lessons.map((lesson) =>
     Number(lessonScores(lesson).understanding.toFixed(1))
   );
-  
+
   const participationScores = lessons.map((lesson) =>
     Number(lessonScores(lesson).participation.toFixed(1))
   );
@@ -292,12 +292,12 @@ const AdminProgress = () => {
 
   const postValues = tests.post
     ? [
-        tests.post.vocab,
-        tests.post.grammar,
-        tests.post.reading,
-        tests.post.listening,
-        tests.post.writing,
-      ]
+      tests.post.vocab,
+      tests.post.grammar,
+      tests.post.reading,
+      tests.post.listening,
+      tests.post.writing,
+    ]
     : [];
 
   const strongestSection =
@@ -310,92 +310,92 @@ const AdminProgress = () => {
       ? sectionLabels[postValues.indexOf(Math.min(...postValues))]
       : null;
 
-      const generateTeacherFeedback = () => {
-        const name = studentName || "The student";
-      
-        if (lessons.length === 0 && availableTests.length === 0) {
-          return `${name} does not have enough lesson or assessment data yet to generate a final evaluation.`;
-        }
-      
-        const lessonTrend =
-          lessonIncrease > 10
-            ? "strong overall improvement"
-            : lessonIncrease > 0
-            ? "steady progress"
-            : "stable progress with room for further improvement";
-      
-        const testTrend =
-          tests.pre && latestTestKey && latestTestKey !== "pre"
-            ? `Assessment results show a ${testPercent.toFixed(1)}% change from the Pre Test to the latest test.`
-            : "More assessment data is needed for a complete test comparison.";
-      
-        const sectionText =
-          strongestSection && weakestSection
-            ? `${name}'s strongest area is ${strongestSection}, while ${weakestSection} requires more attention.`
-            : "Further section-level data will help identify specific strengths and weaknesses.";
-      
-        return `${name} has shown ${lessonTrend} throughout the recorded learning period. Lesson data reflects development in homework accuracy, classwork accuracy, understanding, and participation. ${testTrend} ${sectionText} For the next stage of learning, ${name} should focus on improving consistency, accuracy, and independent problem-solving. Future lessons should prioritise weaker skill areas while maintaining strengths through regular review and progressive practice.`;
-      };
+  const generateTeacherFeedback = () => {
+    const name = studentName || "The student";
 
-      const homeworkClassworkLineData = {
-        labels: progressLabels,
-        datasets: [
-          {
-            label: "Homework",
-            data: homeworkScores,
-            borderColor: "#3B82F6",
-            backgroundColor: "rgba(59, 130, 246, 0.18)",
-            borderWidth: 4,
-            tension: 0.35,
-            pointBackgroundColor: "#3B82F6",
-            pointBorderColor: "#ffffff",
-            pointBorderWidth: 2,
-            pointRadius: 4,
-          },
-          {
-            label: "Classwork",
-            data: classworkScores,
-            borderColor: "#EF4444",
-            backgroundColor: "rgba(239, 68, 68, 0.18)",
-            borderWidth: 4,
-            tension: 0.35,
-            pointBackgroundColor: "#EF4444",
-            pointBorderColor: "#ffffff",
-            pointBorderWidth: 2,
-            pointRadius: 4,
-          },
-        ],
-      };
-      
-      const understandingParticipationLineData = {
-        labels: progressLabels,
-        datasets: [
-          {
-            label: "Understanding",
-            data: understandingScores,
-            borderColor: "#F59E0B",
-            backgroundColor: "rgba(245, 158, 11, 0.18)",
-            borderWidth: 4,
-            tension: 0.35,
-            pointBackgroundColor: "#F59E0B",
-            pointBorderColor: "#ffffff",
-            pointBorderWidth: 2,
-            pointRadius: 4,
-          },
-          {
-            label: "Participation",
-            data: participationScores,
-            borderColor: "#14B8A6",
-            backgroundColor: "rgba(20, 184, 166, 0.18)",
-            borderWidth: 4,
-            tension: 0.35,
-            pointBackgroundColor: "#14B8A6",
-            pointBorderColor: "#ffffff",
-            pointBorderWidth: 2,
-            pointRadius: 4,
-          },
-        ],
-      };
+    if (lessons.length === 0 && availableTests.length === 0) {
+      return `${name} does not have enough lesson or assessment data yet to generate a final evaluation.`;
+    }
+
+    const lessonTrend =
+      lessonIncrease > 10
+        ? "strong overall improvement"
+        : lessonIncrease > 0
+          ? "steady progress"
+          : "stable progress with room for further improvement";
+
+    const testTrend =
+      tests.pre && latestTestKey && latestTestKey !== "pre"
+        ? `Assessment results show a ${testPercent.toFixed(1)}% change from the Pre Test to the latest test.`
+        : "More assessment data is needed for a complete test comparison.";
+
+    const sectionText =
+      strongestSection && weakestSection
+        ? `${name}'s strongest area is ${strongestSection}, while ${weakestSection} requires more attention.`
+        : "Further section-level data will help identify specific strengths and weaknesses.";
+
+    return `${name} has shown ${lessonTrend} throughout the recorded learning period. Lesson data reflects development in homework accuracy, classwork accuracy, understanding, and participation. ${testTrend} ${sectionText} For the next stage of learning, ${name} should focus on improving consistency, accuracy, and independent problem-solving. Future lessons should prioritise weaker skill areas while maintaining strengths through regular review and progressive practice.`;
+  };
+
+  const homeworkClassworkLineData = {
+    labels: progressLabels,
+    datasets: [
+      {
+        label: "Homework",
+        data: homeworkScores,
+        borderColor: "#3B82F6",
+        backgroundColor: "rgba(59, 130, 246, 0.18)",
+        borderWidth: 4,
+        tension: 0.35,
+        pointBackgroundColor: "#3B82F6",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+      },
+      {
+        label: "Classwork",
+        data: classworkScores,
+        borderColor: "#EF4444",
+        backgroundColor: "rgba(239, 68, 68, 0.18)",
+        borderWidth: 4,
+        tension: 0.35,
+        pointBackgroundColor: "#EF4444",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+      },
+    ],
+  };
+
+  const understandingParticipationLineData = {
+    labels: progressLabels,
+    datasets: [
+      {
+        label: "Understanding",
+        data: understandingScores,
+        borderColor: "#F59E0B",
+        backgroundColor: "rgba(245, 158, 11, 0.18)",
+        borderWidth: 4,
+        tension: 0.35,
+        pointBackgroundColor: "#F59E0B",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+      },
+      {
+        label: "Participation",
+        data: participationScores,
+        borderColor: "#14B8A6",
+        backgroundColor: "rgba(20, 184, 166, 0.18)",
+        borderWidth: 4,
+        tension: 0.35,
+        pointBackgroundColor: "#14B8A6",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+      },
+    ],
+  };
 
   const barColors = ["#60A5FA", "#FCA5A5", "#FCD34D"];
 
@@ -406,8 +406,8 @@ const AdminProgress = () => {
         key === "pre"
           ? "Pre Test"
           : key === "mid"
-          ? "Mid Test"
-          : "Post Test",
+            ? "Mid Test"
+            : "Post Test",
       data: sections.map((section) => tests[key][section]),
       backgroundColor: barColors[i],
       borderColor: barColors[i],
@@ -488,16 +488,16 @@ const AdminProgress = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7fb] px-6 py-10 text-[#10264d]">
+    <div className="min-h-screen bg-[#f4f7fb] px-4 py-8 text-[#10264d] sm:px-6 sm:py-10">
       <div className="mx-auto max-w-[1600px] space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Student Progress Dashboard</h1>
-          <Button variant="outline" onClick={loadDemoData}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-bold sm:text-3xl">Student Progress Dashboard</h1>
+          <Button type="button" variant="outline" className="w-full rounded-2xl sm:w-auto" onClick={loadDemoData}>
             Load Demo Data
           </Button>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[480px_1fr]">
+        <div className="grid gap-6 xl:grid-cols-[480px_1fr]">
           <div className="space-y-6">
             <Card className="rounded-[18px] border-[#dfe7f5] bg-white p-5 shadow-sm">
               <h2 className="mb-4 text-xl font-bold">1. Lesson Input</h2>
@@ -507,7 +507,10 @@ const AdminProgress = () => {
                   Student Name
                 </label>
                 <input
-                  className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
+                  type="text"
+
+                  autoComplete="off"
+                  className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
                 />
@@ -520,7 +523,8 @@ const AdminProgress = () => {
                   </label>
                   <input
                     type="number"
-                    className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
+                    inputMode="decimal"
+                    className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                     value={lessonInput.hwTotal}
                     onChange={(e) =>
                       setLessonInput({
@@ -537,7 +541,8 @@ const AdminProgress = () => {
                   </label>
                   <input
                     type="number"
-                    className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
+                    inputMode="decimal"
+                    className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                     value={lessonInput.hwCorrect}
                     onChange={(e) =>
                       setLessonInput({
@@ -554,7 +559,8 @@ const AdminProgress = () => {
                   </label>
                   <input
                     type="number"
-                    className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
+                    inputMode="decimal"
+                    className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                     value={lessonInput.classTotal}
                     onChange={(e) =>
                       setLessonInput({
@@ -571,7 +577,8 @@ const AdminProgress = () => {
                   </label>
                   <input
                     type="number"
-                    className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
+                    inputMode="decimal"
+                    className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                     value={lessonInput.classCorrect}
                     onChange={(e) =>
                       setLessonInput({
@@ -588,7 +595,8 @@ const AdminProgress = () => {
                   </label>
                   <input
                     type="number"
-                    className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
+                    inputMode="decimal"
+                    className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                     value={lessonInput.understanding}
                     onChange={(e) =>
                       setLessonInput({
@@ -605,7 +613,8 @@ const AdminProgress = () => {
                   </label>
                   <input
                     type="number"
-                    className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
+                    inputMode="decimal"
+                    className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                     value={lessonInput.participation}
                     onChange={(e) =>
                       setLessonInput({
@@ -617,14 +626,23 @@ const AdminProgress = () => {
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Button onClick={addLesson}>
+              <div className="mt-4 grid gap-3 sm:flex sm:flex-wrap">
+                <Button
+                  type="button"
+                  className="w-full rounded-2xl sm:w-auto"
+                  onClick={addLesson}>
                   Add Lesson & Generate Graphs
                 </Button>
-                <Button variant="outline" onClick={clearLessonInputs}>
+                <Button
+                  type="button"
+                  className="w-full rounded-2xl sm:w-auto"
+                  variant="outline" onClick={clearLessonInputs}>
                   Clear Inputs
                 </Button>
-                <Button variant="destructive" onClick={resetLessons}>
+                <Button
+                  type="button"
+                  className="w-full rounded-2xl sm:w-auto"
+                  variant="destructive" onClick={resetLessons}>
                   Reset Lessons
                 </Button>
               </div>
@@ -688,8 +706,8 @@ const AdminProgress = () => {
                   Test Type
                 </label>
                 <select
-                  className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
                   value={testType}
+                  className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                   onChange={(e) => setTestType(e.target.value)}
                 >
                   <option value="pre">Pre Test</option>
@@ -706,7 +724,8 @@ const AdminProgress = () => {
                     </label>
                     <input
                       type="number"
-                      className="w-full rounded-[10px] border border-[#cfd9ea] bg-white p-3"
+                      inputMode="decimal"
+                      className="w-full rounded-2xl border border-[#cfd9ea] bg-white px-4 py-3 text-base outline-none transition focus:border-[#1459d9] focus:ring-4 focus:ring-[#1459d9]/10"
                       value={(testInput as any)[key]}
                       onChange={(e) =>
                         setTestInput({
@@ -719,12 +738,16 @@ const AdminProgress = () => {
                 ))}
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Button onClick={addTest}>Add Test & Generate Graphs</Button>
-                <Button variant="outline" onClick={clearTestInputs}>
+              <div className="mt-4 grid gap-3 sm:flex sm:flex-wrap">
+                <Button type="button" className="w-full rounded-2xl sm:w-auto" onClick={addTest}>
+                  Add Test & Generate Graphs
+                </Button>
+
+                <Button type="button" className="w-full rounded-2xl sm:w-auto" variant="outline" onClick={clearTestInputs}>
                   Clear Inputs
                 </Button>
-                <Button variant="destructive" onClick={resetTests}>
+
+                <Button type="button" className="w-full rounded-2xl sm:w-auto" variant="destructive" onClick={resetTests}>
                   Reset Tests
                 </Button>
               </div>
@@ -794,7 +817,7 @@ const AdminProgress = () => {
                   className="rounded-[18px] border-[#dfe7f5] bg-white p-5 shadow-sm"
                 >
                   <p className="text-sm font-bold text-[#607399]">{label}</p>
-                  <p className="mt-2 text-4xl font-extrabold text-[#1459d9]">
+                  <p className="mt-2 text-3xl font-extrabold text-[#1459d9] sm:text-4xl">
                     {value}
                   </p>
                 </Card>
@@ -802,41 +825,41 @@ const AdminProgress = () => {
             </div>
 
             <Card className="rounded-[18px] border-[#dfe7f5] bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold">
+              <h2 className="text-xl font-bold">
                 Graph 1A: Homework & Classwork Accuracy
-            </h2>
-            <p className="mt-1 text-sm text-[#607399]">
+              </h2>
+              <p className="mt-1 text-sm text-[#607399]">
                 Tracks homework accuracy and classwork accuracy across lessons.
-            </p>
+              </p>
 
-            <div className="mt-4 h-[340px]">
+              <div className="mt-4 h-[280px] sm:h-[340px]">
                 {lessons.length > 0 ? (
-                <Line data={homeworkClassworkLineData} options={lineOptions} />
+                  <Line data={homeworkClassworkLineData} options={lineOptions} />
                 ) : (
-                <div className="flex h-full items-center justify-center rounded-[14px] border border-dashed border-[#cfd9ea] bg-[#f8fbff] text-center text-[#7b8dac]">
+                  <div className="flex h-full items-center justify-center rounded-[14px] border border-dashed border-[#cfd9ea] bg-[#f8fbff] text-center text-[#7b8dac]">
                     Add at least 1 lesson to generate this graph.
-                </div>
+                  </div>
                 )}
-            </div>
+              </div>
             </Card>
 
             <Card className="rounded-[18px] border-[#dfe7f5] bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold">
+              <h2 className="text-xl font-bold">
                 Graph 1B: Understanding & Participation
-            </h2>
-            <p className="mt-1 text-sm text-[#607399]">
+              </h2>
+              <p className="mt-1 text-sm text-[#607399]">
                 Tracks teacher-rated understanding and participation across lessons.
-            </p>
+              </p>
 
-            <div className="mt-4 h-[340px]">
+              <div className="mt-4 h-[280px] sm:h-[340px]">
                 {lessons.length > 0 ? (
-                <Line data={understandingParticipationLineData} options={lineOptions} />
+                  <Line data={understandingParticipationLineData} options={lineOptions} />
                 ) : (
-                <div className="flex h-full items-center justify-center rounded-[14px] border border-dashed border-[#cfd9ea] bg-[#f8fbff] text-center text-[#7b8dac]">
+                  <div className="flex h-full items-center justify-center rounded-[14px] border border-dashed border-[#cfd9ea] bg-[#f8fbff] text-center text-[#7b8dac]">
                     Add at least 1 lesson to generate this graph.
-                </div>
+                  </div>
                 )}
-            </div>
+              </div>
             </Card>
 
             <Card className="rounded-[18px] border-[#dfe7f5] bg-white p-5 shadow-sm">
@@ -848,7 +871,7 @@ const AdminProgress = () => {
                 comparison.
               </p>
 
-              <div className="mt-4 h-[360px]">
+              <div className="mt-4 h-[300px] sm:h-[360px]">
                 {availableTests.length > 0 ? (
                   <Bar data={barData} options={barOptions} />
                 ) : (
@@ -869,7 +892,7 @@ const AdminProgress = () => {
                   <p className="text-sm font-bold text-[#607399]">
                     Score Increase from Pre Test
                   </p>
-                  <p className="mt-2 text-4xl font-extrabold text-[#1459d9]">
+                  <p className="mt-2 text-3xl font-extrabold text-[#1459d9] sm:text-4xl">
                     {testIncrease >= 0 ? "+" : ""}
                     {testIncrease.toFixed(1)} points
                   </p>
@@ -879,7 +902,7 @@ const AdminProgress = () => {
                   <p className="text-sm font-bold text-[#607399]">
                     Percentage Increase from Pre Test
                   </p>
-                  <p className="mt-2 text-4xl font-extrabold text-[#1459d9]">
+                  <p className="mt-2 text-3xl font-extrabold text-[#1459d9] sm:text-4xl">
                     {testPercent.toFixed(1)}%
                   </p>
                 </div>
@@ -890,7 +913,7 @@ const AdminProgress = () => {
                   Graph 4: Post Test Strength Pie
                 </h2>
 
-                <div className="mt-4 h-[320px]">
+                <div className="mt-4 h-[280px] sm:h-[320px]">
                   {tests.post ? (
                     <Doughnut data={pieData} options={pieOptions} />
                   ) : (

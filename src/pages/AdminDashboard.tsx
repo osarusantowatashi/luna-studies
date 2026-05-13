@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
-import Footer from "@/components/Footer";
 
 const AdminDashboard = () => {
   const [studentCount, setStudentCount] = useState(0);
@@ -35,75 +34,83 @@ const AdminDashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background px-6 py-20">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-6xl space-y-8">
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
             Admin
           </p>
-          <h1 className="font-serif text-5xl text-primary">
+          <h1 className="font-serif text-3xl text-primary sm:text-5xl">
             Admin Dashboard
           </h1>
-          <p className="mt-3 text-muted-foreground">
+          <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
             Manage question bank, AI generation, and student assignments.
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-3">
-          <Card className="p-6">
+        <div className="grid gap-4 sm:grid-cols-3 sm:gap-5">
+          <Card className="rounded-[1.8rem] p-5 sm:p-6">
             <p className="text-sm text-muted-foreground">Students</p>
-            <p className="mt-2 text-4xl font-semibold">{studentCount}</p>
+            <p className="mt-2 text-3xl font-semibold sm:text-4xl">{studentCount}</p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="rounded-[1.8rem] p-5 sm:p-6">
             <p className="text-sm text-muted-foreground">Tutors</p>
-            <p className="mt-2 text-4xl font-semibold">{tutorCount}</p>
+            <p className="mt-2 text-3xl font-semibold sm:text-4xl">{tutorCount}</p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="rounded-[1.8rem] p-5 sm:p-6">
             <p className="text-sm text-muted-foreground">Saved Questions</p>
-            <p className="mt-2 text-4xl font-semibold">{questionCount}</p>
+            <p className="mt-2 text-3xl font-semibold sm:text-4xl">{questionCount}</p>
           </Card>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-4">
-          <Link to="/admin/questions">
-            <Card className="p-6 transition hover:scale-[1.02]">
-              <h3 className="text-xl font-semibold">Question Bank</h3>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-5">
+          <Link to="/admin/questions" className="block">
+            <Card className="h-full rounded-[1.8rem] p-5 transition md:hover:scale-[1.02] sm:p-6">
+              <h3 className="text-lg font-semibold sm:text-xl">Question Bank</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 View all saved questions by grade and section.
               </p>
-              <Button className="mt-5 w-full">Open</Button>
+              <Button type="button" className="mt-5 w-full rounded-2xl">
+                Open
+              </Button>
             </Card>
           </Link>
 
           <Link to="/generate">
-            <Card className="p-6 transition hover:scale-[1.02]">
-              <h3 className="text-xl font-semibold">Generate Questions</h3>
+            <Card className="h-full rounded-[1.8rem] p-5 transition md:hover:scale-[1.02] sm:p-6">
+              <h3 className="text-lg font-semibold sm:text-xl">Generate Questions</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Generate new questions and save them to Supabase.
               </p>
-              <Button className="mt-5 w-full">Open</Button>
+              <Button type="button" className="mt-5 w-full rounded-2xl">
+                Open
+              </Button>
             </Card>
           </Link>
 
           <Link to="/admin/assign">
-            <Card className="p-6 transition hover:scale-[1.02]">
-              <h3 className="text-xl font-semibold">Assign</h3>
+            <Card className="h-full rounded-[1.8rem] p-5 transition md:hover:scale-[1.02] sm:p-6">
+              <h3 className="text-lg font-semibold sm:text-xl">Assign</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Assign questions or unlock access for students.
               </p>
-              <Button className="mt-5 w-full">Open</Button>
+              <Button type="button" className="mt-5 w-full rounded-2xl">
+                Open
+              </Button>
             </Card>
           </Link>
-          
+
           <Link to="/admin/progress">
-            <Card className="p-6 transition hover:scale-[1.02]">
-              <h3 className="text-xl font-semibold">Student Progress</h3>
+            <Card className="h-full rounded-[1.8rem] p-5 transition md:hover:scale-[1.02] sm:p-6">
+              <h3 className="text-lg font-semibold sm:text-xl">Student Progress</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Track lesson progress, test improvement, and learning performance.
               </p>
-              <Button className="mt-5 w-full">Open</Button>
+              <Button type="button" className="mt-5 w-full rounded-2xl">
+                Open
+              </Button>
             </Card>
           </Link>
         </div>

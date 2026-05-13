@@ -10,17 +10,17 @@ const Enquire = () => {
       <NavBar />
 
       {/* HERO */}
-      <section className="bg-hero px-6 py-24 text-center">
+      <section className="bg-hero px-4 py-16 text-center sm:px-6 sm:py-24">
         <div className="mx-auto max-w-3xl">
           <p className="mb-4 text-sm uppercase tracking-widest text-accent font-medium">
             {t("enquire.hero.label")}
           </p>
 
-          <h1 className="font-serif text-5xl md:text-6xl text-primary leading-tight">
+          <h1 className="font-serif text-3xl leading-tight text-primary sm:text-5xl md:text-6xl">
             {t("enquire.hero.title")}
           </h1>
 
-          <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-6 text-sm leading-7 text-muted-foreground sm:text-lg sm:leading-relaxed">
             {t("enquire.hero.description")}
           </p>
 
@@ -31,8 +31,8 @@ const Enquire = () => {
       </section>
 
       {/* TRUST STRIP */}
-      <section className="border-y bg-secondary/40 px-6 py-10">
-        <div className="mx-auto max-w-5xl grid gap-6 md:grid-cols-3 text-center">
+      <section className="border-y bg-secondary/40 px-4 py-8 sm:px-6 sm:py-10">
+        <div className="mx-auto grid max-w-5xl gap-4 text-center md:grid-cols-3">
           <div>
             <p className="text-sm text-muted-foreground">{t("enquire.trust.response")}</p>
             <p className="text-primary font-semibold mt-1">{t("enquire.trust.responseValue")}</p>
@@ -50,15 +50,15 @@ const Enquire = () => {
 
 
       {/* FORM */}
-      <section id="form" className="px-6 py-24">
+      <section id="form" className="px-4 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-2xl">
           <EnquiryForm />
         </div>
       </section>
 
-      <section className="container mx-auto px-6 py-18">
+      <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-20">
         <div className="max-w-4xl mx-auto text-center mb-14">
-          <h2 className="font-serif text-4xl text-primary">
+        <h2 className="font-serif text-3xl text-primary sm:text-4xl">
             {t("enquire.process.title")}
           </h2>
           <p className="mt-4 text-muted-foreground">
@@ -66,7 +66,7 @@ const Enquire = () => {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-5">
+        <div className="grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-5">
           {[
             {
               step: "01",
@@ -96,7 +96,7 @@ const Enquire = () => {
           ].map((item) => (
             <div
               key={item.step}
-              className="rounded-3xl border bg-card p-6 shadow-soft text-center"
+              className="rounded-[1.8rem] border bg-card p-5 shadow-soft text-center sm:rounded-3xl sm:p-6"
             >
               <p className="text-accent font-semibold">{item.step}</p>
 
@@ -115,12 +115,12 @@ const Enquire = () => {
 
 
       {/* OPTIONAL CONTACT */}
-      <section className="bg-secondary/30 px-6 py-16 text-center">
+      <section className="bg-secondary/30 px-4 py-14 text-center sm:px-6 sm:py-16">
         <p className="text-muted-foreground">
           {t("enquire.contact.title")}
         </p>
 
-        <p className="mt-2 text-primary font-medium">
+        <p className="mt-2 text-sm font-medium leading-7 text-primary sm:text-base">
           WeChat: luna-education · Email: enquiries@lunastudies.com
         </p>
       </section>

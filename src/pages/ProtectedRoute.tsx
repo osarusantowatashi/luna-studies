@@ -10,17 +10,16 @@ const ProtectedRoute = ({ children, allowedRoles }: Props) => {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   const role = localStorage.getItem("role");
 
-  // ❌ Not logged in → go to login
+  // Not logged in
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/en/login" replace />;
   }
 
-  // ❌ Role not allowed → redirect to safe page
+  // Role not allowed
   if (!role || !allowedRoles.includes(role)) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/en" replace />;
   }
 
-  // ✅ Allowed
   return <>{children}</>;
 };
 

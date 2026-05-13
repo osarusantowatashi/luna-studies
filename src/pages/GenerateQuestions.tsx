@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
-import Footer from "@/components/Footer";
 
 const GenerateQuestions = () => {
   const [examType, setExamType] = useState("MAP");
@@ -19,42 +18,34 @@ const GenerateQuestions = () => {
     console.log("SKILL RECEIVED:", skill);
 
     setLoading(true);
-    
+
     setErrorMsg("");
     setQuestions([]);
 
-    const topic = `
-Exam Type: ${examType}
-Grade: ${grade}
-Skill: ${skill}
-Difficulty: ${difficulty}
-Number of questions: ${questionCount}
-Extra instructions: ${extraPrompt}
-`;
     try {
       const res = await fetch("http://localhost:3001/api/generate-questions", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    examType,
-    grade,
-    skill,
-    difficulty,
-    questionCount,
-    extraPrompt,
-  }),
-});
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          examType,
+          grade,
+          skill,
+          difficulty,
+          questionCount,
+          extraPrompt,
+        }),
+      });
 
-const rawText = await res.text();
-console.log("RAW BACKEND RESPONSE:", rawText);
+      const rawText = await res.text();
+      console.log("RAW BACKEND RESPONSE:", rawText);
 
-if (!res.ok) {
-  throw new Error(`Backend error ${res.status}: ${rawText}`);
-}
+      if (!res.ok) {
+        throw new Error(`Backend error ${res.status}: ${rawText}`);
+      }
 
-const data = JSON.parse(rawText);
+      const data = JSON.parse(rawText);
 
       if (!data.text) {
         setErrorMsg("No data returned from server: " + JSON.stringify(data));
@@ -66,31 +57,31 @@ const data = JSON.parse(rawText);
 
       const parsed = JSON.parse(text);
 
-let categorised: any[] = [];
+      let categorised: any[] = [];
 
-if (Array.isArray(parsed)) {
-  // normal questions
-  categorised = parsed.map((q: any) => ({
-    ...q,
-    type: "normal",
-    exam_type: examType,
-    grade,
-    skill,
-    difficulty,
-    id: Date.now() + Math.random(),
-  }));
-} else if (parsed.type === "reading") {
-  categorised = [
-    {
-      ...parsed,
-      exam_type: examType,
-      grade,
-      skill,
-      difficulty,
-      id: Date.now(),
-    },
-  ];
-}
+      if (Array.isArray(parsed)) {
+        // normal questions
+        categorised = parsed.map((q: any) => ({
+          ...q,
+          type: "normal",
+          exam_type: examType,
+          grade,
+          skill,
+          difficulty,
+          id: Date.now() + Math.random(),
+        }));
+      } else if (parsed.type === "reading") {
+        categorised = [
+          {
+            ...parsed,
+            exam_type: examType,
+            grade,
+            skill,
+            difficulty,
+            id: Date.now(),
+          },
+        ];
+      }
       setQuestions(categorised);
     } catch (err: any) {
       console.error(err);
@@ -99,61 +90,14 @@ if (Array.isArray(parsed)) {
       setLoading(false);
     }
   };
-  
+
 
 
   const saveQuestion = async (q: any) => {
-  let payload;
+    let payload;
 
-  if (q.type === "reading") {
-    payload = q.questions.map((subQ: any) => ({
-      exam_type: q.exam_type,
-      grade: q.grade,
-      skill: q.skill,
-      difficulty: q.difficulty,
-      passage: q.passage,
-      question_text: subQ.question_text,
-      option_a: subQ.option_a,
-      option_b: subQ.option_b,
-      option_c: subQ.option_c,
-      option_d: subQ.option_d,
-      correct_answer: subQ.correct_answer,
-      explanation: subQ.explanation,
-    }));
-  } else {
-    payload = [
-      {
-        exam_type: q.exam_type,
-        grade: q.grade,
-        skill: q.skill,
-        difficulty: q.difficulty,
-        passage: q.passage || null,
-        question_text: q.question_text,
-        option_a: q.option_a,
-        option_b: q.option_b,
-        option_c: q.option_c,
-        option_d: q.option_d,
-        correct_answer: q.correct_answer,
-        explanation: q.explanation,
-      },
-    ];
-  }
-
-  const { error } = await supabase.from("questions").insert(payload);
-
-  if (error) {
-    console.error("SAVE ERROR:", error);
-    alert("Failed to save question: " + error.message);
-    return;
-  }
-
-  alert("Saved to database!");
-};
-
-  const saveAllQuestions = async () => {
-  const cleaned = questions.flatMap((q) => {
     if (q.type === "reading") {
-      return q.questions.map((subQ: any) => ({
+      payload = q.questions.map((subQ: any) => ({
         exam_type: q.exam_type,
         grade: q.grade,
         skill: q.skill,
@@ -167,34 +111,81 @@ if (Array.isArray(parsed)) {
         correct_answer: subQ.correct_answer,
         explanation: subQ.explanation,
       }));
+    } else {
+      payload = [
+        {
+          exam_type: q.exam_type,
+          grade: q.grade,
+          skill: q.skill,
+          difficulty: q.difficulty,
+          passage: q.passage || null,
+          question_text: q.question_text,
+          option_a: q.option_a,
+          option_b: q.option_b,
+          option_c: q.option_c,
+          option_d: q.option_d,
+          correct_answer: q.correct_answer,
+          explanation: q.explanation,
+        },
+      ];
     }
 
-    return {
-      exam_type: q.exam_type,
-      grade: q.grade,
-      skill: q.skill,
-      difficulty: q.difficulty,
-      passage: q.passage || null,
-      question_text: q.question_text,
-      option_a: q.option_a,
-      option_b: q.option_b,
-      option_c: q.option_c,
-      option_d: q.option_d,
-      correct_answer: q.correct_answer,
-      explanation: q.explanation,
-    };
-  });
+    const { error } = await supabase.from("questions").insert(payload);
 
-  const { error } = await supabase.from("questions").insert(cleaned);
+    if (error) {
+      console.error("SAVE ERROR:", error);
+      alert("Failed to save question: " + error.message);
+      return;
+    }
 
-  if (error) {
-    console.error("SAVE ERROR:", error);
-    alert("Failed to save questions: " + error.message);
-    return;
-  }
+    alert("Saved to database!");
+  };
 
-  alert(`${cleaned.length} questions saved to database!`);
-};
+  const saveAllQuestions = async () => {
+    const cleaned = questions.flatMap((q) => {
+      if (q.type === "reading") {
+        return q.questions.map((subQ: any) => ({
+          exam_type: q.exam_type,
+          grade: q.grade,
+          skill: q.skill,
+          difficulty: q.difficulty,
+          passage: q.passage,
+          question_text: subQ.question_text,
+          option_a: subQ.option_a,
+          option_b: subQ.option_b,
+          option_c: subQ.option_c,
+          option_d: subQ.option_d,
+          correct_answer: subQ.correct_answer,
+          explanation: subQ.explanation,
+        }));
+      }
+
+      return {
+        exam_type: q.exam_type,
+        grade: q.grade,
+        skill: q.skill,
+        difficulty: q.difficulty,
+        passage: q.passage || null,
+        question_text: q.question_text,
+        option_a: q.option_a,
+        option_b: q.option_b,
+        option_c: q.option_c,
+        option_d: q.option_d,
+        correct_answer: q.correct_answer,
+        explanation: q.explanation,
+      };
+    });
+
+    const { error } = await supabase.from("questions").insert(cleaned);
+
+    if (error) {
+      console.error("SAVE ERROR:", error);
+      alert("Failed to save questions: " + error.message);
+      return;
+    }
+
+    alert(`${cleaned.length} questions saved to database!`);
+  };
   const getCorrectAnswerText = (q: any) => {
     if (q.correct_answer === "option_a") return q.option_a;
     if (q.correct_answer === "option_b") return q.option_b;
@@ -204,25 +195,25 @@ if (Array.isArray(parsed)) {
   };
 
   return (
-    <div className="min-h-screen bg-background px-6 py-20">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-5xl space-y-8">
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
             Question Bank Builder
           </p>
-          <h1 className="font-serif text-5xl text-primary">
+          <h1 className="font-serif text-3xl text-primary sm:text-5xl">
             AI Question Generator
           </h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground">
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
             Generate categorised questions by exam, grade, skill, and difficulty.
             These categories will later control what each student can access.
           </p>
         </div>
 
-        <div className="rounded-2xl border bg-card p-6 shadow-soft">
+        <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:p-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <select
-              className="rounded-lg border p-3"
+              className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
               value={examType}
               onChange={(e) => setExamType(e.target.value)}
             >
@@ -238,7 +229,7 @@ if (Array.isArray(parsed)) {
             </select>
 
             <select
-              className="rounded-lg border p-3"
+              className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
             >
@@ -258,7 +249,7 @@ if (Array.isArray(parsed)) {
             </select>
 
             <select
-              className="rounded-lg border p-3"
+              className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
               value={skill}
               onChange={(e) => setSkill(e.target.value)}
             >
@@ -272,7 +263,7 @@ if (Array.isArray(parsed)) {
             </select>
 
             <select
-              className="rounded-lg border p-3"
+              className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
             >
@@ -285,7 +276,7 @@ if (Array.isArray(parsed)) {
 
           <div className="mt-4 grid gap-4 md:grid-cols-[160px_1fr]">
             <select
-              className="rounded-lg border p-3"
+              className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
               value={questionCount}
               onChange={(e) => setQuestionCount(e.target.value)}
             >
@@ -296,7 +287,7 @@ if (Array.isArray(parsed)) {
             </select>
 
             <input
-              className="rounded-lg border p-3"
+              className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
               placeholder="Extra prompt, e.g. make it MAP style, use short passages, focus on animal vocabulary..."
               value={extraPrompt}
               onChange={(e) => setExtraPrompt(e.target.value)}
@@ -304,7 +295,8 @@ if (Array.isArray(parsed)) {
           </div>
 
           <Button
-            className="mt-5 h-12 w-full"
+            type="button"
+            className="mt-5 h-12 w-full rounded-2xl"
             onClick={handleGenerate}
             disabled={loading}
           >
@@ -313,101 +305,111 @@ if (Array.isArray(parsed)) {
         </div>
 
         {errorMsg && (
-          <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-700">
+          <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm leading-7 text-red-700">
             {errorMsg}
           </div>
         )}
 
         {questions.length > 0 && (
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-muted-foreground">
               Generated {questions.length} questions
             </p>
 
-            <Button onClick={saveAllQuestions}>
+            <Button
+              type="button"
+              className="w-full rounded-2xl sm:w-auto"
+              onClick={saveAllQuestions}
+            >
               Save All Questions
             </Button>
           </div>
         )}
 
         <div className="grid gap-6">
-         {questions.map((q, i) => {
-  if (q.type === "reading") {
-    return (
-      <div key={q.id} className="rounded-xl border bg-card p-6 shadow-soft">
-        
-        {/* PASSAGE */}
-        <p className="mb-4 text-sm text-muted-foreground">
-          Passage:
-        </p>
-        <p className="mb-6 leading-relaxed">{q.passage}</p>
+          {questions.map((q, i) => {
+            if (q.type === "reading") {
+              return (
+                <div key={q.id} className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:p-6">
 
-        {/* QUESTIONS */}
-        {q.questions.map((subQ: any, idx: number) => (
-          <div key={idx} className="mb-6 border-t pt-4">
-            <p className="font-semibold">
-              {idx + 1}. {subQ.question_text}
-            </p>
+                  {/* PASSAGE */}
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    Passage:
+                  </p>
+                  <p className="mb-6 max-h-[45vh] overflow-y-auto whitespace-pre-line rounded-2xl border bg-white p-4 text-sm leading-7 text-muted-foreground sm:p-5">
+                    {q.passage}
+                  </p>
 
-            <div className="mt-3 grid gap-2 text-sm md:grid-cols-2">
-              <p>A. {subQ.option_a}</p>
-              <p>B. {subQ.option_b}</p>
-              <p>C. {subQ.option_c}</p>
-              <p>D. {subQ.option_d}</p>
-            </div>
+                  {/* QUESTIONS */}
+                  {q.questions.map((subQ: any, idx: number) => (
+                    <div key={idx} className="mb-6 border-t pt-4">
+                      <p className="font-semibold">
+                        {idx + 1}. {subQ.question_text}
+                      </p>
 
-            <p className="mt-2 text-sm text-green-700">
-              Correct: {getCorrectAnswerText(subQ)}
-            </p>
+                      <div className="mt-3 grid gap-3 text-sm leading-7 md:grid-cols-2">
+                        <p>A. {subQ.option_a}</p>
+                        <p>B. {subQ.option_b}</p>
+                        <p>C. {subQ.option_c}</p>
+                        <p>D. {subQ.option_d}</p>
+                      </div>
 
-            <p className="text-sm text-muted-foreground">
-              {subQ.explanation}
-            </p>
-          </div>
-        ))}
+                      <p className="mt-2 text-sm text-green-700">
+                        Correct: {getCorrectAnswerText(subQ)}
+                      </p>
 
-      </div>
-    );
-  }
+                      <p className="text-sm text-muted-foreground">
+                        {subQ.explanation}
+                      </p>
+                    </div>
+                  ))}
 
-  // NORMAL QUESTION
-  return (
-    <div key={q.id || i} className="rounded-xl border bg-card p-6 shadow-soft">
-      {q.passage && (
-  <div className="mb-5 rounded-xl border bg-white p-5">
-    <p className="mb-2 text-sm font-semibold text-muted-foreground">
-      Read the paragraph.
-    </p>
-    <p className="leading-7 text-muted-foreground">
-      {q.passage}
-    </p>
-  </div>
-)}
-      <p className="font-semibold">
-        {i + 1}. {q.question_text}
-      </p>
+                </div>
+              );
+            }
 
-      <div className="mt-4 grid gap-2 text-sm md:grid-cols-2">
-        <p>A. {q.option_a}</p>
-        <p>B. {q.option_b}</p>
-        <p>C. {q.option_c}</p>
-        <p>D. {q.option_d}</p>
-      </div>
+            // NORMAL QUESTION
+            return (
+              <div key={q.id || i} className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:p-6">
+                {q.passage && (
+                  <div className="mb-5 max-h-[45vh] overflow-y-auto rounded-2xl border bg-white p-4 sm:p-5">
+                    <p className="mb-2 text-sm font-semibold text-muted-foreground">
+                      Read the paragraph.
+                    </p>
+                    <p className="leading-7 text-muted-foreground">
+                      {q.passage}
+                    </p>
+                  </div>
+                )}
+                <p className="font-semibold">
+                  {i + 1}. {q.question_text}
+                </p>
 
-      <p className="mt-4 text-sm text-green-700">
-        Correct: {getCorrectAnswerText(q)}
-      </p>
+                <div className="mt-3 grid gap-3 text-sm leading-7 md:grid-cols-2">
+                  <p>A. {q.option_a}</p>
+                  <p>B. {q.option_b}</p>
+                  <p>C. {q.option_c}</p>
+                  <p>D. {q.option_d}</p>
+                </div>
 
-      <p className="mt-2 text-sm text-muted-foreground">
-        {q.explanation}
-      </p>
+                <p className="mt-4 text-sm text-green-700">
+                  Correct: {getCorrectAnswerText(q)}
+                </p>
 
-      <Button className="mt-4" onClick={() => saveQuestion(q)}>
-        Approve & Save
-      </Button>
-    </div>
-  );
-})}
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {q.explanation}
+                </p>
+
+                <Button
+                  type="button"
+                  className="mt-4 w-full rounded-2xl sm:w-auto"
+                  onClick={() => saveQuestion(q)}
+                >
+                  Approve & Save
+                </Button>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

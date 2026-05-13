@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
+
 
 const TIME_FILTERS = [
   { label: "All", value: "all" },
@@ -263,14 +263,14 @@ const TutorDashboard = () => {
     "practice";
 
   return (
-    <div className="min-h-screen bg-background px-6 py-16">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-6xl space-y-8">
-        <div className="rounded-3xl border bg-card p-8 shadow-soft">
+      <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-8">
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
             Tutor Dashboard
           </p>
 
-          <h1 className="font-serif text-5xl text-primary">
+          <h1 className="font-serif text-3xl text-primary sm:text-5xl">
             Student Mistake Review
           </h1>
 
@@ -279,13 +279,13 @@ const TutorDashboard = () => {
           </p>
         </div>
 
-        <div className="rounded-3xl border bg-card p-6 shadow-soft">
+        <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-6">
           <label className="mb-2 block text-sm font-semibold text-primary">
             Select Student
           </label>
 
           <select
-            className="w-full rounded-xl border bg-white p-3"
+            className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
             value={selectedStudentId}
             onChange={(e) => setSelectedStudentId(e.target.value)}
           >
@@ -310,37 +310,37 @@ const TutorDashboard = () => {
 
         {selectedStudent && (
           <>
-            <div className="grid gap-5 md:grid-cols-4">
-              <div className="rounded-2xl border bg-card p-6 shadow-soft">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-2xl border bg-card p-5 shadow-soft sm:p-6">
                 <p className="text-sm text-muted-foreground">Student</p>
                 <p className="mt-3 text-2xl font-bold text-primary">
                   {selectedStudent.name}
                 </p>
               </div>
 
-              <div className="rounded-2xl border bg-card p-6 shadow-soft">
+              <div className="rounded-2xl border bg-card p-5 shadow-soft sm:p-6">
                 <p className="text-sm text-muted-foreground">Total Attempts</p>
-                <p className="mt-3 text-4xl font-bold text-primary">{total}</p>
+                <p className="mt-3 text-3xl sm:text-4xl font-bold text-primary">{total}</p>
               </div>
 
-              <div className="rounded-2xl border bg-card p-6 shadow-soft">
+              <div className="rounded-2xl border bg-card p-5 shadow-soft sm:p-6">
                 <p className="text-sm text-muted-foreground">Accuracy</p>
-                <p className="mt-3 text-4xl font-bold text-primary">
+                <p className="mt-3 text-3xl sm:text-4xl font-bold text-primary">
                   {accuracy}%
                 </p>
               </div>
 
-              <div className="rounded-2xl border bg-card p-6 shadow-soft">
+              <div className="rounded-2xl border bg-card p-5 shadow-soft sm:p-6">
                 <p className="text-sm text-muted-foreground">Mistakes</p>
-                <p className="mt-3 text-4xl font-bold text-red-600">
+                <p className="mt-3 text-3xl sm:text-4xl font-bold text-red-600">
                   {mistakes}
                 </p>
               </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-3xl border bg-card p-7 shadow-soft">
-                <h2 className="font-serif text-3xl text-primary">
+              <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-7">
+              <h2 className="font-serif text-2xl text-primary sm:text-3xl">
                   Weak Areas
                 </h2>
 
@@ -371,8 +371,8 @@ const TutorDashboard = () => {
                 </div>
               </div>
 
-              <div className="rounded-3xl border bg-card p-7 shadow-soft">
-                <h2 className="font-serif text-3xl text-primary">
+              <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-7">
+                <h2 className="font-serif text-2xl text-primary sm:text-3xl">
                   Tutor Feedback
                 </h2>
 
@@ -380,9 +380,11 @@ const TutorDashboard = () => {
                   Write feedback that will appear on the student's dashboard.
                 </p>
 
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
                   <Button
+                    type="button"
                     variant="outline"
+                    className="w-full sm:w-auto"
                     onClick={() =>
                       setFeedbackText(
                         `Please focus more on ${weakestSkill}. Review your mistakes carefully before moving to new questions.`
@@ -393,7 +395,9 @@ const TutorDashboard = () => {
                   </Button>
 
                   <Button
+                    type="button"
                     variant="outline"
+                    className="w-full sm:w-auto"
                     onClick={() =>
                       setFeedbackText(
                         "Good effort. Please continue practising regularly and review your incorrect answers before the next lesson."
@@ -405,13 +409,16 @@ const TutorDashboard = () => {
                 </div>
 
                 <textarea
-                  className="mt-5 min-h-[140px] w-full rounded-2xl border bg-white p-4 text-sm outline-none"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  className="mt-5 min-h-[140px] w-full resize-none rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   placeholder="Write feedback for this student..."
                   value={feedbackText}
                   onChange={(e) => setFeedbackText(e.target.value)}
                 />
 
-                <Button className="mt-4 w-full" onClick={submitFeedback}>
+<Button type="button" className="mt-4 h-12 w-full rounded-2xl" onClick={submitFeedback}>
                   Post Feedback
                 </Button>
 
@@ -432,10 +439,10 @@ const TutorDashboard = () => {
               </div>
             </div>
 
-            <div className="rounded-3xl border bg-card p-7 shadow-soft">
+            <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-7">
               <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <h2 className="font-serif text-3xl text-primary">
+                <h2 className="font-serif text-2xl text-primary sm:text-3xl">
                     Mistake List
                   </h2>
                   <p className="mt-2 text-sm text-muted-foreground">
@@ -445,7 +452,7 @@ const TutorDashboard = () => {
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <select
-                    className="rounded-xl border bg-white p-3 text-sm"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                     value={timeFilter}
                     onChange={(e) => setTimeFilter(e.target.value)}
                   >
@@ -457,7 +464,7 @@ const TutorDashboard = () => {
                   </select>
 
                   <select
-                    className="rounded-xl border bg-white p-3 text-sm"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                     value={gradeFilter}
                     onChange={(e) => setGradeFilter(e.target.value)}
                   >
@@ -469,7 +476,7 @@ const TutorDashboard = () => {
                   </select>
 
                   <select
-                    className="rounded-xl border bg-white p-3 text-sm"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                     value={skillFilter}
                     onChange={(e) => setSkillFilter(e.target.value)}
                   >
@@ -481,7 +488,7 @@ const TutorDashboard = () => {
                   </select>
 
                   <select
-                    className="rounded-xl border bg-white p-3 text-sm"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                     value={difficultyFilter}
                     onChange={(e) => setDifficultyFilter(e.target.value)}
                   >
@@ -512,7 +519,7 @@ const TutorDashboard = () => {
                     return (
                       <div
                         key={attempt.id}
-                        className="rounded-2xl border bg-background p-5"
+                        className="rounded-2xl border bg-background p-4 sm:p-5"
                       >
                         <div className="mb-3 flex flex-wrap gap-2 text-xs">
                           <span className="rounded-full bg-secondary px-3 py-1">
@@ -533,7 +540,7 @@ const TutorDashboard = () => {
                         </div>
 
                         {q?.passage && (
-                          <div className="mb-4 rounded-xl border bg-white p-4">
+                          <div className="mb-4 max-h-[45vh] overflow-y-auto rounded-2xl border bg-white p-4">
                             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
                               Passage
                             </p>
@@ -543,29 +550,29 @@ const TutorDashboard = () => {
                           </div>
                         )}
 
-                        <p className="font-semibold text-primary">
+<p className="text-base font-semibold leading-7 text-primary">
                           {index + 1}. {q?.question_text}
                         </p>
 
-                        <div className="mt-3 grid gap-2 text-sm md:grid-cols-2">
+                        <div className="mt-3 grid gap-3 text-sm leading-7 md:grid-cols-2">
                           <p>A. {q?.option_a}</p>
                           <p>B. {q?.option_b}</p>
                           <p>C. {q?.option_c}</p>
                           <p>D. {q?.option_d}</p>
                         </div>
 
-                        <div className="mt-4 grid gap-3 md:grid-cols-2">
-                          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-7 text-red-700">
                             Student answer: {attempt.selected_answer}
                           </div>
 
-                          <div className="rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-700">
+                          <div className="rounded-2xl border border-green-200 bg-green-50 p-4 text-sm leading-7 text-green-700">
                             Correct answer: {correctText}
                           </div>
                         </div>
 
                         {q?.explanation && (
-                          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                          <p className="mt-3 text-sm leading-7 text-muted-foreground">
                             Explanation: {q.explanation}
                           </p>
                         )}

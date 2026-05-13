@@ -491,7 +491,7 @@
           "SAT",
           "O Level"
         ],
-        "education": "Japan Waseda University",
+        "education": "Waseda University, Japan",
         "languages": "Japanese / English / Mandarin",
         "bio": "Specialises in trilingual education, international school preparation, and personalised academic planning.",
         "experience": [
@@ -512,7 +512,7 @@
           "Listening",
           "Accent Reduction"
         ],
-        "education": "National University of Singapore (NUS)",
+        "education": "National University of Singapore",
         "languages": "English / Mandarin",
         "bio": "Experienced in bilingual education, IB preparation, and helping students build confidence in academic English.",
         "experience": [
@@ -532,7 +532,7 @@
           "Problem Solving",
           "AEIS Math"
         ],
-        "education": "Australia University of Sydney",
+        "education": "University of Sydney, Australia",
         "languages": "English / Mandarin",
         "bio": "Focuses on mathematical logic, structured problem solving, and helping students adapt to international curricula.",
         "experience": [
@@ -574,7 +574,7 @@
           "Reading",
           "Speaking"
         ],
-        "education": "China University of Fuzhou",
+        "education": "University of Fuzhou, China",
         "languages": "English / Mandarin",
         "bio": "Specialises in building strong English foundations through patient guidance and structured language learning.",
         "experience": [
@@ -657,6 +657,7 @@
   "alerts": {
     "enterPassword": "Please enter a new password.",
     "success": "Password updated successfully."
-  }
+  },
+  "passwordLength": "Password must be at least 6 characters."
 }
 }

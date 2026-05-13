@@ -2,6 +2,7 @@ import { X, GraduationCap, Globe2, MessageCircle, CheckCircle } from "lucide-rea
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 type Tutor = {
   name: string;
@@ -23,20 +24,31 @@ type TutorProfileModalProps = {
 const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
   const { t } = useTranslation();
 
+  useEffect(() => {
+    if (tutor) {
+      document.body.style.overflow = "hidden";
+    }
+  
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [tutor]);
+
   if (!tutor) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-6 backdrop-blur-sm">
-      <div className="relative grid max-h-[88vh] w-full max-w-5xl overflow-hidden rounded-[2rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid-cols-[0.42fr_0.58fr]">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-3 py-4 backdrop-blur-sm sm:p-6">
+      <div className="relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-y-auto rounded-[1.6rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid md:max-h-[88vh] md:grid-cols-[0.42fr_0.58fr] md:overflow-hidden md:rounded-[2rem]">
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-soft transition hover:bg-secondary"
+          className="absolute right-4 top-4 z-20 ml-auto mr-4 mt-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-soft transition hover:bg-secondary md:absolute md:right-5 md:top-5 md:m-0"
         >
           <X className="h-5 w-5 text-primary" />
         </button>
 
-        <div className="bg-[#fbfaf6] p-8 text-center md:p-10">
-          <div className="mx-auto mb-6 flex h-36 w-36 items-center justify-center overflow-hidden rounded-[2rem] bg-secondary font-serif text-5xl text-primary shadow-soft">
+        {/* LEFT */}
+        <div className="bg-[#fbfaf6] px-6 pb-8 pt-2 text-center sm:p-8 md:p-10">
+          <div className="mx-auto mb-5 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.6rem] bg-secondary font-serif text-4xl text-primary shadow-soft sm:h-36 sm:w-36 sm:rounded-[2rem] sm:text-5xl">
             {tutor.image ? (
               <img
                 src={tutor.image}
@@ -48,7 +60,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
             )}
           </div>
 
-          <h2 className="font-serif text-4xl text-primary">
+          <h2 className="font-serif text-3xl text-primary sm:text-4xl">
             {tutor.name}
           </h2>
 
@@ -56,14 +68,14 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
             {tutor.role}
           </p>
 
-          <div className="mt-8 space-y-5 text-left text-sm">
+          <div className="mt-6 space-y-5 text-left text-sm sm:mt-8">
             <div className="flex gap-3">
               <GraduationCap className="mt-1 h-5 w-5 shrink-0 text-primary" />
               <div>
                 <p className="font-semibold text-primary">
                   {t("tutorsPage.labels.education")}
                 </p>
-                <p className="mt-1 text-muted-foreground">
+                <p className="mt-1 leading-6 text-muted-foreground">
                   {tutor.education}
                 </p>
               </div>
@@ -75,47 +87,53 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
                 <p className="font-semibold text-primary">
                   {t("tutorsPage.labels.languages")}
                 </p>
-                <p className="mt-1 text-muted-foreground">
+                <p className="mt-1 leading-6 text-muted-foreground">
                   {tutor.languages}
                 </p>
               </div>
             </div>
           </div>
 
-          <Link to="/enquiry">
-            <Button className="mt-8 h-12 w-full rounded-xl bg-primary text-sm">
-              {t("landing.headTutors.book")}
-            </Button>
-          </Link>
+          <div className="sticky bottom-0 mt-7 bg-[#fbfaf6] pt-4 sm:mt-8">
+            <Link to="/enquiry" onClick={onClose}>
+              <Button className="h-12 w-full rounded-xl bg-primary text-sm">
+                {t("landing.headTutors.book")}
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        <div className="overflow-y-auto p-8 md:p-10">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#b8873a]">
+        {/* RIGHT */}
+        <div className="px-6 py-8 sm:p-8 md:overflow-y-auto md:p-10">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#b8873a] sm:text-sm">
             {t("tutorsPage.popup.label")}
           </p>
 
-          <h3 className="mt-4 font-serif text-3xl text-primary">
+          <h3 className="mt-4 font-serif text-2xl text-primary sm:text-3xl">
             {t("tutorsPage.popup.about", { name: tutor.name })}
           </h3>
 
-          <p className="mt-5 text-base leading-8 text-muted-foreground">
+          <p className="mt-5 text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8">
             {tutor.bio || tutor.desc}
           </p>
 
-          <h3 className="mt-8 font-serif text-2xl text-primary">
+          <h3 className="mt-8 font-serif text-xl text-primary sm:text-2xl">
             {t("tutorsPage.popup.experience")}
           </h3>
 
           <div className="mt-4 space-y-3">
             {tutor.experience.map((item) => (
-              <div key={item} className="flex items-start gap-3 text-sm text-muted-foreground">
-                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#b8873a]" />
+              <div
+                key={item}
+                className="flex items-start gap-3 text-sm leading-6 text-muted-foreground"
+              >
+                <CheckCircle className="mt-1 h-4 w-4 shrink-0 text-[#b8873a]" />
                 <span>{item}</span>
               </div>
             ))}
           </div>
 
-          <h3 className="mt-8 font-serif text-2xl text-primary">
+          <h3 className="mt-8 font-serif text-xl text-primary sm:text-2xl">
             {t("tutorsPage.popup.subjects")}
           </h3>
 
@@ -123,7 +141,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
             {tutor.subjects.map((subject) => (
               <span
                 key={subject}
-                className="rounded-full bg-secondary px-4 py-2 text-xs font-medium text-primary"
+                className="rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-primary sm:px-4 sm:py-2"
               >
                 {subject}
               </span>

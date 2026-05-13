@@ -8,12 +8,9 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
-  Copy,
   Plus,
-  RotateCcw,
   X,
 } from "lucide-react";
-import Footer from "@/components/Footer";
 
 type LessonStatus =
   | "pending"
@@ -40,8 +37,8 @@ export default function TutorLessons() {
   const [filterStudentId, setFilterStudentId] = useState("all");
   const [selectedStudentId, setSelectedStudentId] = useState("");
   const [showReschedule, setShowReschedule] = useState(false);
-const [rescheduledDate, setRescheduledDate] = useState("");
-const [rescheduleReason, setRescheduleReason] = useState("");
+  const [rescheduledDate, setRescheduledDate] = useState("");
+  const [rescheduleReason, setRescheduleReason] = useState("");
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
@@ -106,7 +103,7 @@ const [rescheduleReason, setRescheduleReason] = useState("");
       setSelectedStudentId(studentData[0].id);
     }
   };
-  
+
 
   const fetchLessons = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -192,16 +189,16 @@ const [rescheduleReason, setRescheduleReason] = useState("");
     }
 
     setLessons((prev) =>
-  prev.map((lesson) =>
-    lesson.id === lessonId
-      ? {
-          ...lesson,
-          status: newStatus,
-          checked_off_at: new Date().toISOString(),
-        }
-      : lesson
-  )
-);
+      prev.map((lesson) =>
+        lesson.id === lessonId
+          ? {
+            ...lesson,
+            status: newStatus,
+            checked_off_at: new Date().toISOString(),
+          }
+          : lesson
+      )
+    );
 
     setSelectedLesson(null);
     setCheckoffNote("");
@@ -210,121 +207,121 @@ const [rescheduleReason, setRescheduleReason] = useState("");
 
 
   const submitReschedule = async () => {
-  if (!selectedLesson || !rescheduledDate) {
-    alert("Please select a new date.");
-    return;
-  }
+    if (!selectedLesson || !rescheduledDate) {
+      alert("Please select a new date.");
+      return;
+    }
 
-  const { error } = await supabase
-    .from("tutor_lessons")
-    .update({
-      status: "reschedule_requested",
-      rescheduled_date: rescheduledDate,
-      reschedule_reason: rescheduleReason.trim() || null,
-      checked_off_at: new Date().toISOString(),
-    })
-    .eq("id", selectedLesson.id);
+    const { error } = await supabase
+      .from("tutor_lessons")
+      .update({
+        status: "reschedule_requested",
+        rescheduled_date: rescheduledDate,
+        reschedule_reason: rescheduleReason.trim() || null,
+        checked_off_at: new Date().toISOString(),
+      })
+      .eq("id", selectedLesson.id);
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+    if (error) {
+      alert(error.message);
+      return;
+    }
 
-  setLessons((prev) =>
-    prev.map((lesson) =>
-      lesson.id === selectedLesson.id
-        ? {
+    setLessons((prev) =>
+      prev.map((lesson) =>
+        lesson.id === selectedLesson.id
+          ? {
             ...lesson,
             status: "reschedule_requested",
             rescheduled_date: rescheduledDate,
             reschedule_reason: rescheduleReason,
           }
-        : lesson
-    )
-  );
+          : lesson
+      )
+    );
 
-setSelectedLesson(null);
-setShowReschedule(false);
-setRescheduledDate("");
-setRescheduleReason("");
-};
+    setSelectedLesson(null);
+    setShowReschedule(false);
+    setRescheduledDate("");
+    setRescheduleReason("");
+  };
   const getStudentName = (studentId: string) => {
-  const student = students.find((s) => s.id === studentId);
-  return student?.name || studentId;
-};
+    const student = students.find((s) => s.id === studentId);
+    return student?.name || studentId;
+  };
 
 
 
-const filteredLessons =
-  filterStudentId === "all"
-    ? lessons
-    : lessons.filter(
+  const filteredLessons =
+    filterStudentId === "all"
+      ? lessons
+      : lessons.filter(
         (lesson) => lesson.student_id === filterStudentId
       );
-const totalHours = filteredLessons.reduce(
-  (sum, lesson) => sum + Number(lesson.hours || 0),
-  0
-);
+  const totalHours = filteredLessons.reduce(
+    (sum, lesson) => sum + Number(lesson.hours || 0),
+    0
+  );
 
-const completed = filteredLessons.filter(
-  (lesson) =>
-    lesson.status === "completed" ||
-    lesson.status === "student_absent"
-).length;
+  const completed = filteredLessons.filter(
+    (lesson) =>
+      lesson.status === "completed" ||
+      lesson.status === "student_absent"
+  ).length;
 
-const pending = filteredLessons.filter(
-  (lesson) =>
-    lesson.status === "pending" ||
-    lesson.status === "reschedule_requested"
-).length;
-      
-const sortedLessons = [...filteredLessons].sort((a, b) => {
-  const isDoneA =
-    a.status === "completed" || a.status === "student_absent";
-  const isDoneB =
-    b.status === "completed" || b.status === "student_absent";
+  const pending = filteredLessons.filter(
+    (lesson) =>
+      lesson.status === "pending" ||
+      lesson.status === "reschedule_requested"
+  ).length;
 
-  // completed / absent lessons go bottom
-  if (isDoneA !== isDoneB) return isDoneA ? 1 : -1;
+  const sortedLessons = [...filteredLessons].sort((a, b) => {
+    const isDoneA =
+      a.status === "completed" || a.status === "student_absent";
+    const isDoneB =
+      b.status === "completed" || b.status === "student_absent";
 
-  // use rescheduled date first if it exists
-  const dateA = a.rescheduled_date || a.lesson_date;
-  const dateB = b.rescheduled_date || b.lesson_date;
+    // completed / absent lessons go bottom
+    if (isDoneA !== isDoneB) return isDoneA ? 1 : -1;
 
-  return new Date(dateA).getTime() - new Date(dateB).getTime();
-});
+    // use rescheduled date first if it exists
+    const dateA = a.rescheduled_date || a.lesson_date;
+    const dateB = b.rescheduled_date || b.lesson_date;
+
+    return new Date(dateA).getTime() - new Date(dateB).getTime();
+  });
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] px-6 py-10">
+    <div className="min-h-screen bg-[#f7f9fc] px-4 py-8 sm:px-6 sm:py-10">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-[32px] border border-[#dbe5f0] p-10 mb-8">
+        <div className="mb-8 rounded-[1.8rem] border border-[#dbe5f0] bg-white p-5 sm:rounded-[32px] sm:p-10">
           <p className="text-[#f7c600] uppercase tracking-[3px] font-semibold text-sm mb-4">
             Tutor Lessons
           </p>
 
-          <h1 className="font-serif text-6xl text-[#0b234a] leading-tight">
+          <h1 className="font-serif text-3xl leading-tight text-[#0b234a] sm:text-5xl lg:text-6xl">
             Lesson Schedule &
             <br />
             Check-off
           </h1>
 
-          <p className="text-slate-500 mt-5 text-lg max-w-2xl">
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-500 sm:text-lg sm:leading-relaxed">
             Add lessons, record completed sessions, and keep monthly tracking
             accurate.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             icon={<Calendar size={22} />}
             title="Total Lessons"
             value={filteredLessons.length}
           />
           <StatCard
-  icon={<Clock size={22} />}
-  title="Total Hours"
-  value={totalHours}
-/>
+            icon={<Clock size={22} />}
+            title="Total Hours"
+            value={totalHours}
+          />
 
           <StatCard
             icon={<CheckCircle2 size={22} />}
@@ -338,30 +335,31 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
             value={pending}
           />
         </div>
-        <div className="mb-8 flex items-center gap-4">
-  <p className="text-sm font-semibold text-[#0b234a]">
-    Filter by Student
-  </p>
+        <div className="mb-8 grid gap-3 sm:flex sm:items-center sm:gap-4">
+          <p className="text-sm font-semibold text-[#0b234a]">
+            Filter by Student
+          </p>
 
-  <select
-    value={filterStudentId}
-    onChange={(e) => setFilterStudentId(e.target.value)}
-    className="border border-[#dbe5f0] rounded-2xl px-4 py-3 bg-white outline-none"
-  >
-    <option value="all">All Students</option>
+          <select
+            value={filterStudentId}
+            onChange={(e) => setFilterStudentId(e.target.value)}
+            className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10 sm:w-auto"
+          >
+            <option value="all">All Students</option>
 
-    {students.map((student) => (
-      <option key={student.id} value={student.id}>
-        {student.name}
-      </option>
-    ))}
-  </select>
-</div>
+            {students.map((student) => (
+              <option key={student.id} value={student.id}>
+                {student.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <div className="flex flex-wrap gap-4 mb-8">
+        <div className="mb-8 grid gap-3 sm:flex sm:flex-wrap">
           <button
+            type="button"
             onClick={() => setShowAdd(true)}
-            className="bg-[#0b234a] text-white px-6 py-4 rounded-2xl font-semibold flex items-center gap-2"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0b234a] px-6 py-4 font-semibold text-white sm:w-auto"
           >
             <Plus size={18} />
             Add Lesson
@@ -370,23 +368,23 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
 
         <div className="space-y-5">
           {lessons.length === 0 ? (
-            <div className="bg-white border border-[#dbe5f0] rounded-[28px] p-8 text-slate-500">
+         <div className="rounded-[1.8rem] border border-[#dbe5f0] bg-white p-5 text-sm leading-7 text-slate-500 sm:rounded-[28px] sm:p-8 sm:text-base">
               No lessons added yet.
             </div>
           ) : (
             sortedLessons.map((lesson) => (
               <div
                 key={lesson.id}
-                className="bg-white border border-[#dbe5f0] rounded-[28px] p-6 flex flex-col lg:flex-row justify-between gap-6"
+                className="flex flex-col gap-5 rounded-[1.8rem] border border-[#dbe5f0] bg-white p-5 sm:p-6 lg:flex-row lg:justify-between"
               >
                 <div>
-                 <p className="text-sm text-[#f7c600] font-semibold mb-2">
-  {lesson.status === "reschedule_requested" &&
-  lesson.rescheduled_date
-    ? lesson.rescheduled_date
-    : lesson.lesson_date}{" "}
-  · {lesson.hours} hour(s)
-</p>
+                  <p className="text-sm text-[#f7c600] font-semibold mb-2">
+                    {lesson.status === "reschedule_requested" &&
+                      lesson.rescheduled_date
+                      ? lesson.rescheduled_date
+                      : lesson.lesson_date}{" "}
+                    · {lesson.hours} hour(s)
+                  </p>
                   <h3 className="text-2xl font-semibold text-[#0b234a]">
                     {getStudentName(lesson.student_id)}
                   </h3>
@@ -404,27 +402,29 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
                       </span>
                     )}
                     {lesson.status === "reschedule_requested" && lesson.rescheduled_date && (
-  <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm">
-    Rescheduled: {lesson.lesson_date} → {lesson.rescheduled_date}
-  </span>
-)}
+                      <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm">
+                        Rescheduled: {lesson.lesson_date} → {lesson.rescheduled_date}
+                      </span>
+                    )}
 
                     <StatusBadge status={lesson.status} />
                   </div>
                 </div>
 
-                <div className="flex items-center">
+                <div className="flex items-center lg:justify-end">
                   {lesson.status === "pending" ? (
                     <button
+                      type="button"
                       onClick={() => setSelectedLesson(lesson)}
-                      className="bg-[#f7c600] text-[#0b234a] px-6 py-4 rounded-2xl font-semibold"
+                      className="w-full rounded-2xl bg-[#f7c600] px-6 py-4 font-semibold text-[#0b234a] sm:w-auto"
                     >
                       Check Off
                     </button>
                   ) : (
                     <button
+                      type="button"
                       onClick={() => setSelectedLesson(lesson)}
-                      className="bg-white border border-[#dbe5f0] text-[#0b234a] px-6 py-4 rounded-2xl font-semibold"
+                      className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-6 py-4 font-semibold text-[#0b234a] sm:w-auto"
                     >
                       View / Update
                     </button>
@@ -438,7 +438,7 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
 
       {showAdd && (
         <Modal onClose={() => setShowAdd(false)}>
-          <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
+          <h2 className="mb-2 pr-10 font-serif text-3xl text-[#0b234a] sm:text-4xl">
             Add Lesson
           </h2>
 
@@ -455,7 +455,7 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
               <select
                 value={selectedStudentId}
                 onChange={(e) => setSelectedStudentId(e.target.value)}
-                className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white"
+                className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
               >
                 {students.length === 0 && (
                   <option value="">No assigned students</option>
@@ -501,7 +501,8 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
           </div>
 
           <button
-            className="w-full mt-6 bg-[#0b234a] text-white py-4 rounded-2xl font-semibold"
+            type="button"
+           className="mt-6 w-full rounded-2xl bg-[#0b234a] py-4 font-semibold text-white"
             onClick={addLesson}
           >
             Save Lesson
@@ -512,17 +513,18 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
 
       {selectedLesson && !showReschedule && (
         <Modal onClose={() => setSelectedLesson(null)}>
-          <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
+          <h2 className="mb-2 pr-10 font-serif text-3xl text-[#0b234a] sm:text-4xl">
             Check Off Lesson
           </h2>
 
           <p className="text-slate-500 mb-6">
-  {getStudentName(selectedLesson.student_id)} ·{" "}
-  {selectedLesson.lesson_date} · {selectedLesson.hours} hour(s)
-</p>
+            {getStudentName(selectedLesson.student_id)} ·{" "}
+            {selectedLesson.lesson_date} · {selectedLesson.hours} hour(s)
+          </p>
 
           <div className="space-y-3 mb-5">
             <button
+              type="button"
               onClick={() => checkOffLesson(selectedLesson.id, "completed")}
               className="w-full text-left px-5 py-4 rounded-2xl border border-green-300 bg-green-50 text-green-700"
             >
@@ -530,6 +532,7 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
             </button>
 
             <button
+              type="button"
               onClick={() =>
                 checkOffLesson(selectedLesson.id, "student_absent")
               }
@@ -539,57 +542,62 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
             </button>
 
             <button
-  onClick={() => {
-    setShowReschedule(true);
-  }}
-  className="w-full text-left px-5 py-4 rounded-2xl border border-blue-300 bg-blue-50 text-blue-700"
->
-  Reschedule Lesson
-</button>
+              type="button"
+              onClick={() => {
+                setShowReschedule(true);
+              }}
+              className="w-full text-left px-5 py-4 rounded-2xl border border-blue-300 bg-blue-50 text-blue-700"
+            >
+              Reschedule Lesson
+            </button>
           </div>
 
           <textarea
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
             placeholder="Optional check-off note..."
             value={checkoffNote}
             onChange={(e) => setCheckoffNote(e.target.value)}
-            className="w-full border border-[#dbe5f0] rounded-2xl p-4 min-h-28 outline-none"
+            className="min-h-28 w-full resize-none rounded-2xl border border-[#dbe5f0] p-4 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
           />
         </Modal>
       )}
       {showReschedule && selectedLesson && (
-  <Modal onClose={() => setShowReschedule(false)}>
-    <h2 className="font-serif text-4xl text-[#0b234a] mb-2">
-      Reschedule Lesson
-    </h2>
+        <Modal onClose={() => setShowReschedule(false)}>
+          <h2 className="mb-2 pr-10 font-serif text-3xl text-[#0b234a] sm:text-4xl">
+            Reschedule Lesson
+          </h2>
 
-    <p className="text-slate-500 mb-6">
-      {getStudentName(selectedLesson.student_id)} · Original Date:{" "}
-      {selectedLesson.lesson_date}
-    </p>
+          <p className="text-slate-500 mb-6">
+            {getStudentName(selectedLesson.student_id)} · Original Date:{" "}
+            {selectedLesson.lesson_date}
+          </p>
 
-    <DateInput
-      label="New Lesson Date"
-      value={rescheduledDate}
-      onChange={setRescheduledDate}
-    />
+          <DateInput
+            label="New Lesson Date"
+            value={rescheduledDate}
+            onChange={setRescheduledDate}
+          />
 
-    <div className="mt-4">
-      <TextAreaInput
-        label="Reschedule Reason"
-        placeholder="Reason for rescheduling..."
-        optional
-        value={rescheduleReason}
-        onChange={setRescheduleReason}
-      />
-    </div>
+          <div className="mt-4">
+            <TextAreaInput
+              label="Reschedule Reason"
+              placeholder="Reason for rescheduling..."
+              optional
+              value={rescheduleReason}
+              onChange={setRescheduleReason}
+            />
+          </div>
 
-    <button
-      onClick={submitReschedule}
-      className="w-full mt-6 bg-[#0b234a] text-white py-4 rounded-2xl font-semibold"
-    >
-      Submit Reschedule
-    </button>
-  </Modal>)}
+          <button
+            type="button"
+            onClick={submitReschedule}
+            className="w-full mt-6 bg-[#0b234a] text-white py-4 rounded-2xl font-semibold"
+          >
+            Submit Reschedule
+          </button>
+        </Modal>)}
     </div>
   );
 }
@@ -597,14 +605,14 @@ const sortedLessons = [...filteredLessons].sort((a, b) => {
 
 function StatCard({ icon, title, value }: any) {
   return (
-    <div className="bg-white border border-[#dbe5f0] rounded-[28px] p-7">
+    <div className="rounded-[1.8rem] border border-[#dbe5f0] bg-white p-5 sm:rounded-[28px] sm:p-7">
       <div className="w-14 h-14 rounded-2xl bg-[#fff7d6] flex items-center justify-center text-[#0b234a] mb-5">
         {icon}
       </div>
 
       <p className="text-slate-500 mb-1">{title}</p>
 
-      <h3 className="text-5xl font-serif text-[#0b234a]">{value}</h3>
+      <h3 className="font-serif text-3xl text-[#0b234a] sm:text-5xl">{value}</h3>
     </div>
   );
 }
@@ -640,7 +648,7 @@ function DateInput({ label, value, onChange }: any) {
         type="date"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none bg-white text-[#0b234a]"
+        className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base text-[#0b234a] outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
       />
     </div>
   );
@@ -653,12 +661,13 @@ function NumberInput({ label, placeholder, value, onChange }: any) {
 
       <input
         type="number"
+        inputMode="decimal"
         step="0.25"
         min="0"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 outline-none"
+        className="w-full rounded-2xl border border-[#dbe5f0] bg-white px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
       />
     </div>
   );
@@ -683,10 +692,13 @@ function TextAreaInput({
       </p>
 
       <textarea
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck={false}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border border-[#dbe5f0] rounded-2xl px-4 py-4 min-h-28 outline-none resize-none"
+        className="min-h-28 w-full resize-none rounded-2xl border border-[#dbe5f0] px-4 py-3 text-base outline-none transition focus:border-[#0b234a] focus:ring-4 focus:ring-[#0b234a]/10"
       />
     </div>
   );
@@ -694,11 +706,12 @@ function TextAreaInput({
 
 function Modal({ children, onClose }: any) {
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-[32px] p-8 w-full max-w-lg relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-3 backdrop-blur-sm sm:p-4">
+      <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[1.8rem] bg-white p-5 shadow-[0_30px_100px_rgba(0,0,0,0.25)] sm:rounded-[32px] sm:p-8">
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400"
+          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
         >
           <X />
         </button>
@@ -707,5 +720,5 @@ function Modal({ children, onClose }: any) {
       </div>
     </div>
   );
-  
+
 }

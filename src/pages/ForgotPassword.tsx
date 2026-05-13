@@ -39,34 +39,45 @@ const ForgotPassword = () => {
         <div className="min-h-screen bg-gradient-to-br from-[#f7f6f3] via-[#f1eee7] to-[#e8e3d8]">
             <NavBar />
 
-            <div className="mx-auto max-w-xl px-6 py-24">
-                <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
+            <div className="mx-auto max-w-xl px-4 py-16 sm:px-6 sm:py-24">
+                <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
                     <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-                    {t("forgotPassword.label")}
+                        {t("forgotPassword.label")}
                     </p>
 
-                    <h1 className="mt-2 font-serif text-4xl text-primary">
-                    {t("forgotPassword.title")}
+                    <h1 className="mt-2 font-serif text-3xl text-primary sm:text-4xl">
+                        {t("forgotPassword.title")}
                     </h1>
 
                     <p className="mt-3 text-sm text-muted-foreground">
-                    {t("forgotPassword.description")}
+                        {t("forgotPassword.description")}
                     </p>
 
                     <div className="mt-8 space-y-5">
                         <input
-                            className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                            type="email"
+                            inputMode="email"
+                            autoComplete="email"
+                            className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                             placeholder={t("forgotPassword.placeholder")}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
 
                         <Button
-                            className="h-12 w-full rounded-2xl"
+                            type="button"
+                            className="h-12 w-full rounded-2xl text-sm sm:text-base"
                             onClick={handleReset}
                             disabled={loading}
                         >
-                            {loading ? t("forgotPassword.loading") : t("forgotPassword.button")}
+                            {loading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                    {t("forgotPassword.loading")}
+                                </span>
+                            ) : (
+                                t("forgotPassword.button")
+                            )}
                         </Button>
                     </div>
                 </div>

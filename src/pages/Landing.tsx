@@ -23,6 +23,7 @@ import TutorProfileModal from "@/components/TutorProfileModal";
 
 
 
+
 const HeroFeature = ({
   icon: Icon,
   title,
@@ -42,6 +43,7 @@ const HeroFeature = ({
 );
 
 const Landing = () => {
+  
   const { t } = useTranslation();
   const [selectedTutor, setSelectedTutor] = useState<any | null>(null);
 
@@ -50,7 +52,7 @@ const Landing = () => {
       name: "Mimi",
       role: t("landing.tutors.mimi.role"),
       image: "/tutors/mimi_new.jpg",
-      tags: ["TOEFL 119", "HSK 6", "JLPT N1"],
+      tags: ["TOEFL 119", "IELTS 8.5", "JLPT N1"],
       desc: t("landing.tutors.mimi.desc"),
       highlight: "MAP · TOEFL · Admissions",
       education: t("landing.tutors.mimi.education"),
@@ -94,7 +96,7 @@ const Landing = () => {
         </div>
 
         <div className="relative z-10 mx-auto max-w-[1440px]">
-          <div className="grid min-h-[660px] items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="grid min-h-[auto] items-center gap-10 py-4 lg:min-h-[660px] lg:grid-cols-[0.8fr_1.2fr]">
             {/* LEFT */}
             <div className="relative z-20 w-full max-w-[560px]">
               <div className="mb-5 flex items-center gap-3">
@@ -104,19 +106,19 @@ const Landing = () => {
                 </p>
               </div>
 
-              <h1 className="max-w-[760px] font-serif text-[clamp(2.6rem,3.8vw,4.2rem)] font-medium leading-[1.05] text-primary">
+              <h1 className="max-w-[760px] font-serif text-[2.5rem] font-medium leading-[1.08] text-primary sm:text-[3.2rem] lg:text-[clamp(2.6rem,3.8vw,4.2rem)]">
                 {t("landing.hero.title")}
-                <span className="relative mt-2 block whitespace-nowrap italic text-accent">
+                <span className="relative mt-2 block italic leading-tight text-accent">
                   {t("landing.hero.accent")}
                   <span className="absolute -bottom-2 left-0 h-[10px] w-[min(340px,100%)] rounded-full bg-accent/20" />
                 </span>
               </h1>
 
-              <p className="mt-7 max-w-[520px] text-base leading-8 text-slate-600 sm:text-lg">
+              <p className="mt-7 max-w-[520px] text-sm leading-7 text-slate-600 sm:text-base lg:text-lg">
                 {t("landing.hero.subtitle")}
               </p>
 
-              <div className="mt-8 grid max-w-[680px] grid-cols-2 gap-6 sm:grid-cols-4">
+              <div className="mt-8 grid max-w-[680px] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6">
                 <HeroFeature
                   icon={BookOpen}
                   title={t("landing.features.tutors.title")}
@@ -139,9 +141,9 @@ const Landing = () => {
                 />
               </div>
 
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link to="/enquiry">
-                  <Button className="h-14 w-full rounded-2xl bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.22)] sm:w-auto">
+                  <Button className="h-12 w-full rounded-2xl text-sm sm:h-14 sm:text-base bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.22)] sm:w-auto">
                     {t("landing.buttons.enquire")}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
@@ -150,7 +152,7 @@ const Landing = () => {
                 <Link to="/subjects">
                   <Button
                     variant="outline"
-                    className="h-14 w-full rounded-2xl border-primary/20 bg-white/80 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto"
+                    className="h-12 w-full rounded-2xl text-sm sm:h-14 sm:text-base border-primary/20 bg-white/80 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto"
                   >
                     {t("landing.buttons.programs")}
                   </Button>
@@ -176,7 +178,7 @@ const Landing = () => {
             </div>
 
             {/* MOBILE IMAGE ONLY */}
-            <div className="relative overflow-hidden rounded-[2rem] lg:hidden">
+            <div className="relative overflow-hidden rounded-[1.6rem] lg:hidden">
               <img
                 src="/hero/luna_girl.jpeg"
                 alt="Luna Education student studying"
@@ -186,7 +188,7 @@ const Landing = () => {
           </div>
 
           {/* BOTTOM STATS */}
-          <div className="relative z-30 mx-auto grid max-w-[1440px] gap-4 rounded-[2rem] border border-white/80 bg-white/85 p-5 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-5">
+          <div className="relative z-30 mx-auto grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 rounded-[2rem] border border-white/80 bg-white/85 p-5 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-5">
             {[
               {
                 icon: Users,
@@ -216,14 +218,14 @@ const Landing = () => {
             ].map((item) => (
               <div
                 key={item.title}
-                className="flex min-w-0 items-center gap-4 lg:border-r lg:border-primary/10 lg:last:border-r-0"
+                className="flex min-w-0 items-center gap-3 rounded-2xl bg-white/70 p-3 lg:rounded-none lg:bg-transparent lg:p-0 lg:border-r lg:border-primary/10 lg:last:border-r-0"
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 sm:h-14 sm:w-14">
                   <item.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                 </div>
 
                 <div className="min-w-0">
-                  <p className="font-serif text-2xl text-primary sm:text-3xl">
+                  <p className="font-serif text-xl text-primary sm:text-2xl lg:text-3xl">
                     {item.value}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
@@ -237,14 +239,14 @@ const Landing = () => {
       </section>
 
       {/* HEAD TUTORS */}
-      <section className="relative overflow-hidden bg-white px-6 py-16">
-        <div className="mx-auto grid max-w-[1500px] items-center gap-24 px-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <section className="relative overflow-hidden bg-white px-4 py-14 sm:px-6 sm:py-16">
+      <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-0 lg:gap-24 lg:px-6 lg:grid-cols-[1.05fr_0.95fr]">
           {/* LEFT COPY */}
           <div className="self-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-[#b8873a]">
               {t("landing.headTutors.label")}
             </p>
-            <h2 className="mt-5 max-w-[720px] font-serif text-5xl leading-tight text-primary">
+            <h2 className="mt-5 max-w-[720px] font-serif text-3xl leading-tight text-primary sm:text-4xl lg:text-5xl">
               {t("landing.headTutors.title")}
             </h2>
 
@@ -268,15 +270,17 @@ const Landing = () => {
               return (
                 <div
                   key={tutor.name}
-                  className={`group flex min-h-[240px] w-full max-w-[760px] items-center gap-8 rounded-[2rem] border border-white/70 bg-[#f8f6f1] px-8 py-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)] ${index === 1 ? "lg:ml-28" : ""
-                    }`}
+                  className={`group flex flex-col items-start gap-6 rounded-[2rem] border border-white/70 bg-[#f8f6f1] p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)] lg:flex-row lg:items-center sm:gap-8 sm:px-8 sm:py-6 lg:min-h-[240px] lg:max-w-[760px] ${
+                    index === 1 ? "lg:ml-28" : ""
+                  }`}
                 >
-                  <div className="h-[200px] w-[210px] shrink-0 overflow-hidden rounded-[3rem] bg-secondary">
+                  <div className="h-[260px] w-full overflow-hidden rounded-[2rem] bg-secondary sm:h-[200px] sm:w-[210px] sm:shrink-0 sm:rounded-[3rem]">
                     <img
                       src={tutor.image}
                       alt={tutor.name}
-                      className={`h-full w-full scale-[1.35] object-cover object-top transition duration-500 ${tutor.name === "Mimi" ? "translate-x-2" : ""
-                        }`}
+                      className={`h-full w-full object-cover object-top transition duration-500 lg:scale-[1.35] ${
+                        tutor.name === "Mimi" ? "lg:translate-x-2" : ""
+                      }`}
                     />
                   </div>
 
@@ -287,7 +291,7 @@ const Landing = () => {
                       {t("landing.headTutors.cardLabel")}
                     </p>
 
-                    <h3 className="mt-2 font-serif text-[42px] leading-none text-primary">
+                    <h3 className="mt-2 font-serif text-3xl leading-none text-primary sm:text-[42px]">
                       {tutor.name}
                     </h3>
 
@@ -318,9 +322,9 @@ const Landing = () => {
                       </Link>
                     )}
 
-                    <div className="mt-6 flex flex-nowrap items-center gap-3">  <Button
+<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-nowrap sm:items-center"> <Button
   onClick={() => setSelectedTutor(tutor)}
-  className="h-11 rounded-xl bg-primary px-6 text-sm"
+  className="h-11 w-full rounded-xl bg-primary px-6 text-sm sm:w-auto"
 >
   {t("landing.headTutors.viewProfile")}
   <ArrowRight className="ml-2 h-4 w-4" />
@@ -328,7 +332,7 @@ const Landing = () => {
                       <Link to="/enquiry">
                         <Button
                           variant="outline"
-                          className="h-11 rounded-xl border-[#b8873a]/30 bg-white px-6 text-sm text-[#b8873a]"
+                          className="h-11 w-full rounded-xl border-[#b8873a]/30 bg-white px-6 text-sm text-[#b8873a] sm:w-auto"
                         >
                           {t("landing.headTutors.book")}
                         </Button>
@@ -342,8 +346,8 @@ const Landing = () => {
         </div>
       </section>
       {/* TRUST STRIP */}
-<section className="border-y bg-secondary/40 px-6 py-10">
-  <div className="mx-auto grid max-w-6xl gap-6 text-center md:grid-cols-3">
+      <section className="border-y bg-secondary/40 px-4 py-8 sm:px-6 sm:py-10">
+  <div className="mx-auto grid max-w-6xl gap-4 text-center md:grid-cols-3">
     <div>
       <p className="text-sm text-muted-foreground">
         {t("landing.stats.students")}
@@ -373,9 +377,9 @@ const Landing = () => {
   </div>
 </section>
       {/* PROCESS */}
-      <section className="container mx-auto px-6 py-24">
+      <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-24">
         <div className="mb-14 text-center">
-          <h2 className="font-serif text-4xl text-primary">
+        <h2 className="font-serif text-3xl text-primary sm:text-4xl">
             {t("landing.process.title")}
           </h2>
         </div>
@@ -391,10 +395,10 @@ const Landing = () => {
       </section>
 
       {/* WHY LUNA PREVIEW */}
-      <section className="bg-secondary/30 px-6 py-24">
+      <section className="bg-secondary/30 px-4 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
           <div>
-            <h2 className="font-serif text-4xl text-primary">
+          <h2 className="font-serif text-3xl text-primary sm:text-4xl">
               {t("landing.why.title")}
             </h2>
 
@@ -424,7 +428,7 @@ const Landing = () => {
       </section>
 
       {/* PROGRAMS */}
-      <section className="container mx-auto px-6 py-24">
+      <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-24">
         <div className="mb-14 text-center">
           <p className="mb-3 text-sm font-medium uppercase tracking-widest text-accent">
             {t("landing.programs.label")}
@@ -447,7 +451,7 @@ const Landing = () => {
           {(t("landing.programs.items", { returnObjects: true }) as any[]).map((program) => (
             <div
               key={program.title}
-              className="group relative rounded-3xl border bg-card p-8 shadow-soft transition hover:-translate-y-2 hover:shadow-elegant"
+              className="group relative rounded-3xl border bg-card p-6 sm:p-8 shadow-soft transition hover:-translate-y-2 hover:shadow-elegant"
             >
               <h3 className="mb-2 font-serif text-2xl text-primary">
                 {program.title}
@@ -475,8 +479,8 @@ const Landing = () => {
       </section>
 
       {/* CTA */}
-      <section className="bg-hero px-6 py-24 text-center">
-        <h2 className="font-serif text-4xl text-primary">
+      <section className="bg-hero px-4 py-16 text-center sm:px-6 sm:py-24">
+      <h2 className="font-serif text-3xl text-primary sm:text-4xl">
           {t("landing.cta.title")}
         </h2>
 

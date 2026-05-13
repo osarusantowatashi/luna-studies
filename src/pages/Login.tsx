@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 
 const Login = () => {
@@ -16,6 +17,7 @@ const Login = () => {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [inviteCode, setInviteCode] = useState("");
+
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -193,12 +195,12 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#f7f6f3] via-[#f1eee7] to-[#e8e3d8]">
       <NavBar />
 
-      <div className="mx-auto max-w-6xl px-6 py-20">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         <div className="mb-12 text-center">
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.28em] text-accent">
             Luna Studies
           </p>
-          <h1 className="font-serif text-4xl text-primary md:text-5xl">
+          <h1 className="font-serif text-3xl text-primary sm:text-4xl md:text-5xl">
             {t("login.hero.title")}
           </h1>
           <p className="mt-4 text-muted-foreground">
@@ -207,7 +209,7 @@ const Login = () => {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
-          <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
+          <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
             <div className="mb-8">
               <p className="text-sm font-semibold uppercase tracking-widest text-accent">
                 {t("login.signin.label")}
@@ -226,7 +228,10 @@ const Login = () => {
                   {t("login.fields.email")}
                 </label>
                 <input
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   placeholder={t("login.placeholders.email")}
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
@@ -239,30 +244,36 @@ const Login = () => {
                 </label>
                 <input
                   type="password"
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                  autoComplete="current-password"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   placeholder={t("login.placeholders.password")}
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                 />
               </div>
-              <a
-                href={window.location.pathname.startsWith("/zh") ? "/zh/forgot-password" : "/en/forgot-password"}
+              <Link
+                to={
+                  window.location.pathname.startsWith("/zh")
+                    ? "/zh/forgot-password"
+                    : "/en/forgot-password"
+                }
                 className="text-sm font-medium text-primary hover:underline"
               >
-
                 {t("login.buttons.forgotPassword")}
+              </Link>
 
-              </a>
-
-              <Button className="h-12 w-full rounded-2xl" onClick={handleLogin}>
-
+              <Button
+                type="button"
+                className="h-12 w-full rounded-2xl"
+                onClick={handleLogin}
+              >
                 {t("login.buttons.signin")}
 
               </Button>
             </div>
           </div>
 
-          <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
+          <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
             <div className="mb-8">
               <p className="text-sm font-semibold uppercase tracking-widest text-accent">
                 {t("login.signup.label")}
@@ -285,7 +296,8 @@ const Login = () => {
                   {t("login.fields.name")}
                 </label>
                 <input
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                  autoComplete="name"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   placeholder={t("login.placeholders.name")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -299,7 +311,10 @@ const Login = () => {
 
                 </label>
                 <input
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   placeholder={t("login.placeholders.email")}
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
@@ -314,7 +329,8 @@ const Login = () => {
                 </label>
                 <input
                   type="password"
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                  autoComplete="new-password"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   placeholder={t("login.placeholders.createPassword")}
                   value={signupPassword}
                   onChange={(e) => setSignupPassword(e.target.value)}
@@ -326,22 +342,26 @@ const Login = () => {
                   {t("login.fields.accessCode")}
                 </label>
                 <input
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                  autoComplete="off"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   placeholder={t("login.placeholders.accessCode")}
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value)}
                 />
               </div>
 
-              <Button className="h-12 w-full rounded-2xl" onClick={handleSignup}>
-
+              <Button
+                type="button"
+                className="h-12 w-full rounded-2xl"
+                onClick={handleSignup}
+              >
                 {t("login.buttons.create")}
               </Button>
             </div>
           </div>
         </div>
       </div>
-    <Footer />
+      <Footer />
     </div>
   );
 };

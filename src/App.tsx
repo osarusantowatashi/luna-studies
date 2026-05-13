@@ -11,11 +11,9 @@ import Enquire from "./pages/Enquire";
 import Page from "./pages/Page";
 
 import TutorDashboard from "./pages/TutorDashboard";
-import TutorMistakes from "./pages/TutorMistakes";
 import StudentOverview from "./pages/StudentOverview";
 import Practice from "./pages/Practice";
 import Mistakes from "./pages/Mistakes";
-import RedoMistakes from "./pages/RedoMistakes";
 import GenerateQuestions from "./pages/GenerateQuestions";
 
 import AdminQuestions from "./pages/AdminQuestions";
@@ -162,14 +160,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/mistakes"
-          element={
-            <Layout>
-              <TutorMistakes />
-            </Layout>
-          }
-        />
 
         {/* Student */}
         <Route
@@ -201,17 +191,6 @@ const App = () => {
             <ProtectedRoute allowedRoles={["admin", "student"]}>
               <Layout>
                 <Practice />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/redo-mistakes"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "student"]}>
-              <Layout>
-                <RedoMistakes />
               </Layout>
             </ProtectedRoute>
           }

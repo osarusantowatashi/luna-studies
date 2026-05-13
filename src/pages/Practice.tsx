@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
+
 
 const DIFFICULTIES = ["Easy", "Medium", "Hard", "Advanced"];
 
@@ -242,9 +242,9 @@ const Practice = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen px-6 py-20">
-        <div className="mx-auto max-w-3xl rounded-3xl border bg-white/80 p-10 text-center shadow-xl">
-          <p className="text-muted-foreground">Loading practice...</p>
+      <div className="min-h-screen px-4 py-8 sm:px-6 sm:py-16">
+        <div className="mx-auto max-w-3xl rounded-[1.8rem] border bg-white/80 p-5 text-center shadow-xl sm:rounded-3xl sm:p-10">
+        <p className="text-sm text-muted-foreground sm:text-base">Loading practice...</p>
         </div>
       </div>
     );
@@ -252,9 +252,9 @@ const Practice = () => {
 
   if (allowedGrades.length === 0) {
     return (
-      <div className="min-h-screen px-6 py-20">
-        <div className="mx-auto max-w-3xl rounded-3xl border bg-white/80 p-10 text-center shadow-xl">
-          <h1 className="font-serif text-3xl text-primary">
+      <div className="min-h-screen px-4 py-8 sm:px-6 sm:py-16">
+        <div className="mx-auto max-w-3xl rounded-[1.8rem] border bg-white/80 p-5 text-center shadow-xl sm:rounded-3xl sm:p-10">
+        <h1 className="font-serif text-2xl text-primary sm:text-3xl">
             No Practice Access Yet
           </h1>
           <p className="mt-3 text-muted-foreground">
@@ -267,20 +267,20 @@ const Practice = () => {
 
   if (!started) {
     return (
-      <div className="min-h-screen px-6 py-20">
+      <div className="min-h-screen px-4 py-8 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-4xl space-y-8">
-          <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
+          <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
             <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
               Practice Setup
             </p>
-            <h1 className="font-serif text-4xl text-primary">
+            <h1 className="font-serif text-3xl text-primary sm:text-4xl">
               Choose your practice
             </h1>
             <p className="mt-3 text-muted-foreground">
               Select your grade, difficulty, and question type before starting.
             </p>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl border bg-secondary/40 p-4">
                 <p className="text-xs uppercase tracking-widest text-muted-foreground">
                   Attempted
@@ -310,14 +310,14 @@ const Practice = () => {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
+          <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
             <div className="grid gap-6 md:grid-cols-3">
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Grade
                 </label>
                 <select
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   value={selectedGrade}
                   onChange={(e) => setSelectedGrade(e.target.value)}
                 >
@@ -334,7 +334,7 @@ const Practice = () => {
                   Difficulty
                 </label>
                 <select
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   value={selectedDifficulty}
                   onChange={(e) => setSelectedDifficulty(e.target.value)}
                 >
@@ -351,7 +351,7 @@ const Practice = () => {
                   Question Type
                 </label>
                 <select
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none"
+                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                   value={selectedSkill}
                   onChange={(e) => setSelectedSkill(e.target.value)}
                 >
@@ -364,14 +364,17 @@ const Practice = () => {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-3 md:grid-cols-[1fr_auto]">
-              <Button className="h-12 rounded-2xl" onClick={startPractice}>
+            <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_auto]">
+              <Button 
+              type="button"
+              className="h-12 w-full rounded-2xl" onClick={startPractice}>
                 Start Practice
               </Button>
 
               <Button
+              type="button"
                 variant="outline"
-                className="h-12 rounded-2xl"
+                className="h-12 w-full rounded-2xl"
                 onClick={resetProgress}
               >
                 Reset Progress
@@ -384,23 +387,23 @@ const Practice = () => {
   }
 
   return (
-    <div className="min-h-screen px-6 py-20">
+    <div className="min-h-screen px-4 py-8 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-3xl space-y-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">
             {selectedGrade} · {selectedDifficulty} · {selectedSkill}
           </p>
 
-          <h1 className="mt-2 font-serif text-4xl text-primary">Practice</h1>
+          <h1 className="mt-2 font-serif text-3xl text-primary sm:text-4xl">Practice</h1>
 
           <p className="mt-3 text-muted-foreground">
             Question {currentIndex + 1} / {questions.length}
           </p>
         </div>
 
-        <div className="rounded-[2rem] border bg-white/80 p-8 shadow-xl backdrop-blur">
+        <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
           {current?.passage && (
-            <div className="mb-6 rounded-2xl border bg-secondary/40 p-5">
+            <div className="mb-6 max-h-[45vh] overflow-y-auto rounded-2xl border bg-secondary/40 p-4 sm:p-5">
               <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
                 Passage
               </p>
@@ -410,7 +413,7 @@ const Practice = () => {
             </div>
           )}
 
-          <p className="mb-3 text-lg font-semibold leading-8 text-primary">
+          <p className="mb-3 text-base font-semibold leading-7 text-primary sm:text-lg sm:leading-8">
             {current.question_text}
           </p>
 
@@ -436,7 +439,7 @@ const Practice = () => {
                 const isCorrectOption = opt === correctText;
 
                 let buttonClass =
-                  "w-full rounded-2xl border bg-white px-4 py-4 text-left transition";
+                  "w-full rounded-2xl border bg-white px-4 py-4 text-left text-sm leading-7 transition sm:text-base";
 
                 if (!showFeedback && isSelected) {
                   buttonClass += " bg-yellow-100 border-yellow-300";
@@ -461,6 +464,7 @@ const Practice = () => {
 
                 return (
                   <button
+                    type="button"
                     key={i}
                     onClick={() => !showFeedback && setSelected(opt)}
                     className={buttonClass}
@@ -475,7 +479,7 @@ const Practice = () => {
 
         {showFeedback && (
           <div
-            className={`rounded-2xl border p-5 ${
+          className={`rounded-2xl border p-4 text-sm leading-7 sm:p-5 ${
               isCorrect
                 ? "border-green-300 bg-green-50 text-green-800"
                 : "border-red-300 bg-red-50 text-red-800"
@@ -500,11 +504,15 @@ const Practice = () => {
         )}
 
         {showFeedback ? (
-          <Button className="h-12 w-full rounded-2xl" onClick={handleNext}>
+          <Button 
+          type="button"
+          className="h-12 w-full rounded-2xl" onClick={handleNext}>
             Next
           </Button>
         ) : (
-          <Button className="h-12 w-full rounded-2xl" onClick={handleSubmit}>
+          <Button 
+          type="button"
+          className="h-12 w-full rounded-2xl" onClick={handleSubmit}>
             Submit
           </Button>
         )}

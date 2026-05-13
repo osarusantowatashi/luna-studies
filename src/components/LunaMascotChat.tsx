@@ -2,24 +2,41 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Send } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 
 
-const LunaMascotChat = () => {
-  const { t, i18n } = useTranslation();
-const [open, setOpen] = useState(false);
+  const LunaMascotChat = () => {
+    const { t, i18n } = useTranslation();
+    const location = useLocation();
+  
+    const hiddenRoutes = [
+      "/admin",
+      "/generate",
+      "/practice",
+      "/mistakes",
+      "/studentoverview",
+      "/dashboard",
+      "/tutor/lessons",
+    ];
+  
+    const shouldHide = hiddenRoutes.some((route) =>
+      location.pathname.startsWith(route)
+    );
+  
+    const [open, setOpen] = useState(false);
 
-const [messages, setMessages] = useState<
-  { role: string; text: string }[]
->(() => [
-  {
-    role: "assistant",
-    text: t("chat.initialMessage"),
-  },
-]);
+  const [messages, setMessages] = useState<
+    { role: string; text: string }[]
+  >(() => [
+    {
+      role: "assistant",
+      text: t("chat.initialMessage"),
+    },
+  ]);
 
 
 
@@ -201,8 +218,11 @@ const [messages, setMessages] = useState<
     }
   };
 
+
+  if (shouldHide) return null;
+
   return (
-    <div className="fixed bottom-8 right-6 z-[999] hidden w-[360px] max-w-[calc(100vw-48px)] md:block">
+   <div className="fixed bottom-8 right-6 z-40 hidden w-[360px] max-w-[calc(100vw-48px)] md:block">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -238,8 +258,8 @@ const [messages, setMessages] = useState<
                   >
                     <div
                       className={`max-w-[82%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${msg.role === "user"
-                          ? "bg-[#082A55] text-white"
-                          : "bg-white text-slate-700 shadow-sm"
+                        ? "bg-[#082A55] text-white"
+                        : "bg-white text-slate-700 shadow-sm"
                         }`}
                     >
                       {msg.text}
@@ -394,7 +414,7 @@ const [messages, setMessages] = useState<
 
       <motion.button
         onClick={() => setOpen(true)}
-        className="relative ml-auto flex h-[170px] w-[170px] items-center justify-center rounded-full bg-white shadow-[0_25px_70px_rgba(8,42,85,0.25)]"
+       className="relative ml-auto flex h-[130px] w-[130px] items-center justify-center rounded-full bg-white shadow-[0_25px_70px_rgba(8,42,85,0.25)]"
         animate={{ y: [0, -10, 0] }}
         transition={{
           repeat: Infinity,
@@ -407,7 +427,7 @@ const [messages, setMessages] = useState<
 
         <svg
           viewBox="0 0 240 240"
-          className="relative h-[145px] w-[145px] drop-shadow-xl"
+          className="relative h-[110px] w-[110px] drop-shadow-xl"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path

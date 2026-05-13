@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
+import { Link } from "react-router-dom";
+
 
 const DAILY_GOAL = 30;
 
 const StudentOverview = () => {
-  const [attempts, setAttempts] = useState<any[]>([]);
+  type Attempt = {
+    created_at: string;
+    is_correct: boolean;
+    questions?: {
+      skill?: string;
+    };
+  };
+
+  const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [accuracy, setAccuracy] = useState(0);
   const [mistakes, setMistakes] = useState(0);
   const [stats, setStats] = useState<any>({});
@@ -135,56 +144,60 @@ const StudentOverview = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background px-6 py-16">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-5xl">
-        <div className="rounded-[2rem] border bg-card p-8 shadow-elegant">
-          <div className="mb-8 flex items-start justify-between">
+        <div className="rounded-[1.8rem] border bg-card p-5 shadow-elegant sm:rounded-[2rem] sm:p-8">
+          <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="font-serif text-4xl font-semibold text-primary">
-                {loading ? "Loading..." : `Welcome back, ${name} 👋`}
+              <h1 className="font-serif text-3xl font-semibold leading-tight text-primary sm:text-4xl">
+                {loading ? (
+                  <div className="h-10 w-40 animate-pulse rounded-xl bg-secondary" />
+                ) : (
+                  `Welcome back, ${name} 👋`
+                )}
               </h1>
 
-              <p className="mt-2 text-lg text-muted-foreground">
+              <p className="mt-2 text-sm leading-7 text-muted-foreground sm:text-lg">
                 Here’s your study overview
               </p>
             </div>
 
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-2xl">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary text-xl sm:h-14 sm:w-14 sm:text-2xl">
               🌙
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="rounded-2xl border p-6">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
+            <div className="rounded-2xl border p-5 sm:p-6">
               <p className="text-sm font-semibold text-muted-foreground">
                 Overall Accuracy
               </p>
-              <p className="mt-4 text-5xl font-bold text-primary">
+              <p className="mt-4 text-4xl font-bold text-primary sm:text-5xl">
                 {accuracy}%
               </p>
             </div>
 
-            <div className="rounded-2xl border p-6">
+            <div className="rounded-2xl border p-5 sm:p-6">
               <p className="text-sm font-semibold text-muted-foreground">
                 Study Streak
               </p>
-              <p className="mt-4 text-5xl font-bold text-yellow-500">
+              <p className="mt-4 text-4xl font-bold text-primary sm:text-5xl text-yellow-500">
                 {streak}
               </p>
             </div>
 
-            <div className="rounded-2xl border p-6">
+            <div className="rounded-2xl border p-5 sm:p-6">
               <p className="text-sm font-semibold text-muted-foreground">
                 Questions Solved
               </p>
-              <p className="mt-4 text-5xl font-bold text-primary">
+              <p className="mt-4 text-4xl font-bold text-primary sm:text-5xl">
                 {attempts.length}
               </p>
             </div>
           </div>
 
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border p-7">
+          <div className="mt-8 grid gap-5 sm:gap-6 md:grid-cols-2">
+            <div className="rounded-2xl border p-5 sm:p-7">
               <h2 className="font-serif text-2xl font-semibold text-primary">
                 Recommended Practice
               </h2>
@@ -225,18 +238,22 @@ const StudentOverview = () => {
                 </div>
               </div>
 
-              <div className="mt-7 flex flex-wrap gap-3">
-                <a href="/practice">
-                  <Button>Practice</Button>
-                </a>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <Link to="/practice" className="w-full sm:w-auto">
+                  <Button type="button" className="w-full sm:w-auto">
+                    Practice
+                  </Button>
+                </Link>
 
-                <a href="/mistakes">
-                  <Button variant="outline">View Mistakes</Button>
-                </a>
+                <Link to="/mistakes" className="w-full sm:w-auto">
+                  <Button type="button" variant="outline" className="w-full sm:w-auto">
+                    View Mistakes
+                  </Button>
+                </Link>
               </div>
             </div>
 
-            <div className="rounded-2xl border p-7">
+            <div className="rounded-2xl border p-5 sm:p-7">
               <h2 className="font-serif text-2xl font-semibold text-primary">
                 Recent Tutor Feedback
               </h2>
@@ -270,22 +287,18 @@ const StudentOverview = () => {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center gap-4">
-          <a href="/practice">
-            <Button className="px-8">Practice</Button>
-          </a>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <Link to="/practice" className="w-full sm:w-auto">
+            <Button type="button" className="w-full px-8 sm:w-auto">
+              Practice
+            </Button>
+          </Link>
 
-          <a href="/mistakes">
-            <Button variant="outline" className="px-8">
+          <Link to="/mistakes" className="w-full sm:w-auto">
+            <Button type="button" variant="outline" className="w-full px-8 sm:w-auto">
               View Mistakes
             </Button>
-          </a>
-
-          <a href="/redo-mistakes">
-            <Button variant="outline" className="px-8">
-              Redo Mistakes
-            </Button>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

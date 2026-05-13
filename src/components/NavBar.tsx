@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { LogOut, Sparkles } from "lucide-react";
+import { LogOut, Sparkles, Menu, X } from "lucide-react";
 
 const NavBar = () => {
   const location = useLocation();
@@ -16,6 +16,7 @@ const NavBar = () => {
   const [name, setName] = useState(
     localStorage.getItem("userName") || ""
   );
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const appRoutes = [
     "/dashboard",
@@ -66,6 +67,8 @@ const NavBar = () => {
 
   const changeLanguage = () => {
     if (isApp) return;
+    
+    setMobileOpen(false);
   
     const currentLang = location.pathname.startsWith("/zh") ? "zh" : "en";
     const nextLang = currentLang === "zh" ? "en" : "zh";
@@ -83,7 +86,6 @@ const NavBar = () => {
   const withLang = (path: string) =>
     `/${currentLang}${path === "/" ? "" : path}`;
 
-
   const links =
     role === "admin"
       ? [
@@ -96,7 +98,7 @@ const NavBar = () => {
       : role === "tutor"
       ? [
           ["Dashboard", "/dashboard"],
-          ["Mistakes", "/tutor/mistakes"],
+          ["Mistakes", "/mistakes"],
           ["Lessons", "/tutor/lessons"],
         ]
       : role === "student"
@@ -104,7 +106,6 @@ const NavBar = () => {
           ["Overview", "/studentoverview"],
           ["Practice", "/practice"],
           ["Mistakes", "/mistakes"],
-          ["Redo", "/redo-mistakes"],
         ]
       : [
         [t("nav.home"), withLang("/")],
@@ -123,23 +124,36 @@ const NavBar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        <Link to={withLang("/")} className="flex items-center gap-3">
+    <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <Link
+          to={
+            isApp
+              ? role === "admin"
+                ? "/admin/dashboard"
+                : role === "tutor"
+                ? "/dashboard"
+                : "/studentoverview"
+              : withLang("/")
+          }
+          className="flex min-w-0 items-center gap-2 sm:gap-3"
+          onClick={() => setMobileOpen(false)}
+        >
           <img
             src="/lunalogo.png"
-            className="h-10 w-10 object-contain"
+            className="h-10 w-10 shrink-0 object-contain"
           />
-
-          <h1 className="font-serif text-xl tracking-wide text-primary">
+  
+          <h1 className="truncate font-serif text-lg tracking-wide text-primary sm:text-xl">
             {brandName}
           </h1>
         </Link>
-
+  
+        {/* DESKTOP NAV */}
         <nav className="hidden rounded-full border bg-card/80 p-1 shadow-soft md:flex">
           {links.map(([label, path]) => {
             const active = isActive(path);
-
+  
             return (
               <Link
                 key={path}
@@ -155,24 +169,25 @@ const NavBar = () => {
             );
           })}
         </nav>
-
-        <div className="flex items-center gap-3">
-        {!isApp && (
-          <button
-            onClick={changeLanguage}
-            className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-primary shadow-soft transition hover:bg-secondary"
-          >
-            {t("nav.language")}
-          </button>
-        )}
-
+  
+        {/* DESKTOP RIGHT */}
+        <div className="hidden items-center gap-3 md:flex">
+          {!isApp && (
+            <button
+              onClick={changeLanguage}
+              className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-primary shadow-soft transition hover:bg-secondary"
+            >
+              {t("nav.language")}
+            </button>
+          )}
+  
           {role ? (
             <>
-              <div className="hidden items-center gap-3 rounded-full border bg-card px-4 py-2 shadow-soft md:flex">
+              <div className="flex items-center gap-3 rounded-full border bg-card px-4 py-2 shadow-soft">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary">
                   <Sparkles className="h-4 w-4 text-accent" />
                 </div>
-
+  
                 <div className="leading-tight">
                   <p className="text-sm font-medium text-primary">
                     {name}
@@ -182,7 +197,7 @@ const NavBar = () => {
                   </p>
                 </div>
               </div>
-
+  
               <Button variant="ghost" size="sm" onClick={logout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
@@ -193,7 +208,7 @@ const NavBar = () => {
               <Link to={withLang("/login")}>
                 <Button variant="ghost">{t("nav.login")}</Button>
               </Link>
-
+  
               <Link to={withLang("/login")}>
                 <Button className="shadow-elegant">
                   {t("nav.getStarted")}
@@ -202,7 +217,93 @@ const NavBar = () => {
             </>
           )}
         </div>
+  
+        {/* MOBILE BUTTON */}
+        <button
+          type="button"
+          onClick={() => setMobileOpen((prev) => !prev)}
+          className="flex h-11 w-11 items-center justify-center rounded-2xl border bg-card shadow-soft md:hidden"
+        >
+          {mobileOpen ? (
+            <X className="h-5 w-5 text-primary" />
+          ) : (
+            <Menu className="h-5 w-5 text-primary" />
+          )}
+        </button>
       </div>
+  
+      {/* MOBILE MENU */}
+      {mobileOpen && (
+        <div className="border-t border-border/50 bg-background/95 px-4 py-4 shadow-lg backdrop-blur-xl md:hidden">
+          <div className="space-y-2">
+            {links.map(([label, path]) => {
+              const active = isActive(path);
+  
+              return (
+                <Link
+                  key={path}
+                  to={path}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block rounded-2xl px-4 py-3 text-sm font-semibold ${
+                    active
+                      ? "bg-yellow-400 text-black"
+                      : "bg-card text-primary"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+  
+          <div className="mt-4 grid gap-3">
+            {!isApp && (
+              <button
+                onClick={changeLanguage}
+                className="w-full rounded-2xl border bg-card px-4 py-3 text-sm font-semibold text-primary"
+              >
+                {t("nav.language")}
+              </button>
+            )}
+  
+            {role ? (
+              <>
+                <div className="rounded-2xl border bg-card px-4 py-3">
+                  <p className="text-sm font-semibold text-primary">
+                    {name}
+                  </p>
+                  <p className="text-xs capitalize text-muted-foreground">
+                    {role}
+                  </p>
+                </div>
+  
+                <Button
+                  variant="outline"
+                  className="h-12 w-full rounded-2xl"
+                  onClick={logout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to={withLang("/login")} onClick={() => setMobileOpen(false)}>
+                  <Button variant="outline" className="h-12 w-full rounded-2xl">
+                    {t("nav.login")}
+                  </Button>
+                </Link>
+  
+                <Link to={withLang("/login")} onClick={() => setMobileOpen(false)}>
+                  <Button className="h-12 w-full rounded-2xl shadow-elegant">
+                    {t("nav.getStarted")}
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
