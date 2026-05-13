@@ -43,7 +43,7 @@ const HeroFeature = ({
 );
 
 const Landing = () => {
-  
+
   const { t } = useTranslation();
   const [selectedTutor, setSelectedTutor] = useState<any | null>(null);
 
@@ -79,11 +79,11 @@ const Landing = () => {
       <NavBar />
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[#fbfaf6] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+      <section className="relative overflow-hidden bg-[#fbfaf6] px-4 py-6 sm:px-6 lg:px-8 lg:py-16">
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#fffdf8_0%,#fffaf2_48%,#f7fbff_100%)]" />
 
         {/* RIGHT IMAGE AS BACKGROUND */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[62%] lg:block">
+        <div className="pointer-events-none absolute inset-y-0 right-0 block w-full opacity-25 sm:opacity-35 lg:w-[62%] lg:opacity-100">
           <img
             src="/hero/luna_girl.jpeg"
             alt="Luna Education student studying"
@@ -96,7 +96,7 @@ const Landing = () => {
         </div>
 
         <div className="relative z-10 mx-auto max-w-[1440px]">
-        <div className="grid min-h-[auto] items-center gap-10 py-4 lg:min-h-[660px] lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="grid items-center gap-8 py-2 lg:min-h-[660px] lg:grid-cols-[0.8fr_1.2fr]">
             {/* LEFT */}
             <div className="relative z-20 w-full max-w-[560px]">
               <div className="mb-5 flex items-center gap-3">
@@ -114,7 +114,7 @@ const Landing = () => {
                 </span>
               </h1>
 
-              <p className="mt-7 max-w-[520px] text-sm leading-7 text-slate-600 sm:text-base lg:text-lg">
+              <p className="mt-5 max-w-[520px] text-sm leading-6 text-slate-600 sm:text-base lg:text-lg">
                 {t("landing.hero.subtitle")}
               </p>
 
@@ -141,9 +141,9 @@ const Landing = () => {
                 />
               </div>
 
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="mt-9 flex flex-row flex-wrap gap-3">
                 <Link to="/enquiry">
-                  <Button className="h-12 w-full rounded-2xl text-sm sm:h-14 sm:text-base bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.22)] sm:w-auto">
+                  <Button className="h-12 rounded-2xl bg-primary px-8 text-sm shadow-[0_18px_45px_rgba(10,36,84,0.22)] sm:h-14 sm:text-base">
                     {t("landing.buttons.enquire")}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
@@ -152,7 +152,7 @@ const Landing = () => {
                 <Link to="/subjects">
                   <Button
                     variant="outline"
-                    className="h-12 w-full rounded-2xl text-sm sm:h-14 sm:text-base border-primary/20 bg-white/80 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto"
+                    className="h-12 rounded-2xl border-primary/20 bg-white/80 px-8 text-sm text-primary shadow-sm backdrop-blur sm:h-14 sm:text-base"
                   >
                     {t("landing.buttons.programs")}
                   </Button>
@@ -175,15 +175,6 @@ const Landing = () => {
                   {t("landing.floating.subtitle")}
                 </p>
               </div>
-            </div>
-
-            {/* MOBILE IMAGE ONLY */}
-            <div className="relative overflow-hidden rounded-[1.6rem] lg:hidden">
-              <img
-                src="/hero/luna_girl.jpeg"
-                alt="Luna Education student studying"
-                className="w-full object-cover"
-              />
             </div>
           </div>
 
@@ -240,7 +231,7 @@ const Landing = () => {
 
       {/* HEAD TUTORS */}
       <section className="relative overflow-hidden bg-white px-4 py-14 sm:px-6 sm:py-16">
-      <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-0 lg:gap-24 lg:px-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-0 lg:gap-24 lg:px-6 lg:grid-cols-[1.05fr_0.95fr]">
           {/* LEFT COPY */}
           <div className="self-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-[#b8873a]">
@@ -270,17 +261,15 @@ const Landing = () => {
               return (
                 <div
                   key={tutor.name}
-                  className={`group flex flex-col items-start gap-6 rounded-[2rem] border border-white/70 bg-[#f8f6f1] p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)] lg:flex-row lg:items-center sm:gap-8 sm:px-8 sm:py-6 lg:min-h-[240px] lg:max-w-[760px] ${
-                    index === 1 ? "lg:ml-28" : ""
-                  }`}
+                  className={`group flex flex-col items-start gap-6 rounded-[2rem] border border-white/70 bg-[#f8f6f1] p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)] lg:flex-row lg:items-center sm:gap-8 sm:px-8 sm:py-6 lg:min-h-[240px] lg:max-w-[760px] ${index === 1 ? "lg:ml-28" : ""
+                    }`}
                 >
                   <div className="h-[260px] w-full overflow-hidden rounded-[2rem] bg-secondary sm:h-[200px] sm:w-[210px] sm:shrink-0 sm:rounded-[3rem]">
                     <img
                       src={tutor.image}
                       alt={tutor.name}
-                      className={`h-full w-full object-cover object-top transition duration-500 lg:scale-[1.35] ${
-                        tutor.name === "Mimi" ? "lg:translate-x-2" : ""
-                      }`}
+                      className={`h-full w-full object-cover object-top transition duration-500 lg:scale-[1.35] ${tutor.name === "Mimi" ? "lg:translate-x-2" : ""
+                        }`}
                     />
                   </div>
 
@@ -322,17 +311,19 @@ const Landing = () => {
                       </Link>
                     )}
 
-<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-nowrap sm:items-center"> <Button
-  onClick={() => setSelectedTutor(tutor)}
-  className="h-11 w-full rounded-xl bg-primary px-6 text-sm sm:w-auto"
->
-  {t("landing.headTutors.viewProfile")}
-  <ArrowRight className="ml-2 h-4 w-4" />
-</Button>
+                    <div className="mt-6 flex flex-row flex-wrap gap-3">
+                      <Button
+                        onClick={() => setSelectedTutor(tutor)}
+                        className="h-11 rounded-xl bg-primary px-6 text-sm"
+                      >
+                        {t("landing.headTutors.viewProfile")}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+
                       <Link to="/enquiry">
                         <Button
                           variant="outline"
-                          className="h-11 w-full rounded-xl border-[#b8873a]/30 bg-white px-6 text-sm text-[#b8873a] sm:w-auto"
+                          className="h-11 rounded-xl border-[#b8873a]/30 bg-white px-6 text-sm text-[#b8873a]"
                         >
                           {t("landing.headTutors.book")}
                         </Button>
@@ -347,39 +338,39 @@ const Landing = () => {
       </section>
       {/* TRUST STRIP */}
       <section className="border-y bg-secondary/40 px-4 py-8 sm:px-6 sm:py-10">
-  <div className="mx-auto grid max-w-6xl gap-4 text-center md:grid-cols-3">
-    <div>
-      <p className="text-sm text-muted-foreground">
-        {t("landing.stats.students")}
-      </p>
-      <p className="mt-1 font-semibold text-primary">
-        {t("landing.trust.schools")}
-      </p>
-    </div>
+        <div className="mx-auto grid max-w-6xl gap-4 text-center md:grid-cols-3">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              {t("landing.stats.students")}
+            </p>
+            <p className="mt-1 font-semibold text-primary">
+              {t("landing.trust.schools")}
+            </p>
+          </div>
 
-    <div>
-      <p className="text-sm text-muted-foreground">
-        {t("landing.trust.subjects")}
-      </p>
-      <p className="mt-1 font-semibold text-primary">
-        MAP · AEIS · TOEFL
-      </p>
-    </div>
+          <div>
+            <p className="text-sm text-muted-foreground">
+              {t("landing.trust.subjects")}
+            </p>
+            <p className="mt-1 font-semibold text-primary">
+              MAP · AEIS · TOEFL
+            </p>
+          </div>
 
-    <div>
-      <p className="text-sm text-muted-foreground">
-        {t("landing.trust.languages")}
-      </p>
-      <p className="mt-1 font-semibold text-primary">
-        EN · CN · JP
-      </p>
-    </div>
-  </div>
-</section>
+          <div>
+            <p className="text-sm text-muted-foreground">
+              {t("landing.trust.languages")}
+            </p>
+            <p className="mt-1 font-semibold text-primary">
+              EN · CN · JP
+            </p>
+          </div>
+        </div>
+      </section>
       {/* PROCESS */}
       <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-24">
         <div className="mb-14 text-center">
-        <h2 className="font-serif text-3xl text-primary sm:text-4xl">
+          <h2 className="font-serif text-3xl text-primary sm:text-4xl">
             {t("landing.process.title")}
           </h2>
         </div>
@@ -398,7 +389,7 @@ const Landing = () => {
       <section className="bg-secondary/30 px-4 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
           <div>
-          <h2 className="font-serif text-3xl text-primary sm:text-4xl">
+            <h2 className="font-serif text-3xl text-primary sm:text-4xl">
               {t("landing.why.title")}
             </h2>
 
@@ -480,7 +471,7 @@ const Landing = () => {
 
       {/* CTA */}
       <section className="bg-hero px-4 py-16 text-center sm:px-6 sm:py-24">
-      <h2 className="font-serif text-3xl text-primary sm:text-4xl">
+        <h2 className="font-serif text-3xl text-primary sm:text-4xl">
           {t("landing.cta.title")}
         </h2>
 
@@ -498,9 +489,9 @@ const Landing = () => {
         </Link>
       </section>
       <TutorProfileModal
-  tutor={selectedTutor}
-  onClose={() => setSelectedTutor(null)}
-/>
+        tutor={selectedTutor}
+        onClose={() => setSelectedTutor(null)}
+      />
       <Footer />
     </div>
   );

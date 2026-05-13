@@ -222,7 +222,7 @@ const API_URL =
   if (shouldHide) return null;
 
   return (
-   <div className="fixed bottom-8 right-6 z-40 hidden w-[360px] max-w-[calc(100vw-48px)] md:block">
+    <div className="fixed bottom-5 right-4 z-[999] w-[92vw] max-w-[360px] md:bottom-8 md:right-6 md:w-[360px]">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -248,7 +248,7 @@ const API_URL =
               </button>
             </div>
 
-            <div className="flex h-[390px] flex-col bg-[#FAF8F3]">
+            <div className="flex h-[55vh] max-h-[390px] min-h-[320px] flex-col bg-[#FAF8F3] md:h-[390px]">
               <div className="flex-1 space-y-3 overflow-y-auto p-4">
                 {messages.map((msg, index) => (
                   <div
@@ -414,7 +414,7 @@ const API_URL =
 
       <motion.button
         onClick={() => setOpen(true)}
-       className="relative ml-auto flex h-[130px] w-[130px] items-center justify-center rounded-full bg-white shadow-[0_25px_70px_rgba(8,42,85,0.25)]"
+     className="relative ml-auto flex h-[82px] w-[82px] items-center justify-center rounded-full bg-white shadow-[0_18px_45px_rgba(8,42,85,0.22)] md:h-[130px] md:w-[130px]"
         animate={{ y: [0, -10, 0] }}
         transition={{
           repeat: Infinity,
@@ -427,7 +427,7 @@ const API_URL =
 
         <svg
           viewBox="0 0 240 240"
-          className="relative h-[110px] w-[110px] drop-shadow-xl"
+          className="relative h-[68px] w-[68px] drop-shadow-xl md:h-[110px] md:w-[110px]"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path

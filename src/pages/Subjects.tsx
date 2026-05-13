@@ -78,7 +78,7 @@ const Subjects = () => {
     <div className="min-h-screen bg-background">
       <NavBar />
 
-      <section className="bg-hero px-4 py-16 text-center sm:px-6 sm:py-24">
+      <section className="bg-hero px-4 py-10 text-center sm:px-6 sm:py-24">
         <h1 className="font-serif text-3xl text-primary sm:text-5xl">
           {t("subjects.hero.title")}
         </h1>
@@ -142,7 +142,7 @@ const Subjects = () => {
               <Button
                 type="button"
                 onClick={() => setSelectedSubject(null)}
-                className="rounded-2xl"
+                className="w-full rounded-2xl sm:w-auto"
               >
                 {t("subjects.close")}
               </Button>

@@ -61,7 +61,7 @@ const WhyLuna = () => {
       <NavBar />
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-hero px-4 py-16 sm:px-6 sm:py-24 lg:py-28">
+      <section className="relative overflow-hidden bg-hero px-4 py-10 sm:px-6 sm:py-24 lg:py-28">
         <div className="absolute left-20 top-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
         <div className="absolute bottom-10 right-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
 
@@ -207,7 +207,7 @@ const WhyLuna = () => {
             </ul>
           </div>
 
-          <div className="rounded-3xl border bg-card p-8 shadow-elegant">
+          <div className="rounded-[1.8rem] border bg-card p-5 shadow-elegant sm:rounded-3xl sm:p-8">
             <h3 className="font-serif text-2xl text-primary">
               {t("whyLuna.comparison.luna.title")}
             </h3>
@@ -234,7 +234,7 @@ const WhyLuna = () => {
               {t("whyLuna.values.label")}
             </p>
 
-            <h2 className="font-serif text-4xl text-primary md:text-5xl">
+            <h2 className="font-serif text-3xl text-primary sm:text-4xl md:text-5xl">
               {t("whyLuna.values.title")}
             </h2>
 
@@ -357,10 +357,10 @@ const WhyLuna = () => {
             <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-accent">
               {t("whyLuna.questionBank.label")}
             </p>
-            <h2 className="font-serif text-4xl text-primary">
+            <h2 className="font-serif text-3xl text-primary sm:text-4xl">
               {t("whyLuna.questionBank.title")}
             </h2>
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+            <p className="mt-6 text-sm leading-7 text-muted-foreground sm:text-lg sm:leading-relaxed">
               {t("whyLuna.questionBank.description")}
             </p>
           </div>
