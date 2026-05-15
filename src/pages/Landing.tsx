@@ -106,7 +106,7 @@ const Landing = () => {
                 </p>
               </div>
 
-              <h1 className="max-w-[760px] font-serif text-[2.5rem] font-medium leading-[1.08] text-primary sm:text-[3.2rem] lg:text-[clamp(2.6rem,3.8vw,4.2rem)]">
+              <h1 className="max-w-[760px] font-poppins text-[2.5rem] font-medium leading-[1.08] text-primary sm:text-[3.2rem] lg:text-[clamp(2.6rem,3.8vw,4.2rem)]">
                 {t("landing.hero.title")}
                 <span className="relative mt-2 block italic leading-tight text-accent">
                   {t("landing.hero.accent")}
@@ -216,7 +216,7 @@ const Landing = () => {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="font-serif text-xl text-primary sm:text-2xl lg:text-3xl">
+                  <p className="font-poppins text-xl text-primary sm:text-2xl lg:text-3xl">
                     {item.value}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
@@ -237,7 +237,7 @@ const Landing = () => {
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-[#b8873a]">
               {t("landing.headTutors.label")}
             </p>
-            <h2 className="mt-5 max-w-[720px] font-serif text-3xl leading-tight text-primary sm:text-4xl lg:text-5xl">
+            <h2 className="mt-5 max-w-[720px] font-poppins text-3xl leading-tight text-primary sm:text-4xl lg:text-5xl">
               {t("landing.headTutors.title")}
             </h2>
 
@@ -280,7 +280,7 @@ const Landing = () => {
                       {t("landing.headTutors.cardLabel")}
                     </p>
 
-                    <h3 className="mt-2 font-serif text-3xl leading-none text-primary sm:text-[42px]">
+                    <h3 className="mt-2 font-poppins text-3xl leading-none text-primary sm:text-[42px]">
                       {tutor.name}
                     </h3>
 
@@ -370,7 +370,7 @@ const Landing = () => {
       {/* PROCESS */}
       <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-24">
         <div className="mb-14 text-center">
-          <h2 className="font-serif text-3xl text-primary sm:text-4xl">
+          <h2 className="font-poppins text-3xl text-primary sm:text-4xl">
             {t("landing.process.title")}
           </h2>
         </div>
@@ -389,7 +389,7 @@ const Landing = () => {
       <section className="bg-secondary/30 px-4 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
           <div>
-            <h2 className="font-serif text-3xl text-primary sm:text-4xl">
+            <h2 className="font-poppins text-3xl text-primary sm:text-4xl">
               {t("landing.why.title")}
             </h2>
 
@@ -425,7 +425,7 @@ const Landing = () => {
             {t("landing.programs.label")}
           </p>
 
-          <h2 className="font-serif text-4xl text-primary md:text-5xl">
+          <h2 className="font-poppins text-4xl text-primary md:text-5xl">
 
             {t("landing.programs.title")}
 
@@ -444,7 +444,7 @@ const Landing = () => {
               key={program.title}
               className="group relative rounded-3xl border bg-card p-6 sm:p-8 shadow-soft transition hover:-translate-y-2 hover:shadow-elegant"
             >
-              <h3 className="mb-2 font-serif text-2xl text-primary">
+              <h3 className="mb-2 font-poppins text-2xl text-primary">
                 {program.title}
               </h3>
 
@@ -471,7 +471,7 @@ const Landing = () => {
 
       {/* CTA */}
       <section className="bg-hero px-4 py-16 text-center sm:px-6 sm:py-24">
-        <h2 className="font-serif text-3xl text-primary sm:text-4xl">
+        <h2 className="font-poppins text-3xl text-primary sm:text-4xl">
           {t("landing.cta.title")}
         </h2>
 
