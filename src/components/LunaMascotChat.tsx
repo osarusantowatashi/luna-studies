@@ -413,84 +413,61 @@ const API_URL =
       </AnimatePresence>
 
       <motion.button
-        onClick={() => setOpen(true)}
-     className="relative ml-auto flex h-[82px] w-[82px] items-center justify-center rounded-full bg-white shadow-[0_18px_45px_rgba(8,42,85,0.22)] md:h-[130px] md:w-[130px]"
-        animate={{ y: [0, -10, 0] }}
-        transition={{
-          repeat: Infinity,
-          duration: 3.4,
-          ease: "easeInOut",
-        }}
-        whileHover={{ scale: 1.06, rotate: -2 }}
-      >
-        <div className="absolute inset-3 rounded-full bg-gradient-to-br from-[#F6C65B]/35 via-white to-[#082A55]/20 blur-xl" />
+  type="button"
+  onClick={() => setOpen(true)}
+  className="relative ml-auto flex h-[96px] w-[96px] items-center justify-center rounded-full bg-white shadow-[0_20px_55px_rgba(8,42,85,0.25)] sm:h-[120px] sm:w-[120px] lg:h-[130px] lg:w-[130px]"
+  animate={{ y: [0, -8, 0] }}
+  transition={{
+    repeat: Infinity,
+    duration: 3.2,
+    ease: "easeInOut",
+  }}
+  whileHover={{ scale: 1.06, rotate: -2 }}
+>
+  <motion.div
+    className="absolute inset-2 rounded-full bg-gradient-to-br from-[#F6C65B]/35 via-white to-[#082A55]/20 blur-xl"
+    animate={{ opacity: [0.55, 1, 0.55], scale: [1, 1.08, 1] }}
+    transition={{
+      repeat: Infinity,
+      duration: 2.8,
+      ease: "easeInOut",
+    }}
+  />
 
-        <svg
-          viewBox="0 0 240 240"
-          className="relative h-[68px] w-[68px] drop-shadow-xl md:h-[110px] md:w-[110px]"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M154 25C102 32 64 76 64 128C64 180 108 216 158 213C129 196 111 164 111 127C111 87 129 50 154 25Z"
-            fill="#082A55"
-          />
+  <motion.img
+    src="/mascot/chokina.png"
+    alt="Chokina AI Assistant"
+    className="relative z-10 h-[88px] w-[88px] object-contain sm:h-[112px] sm:w-[112px] lg:h-[122px] lg:w-[122px]"
+    animate={{ rotate: [0, 1.5, -1.5, 0] }}
+    transition={{
+      repeat: Infinity,
+      duration: 4,
+      ease: "easeInOut",
+    }}
+  />
 
-          <circle cx="113" cy="105" r="6" fill="#F6C65B" />
-          <circle cx="138" cy="105" r="6" fill="#F6C65B" />
+  <motion.span
+    className="absolute right-3 top-3 z-20 h-3 w-3 rounded-full bg-[#F6C65B] shadow-[0_0_18px_rgba(246,198,91,0.9)]"
+    animate={{ scale: [1, 1.4, 1], opacity: [0.7, 1, 0.7] }}
+    transition={{
+      repeat: Infinity,
+      duration: 1.6,
+      ease: "easeInOut",
+    }}
+  />
 
-          <path
-            d="M115 126C123 134 132 134 140 126"
-            stroke="#F6C65B"
-            strokeWidth="5"
-            strokeLinecap="round"
-            fill="none"
-          />
-
-          <motion.g
-            style={{ transformOrigin: "165px 124px" }}
-            animate={{ rotate: [0, 18, -10, 18, 0] }}
-            transition={{
-              repeat: Infinity,
-              repeatDelay: 1.8,
-              duration: 1.1,
-              ease: "easeInOut",
-            }}
-          >
-            <path
-              d="M158 126C172 112 184 114 191 128"
-              stroke="#F6C65B"
-              strokeWidth="9"
-              strokeLinecap="round"
-              fill="none"
-            />
-
-            <circle cx="194" cy="130" r="9" fill="#F6C65B" />
-          </motion.g>
-
-          <path
-            d="M55 168C83 153 108 158 123 194C94 177 72 176 55 183Z"
-            fill="#F6C65B"
-          />
-
-          <path
-            d="M185 168C157 153 132 158 117 194C146 177 168 176 185 183Z"
-            fill="#F6C65B"
-          />
-
-          <motion.path
-            d="M172 55L180 78L204 87L180 96L172 121L164 96L140 87L164 78Z"
-            fill="#C89235"
-            animate={{
-              scale: [1, 1.18, 1],
-              rotate: [0, 8, 0],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 2,
-            }}
-          />
-        </svg>
-      </motion.button>
+  <motion.span
+    className="absolute bottom-4 left-4 z-20 text-lg"
+    animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
+    transition={{
+      repeat: Infinity,
+      duration: 2,
+      ease: "easeInOut",
+    }}
+  >
+    ✦
+  </motion.span>
+</motion.button>
     </div>
   );
 };

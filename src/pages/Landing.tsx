@@ -85,7 +85,7 @@ const Landing = () => {
         {/* RIGHT IMAGE AS BACKGROUND */}
         <div className="pointer-events-none absolute inset-y-0 right-0 block w-full opacity-25 sm:opacity-35 lg:w-[62%] lg:opacity-100">
           <img
-            src="/hero/luna_girl.jpeg"
+            src="/hero/luna_girl.png"
             alt="Luna Education student studying"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
@@ -96,7 +96,7 @@ const Landing = () => {
         </div>
 
         <div className="relative z-10 mx-auto max-w-[1440px]">
-        <div className="grid items-center gap-8 py-2 lg:min-h-[660px] lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="grid items-center gap-8 py-2 lg:min-h-[660px] lg:grid-cols-[0.8fr_1.2fr]">
             {/* LEFT */}
             <div className="relative z-20 w-full max-w-[560px]">
               <div className="mb-5 flex items-center gap-3">
@@ -179,7 +179,7 @@ const Landing = () => {
           </div>
 
           {/* BOTTOM STATS */}
-          <div className="relative z-30 mx-auto grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 rounded-[2rem] border border-white/80 bg-white/85 p-5 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-5">
+          <div className="relative z-30 mx-auto grid grid-cols-1 gap-3 rounded-[2rem] border border-white/80 bg-white/85 p-5 shadow-[0_20px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-5">
             {[
               {
                 icon: Users,
@@ -198,7 +198,7 @@ const Landing = () => {
               },
               {
                 icon: GraduationCap,
-                value: "Top Uni",
+                value: "Top University",
                 title: t("landing.stats.worldwide"),
               },
               {
@@ -208,15 +208,15 @@ const Landing = () => {
               },
             ].map((item) => (
               <div
-                key={item.title}
-                className="flex min-w-0 items-center gap-3 rounded-2xl bg-white/70 p-3 lg:rounded-none lg:bg-transparent lg:p-0 lg:border-r lg:border-primary/10 lg:last:border-r-0"
-              >
+  key={item.title}
+  className="flex min-w-0 items-center gap-4 rounded-2xl bg-white/70 p-4 lg:h-full lg:min-h-[120px] lg:rounded-none lg:bg-transparent lg:p-0 lg:pr-6 lg:border-r lg:border-primary/10 lg:last:border-r-0"
+>
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 sm:h-14 sm:w-14">
                   <item.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                 </div>
 
-                <div className="min-w-0">
-                  <p className="font-poppins text-xl text-primary sm:text-2xl lg:text-3xl">
+                <div className="flex min-h-[78px] flex-col justify-center">
+                  <p className="font-serif leading-none text-primary text-xl sm:text-2xl lg:text-3xl">
                     {item.value}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
@@ -231,7 +231,7 @@ const Landing = () => {
 
       {/* HEAD TUTORS */}
       <section className="relative overflow-hidden bg-white px-4 py-14 sm:px-6 sm:py-16">
-        <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-0 lg:gap-24 lg:px-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-0 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:px-6">
           {/* LEFT COPY */}
           <div className="self-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-[#b8873a]">
@@ -254,14 +254,14 @@ const Landing = () => {
           </div>
 
           {/* RIGHT FEATURED TUTORS */}
-          <div className="grid gap-6 lg:translate-x-10">
+          <div className="grid gap-6 lg:translate-x-4">
             {tutors.slice(0, 2).map((tutor, index) => {
               const isLongDesc = tutor.desc.length > 85;
 
               return (
                 <div
                   key={tutor.name}
-                  className={`group flex flex-col items-start gap-6 rounded-[2rem] border border-white/70 bg-[#f8f6f1] p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)] lg:flex-row lg:items-center sm:gap-8 sm:px-8 sm:py-6 lg:min-h-[240px] lg:max-w-[760px] ${index === 1 ? "lg:ml-28" : ""
+                  className={`group flex flex-col items-start gap-6 rounded-[2rem] border border-white/70 bg-[#f8f6f1] p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)] lg:flex-row lg:items-center sm:gap-8 sm:px-8 sm:py-6 lg:min-h-[240px] lg:max-w-[920px] ${index === 1 ? "lg:ml-10" : ""
                     }`}
                 >
                   <div className="h-[260px] w-full overflow-hidden rounded-[2rem] bg-secondary sm:h-[200px] sm:w-[210px] sm:shrink-0 sm:rounded-[3rem]">

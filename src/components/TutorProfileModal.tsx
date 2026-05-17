@@ -38,7 +38,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-3 py-4 backdrop-blur-sm sm:p-6">
-      <div className="relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-y-auto rounded-[1.6rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid md:max-h-[88vh] md:grid-cols-[0.42fr_0.58fr] md:overflow-hidden md:rounded-[2rem]">
+     <div className="relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-y-auto rounded-[1.6rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid md:max-h-[88vh] md:grid-cols-[0.42fr_0.58fr] md:rounded-[2rem]">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 z-20 ml-auto mr-4 mt-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-soft transition hover:bg-secondary md:absolute md:right-5 md:top-5 md:m-0"
@@ -104,7 +104,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
         </div>
 
         {/* RIGHT */}
-        <div className="px-6 py-8 sm:p-8 md:overflow-y-auto md:p-10">
+        <div className="px-6 py-8 sm:p-8 md:max-h-[88vh] md:overflow-y-auto md:p-10">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#b8873a] sm:text-sm">
             {t("tutorsPage.popup.label")}
           </p>
