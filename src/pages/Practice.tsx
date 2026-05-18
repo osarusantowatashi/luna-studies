@@ -269,7 +269,7 @@ const Practice = () => {
     return (
       <div className="min-h-screen px-4 py-8 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-4xl space-y-8">
-          <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
+        <div data-guide="practice-setup" className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
             <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
               Practice Setup
             </p>
@@ -310,7 +310,7 @@ const Practice = () => {
             </div>
           </div>
 
-          <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
+          <div data-guide="practice-actions" className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
             <div className="grid gap-6 md:grid-cols-3">
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import Footer from "@/components/Footer";
 
 const Mistakes = () => {
   const [mistakes, setMistakes] = useState<any[]>([]);
@@ -63,7 +62,7 @@ const Mistakes = () => {
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div data-guide="mistakes-review" className="mx-auto max-w-4xl space-y-6">
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
             Student Review
@@ -93,20 +92,6 @@ const Mistakes = () => {
               ))}
             </div>
           )}
-        </div>
-
-        <div className="grid gap-3 sm:flex sm:flex-wrap">
-          <a href="/practice" className="w-full sm:w-auto">
-            <button className="w-full rounded-2xl bg-primary px-4 py-3 text-sm text-white sm:w-auto">
-              Redo Mistakes
-            </button>
-          </a>
-
-          <a href="/practice" className="w-full sm:w-auto">
-            <button className="w-full rounded-2xl border px-4 py-3 text-sm sm:w-auto">
-              Practice More
-            </button>
-          </a>
         </div>
 
         {!canViewAnswers && (

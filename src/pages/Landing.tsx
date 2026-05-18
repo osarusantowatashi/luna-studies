@@ -1,6 +1,5 @@
 
 import { Link } from "react-router-dom";
-import NavBar from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle,
@@ -76,7 +75,6 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavBar />
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-[#fbfaf6] px-4 py-6 sm:px-6 lg:px-8 lg:py-16">

@@ -30,6 +30,7 @@ import AdminLessons from "./pages/AdminLessons";
 import ScrollToTop from "./components/ScrollToTop";
 
 import LunaMascotChat from "./components/LunaMascotChat";
+import HapikoGuide from "./components/HapikoGuide";
 
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -42,13 +43,15 @@ const App = () => {
         {/* Public Pages */}
         <Route path="/" element={<Navigate to="/en" replace />} />
 
-        <Route path="/:lang" element={<Landing />} />
+        <Route path="/:lang" element={<Layout><Landing /></Layout>} />
+
         <Route path="/:lang/auth" element={<Auth />} />
         <Route path="/:lang/login" element={<Login />} />
-        <Route path="/:lang/subjects" element={<Subjects />} />
-        <Route path="/:lang/whyluna" element={<WhyLuna />} />
-        <Route path="/:lang/tutors" element={<Tutors />} />
-        <Route path="/:lang/enquiry" element={<Enquire />} />
+
+        <Route path="/:lang/subjects" element={<Layout><Subjects /></Layout>} />
+        <Route path="/:lang/whyluna" element={<Layout><WhyLuna /></Layout>} />
+        <Route path="/:lang/tutors" element={<Layout><Tutors /></Layout>} />
+        <Route path="/:lang/enquiry" element={<Layout><Enquire /></Layout>} />
         <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
         <Route path="/:lang/reset-password" element={<ResetPassword />} />
 
@@ -213,6 +216,7 @@ const App = () => {
       </Routes>
 
       <LunaMascotChat />
+      <HapikoGuide />
     </BrowserRouter>
   );
 };

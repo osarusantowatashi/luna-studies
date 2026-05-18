@@ -421,46 +421,46 @@
     }
   },
   "chat": {
-    "initialMessage": "今天想了解哪方面的课程或学习支持？",
-    "header": {
-      "title": "Luna AI 助手",
-      "subtitle": "为家长与学生提供课程咨询"
-    },
-    "loading": "正在整理个性化建议",
-    "quick": {
-      "english": "英语提升",
-      "map": "MAP 备考",
-      "cat4": "CAT4 备考",
-      "admissions": "学校申请",
-      "toefl": "IELTS / TOEFL"
-    },
-    "input": {
-      "placeholder": "询问 MAP、TOEFL、CAT4...",
-      "loading": "Luna 正在回复..."
-    },
-    "buttons": {
-      "submitEnquiry": "提交咨询",
-      "whatsapp": "联系 WhatsApp"
-    },
-    "lead": {
-      "title": "提交咨询",
-      "name": "家长 / 学生姓名",
-      "contact": "邮箱或 WhatsApp",
-      "grade": "学生年级",
-      "goal": "学习目标 / 考试 / 科目",
-      "submit": "提交",
-      "submitting": "提交中...",
-      "cancel": "取消",
-      "alert": "请填写姓名和联系方式。",
-      "noGoal": "来自 Luna AI 聊天框的咨询，未填写具体学习目标。",
-      "success": "谢谢，您的咨询已成功提交。我们的团队会尽快联系您。",
-      "error": "抱歉，暂时无法提交咨询。请通过 WhatsApp 联系我们，或稍后再试。"
-    },
-    "errors": {
-      "noReply": "抱歉，暂时无法生成回复。",
-      "general": "抱歉，Luna 暂时开小差了 🌙 请稍后再试。"
-    }
+  "initialMessage": "你好，我是 Chokina。今天想了解哪方面的课程或学习支持？",
+  "header": {
+    "title": "Chokina AI 咨询顾问",
+    "subtitle": "为家长与学生提供课程咨询"
   },
+  "loading": "Chokina 正在整理个性化建议",
+  "quick": {
+    "english": "英语提升",
+    "map": "MAP 备考",
+    "cat4": "CAT4 备考",
+    "admissions": "学校申请",
+    "toefl": "IELTS / TOEFL"
+  },
+  "input": {
+    "placeholder": "向 Chokina 询问 MAP、TOEFL、CAT4...",
+    "loading": "Chokina 正在回复..."
+  },
+  "buttons": {
+    "submitEnquiry": "提交咨询",
+    "whatsapp": "联系 WhatsApp"
+  },
+  "lead": {
+    "title": "提交咨询",
+    "name": "家长 / 学生姓名",
+    "contact": "邮箱或 WhatsApp",
+    "grade": "学生年级",
+    "goal": "学习目标 / 考试 / 科目",
+    "submit": "提交",
+    "submitting": "提交中...",
+    "cancel": "取消",
+    "alert": "请填写姓名和联系方式。",
+    "noGoal": "来自 Chokina AI 咨询顾问的咨询，未填写具体学习目标。",
+    "success": "谢谢，您的咨询已成功提交。我们的团队会尽快联系您。",
+    "error": "抱歉，Chokina 暂时无法提交咨询。请通过 WhatsApp 联系我们，或稍后再试。"
+  },
+  "errors": {
+    "noReply": "抱歉，Chokina 暂时无法生成回复。",
+    "general": "抱歉，Chokina 暂时休息了一下。请稍后再试。"
+  }
+},
   "tutorsPage": {
     "hero": {
       "label": "导师团队",

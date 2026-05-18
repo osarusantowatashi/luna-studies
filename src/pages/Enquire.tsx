@@ -1,4 +1,4 @@
-import NavBar from "@/components/NavBar";
+
 import EnquiryForm from "@/pages/EnquiryForm";
 import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
@@ -7,7 +7,6 @@ const Enquire = () => {
   const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background">
-      <NavBar />
 
       {/* HERO */}
       <section className="bg-hero px-4 py-16 text-center sm:px-6 sm:py-24">

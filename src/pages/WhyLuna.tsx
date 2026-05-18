@@ -1,4 +1,3 @@
-import NavBar from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -58,7 +57,6 @@ const WhyLuna = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavBar />
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero px-4 py-10 sm:px-6 sm:py-24 lg:py-28">

@@ -9,25 +9,26 @@ const API_URL =
 
 
 
-  const LunaMascotChat = () => {
-    const { t, i18n } = useTranslation();
-    const location = useLocation();
-  
-    const hiddenRoutes = [
-      "/admin",
-      "/generate",
-      "/practice",
-      "/mistakes",
-      "/studentoverview",
-      "/dashboard",
-      "/tutor/lessons",
-    ];
-  
-    const shouldHide = hiddenRoutes.some((route) =>
-      location.pathname.startsWith(route)
-    );
-  
-    const [open, setOpen] = useState(false);
+const LunaMascotChat = () => {
+  const { t, i18n } = useTranslation();
+  const location = useLocation();
+
+  const hiddenRoutes = [
+    "/admin",
+    "/generate",
+    "/practice",
+    "/mistakes",
+    "/studentoverview",
+    "/dashboard",
+    "/tutor/lessons",
+  ];
+
+  const shouldHide = hiddenRoutes.some((route) =>
+    location.pathname.startsWith(route)
+  );
+
+  const [open, setOpen] = useState(false);
+  const [isBlinking, setIsBlinking] = useState(false);
 
   const [messages, setMessages] = useState<
     { role: string; text: string }[]
@@ -57,6 +58,25 @@ const API_URL =
       behavior: "smooth",
     });
   }, [messages, isLoading, showLeadForm]);
+
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const interval = setInterval(() => {
+      setIsBlinking(true);
+
+      timeout = setTimeout(() => {
+        setIsBlinking(false);
+      }, 260);
+    }, 3200);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
+
 
   const shouldShowCTA = (text: string) => {
     const lowerText = text.toLowerCase();
@@ -412,63 +432,104 @@ const API_URL =
         )}
       </AnimatePresence>
 
-      <motion.button
-  type="button"
-  onClick={() => setOpen(true)}
-  className="relative ml-auto flex h-[96px] w-[96px] items-center justify-center rounded-full bg-white shadow-[0_20px_55px_rgba(8,42,85,0.25)] sm:h-[120px] sm:w-[120px] lg:h-[130px] lg:w-[130px]"
-  animate={{ y: [0, -8, 0] }}
-  transition={{
-    repeat: Infinity,
-    duration: 3.2,
-    ease: "easeInOut",
-  }}
-  whileHover={{ scale: 1.06, rotate: -2 }}
+
+
+      <div className="relative ml-auto w-fit">
+
+        {!open && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="absolute bottom-[190px] right-[128px] z-30 isolate"
+          >
+            <div className="relative w-[280px] rounded-[36px] border border-white/60 bg-white/95 px-6 py-5 shadow-[0_20px_55px_rgba(8,42,85,0.12)] backdrop-blur-md">
+
+              {/* sparkle */}
+              <div className="absolute left-5 top-4 text-[#F6C65B] opacity-90 text-[14px]">
+                ✦
+              </div>
+
+              <div className="absolute left-10 top-2 text-[#E8D8B5] opacity-80 text-[18px]">
+                ✦
+              </div>
+
+              {/* bubble tail */}
+<svg
+  className="absolute -bottom-[18px] right-[58px] h-[28px] w-[46px] drop-shadow-[0_10px_14px_rgba(8,42,85,0.06)]"
+  viewBox="0 0 46 28"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
 >
-  <motion.div
-    className="absolute inset-2 rounded-full bg-gradient-to-br from-[#F6C65B]/35 via-white to-[#082A55]/20 blur-xl"
-    animate={{ opacity: [0.55, 1, 0.55], scale: [1, 1.08, 1] }}
-    transition={{
-      repeat: Infinity,
-      duration: 2.8,
-      ease: "easeInOut",
-    }}
+  <path
+    d="M8 0C14 11 22 20 36 24C25 29 10 25 0 8C-2 4 2 0 8 0Z"
+    fill="rgba(255,255,255,0.95)"
   />
+</svg>
+              
+               <div className="pl-6">
+                <p className="text-[18px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#082A55]">
+                  <span className="text-[#F6C65B]">
+                    Chokina
+                  </span>{" "}
+                  is here for you
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
-  <motion.img
-    src="/mascot/chokina.png"
-    alt="Chokina AI Assistant"
-    className="relative z-10 h-[88px] w-[88px] object-contain sm:h-[112px] sm:w-[112px] lg:h-[122px] lg:w-[122px]"
-    animate={{ rotate: [0, 1.5, -1.5, 0] }}
-    transition={{
-      repeat: Infinity,
-      duration: 4,
-      ease: "easeInOut",
-    }}
-  />
+        <motion.button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="relative ml-auto flex h-[160px] w-[160px] items-center justify-center bg-transparent sm:h-[190px] sm:w-[190px] lg:h-[205px] lg:w-[205px]"
 
-  <motion.span
-    className="absolute right-3 top-3 z-20 h-3 w-3 rounded-full bg-[#F6C65B] shadow-[0_0_18px_rgba(246,198,91,0.9)]"
-    animate={{ scale: [1, 1.4, 1], opacity: [0.7, 1, 0.7] }}
-    transition={{
-      repeat: Infinity,
-      duration: 1.6,
-      ease: "easeInOut",
-    }}
-  />
+          whileHover={{ scale: 1.06, rotate: -2 }}
+        >
+          <motion.div
+            className="relative z-10 h-[225px] w-[225px] max-w-none opacity-100 sm:h-[260px] sm:w-[260px] lg:h-[285px] lg:w-[285px]"
+            animate={{
+              y: [0, -9, 0],
+              rotate: [-2.8, 2.8, -2.8],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 4.6,
+              ease: "easeInOut",
+            }}
+          >
+            <img
+              src={isBlinking ? "/mascot/chokina_blink.png" : "/mascot/chokina.png"}
+              alt="Chokina AI Assistant"
+              className="absolute inset-0 h-full w-full scale-[1.08] object-contain"
+            />
+          </motion.div>
 
-  <motion.span
-    className="absolute bottom-4 left-4 z-20 text-lg"
-    animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
-    transition={{
-      repeat: Infinity,
-      duration: 2,
-      ease: "easeInOut",
-    }}
-  >
-    ✦
-  </motion.span>
-</motion.button>
+          <motion.span
+            className="absolute right-3 top-3 z-20 h-3 w-3 rounded-full bg-[#F6C65B] shadow-[0_0_18px_rgba(246,198,91,0.9)]"
+            animate={{ scale: [1, 1.4, 1], opacity: [0.7, 1, 0.7] }}
+            transition={{
+              repeat: Infinity,
+              duration: 1.6,
+              ease: "easeInOut",
+            }}
+          />
+
+          <motion.span
+            className="absolute bottom-4 left-4 z-20 text-lg"
+            animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
+            transition={{
+              repeat: Infinity,
+              duration: 2,
+              ease: "easeInOut",
+            }}
+          >
+            ✦
+          </motion.span>
+        </motion.button>
+      </div>
     </div>
+
   );
 };
 

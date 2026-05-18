@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import NavBar from "@/components/NavBar";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import EnquiryForm from "@/pages/EnquiryForm";
@@ -76,7 +75,6 @@ const Subjects = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavBar />
 
       <section className="bg-hero px-4 py-10 text-center sm:px-6 sm:py-24">
         <h1 className="font-serif text-3xl text-primary sm:text-5xl">

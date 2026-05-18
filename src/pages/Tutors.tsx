@@ -1,4 +1,3 @@
-import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -26,7 +25,6 @@ const Tutors = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavBar />
 
       <section className="px-4 py-16 text-center sm:px-6 sm:py-24">
         <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-accent">

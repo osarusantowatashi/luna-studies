@@ -167,7 +167,7 @@ const StudentOverview = () => {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
+          <div data-guide="overview-stats" className="grid gap-4 sm:gap-6 md:grid-cols-3">
             <div className="rounded-2xl border p-5 sm:p-6">
               <p className="text-sm font-semibold text-muted-foreground">
                 Overall Accuracy
@@ -196,7 +196,7 @@ const StudentOverview = () => {
             </div>
           </div>
 
-          <div className="mt-8 grid gap-5 sm:gap-6 md:grid-cols-2">
+          <div data-guide="overview-practice-feedback" className="mt-8 grid gap-5 sm:gap-6 md:grid-cols-2">
             <div className="rounded-2xl border p-5 sm:p-7">
               <h2 className="font-serif text-2xl font-semibold text-primary">
                 Recommended Practice

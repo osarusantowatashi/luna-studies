@@ -421,46 +421,46 @@
     }
   },
   "chat": {
-    "initialMessage": "What would you like help with today?",
-    "header": {
-      "title": "Luna AI Assistant",
-      "subtitle": "Course guidance for parents & students"
-    },
-    "loading": "Preparing personalised guidance",
-    "quick": {
-      "english": "English improvement",
-      "map": "MAP preparation",
-      "cat4": "CAT4 preparation",
-      "admissions": "School admissions",
-      "toefl": "IELTS / TOEFL"
-    },
-    "input": {
-      "placeholder": "Ask about MAP, TOEFL, CAT4...",
-      "loading": "Luna is replying..."
-    },
-    "buttons": {
-      "submitEnquiry": "Submit Enquiry",
-      "whatsapp": "WhatsApp Team"
-    },
-    "lead": {
-      "title": "Submit an enquiry",
-      "name": "Parent / Student name",
-      "contact": "Email or WhatsApp",
-      "grade": "Student grade / year level",
-      "goal": "Learning goal / exam / subject",
-      "submit": "Submit",
-      "submitting": "Submitting...",
-      "cancel": "Cancel",
-      "alert": "Please enter your name and contact.",
-      "noGoal": "Submitted from Luna AI chatbox. No learning goal provided.",
-      "success": "Thank you. Your enquiry has been submitted successfully. Our team will contact you soon.",
-      "error": "Sorry, we could not submit the enquiry. Please contact us via WhatsApp or try again later."
-    },
-    "errors": {
-      "noReply": "Sorry, I could not generate a reply.",
-      "general": "Sorry, Luna is taking a short moon nap 🌙 Please try again."
-    }
+  "initialMessage": "Hi, I’m Chokina. What would you like help with today?",
+  "header": {
+    "title": "Chokina AI Consultant",
+    "subtitle": "Course guidance for parents & students"
   },
+  "loading": "Chokina is preparing personalised guidance",
+  "quick": {
+    "english": "English improvement",
+    "map": "MAP preparation",
+    "cat4": "CAT4 preparation",
+    "admissions": "School admissions",
+    "toefl": "IELTS / TOEFL"
+  },
+  "input": {
+    "placeholder": "Ask Chokina about MAP, TOEFL, CAT4...",
+    "loading": "Chokina is replying..."
+  },
+  "buttons": {
+    "submitEnquiry": "Submit Enquiry",
+    "whatsapp": "WhatsApp Team"
+  },
+  "lead": {
+    "title": "Submit an enquiry",
+    "name": "Parent / Student name",
+    "contact": "Email or WhatsApp",
+    "grade": "Student grade / year level",
+    "goal": "Learning goal / exam / subject",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "cancel": "Cancel",
+    "alert": "Please enter your name and contact.",
+    "noGoal": "Submitted from Chokina AI Consultant. No learning goal provided.",
+    "success": "Thank you. Your enquiry has been submitted successfully. Our team will contact you soon.",
+    "error": "Sorry, Chokina could not submit the enquiry. Please contact us via WhatsApp or try again later."
+  },
+  "errors": {
+    "noReply": "Sorry, Chokina could not generate a reply.",
+    "general": "Sorry, Chokina is taking a short break. Please try again."
+  }
+},
   "tutorsPage": {
     "hero": {
       "label": "Our Tutors",
