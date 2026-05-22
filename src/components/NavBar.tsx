@@ -4,7 +4,11 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { LogOut, Sparkles, Menu, X } from "lucide-react";
+import en from "./locales/en.json";
 
+import zh from "./locales/zh.json";
+
+import ja from "./locales/ja.json";
 const NavBar = () => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -64,28 +68,63 @@ const NavBar = () => {
 
     syncUser();
   }, [location.pathname]);
+const currentLang = location.pathname.startsWith("/zh")
+  ? "zh"
+  : location.pathname.startsWith("/jp")
+  ? "jp"
+  : "en";
 
-  const changeLanguage = () => {
-    if (isApp) return;
-    
-    setMobileOpen(false);
-  
-    const currentLang = location.pathname.startsWith("/zh") ? "zh" : "en";
-    const nextLang = currentLang === "zh" ? "en" : "zh";
-  
-    localStorage.setItem("luna_language", nextLang);
-  
-    const pathWithoutLang =
-      location.pathname.replace(/^\/(en|zh)/, "") || "/";
-  
-    window.location.href = `/${nextLang}${pathWithoutLang}`;
+useEffect(() => {
+  const detectBrowserLang = () => {
+    const lang = navigator.language.toLowerCase();
+
+    if (lang.startsWith("ja")) return "jp";
+    if (lang.startsWith("zh")) return "zh";
+
+    return "en";
   };
-  
-  const currentLang = location.pathname.startsWith("/zh") ? "zh" : "en";
 
-  const withLang = (path: string) =>
-    `/${currentLang}${path === "/" ? "" : path}`;
+  const hasLangPrefix = /^\/(en|zh|jp)(\/|$)/.test(location.pathname);
 
+  if (!hasLangPrefix) {
+    const savedLang = localStorage.getItem("luna_language");
+
+    const lang =
+      savedLang && ["en", "zh", "jp"].includes(savedLang)
+        ? savedLang
+        : detectBrowserLang();
+
+    localStorage.setItem("luna_language", lang);
+
+    window.location.replace(
+      location.pathname === "/"
+        ? `/${lang}`
+        : `/${lang}${location.pathname}`
+    );
+
+    return;
+  }
+
+  const i18nLang = currentLang === "jp" ? "ja" : currentLang;
+  i18n.changeLanguage(i18nLang);
+}, [location.pathname, currentLang, i18n]);
+
+const changeLanguage = (nextLang: "en" | "zh" | "jp") => {
+  if (isApp) return;
+
+  setMobileOpen(false);
+
+  localStorage.setItem("luna_language", nextLang);
+  i18n.changeLanguage(nextLang === "jp" ? "ja" : nextLang);
+
+  const pathWithoutLang =
+    location.pathname.replace(/^\/(en|zh|jp)/, "") || "/";
+
+  window.location.href = `/${nextLang}${pathWithoutLang}`;
+};
+
+const withLang = (path: string) =>
+  `/${currentLang}${path === "/" ? "" : path}`;
   const links =
     role === "admin"
       ? [
@@ -169,17 +208,23 @@ const NavBar = () => {
             );
           })}
         </nav>
-  
-        {/* DESKTOP RIGHT */}
-        <div className="hidden items-center gap-3 md:flex">
-          {!isApp && (
-            <button
-              onClick={changeLanguage}
-              className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-primary shadow-soft transition hover:bg-secondary"
-            >
-              {t("nav.language")}
-            </button>
-          )}
+
+  {/* DESKTOP RIGHT */}
+<div className="hidden items-center gap-3 md:flex">
+  {!isApp && (
+    <select
+      value={currentLang}
+      onChange={(e) =>
+        changeLanguage(e.target.value as "en" | "zh" | "jp")
+      }
+      className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-primary shadow-soft transition hover:bg-secondary"
+    >
+      <option value="en">English</option>
+      <option value="zh">中文</option>
+      <option value="jp">日本語</option>
+    </select>
+  )}
+
   
           {role ? (
             <>
@@ -256,14 +301,19 @@ const NavBar = () => {
             })}
           </div>
   
-          <div className="mt-4 grid gap-3">
-            {!isApp && (
-              <button
-                onClick={changeLanguage}
-                className="w-full rounded-2xl border bg-card px-4 py-3 text-sm font-semibold text-primary"
-              >
-                {t("nav.language")}
-              </button>
+         <div className="mt-4 grid gap-3">
+  {!isApp && (
+    <select
+      value={currentLang}
+      onChange={(e) =>
+        changeLanguage(e.target.value as "en" | "zh" | "jp")
+      }
+      className="w-full rounded-2xl border bg-card px-4 py-3 text-sm font-semibold text-primary"
+    >
+      <option value="en">English</option>
+      <option value="zh">中文</option>
+      <option value="jp">日本語</option>
+    </select>
             )}
   
             {role ? (
