@@ -1,131 +1,250 @@
 
 import EnquiryForm from "@/pages/EnquiryForm";
 import Footer from "@/components/Footer";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
+import {
+  ClipboardCheck,
+  BarChart3,
+  Target,
+  TrendingUp,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
+import { Helmet } from "react-helmet-async";
+
 
 const Enquire = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+
+useEffect(() => {
+  if (!location.hash) return;
+
+  const id = location.hash.replace("#", "");
+
+  setTimeout(() => {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, 300);
+}, [location]);
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+        <title>{t("enquire.seo.title")}</title>
+        <meta name="description" content={t("enquire.seo.description")} />
+      </Helmet>
+      <div className="min-h-screen bg-background">
 
-      {/* HERO */}
-      <section className="bg-hero px-4 py-16 text-center sm:px-6 sm:py-24">
-        <div className="mx-auto max-w-3xl">
-          <p className="mb-4 text-sm uppercase tracking-widest text-accent font-medium">
-            {t("enquire.hero.label")}
-          </p>
+        {/* ENQUIRY HERO - CONCIERGE STYLE */}
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pt-24 pb-10 sm:px-6 lg:px-8">          <div className="absolute inset-0 bg-[linear-gradient(135deg,#fffdf8_0%,#f7f3ff_48%,#fff4c7_100%)]" />
 
-          <h1 className="font-serif text-3xl leading-tight text-primary sm:text-5xl md:text-6xl">
-            {t("enquire.hero.title")}
-          </h1>
+          <div className="relative z-10 mx-auto grid max-w-[1180px] items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">            <motion.div
+            initial={{ opacity: 0, x: -50, rotate: -2 }}
+            animate={{ opacity: 1, x: 0, rotate: -1 }}
+            transition={{ duration: 0.7 }}
+            className="relative rounded-[2.5rem] bg-white p-7 shadow-[0_24px_80px_rgba(66,56,120,0.12)] sm:p-9"            >
+            <div className="absolute -right-6 top-1/2 h-12 w-12 -translate-y-1/2 rounded-full bg-[#fbfaff]" />
+            <div className="absolute -left-6 top-1/2 h-12 w-12 -translate-y-1/2 rounded-full bg-[#fbfaff]" />
 
-          <p className="mt-6 text-sm leading-7 text-muted-foreground sm:text-lg sm:leading-relaxed">
-            {t("enquire.hero.description")}
-          </p>
+            <p className="text-sm font-black uppercase tracking-[0.3em] text-[#8d73ff]">
+              {t("enquire.hero.label")}
+            </p>
 
-          <p className="mt-4 text-sm text-muted-foreground">
-            {t("enquire.hero.trial")}
-          </p>
-        </div>
-      </section>
+            <h1 className="mt-5 font-poppins text-[2.8rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4rem]">
+              {t("enquire.hero.titleLine1")}<br />
+              {t("enquire.hero.titleLine2")}
+            </h1>
 
-      {/* TRUST STRIP */}
-      <section className="border-y bg-secondary/40 px-4 py-8 sm:px-6 sm:py-10">
-        <div className="mx-auto grid max-w-5xl gap-4 text-center md:grid-cols-3">
-          <div>
-            <p className="text-sm text-muted-foreground">{t("enquire.trust.response")}</p>
-            <p className="text-primary font-semibold mt-1">{t("enquire.trust.responseValue")}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">{t("enquire.trust.format")}</p>
-            <p className="text-primary font-semibold mt-1">{t("enquire.trust.formatValue")}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">{t("enquire.trust.support")}</p>
-            <p className="text-primary font-semibold mt-1">{t("enquire.trust.supportValue")}</p>
-          </div>
-        </div>
-      </section>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-primary/60">
+              {t("enquire.hero.description")}
+            </p>
 
+            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              {[
+                t("enquire.hero.cards.level"),
+                t("enquire.hero.cards.goal"),
+                t("enquire.hero.cards.tutorFit"),
+              ].map((item, i) => (
+                <motion.div
+                  key={item}
+                  whileHover={{ y: -8, rotate: i === 1 ? 2 : -2 }}
+                  className="rounded-[1.5rem] bg-[#fbfaff] p-5 text-center"
+                >
+                  <p className="text-3xl font-black text-[#8d73ff]">0{i + 1}</p>
+                  <p className="mt-2 text-sm font-bold text-primary">{item}</p>
+                </motion.div>
+              ))}
+            </div>
 
-      {/* FORM */}
-      <section id="form" className="px-4 py-16 sm:px-6 sm:py-24">
-        <div className="mx-auto max-w-2xl">
-          <EnquiryForm />
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-20">
-        <div className="max-w-4xl mx-auto text-center mb-14">
-        <h2 className="font-serif text-3xl text-primary sm:text-4xl">
-            {t("enquire.process.title")}
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            {t("enquire.process.description")}
-          </p>
-        </div>
-
-        <div className="grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-5">
-          {[
-            {
-              step: "01",
-              title: t("enquire.steps.step1.title"),
-              text: t("enquire.steps.step1.text"),
-            },
-            {
-              step: "02",
-              title: t("enquire.steps.step2.title"),
-              text: t("enquire.steps.step2.text"),
-            },
-            {
-              step: "03",
-              title: t("enquire.steps.step3.title"),
-              text: t("enquire.steps.step3.text"),
-            },
-            {
-              step: "04",
-              title: t("enquire.steps.step4.title"),
-              text: t("enquire.steps.step4.text"),
-            },
-            {
-              step: "05",
-              title: t("enquire.steps.step5.title"),
-              text: t("enquire.steps.step5.text"),
-            },
-          ].map((item) => (
-            <div
-              key={item.step}
-              className="rounded-[1.8rem] border bg-card p-5 shadow-soft text-center sm:rounded-3xl sm:p-6"
+            <a
+              href="#enquiry-form"
+              className="mt-10 inline-flex h-14 items-center rounded-full bg-primary px-8 text-base font-bold text-white"
             >
-              <p className="text-accent font-semibold">{item.step}</p>
+              {t("enquire.hero.button")}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </a>
+          </motion.div>
 
-              <h3 className="mt-2 font-serif text-lg text-primary">
-                {item.title}
-              </h3>
+            {/* RIGHT TIMELINE */}
+            <div className="relative">
+              <div className="absolute left-6 top-8 h-[82%] w-[3px] rounded-full bg-[#ddd5ff]" />
 
-              <p className="mt-3 text-sm text-muted-foreground leading-6">
-                {item.text}
+              {[
+                [
+                  "01",
+                  t("enquire.timeline.step1.title"),
+                  t("enquire.timeline.step1.text"),
+                ],
+                [
+                  "02",
+                  t("enquire.timeline.step2.title"),
+                  t("enquire.timeline.step2.text"),
+                ],
+                [
+                  "03",
+                  t("enquire.timeline.step3.title"),
+                  t("enquire.timeline.step3.text"),
+                ],
+                [
+                  "04",
+                  t("enquire.timeline.step4.title"),
+                  t("enquire.timeline.step4.text"),
+                ],
+              ].map(([num, title, text], i) => (
+                <motion.div
+                  key={title}
+                  initial={{ opacity: 0, x: 45 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: false }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ x: 10 }}
+                  className="relative mb-5 ml-16 rounded-[2rem] bg-white/90 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)]"
+                >
+                  <div className="absolute -left-[58px] top-6 flex h-12 w-12 items-center justify-center rounded-full bg-[#8d73ff] text-sm font-black text-white">
+                    {num}
+                  </div>
+
+                  <h3 className="font-poppins text-xl font-black text-primary">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7 text-primary/60">{text}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>   {/* FORM */}
+        <section id="enquiry-form" className="bg-[#fbfaff] px-4 py-10 sm:px-6 sm:py-14">
+          <div className="mx-auto max-w-5xl">
+            <EnquiryForm />
+          </div>
+        </section>{/* PROCESS FLOW */}
+        <section className="relative overflow-hidden bg-[#fffdf8] px-4 py-16 sm:px-6 lg:px-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#f0eaff_0%,transparent_25%),radial-gradient(circle_at_80%_80%,#fff1bd_0%,transparent_28%)]" />
+
+          <div className="relative z-10 mx-auto max-w-[1250px]">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-sm font-black uppercase tracking-[0.28em] text-[#8d73ff]">
+                {t("enquire.process.label")}
+              </p>
+
+              <h2 className="mt-4 font-poppins text-[2.7rem] font-black leading-[0.95] tracking-[-0.04em] text-primary sm:text-[4rem]">
+                {t("enquire.process.titleLine1")}<br />
+                {t("enquire.process.titleLine2")}
+              </h2>
+
+              <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-primary/60">
+                {t("enquire.process.description")}
               </p>
             </div>
-          ))}
+
+            <div className="relative mt-14">
+              {/* line */}
+              <div className="absolute left-0 top-10 hidden h-[3px] w-full rounded-full bg-[#e7dfff] xl:block" />
+
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+                {[
+  {
+    step: "01",
+    title: t("enquire.steps.step1.title"),
+    text: t("enquire.steps.step1.text"),
+    icon: ClipboardCheck,
+  },
+  {
+    step: "02",
+    title: t("enquire.steps.step2.title"),
+    text: t("enquire.steps.step2.text"),
+    icon: BarChart3,
+  },
+  {
+    step: "03",
+    title: t("enquire.steps.step3.title"),
+    text: t("enquire.steps.step3.text"),
+    icon: Target,
+  },
+  {
+    step: "04",
+    title: t("enquire.steps.step4.title"),
+    text: t("enquire.steps.step4.text"),
+    icon: TrendingUp,
+  },
+  {
+    step: "05",
+    title: t("enquire.steps.step5.title"),
+    text: t("enquire.steps.step5.text"),
+    icon: Sparkles,
+  },
+].map((item, i) => {
+  const Icon = item.icon;
+
+  return (
+    <motion.div
+      key={item.step}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: false, amount: 0.2 }}
+      transition={{ delay: i * 0.08 }}
+      whileHover={{
+        y: -10,
+        rotate: i % 2 === 0 ? -2 : 2,
+      }}
+      className="group relative rounded-[2.2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl"
+    >
+      <div className="relative z-10">
+        <div className="flex items-center justify-between">
+          <div className="flex h-14 w-14 items-center justify-center rounded-[1.4rem] bg-[#8d73ff] shadow-[0_14px_35px_rgba(141,115,255,0.28)]">
+            <Icon className="h-6 w-6 text-white" strokeWidth={2.4} />
+          </div>
+
+          <span className="text-sm font-black text-[#8d73ff]">
+            {item.step}
+          </span>
         </div>
-      </section>
 
+        <h3 className="mt-6 font-poppins text-xl font-black leading-tight text-primary">
+          {item.title}
+        </h3>
 
-
-      {/* OPTIONAL CONTACT */}
-      <section className="bg-secondary/30 px-4 py-14 text-center sm:px-6 sm:py-16">
-        <p className="text-muted-foreground">
-          {t("enquire.contact.title")}
+        <p className="mt-3 text-sm leading-7 text-primary/60">
+          {item.text}
         </p>
+      </div>
 
-        <p className="mt-2 text-sm font-medium leading-7 text-primary sm:text-base">
-          WeChat: luna-education · Email: enquiries@lunastudies.com
-        </p>
-      </section>
-
-      <Footer />
-    </div>
+      <div className="absolute inset-x-0 bottom-0 h-1 rounded-b-[2.2rem] bg-gradient-to-r from-[#8d73ff] to-[#ffd84d] opacity-0 transition group-hover:opacity-100" />
+    </motion.div>
+  );
+})}
+              </div>
+            </div>
+          </div>
+        </section>
+        <Footer />
+      </div>
+    </>
   );
 };
 

@@ -1124,10 +1124,10 @@ CONTACT INFORMATION
 ==================================================
 
 WeChat:
-luna.education
+luna-education
 
 WhatsApp:
-+65 94235165
++65 81381999
 
 If users request detailed consultation:
 

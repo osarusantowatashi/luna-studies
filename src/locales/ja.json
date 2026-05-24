@@ -10,128 +10,848 @@
     "getStarted": "登録する"
   },
   "landing": {
+    "seo": {
+      "title": "LUNA Studies | 世界へつながる国際教育",
+      "description": "LUNA Studies は、日本・シンガポール・オンラインの生徒向けに、MAP、WIDA、AEIS、TOEFL、英語教育、バイリンガル教育を提供しています。"
+    },
     "hero": {
-      "label": "一人ひとりに合わせた個別指導",
-      "title": "考える力を育てる。",
-      "accent": "自信を持って学ぶ。",
-      "subtitle": "個別サポートを通じて、思考力・学習習慣・確かな学力向上をサポートします。",
-      "note": "オンライン中心 · シンガポール・東京で対面対応可 · 体験レッスン予約受付中"
+      "label": "生徒の可能性を広げる",
+      "titleLine1": "世界へつながる",
+      "titleLine2": "英語",
+      "titleHighlight": "スキル",
+      "titleLine3": "を育てる",
+      "description": "個別最適化された学習、経験豊富な講師、国際的なプログラムを通じて、生徒が自信を持って成長できる環境を提供します。",
+      "primaryButton": "LUNAについて",
+      "secondaryButton": "コースを見る",
+      "rating": "2,000名以上の生徒から平均 4.9/5 評価"
+    },
+    "dashboard": {
+      "writingFeedback": {
+        "title": "ライティングフィードバック",
+        "comment": "とても良い出来です！この調子で頑張りましょう！🎉",
+        "items": {
+          "ideas": "アイデア",
+          "structure": "構成",
+          "vocabulary": "語彙",
+          "grammar": "文法"
+        }
+      },
+      "upcomingLesson": {
+        "title": "次回レッスン",
+        "lesson": "スピーキング練習",
+        "time": "本日 7:00 PM",
+        "action": "レッスンに参加 →"
+      },
+      "vocabularyGrowth": {
+        "title": "語彙力の成長",
+        "badge": "+42単語"
+      },
+      "mapProgress": {
+        "title": "MAPスコアの成長",
+        "badge": "+18%",
+        "reading": {
+          "title": "Reading",
+          "subtitle": "読解力・語彙力"
+        },
+        "math": {
+          "title": "Math",
+          "subtitle": "問題解決・論理力"
+        }
+      },
+      "tutorFeedback": {
+        "title": "講師フィードバック",
+        "imageAlt": "講師",
+        "name": "Christine先生",
+        "role": "専門講師",
+        "comment": "論理構成が非常に分かりやすく、表現力も素晴らしいです。"
+      },
+      "weeklyGoals": {
+        "title": "今週の目標",
+        "badge": "3/4 完了",
+        "items": {
+          "readingHomework": "読解宿題を完了",
+          "vocabulary": "新しい単語を15個学習",
+          "speakingPractice": "スピーキング練習を完了",
+          "grammarReview": "文法修正を復習"
+        }
+      }
+    },
+    "programs": {
+      "labelLine1": "あらゆる",
+      "labelLine2": "目標に向けて",
+      "titleLine1": "すべての試験へ。",
+      "titleLine2": "すべての目標へ。",
+      "titleLine3": "すべての",
+      "highlight": "未来へ。",
+      "items": {
+        "map": {
+          "title": "MAP",
+          "sub": "学力成長測定"
+        },
+        "toefl": {
+          "title": "TOEFL",
+          "sub": "iBT / Junior 対策"
+        },
+        "wida": {
+          "title": "WIDA",
+          "sub": "言語発達サポート"
+        },
+        "writing": {
+          "title": "Academic Writing",
+          "sub": "考える・書く・伝える。"
+        },
+        "interview": {
+          "title": "面接対策",
+          "sub": "自信を持って話す。"
+        }
+      }
+    },
+    "pathways": {
+      "label": "グローバル進学サポート",
+      "titleLine1": "インターナショナルスクールから",
+      "titleLine2": "世界へ。",
+      "description": "LUNAは、日本・シンガポール・各国インターナショナルスクールの生徒に対し、英語力・試験対策・学術スキルを通じて進学をサポートします。",
+      "items": {
+        "japan": {
+          "country": "日本",
+          "desc": "インターナショナルスクール、バイリンガル教育、MAP/WIDA対策、面接準備をサポート。"
+        },
+        "singapore": {
+          "country": "シンガポール",
+          "desc": "英語基礎、AEIS対策、学校転校準備、学習自信の向上を支援。"
+        },
+        "australia": {
+          "country": "オーストラリア",
+          "desc": "アカデミックライティング、スピーキング、IELTS型コミュニケーション能力を強化。"
+        },
+        "others": {
+          "country": "その他",
+          "desc": "批判的思考、読解力、プレゼン能力、ボーディングスクール準備をサポート。"
+        }
+      },
+      "tags": {
+        "interview": "面接",
+        "english": "英語",
+        "transition": "進学準備",
+        "writing": "ライティング",
+        "speaking": "スピーキング",
+        "reading": "読解",
+        "criticalThinking": "批判的思考",
+        "presentation": "プレゼン"
+      }
+    },
+    "whyPreview": {
+      "label": "Why Luna?",
+      "titleLine1": "ただの授業ではなく、",
+      "titleLine2": "成長のための",
+      "titleLine3": "学習システム。",
+      "description": "LUNAでは、学力診断、講師マッチング、進捗管理、保護者フィードバックを組み合わせています。",
+      "button": "LUNAの仕組みを見る",
+      "cards": {
+        "assessment": {
+          "title": "まずは学力診断",
+          "desc": "レッスン開始前に、生徒の強み・弱点・学習課題を分析します。"
+        },
+        "matching": {
+          "title": "講師マッチング",
+          "desc": "学習目標や性格に合わせて、最適な講師を選定します。"
+        },
+        "progress": {
+          "title": "成長を見える化",
+          "desc": "保護者も進捗や成果を分かりやすく確認できます。"
+        },
+        "support": {
+          "title": "継続的なサポート",
+          "desc": "同じやり方を繰り返すのではなく、状況に合わせて学習計画を改善します。"
+        }
+      }
+    },
+    "process": {
+      "label": "LUNA 学習システム ✨",
+      "title": "成長につながる明確なステップ",
+      "description": "体験レッスンから最終評価まで、すべての流れが「見える成長」を目的に設計されています。",
+      "stepLabel": "STEP",
+      "steps": {
+        "assessment": {
+          "title": "体験アセスメント",
+          "desc": "現在のレベル、強み、弱点を確認します。"
+        },
+        "report": {
+          "title": "総合レポート",
+          "desc": "読解・ライティング・スピーキング・試験対策の詳細分析を共有します。"
+        },
+        "matching": {
+          "title": "講師マッチング",
+          "desc": "学習スタイルや目標に合った講師を選びます。"
+        },
+        "tracking": {
+          "title": "進捗管理",
+          "desc": "宿題、授業記録、成長を継続的に確認します。"
+        },
+        "evaluation": {
+          "title": "最終評価",
+          "desc": "学習成果を振り返り、次のステップを提案します。"
+        }
+      }
+    },
+    "tutorsSection": {
+      "label": "講師紹介 ✨",
+      "titleLine1": "経験豊富な指導で",
+      "titleLine2": "生徒に",
+      "highlight": "自信を。",
+      "mobileTitle": "経験豊富な講師が自信を育てます。",
+      "description": "国際経験と学術サポートを活かし、生徒一人ひとりを支えます。",
+      "button": "講師一覧を見る"
+    },
+    "tutors": {
+      "mimi": {
+        "role": "英語・日本語講師",
+        "desc": "MAP Reading、TOEFL Speaking、インターナショナルスクール進学対策を担当。"
+      },
+      "grace": {
+        "role": "IB・CAT4・AEIS講師",
+        "desc": "構造的な試験対策、アカデミックライティング、読解指導を担当。"
+      },
+      "francis": {
+        "role": "数学・理科講師",
+        "desc": "論理力、問題解決力、試験戦略を分かりやすく指導。"
+      },
+      "cj": {
+        "role": "英語・面接対策講師",
+        "desc": "面接、スピーキング、自信あるコミュニケーションをサポート。"
+      },
+      "christine": {
+        "role": "読解・ライティング講師",
+        "desc": "読解力、語彙力、ライティング力向上をサポート。"
+      }
+    },
+    "enquiry": {
+      "label": "始めてみませんか？",
+      "titleLine1": "お子さまの",
+      "titleLine2": "次の成長は、",
+      "titleLine3": "一つの相談から。",
+      "description": "学習目標や現在の課題を教えてください。最適なサポートをご提案します。",
+      "button": "お問い合わせ",
+      "card": {
+        "badge": "無料相談",
+        "title": "お問い合わせフォーム",
+        "subtitle": "通常 2〜3 分で完了します",
+        "steps": {
+          "grade": "学年 / 学校システム",
+          "level": "現在の英語レベル",
+          "goals": "目標・試験内容",
+          "schedule": "希望スケジュール"
+        },
+        "continue": "クリックして続行"
+      }
+    }
+  },
+  "whyLuna": {
+    "seo": {
+      "title": "LUNA Studies が選ばれる理由 | 一人ひとりに合わせた国際教育",
+      "description": "LUNA Studies は、個別学習プラン、講師マッチング、学習進捗管理、インターナショナルスクール対策を通じて、生徒の成長をサポートします。"
+    },
+    "hero": {
+      "label": "私たちのアプローチ",
+      "titleLine1": "質の高い個別指導を、",
+      "titleLine2": "本当の",
+      "titleHighlight": "成長のために。",
+      "description": "LUNA Education は、優れた講師、個別学習プラン、体系的な評価、継続的なサポートを組み合わせ、生徒がただ授業を受けるだけでなく、明確な方向性を持って成長できるよう支えます。"
     },
     "buttons": {
       "enquire": "今すぐ相談する",
       "programs": "コースを見る"
     },
-    "features": {
-      "tutors": {
-        "title": "優秀な講師陣",
-        "subtitle": "国際経験を持つ講師"
+    "highlights": {
+      "personalised": "一対一の個別指導",
+      "tutors": "若く経験豊富な優秀講師",
+      "onlineOffline": "オンライン・対面レッスン対応",
+      "chat": "学習質問へのチャットサポート",
+      "questionBanks": "登録生向け無料問題集",
+      "tracking": "事前・中間・最終評価による進捗管理"
+    },
+    "planCard": {
+      "label": "LUNA 学習プラン",
+      "title": "生徒の成長マップ",
+      "badge": "1対1",
+      "items": {
+        "preTest": {
+          "title": "事前評価",
+          "desc": "現在のレベルを確認"
+        },
+        "midTest": {
+          "title": "中間評価",
+          "desc": "成長をチェック"
+        },
+        "postTest": {
+          "title": "最終評価",
+          "desc": "学習成果を確認"
+        }
       },
-      "personalised": {
-        "title": "個別最適化",
-        "subtitle": "専用学習プラン"
-      },
-      "results": {
-        "title": "確かな成長",
-        "subtitle": "習慣も結果も安定"
-      },
-      "language": {
-        "title": "多言語対応",
-        "subtitle": "英語 / 中国語 / 日本語"
+      "chat": {
+        "label": "学習サポート",
+        "message": "「この問題を質問してもいいですか？」"
       }
     },
-    "floating": {
-      "title": "生徒の成長ストーリー",
-      "subtitle": "明確な構成 · 自信ある表現 · より良い成果"
+    "comparison": {
+      "label": "LUNA の違い",
+      "titleLine1": "ただの授業ではなく、",
+      "titleLine2": "総合的な学習システム。",
+      "typical": {
+        "label": "一般的な補習",
+        "titleLine1": "取り組みがばらばらで、",
+        "titleLine2": "成長が見えにくい。",
+        "point1": "明確な学習ルートがなく、練習内容がばらばら",
+        "point2": "授業時間外のサポートが限られている",
+        "point3": "保護者が成長を実感しにくい",
+        "point4": "一人ひとりに合わせた調整が少ない"
+      },
+      "luna": {
+        "label": "LUNA Education",
+        "titleLine1": "体系的なサポートで、",
+        "titleLine2": "成長が見える。",
+        "point1": "生徒ごとに一対一の学習プランを設計",
+        "point2": "チャットサポートと問題集へのアクセス",
+        "point3": "事前・中間・最終評価で学習品質を確認",
+        "point4": "科目・背景・学習ニーズに合わせて講師をマッチング"
+      }
     },
-    "stats": {
-      "students": "指導実績",
-      "improve": "3か月以内に明確な成長",
-      "countries": "多国籍の生徒に対応",
-      "worldwide": "海外進学サポート",
-      "rating": "保護者平均評価"
+    "values": {
+      "label": "私たちの価値観",
+      "titleLine1": "学びは、",
+      "titleLine2": "こうあるべきだと考えています。",
+      "description": "LUNA Education では、ただ問題を解くことや受け身の学習ではなく、理解の明確さ、学習の構造、測定できる成長を重視しています。",
+      "items": {
+        "clarity": {
+          "title": "明確な理解",
+          "text": "答えを覚えるだけではなく、なぜ正しいのかを理解することを大切にします。"
+        },
+        "structure": {
+          "title": "学習の構造",
+          "text": "学習には、明確な道筋、方向性、目的が必要です。"
+        },
+        "growth": {
+          "title": "成長",
+          "text": "間違いは失敗ではなく、改善のためのサインです。"
+        },
+        "responsibility": {
+          "title": "主体性",
+          "text": "講師が導きながら、生徒自身が学びに責任を持てるよう支えます。"
+        }
+      },
+      "bullets": {
+        "point1": "授業はランダムではなく、明確な構造に沿って進みます",
+        "point2": "間違いは記録され、体系的に復習されます",
+        "point3": "答えを出すだけでなく、説明する力を育てます",
+        "point4": "保護者へ分かりやすい進捗フィードバックを行います"
+      }
     },
-    "headTutors": {
-      "label": "ヘッドチューター",
-      "title": "経験豊富な講師が学習をサポートします。",
-      "desc": "ヘッドチューターが学力診断、学習計画、進捗確認を行い、一人ひとりに合った体系的なサポートを提供します。",
-      "button": "講師を見る",
-      "cardLabel": "ヘッドチューター",
+    "focusArea": "重点分野",
+    "improving": "改善中",
+    "system": {
+      "label": "LUNA 学習システム",
+      "titleLine1": "すべての授業を支える",
+      "titleLine2": "4つの柱。"
+    },
+    "sections": {
+      "tutors": {
+        "title": "国際的な背景を持つ優秀な講師陣",
+        "text": "LUNA の講師は、優れた学術背景を持ち、熱意があり、慎重に選ばれています。学校制度、国、試験の違いを理解した講師を、生徒に合わせてマッチングします。",
+        "tag": "講師マッチング"
+      },
+      "planning": {
+        "title": "一人ひとりに合わせた学習プラン",
+        "text": "生徒のレベル、目標校、試験、弱点に合わせて個別の学習計画を作成します。授業はランダムではなく、すべてのステップに目的があります。",
+        "tag": "1対1プランニング"
+      },
+      "progress": {
+        "title": "実感できる成長",
+        "text": "事前評価・中間評価・最終評価を通じて、学習の質と成長を確認します。保護者も生徒の変化を明確に把握できます。",
+        "tag": "進捗管理"
+      },
+      "support": {
+        "title": "授業時間外のサポート",
+        "text": "登録生は問題集や学習質問サポートを利用できるため、授業外でも学習を継続できます。",
+        "tag": "継続サポート"
+      }
+    },
+    "questionBank": {
+      "label": "登録生特典",
+      "titleLine1": "厳選された問題集を",
+      "titleLine2": "無料で利用可能。",
+      "description": "登録生は目標に合わせた問題集で練習できます。講師は間違いを確認し、次の学習改善につなげます。",
+      "available": "利用可能",
+      "benefits": {
+        "targetedPractice": "目的別練習",
+        "mistakeReview": "間違いの復習",
+        "tutorFollowUp": "講師のフォロー",
+        "goalBasedSets": "目標別問題セット"
+      },
+      "mockup": {
+        "label": "練習ライブラリ",
+        "title": "問題集",
+        "badge": "登録生特典",
+        "readiness": "練習セット準備度"
+      },
+      "review": {
+        "label": "講師レビュー",
+        "text": "間違いは次の学習計画につながります。"
+      },
+      "items": {
+        "map": "MAP Reading",
+        "toefl": "TOEFL Writing",
+        "aeis": "AEIS Math",
+        "interview": "面接練習"
+      }
+    },
+    "cta": {
+      "label": "学習の第一歩を始めましょう ✨",
+      "titleLine1": "本当のサポート。",
+      "titleLine2": "明確な構造。",
+      "titleLine3": "見える成長。",
+      "description": "生徒の現在のレベルを確認し、強みと弱点を分析したうえで、目標に合わせた個別学習プランをご提案します。",
+      "tags": {
+        "planning": "1対1プランニング",
+        "exams": "MAP / TOEFL / AEIS",
+        "questionBanks": "問題集",
+        "progress": "進捗管理"
+      },
+      "card": {
+        "label": "体験レッスン",
+        "title": "個別アセスメント",
+        "badge": "枠に限りあり",
+        "steps": {
+          "assessment": "レベル診断",
+          "matching": "講師マッチング",
+          "planning": "成長プラン作成",
+          "pathway": "おすすめ学習ルート"
+        }
+      }
+    }
+  },
+  "subjects": {
+    "seo": {
+      "title": "MAP・WIDA・AEIS・国際教育プログラム | LUNA Studies",
+      "description": "LUNA Studies の MAP対策、WIDAサポート、AEIS英語、TOEFL、アカデミックライティング、面接対策、バイリンガル教育プログラムをご覧ください。"
+    },
+    "hero": {
+      "label": "LUNA プログラム",
+      "titleLine1": "お子さまに合った",
+      "titleLine2": "学習サポートを。",
+      "description": "MAP、TOEFL、スピーキング、ライティング、数学、日本語、学校転校サポートまで、各プログラムは明確な目標と成長を重視して設計されています。"
+    },
+    "learnMore": "詳しく見る",
+    "suitableFor": "対象：",
+    "close": "閉じる",
+    "modal": {
+      "programLabel": "LUNA プログラム",
+      "suitableFor": "対象生徒",
+      "includedTitle": "含まれる内容",
+      "included": {
+        "items": {
+          "lessons": "1対1個別レッスン",
+          "homework": "宿題とフィードバック",
+          "tracking": "進捗管理",
+          "support": "学習質問サポート"
+        }
+      },
+      "enquiryTitle": "このプログラムについて相談する",
+      "enquiryDescription": "生徒の目標に合わせて、最適な講師と学習プランをご提案します。"
+    },
+    "items": {
+      "assessments": {
+        "title": "MAP / WIDA / CAT4 対策",
+        "body": "インターナショナルスクールの評価に向けた対策。",
+        "details": "MAP、WIDA、CAT4 は、インターナショナルスクールで生徒の学力、言語力、思考力を把握するためによく使われます。",
+        "suitableFor": "インターナショナルスクールを受験予定、または在籍中の生徒。"
+      },
+      "aeis": {
+        "title": "AEIS 対策",
+        "body": "シンガポール AEIS の英語・数学対策。",
+        "details": "AEIS は、シンガポール政府校への入学を希望する留学生向けの入学試験です。",
+        "suitableFor": "シンガポール政府校への入学を目指す生徒。"
+      },
+      "toefl": {
+        "title": "TOEFL / IELTS",
+        "body": "英語能力試験に向けた体系的な対策。",
+        "details": "TOEFL と IELTS は、学校入学、大学出願、英語力証明に使われる国際的な英語試験です。",
+        "suitableFor": "インターナショナルスクール入学、大学出願、英語試験対策が必要な生徒。"
+      },
+      "speaking": {
+        "title": "スピーキング・ライティング",
+        "body": "明確な表現力と学術コミュニケーションを育てます。",
+        "details": "構造的なスピーキング、ライティング、プレゼン、エッセイ練習を通じて表現力を高めます。",
+        "suitableFor": "表現力、文章構成、スピーキングの自信を高めたい生徒。"
+      },
+      "math": {
+        "title": "数学サポート",
+        "body": "学年別の数学演習と概念理解。",
+        "details": "数学サポートでは、概念理解、問題解決力、試験への自信を育てます。",
+        "suitableFor": "数学のサポートが必要な生徒、または学年相応の基礎を強化したい生徒。"
+      },
+      "japanese": {
+        "title": "日本語レッスン",
+        "body": "初級から中級までの日本語レッスン。",
+        "details": "文法、語彙、会話、JLPT形式の練習を含む初級〜中級日本語レッスンを提供します。",
+        "suitableFor": "学校、試験、会話、自己成長のために日本語を学ぶ生徒。"
+      },
+      "foundation": {
+        "title": "英語基礎",
+        "body": "文法、語彙、読解の基礎サポート。",
+        "details": "文法、語彙、文構造、読解力など、英語の基礎力を強化します。",
+        "suitableFor": "英語の基礎に不安があり、段階的なサポートが必要な生徒。"
+      },
+      "mandarin": {
+        "title": "中国語レッスン",
+        "body": "会話、読解、作文、バイリンガル中国語サポート。",
+        "details": "インターナショナルスクール生、初学者、継承語学習者、バイリンガル力を高めたい生徒向けの中国語レッスンです。",
+        "suitableFor": "学校、会話、読解、作文、バイリンガル学習のために中国語を学ぶ生徒。"
+      }
+    }
+  },
+  "tutorsPage": {
+    "seo": {
+      "title": "日本・シンガポールの国際講師 | LUNA Studies",
+      "description": "MAP、WIDA、TOEFL、英語、バイリンガル教育、インターナショナルスクールサポートを専門とする LUNA Studies の講師陣をご紹介します。"
+    },
+    "buttons": {
       "viewProfile": "プロフィールを見る",
       "book": "相談を予約する"
     },
-    "trust": {
-      "schools": "インターナショナルスクール生",
-      "subjects": "対応コース",
+    "hero": {
+      "label": "講師紹介",
+      "title": "LUNA Education の講師陣",
+      "description": "LUNA の講師は、優れた学術背景、分かりやすい説明力、そして生徒一人ひとりに合わせて授業を調整する力を重視して選ばれています。"
+    },
+    "labels": {
+      "education": "学歴",
       "languages": "対応言語"
     },
+    "popup": {
+      "label": "講師プロフィール",
+      "about": "{{name}}について",
+      "experience": "指導経験",
+      "subjects": "対応科目",
+      "quote": "{{name}} は、分かりやすい説明、体系的な指導、生徒が一歩ずつ自信を持てるようになることを大切にしています。"
+    },
+    "items": [
+      {
+        "name": "Mimi",
+        "image": "/tutors/mimi_new.jpg",
+        "role": "トリリンガル教育講師・ヘッドチューター",
+        "subjects": [
+          "日本語",
+          "英語",
+          "TOEFL",
+          "IELTS",
+          "SAT",
+          "O Level"
+        ],
+        "education": "早稲田大学（日本）",
+        "languages": "日本語 / 英語 / 中国語",
+        "bio": "三言語教育、インターナショナルスクール対策、個別学習プランニングを専門としています。",
+        "experience": [
+          "日本語・英語・中国語による三言語教育",
+          "インターナショナルスクール入学対策",
+          "TOEFL / IELTS / SAT / O Level 対策",
+          "個別学習計画と学習戦略の設計"
+        ]
+      },
+      {
+        "name": "Grace",
+        "image": "/tutors/grace_new.jpg",
+        "role": "アカデミック英語・IB講師",
+        "subjects": [
+          "IB English",
+          "TOEFL",
+          "Academic Writing",
+          "Listening",
+          "発音改善"
+        ],
+        "education": "シンガポール国立大学（シンガポール）",
+        "languages": "英語 / 中国語",
+        "bio": "バイリンガル教育、IB対策、アカデミック英語の自信づくりをサポートします。",
+        "experience": [
+          "アカデミック英語とIB英語の指導",
+          "TOEFLスピーキング・ライティング対策",
+          "バイリンガル教育サポート",
+          "学術的な表現力と自信の育成"
+        ]
+      },
+      {
+        "name": "Francis",
+        "image": "/tutors/francis_new.png",
+        "role": "国際数学講師",
+        "subjects": [
+          "IGCSE 数学",
+          "A Level 数学",
+          "問題解決",
+          "AEIS 数学"
+        ],
+        "education": "シドニー大学（オーストラリア）",
+        "languages": "英語 / 中国語",
+        "bio": "数学的論理、構造的な問題解決、国際カリキュラムへの適応をサポートします。",
+        "experience": [
+          "IGCSE・A Level 数学指導",
+          "構造的な問題解決トレーニング",
+          "AEIS数学対策",
+          "国際カリキュラム適応サポート"
+        ]
+      },
+      {
+        "name": "CJ",
+        "image": "/tutors/cj_new.png",
+        "role": "STEM・シンガポールカリキュラム講師",
+        "subjects": [
+          "AEIS",
+          "A Level 数学",
+          "英語",
+          "シンガポールカリキュラム",
+          "学習サポート"
+        ],
+        "education": "南洋理工大学（シンガポール）",
+        "languages": "英語 / 中国語",
+        "bio": "シンガポールの教育ルートとバイリンガル指導に精通し、英語ベースの学習環境への適応を支援します。",
+        "experience": [
+          "シンガポールカリキュラムとAEIS対策",
+          "A Level数学とSTEM指導",
+          "英語・中国語による学習サポート",
+          "英語ベースの学習環境への適応支援"
+        ]
+      },
+      {
+        "name": "Christine",
+        "image": "/tutors/christine_new.png",
+        "role": "英語基礎講師",
+        "subjects": [
+          "英語",
+          "文法",
+          "ライティング",
+          "リーディング",
+          "スピーキング"
+        ],
+        "education": "福州大学（中国）",
+        "languages": "英語 / 中国語",
+        "bio": "丁寧な指導と体系的な英語学習を通じて、英語基礎力の向上をサポートします。",
+        "experience": [
+          "低年齢学習者向け英語基礎指導",
+          "文法・読解・ライティングサポート",
+          "体系的な言語学習指導",
+          "自信とコミュニケーション力を育てる指導"
+        ]
+      }
+    ]
+  },
+  "enquire": {
+    "seo": {
+      "title": "相談を予約する | LUNA Studies",
+      "description": "LUNA Studies では、日本・シンガポール・オンラインの生徒向けに、MAP、WIDA、AEIS、TOEFL、個別国際教育サポートを提供しています。"
+    },
+    "hero": {
+      "label": "LUNA 学習相談",
+      "titleLine1": "お子さまの現在地を",
+      "titleLine2": "教えてください。",
+      "description": "その情報をもとに、講師マッチング、レベル診断、明確な学習方向をご提案します。",
+      "button": "相談を始める",
+      "cards": {
+        "level": "レベル",
+        "goal": "目標",
+        "tutorFit": "講師適性"
+      }
+    },
+    "timeline": {
+      "step1": {
+        "title": "現在の学習状況を共有",
+        "text": "学年、学校システム、得意分野、苦手分野を確認します。"
+      },
+      "step2": {
+        "title": "学習目標を確認",
+        "text": "MAP、TOEFL、AEIS、ライティング、スピーキング、学校受験などを確認します。"
+      },
+      "step3": {
+        "title": "講師と学習プランを提案",
+        "text": "生徒に合った講師と学習方向をご提案します。"
+      },
+      "step4": {
+        "title": "体験アセスメント開始",
+        "text": "レベルを確認し、次の学習ステップを設計します。"
+      }
+    },
     "process": {
-      "title": "明確な仕組みで、確かな成長へ",
-      "steps": [
-        "体験アセスメント",
-        "総合レポート",
-        "講師マッチング",
-        "進捗管理",
-        "最終評価"
-      ]
+      "label": "学習の流れ",
+      "titleLine1": "より明確なプロセス。",
+      "titleLine2": "より良い学習成果へ。",
+      "description": "すべての生徒が、成長を測定できる体系的なサポートプロセスに沿って学習します。"
     },
-    "why": {
-      "title": "ただの補習ではなく、体系的な学習サポート。",
-      "desc": "個別学習、進捗管理、講師による指導を組み合わせ、生徒の継続的な成長を支えます。",
-      "button": "詳しく見る",
-      "points": [
-        "一対一の個別指導",
-        "事前・中間・最終評価",
-        "講師マッチング",
-        "学習フィードバックと進捗管理"
-      ]
+    "steps": {
+      "step1": {
+        "title": "体験アセスメント",
+        "text": "ヘッドチューターが現在のレベルと学習スタイルを確認します。"
+      },
+      "step2": {
+        "title": "総合レポート",
+        "text": "主要な学習分野について詳しく評価します。"
+      },
+      "step3": {
+        "title": "講師マッチング",
+        "text": "生徒の目標とニーズに合わせて講師を決定します。"
+      },
+      "step4": {
+        "title": "進捗管理",
+        "text": "3回の授業ごとにフィードバックを行い、学習計画を調整します。"
+      },
+      "step5": {
+        "title": "最終評価",
+        "text": "グラフで成長を比較し、次の学習ステップをご提案します。"
+      }
+    }
+  },
+  "enquiryForm": {
+    "label": "ここから始める",
+    "enquireAbout": "相談する：",
+    "bookTrial": "体験レッスンを予約",
+    "description": "生徒の状況を教えてください。最適なサポートをご提案します。",
+    "subject": "科目",
+    "submit": "お問い合わせを送信",
+    "submitting": "送信中...",
+    "success": "ありがとうございます。お問い合わせを送信しました。",
+    "benefits": {
+      "matching": "個別講師マッチング",
+      "assessment": "体験アセスメント可能",
+      "support": "オンライン・対面サポート"
     },
-    "programs": {
-      "label": "コース",
-      "title": "国際生のために設計されたプログラム",
-      "desc": "入学試験対策から英語力向上まで、お子さまの学習目標に合わせて設計します。",
-      "learnMore": "詳しく見る",
-      "items": [
-        {
-          "title": "入学試験対策",
-          "subtitle": "AEIS、CAT4、インターナショナルスクール入学対策",
-          "points": [
-            "体系的な受験計画",
-            "面接・筆記対策",
-            "本番形式に近い練習"
-          ]
-        },
-        {
-          "title": "英語・アカデミックスキル",
-          "subtitle": "MAP、WIDA、ライティング、リーディング",
-          "points": [
-            "読解力向上",
-            "作文構成トレーニング",
-            "語彙力強化"
-          ]
-        },
-        {
-          "title": "英語試験対策",
-          "subtitle": "TOEFL、IELTS、面接練習",
-          "points": [
-            "スピーキング・ライティング指導",
-            "試験戦略の習得",
-            "模擬試験練習"
-          ]
-        }
-      ]
+    "fields": {
+      "message": "メッセージ"
     },
-    "cta": {
-      "title": "お子さまの成長をここから始めましょう",
-      "desc": "目標をお聞かせください。最適な学習プランをご提案します。",
-      "button": "今すぐ相談する"
+    "errors": {
+      "fillRequired": "お名前とメールアドレスを入力してください。",
+      "invalidEmail": "有効なメールアドレスを入力してください。",
+      "general": "送信できませんでした。もう一度お試しください。"
+    },
+    "placeholders": {
+      "name": "保護者 / 生徒氏名",
+      "email": "メールアドレス",
+      "grade": "学年 / 年級レベル",
+      "subjectHelp": "この科目について、どのようなサポートをご希望ですか：",
+      "generalHelp": "どのようなサポートをご希望ですか？"
     }
   },
   "footer": {
-    "description": "シンガポール、日本、そして世界中の国際生に向けた個別教育サポートを提供しています。",
-    "quickLinks": "クイックリンク",
-    "programmes": "コース",
-    "contact": "お問い合わせ",
-    "copyright": "© 2026 Luna Education All rights reserved.",
-    "locations": "シンガポール · 東京 · 中国 · オンライン"
+  "description": "シンガポール、日本、そしてオンラインの生徒に向けた個別国際教育サポート。",
+  "quickLinks": "クイックリンク",
+  "programmes": "プログラム",
+  "contact": "お問い合わせ",
+  "copyright": "© 2026 Luna Education. All rights reserved.",
+  "locations": "シンガポール · 東京 · 中国 · オンライン"
+},
+"chat": {
+  "initialMessage": "こんにちは、Chokinaです。今日はどのようなことでお困りですか？",
+  "header": {
+    "title": "Chokina AI コンサルタント",
+    "subtitle": "保護者・生徒向けコース案内"
+  },
+  "loading": "Chokina が個別案内を準備しています",
+  "quick": {
+    "english": "英語力向上",
+    "map": "MAP対策",
+    "cat4": "CAT4対策",
+    "admissions": "学校入学サポート",
+    "toefl": "IELTS / TOEFL"
+  },
+  "input": {
+    "placeholder": "MAP、TOEFL、CAT4について Chokina に質問する...",
+    "loading": "Chokina が返信中..."
+  },
+  "buttons": {
+    "submitEnquiry": "お問い合わせを送信",
+    "whatsapp": "WhatsAppで相談"
+  },
+  "lead": {
+    "title": "お問い合わせを送信",
+    "name": "保護者 / 生徒氏名",
+    "contact": "メールまたは WhatsApp",
+    "grade": "学年 / 年級レベル",
+    "goal": "学習目標 / 試験 / 科目",
+    "submit": "送信",
+    "submitting": "送信中...",
+    "cancel": "キャンセル",
+    "alert": "お名前と連絡先を入力してください。",
+    "noGoal": "Chokina AI コンサルタントから送信されました。学習目標は未入力です。",
+    "success": "ありがとうございます。お問い合わせを送信しました。担当者よりご連絡いたします。",
+    "error": "申し訳ありません。お問い合わせを送信できませんでした。WhatsAppでご連絡いただくか、後ほど再度お試しください。"
+  },
+  "errors": {
+    "noReply": "申し訳ありません。Chokina は返信を生成できませんでした。",
+    "general": "申し訳ありません。Chokina は少し休憩中です。もう一度お試しください。"
   }
+},
+"login": {
+  "hero": {
+    "title": "学習を続けましょう",
+    "description": "ダッシュボードにログインするか、アクセスコードで新しいアカウントを作成してください。"
+  },
+  "signin": {
+    "label": "既存ユーザー",
+    "title": "ログイン",
+    "description": "レッスン、進捗、課題にアクセスできます。"
+  },
+  "signup": {
+    "label": "新規ユーザー",
+    "title": "アカウント作成",
+    "description": "アクセスコードにより、アカウントタイプが自動的に設定されます。"
+  },
+  "fields": {
+    "name": "名前",
+    "email": "メール",
+    "password": "パスワード",
+    "accessCode": "アクセスコード"
+  },
+  "placeholders": {
+    "name": "お名前",
+    "email": "you@example.com",
+    "password": "パスワードを入力",
+    "createPassword": "パスワードを作成",
+    "accessCode": "アクセスコードを入力"
+  },
+  "buttons": {
+    "signin": "ログイン",
+    "create": "アカウント作成",
+    "forgotPassword": "パスワードをお忘れですか？"
+  },
+  "alerts": {
+    "emailVerified": "メール認証が完了しました。ログインできます。",
+    "verifyEmail": "ログイン前にメール認証を完了してください。",
+    "disabled": "このアカウントは無効化されています。管理者にお問い合わせください。",
+    "fillAll": "必須項目をすべて入力してください。",
+    "invalidCode": "アクセスコードが無効、期限切れ、または使用済みです。",
+    "expiredCode": "このアクセスコードは期限切れです。",
+    "invalidRole": "アクセスコードの権限が無効です。",
+    "checkEmail": "認証メールをご確認ください。"
+  }
+},
+"forgotPassword": {
+  "label": "パスワードリセット",
+  "title": "パスワードをお忘れですか？",
+  "description": "メールアドレスを入力すると、リセットリンクを送信します。",
+  "placeholder": "you@example.com",
+  "button": "リセットメールを送信",
+  "loading": "送信中...",
+  "alerts": {
+    "enterEmail": "メールアドレスを入力してください。",
+    "success": "パスワードリセットメールを送信しました。受信箱をご確認ください。"
+  }
+},
+"resetPassword": {
+  "label": "パスワード再設定",
+  "title": "新しいパスワードを作成",
+  "description": "新しいパスワードを入力してください。",
+  "placeholder": "新しいパスワード",
+  "button": "パスワードを更新",
+  "loading": "更新中...",
+  "alerts": {
+    "enterPassword": "新しいパスワードを入力してください。",
+    "success": "パスワードを更新しました。"
+  },
+  "passwordLength": "パスワードは6文字以上である必要があります。"
+}
 }

@@ -22,13 +22,20 @@ type TutorProfileModalProps = {
 };
 
 const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
+  const label = (key: string, fallback: string) => {
+    const value = t(key);
+
+    if (typeof value !== "string") return fallback;
+
+    return value === key ? fallback : value;
+  };
   useEffect(() => {
     if (tutor) {
       document.body.style.overflow = "hidden";
     }
-  
+
     return () => {
       document.body.style.overflow = "";
     };
@@ -38,7 +45,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-3 py-4 backdrop-blur-sm sm:p-6">
-     <div className="relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-y-auto rounded-[1.6rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid md:max-h-[88vh] md:grid-cols-[0.42fr_0.58fr] md:rounded-[2rem]">
+      <div className="relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-y-auto rounded-[1.6rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid md:max-h-[88vh] md:grid-cols-[0.42fr_0.58fr] md:rounded-[2rem]">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 z-20 ml-auto mr-4 mt-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-soft transition hover:bg-secondary md:absolute md:right-5 md:top-5 md:m-0"
@@ -73,8 +80,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
               <GraduationCap className="mt-1 h-5 w-5 shrink-0 text-primary" />
               <div>
                 <p className="font-semibold text-primary">
-                  {t("tutorsPage.labels.education")}
-                </p>
+                  {label("tutorsPage.labels.education", "Education")}                </p>
                 <p className="mt-1 leading-6 text-muted-foreground">
                   {tutor.education}
                 </p>
@@ -85,8 +91,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
               <Globe2 className="mt-1 h-5 w-5 shrink-0 text-primary" />
               <div>
                 <p className="font-semibold text-primary">
-                  {t("tutorsPage.labels.languages")}
-                </p>
+                  {label("tutorsPage.labels.languages", "Languages")}                </p>
                 <p className="mt-1 leading-6 text-muted-foreground">
                   {tutor.languages}
                 </p>
@@ -95,9 +100,9 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
           </div>
 
           <div className="sticky bottom-0 mt-7 bg-[#fbfaf6] pt-4 sm:mt-8">
-            <Link to="/enquiry" onClick={onClose}>
+            <Link to={`/${i18n.language.startsWith("zh") ? "zh" : i18n.language.startsWith("ja") ? "ja" : "en"}/enquiry`} onClick={onClose}>
               <Button className="h-12 w-full rounded-xl bg-primary text-sm">
-                {t("landing.headTutors.book")}
+                {t("tutorsPage.buttons.book")}
               </Button>
             </Link>
           </div>
@@ -106,36 +111,28 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
         {/* RIGHT */}
         <div className="px-6 py-8 sm:p-8 md:max-h-[88vh] md:overflow-y-auto md:p-10">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#b8873a] sm:text-sm">
-            {t("tutorsPage.popup.label")}
-          </p>
+            {label("tutorsPage.popup.label", "Tutor Profile")}          </p>
 
           <h3 className="mt-4 font-serif text-2xl text-primary sm:text-3xl">
-            {t("tutorsPage.popup.about", { name: tutor.name })}
-          </h3>
-
+            {t("tutorsPage.popup.about", { name: tutor.name })}</h3>
           <p className="mt-5 text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8">
             {tutor.bio || tutor.desc}
           </p>
 
           <h3 className="mt-8 font-serif text-xl text-primary sm:text-2xl">
-            {t("tutorsPage.popup.experience")}
-          </h3>
-
+            {label("tutorsPage.popup.experience", "Teaching Experience")}          </h3>
           <div className="mt-4 space-y-3">
-            {tutor.experience.map((item) => (
+            {(tutor.experience || []).map((item: string) => (
               <div
                 key={item}
-                className="flex items-start gap-3 text-sm leading-6 text-muted-foreground"
+                className="rounded-2xl bg-[#f8f6ff] px-4 py-3 text-sm leading-7 text-primary/70"
               >
-                <CheckCircle className="mt-1 h-4 w-4 shrink-0 text-[#b8873a]" />
-                <span>{item}</span>
+                ✦ {item}
               </div>
             ))}
           </div>
-
           <h3 className="mt-8 font-serif text-xl text-primary sm:text-2xl">
-            {t("tutorsPage.popup.subjects")}
-          </h3>
+            {label("tutorsPage.popup.subjects", "Subjects")}          </h3>
 
           <div className="mt-4 flex flex-wrap gap-2">
             {tutor.subjects.map((subject) => (
@@ -151,8 +148,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
           <div className="mt-8 rounded-2xl border bg-[#fbfaf6] p-5">
             <MessageCircle className="mb-3 h-5 w-5 text-[#b8873a]" />
             <p className="text-sm leading-7 text-muted-foreground">
-              {t("tutorsPage.popup.quote", { name: tutor.name })}
-            </p>
+              {t("tutorsPage.popup.quote", { name: tutor.name })}         </p>
           </div>
         </div>
       </div>

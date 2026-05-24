@@ -10,160 +10,239 @@
     "getStarted": "注册"
   },
   "landing": {
+    "seo": {
+      "title": "LUNA Studies | 面向全球学生的国际教育",
+      "description": "LUNA Studies 为日本、新加坡及线上学生提供 MAP、WIDA、AEIS、TOEFL、英语与双语教育的一对一个性化辅导。"
+    },
     "hero": {
-      "label": "个性化一对一辅导",
-      "title": "帮助学生清晰思考。",
-      "accent": "自信学习。",
-      "subtitle": "通过个性化支持，建立清晰思路、更强学习习惯和真实学术进步。",
-      "note": "线上课程为主 · 新加坡与东京可线下 · 可预约体验课"
+      "label": "赋能学生成长",
+      "titleLine1": "面向未来的",
+      "titleLine2": "英语",
+      "titleHighlight": "能力",
+      "titleLine3": "不止于课堂",
+      "description": "个性化学习、专业导师与国际化课程，帮助学生建立自信，并在更广阔的学习环境中持续进步。",
+      "primaryButton": "了解 LUNA",
+      "secondaryButton": "查看课程",
+      "rating": "来自 2,000+ 学生的 4.9/5 评分"
     },
-    "buttons": {
-      "enquire": "立即咨询",
-      "programs": "查看课程"
-    },
-    "features": {
-      "tutors": {
-        "title": "专业导师",
-        "subtitle": "国际背景优秀导师"
+    "dashboard": {
+      "writingFeedback": {
+        "title": "写作反馈",
+        "comment": "完成得很好！继续保持！🎉",
+        "items": {
+          "ideas": "观点",
+          "structure": "结构",
+          "vocabulary": "词汇",
+          "grammar": "语法"
+        }
       },
-      "personalised": {
-        "title": "个性化",
-        "subtitle": "专属学习规划"
+      "upcomingLesson": {
+        "title": "下一节课程",
+        "lesson": "口语练习",
+        "time": "今天 7:00 PM",
+        "action": "进入课程 →"
       },
-      "results": {
-        "title": "真实进步",
-        "subtitle": "习惯更好，结果更稳"
+      "vocabularyGrowth": {
+        "title": "词汇增长",
+        "badge": "+42 个词"
       },
-      "language": {
-        "title": "多语言支持",
-        "subtitle": "英文 / 中文 / 日文"
+      "mapProgress": {
+        "title": "MAP 成绩进步",
+        "badge": "+18%",
+        "reading": {
+          "title": "阅读",
+          "subtitle": "理解能力与词汇"
+        },
+        "math": {
+          "title": "数学",
+          "subtitle": "解题能力与逻辑推理"
+        }
+      },
+      "tutorFeedback": {
+        "title": "导师反馈",
+        "imageAlt": "导师",
+        "name": "Christine 老师",
+        "role": "专业导师",
+        "comment": "表现非常好！你的论点结构清晰，表达也很完整。"
+      },
+      "weeklyGoals": {
+        "title": "本周目标",
+        "badge": "完成 3/4",
+        "items": {
+          "readingHomework": "完成阅读作业",
+          "vocabulary": "学习 15 个新词",
+          "speakingPractice": "完成口语练习",
+          "grammarReview": "复习语法修改"
+        }
       }
     },
-    "floating": {
-      "title": "学生成长转变",
-      "subtitle": "清晰结构 · 自信表达 · 更强成果"
+    "programs": {
+      "labelLine1": "我们帮助你",
+      "labelLine2": "准备",
+      "titleLine1": "每一次考试。",
+      "titleLine2": "每一个目标。",
+      "titleLine3": "每一个",
+      "highlight": "未来。",
+      "items": {
+        "map": {
+          "title": "MAP",
+          "sub": "成长测评"
+        },
+        "toefl": {
+          "title": "TOEFL",
+          "sub": "iBT / Junior 备考"
+        },
+        "wida": {
+          "title": "WIDA",
+          "sub": "语言发展测评"
+        },
+        "writing": {
+          "title": "学术写作",
+          "sub": "思考、表达、进步。"
+        },
+        "interview": {
+          "title": "面试准备",
+          "sub": "自信表达自己。"
+        }
+      }
     },
-    "stats": {
-      "students": "辅导学生",
-      "improve": "3个月内明显进步",
-      "countries": "学生来自多个国家",
-      "worldwide": "全球升学支持",
-      "rating": "家长平均评分"
+    "pathways": {
+      "label": "全球升学路径",
+      "titleLine1": "从国际学校",
+      "titleLine2": "走向更广阔的世界。",
+      "description": "LUNA 支持新加坡、日本及国际学校学生，通过英语、考试准备与学术能力培养，走向更清晰的全球升学路径。",
+      "items": {
+        "japan": {
+          "country": "日本",
+          "desc": "支持国际学校、双语教育、MAP/WIDA 提升与面试准备。"
+        },
+        "singapore": {
+          "country": "新加坡",
+          "desc": "支持英语基础、AEIS 路径、国际学校转轨与学术自信建立。"
+        },
+        "australia": {
+          "country": "澳大利亚",
+          "desc": "提升学术写作、口语表达、IELTS 类沟通能力与全球学习技能。"
+        },
+        "others": {
+          "country": "其他地区",
+          "desc": "培养批判性思维、阅读理解、演讲表达与寄宿学校准备能力。"
+        }
+      },
+      "tags": {
+        "interview": "面试",
+        "english": "英语",
+        "transition": "转轨",
+        "writing": "写作",
+        "speaking": "口语",
+        "reading": "阅读",
+        "criticalThinking": "批判性思维",
+        "presentation": "演讲表达"
+      }
     },
-    "headTutors": {
-      "label": "首席导师",
-      "title": "由经验丰富的导师提供学术指导。",
-      "desc": "我们的首席导师负责学生测评、学习规划与进度复盘，确保每位学生获得系统化支持。",
-      "button": "认识我们的导师",
-      "cardLabel": "首席导师",
-      "viewProfile": "查看资料",
-      "book": "预约咨询"
-    },
-    "trust": {
-      "schools": "国际学生",
-      "subjects": "课程方向",
-      "languages": "语言支持"
+    "whyPreview": {
+      "label": "为什么选择 LUNA？",
+      "titleLine1": "不只是上课。",
+      "titleLine2": "而是一套",
+      "titleLine3": "为成长设计的学习系统。",
+      "description": "LUNA 结合测评、导师匹配、进度追踪与家长反馈，让每一节课都有清晰目标。",
+      "button": "了解 LUNA 的学习系统",
+      "cards": {
+        "assessment": {
+          "title": "先测评，再规划",
+          "desc": "课程开始前，我们会先了解学生的优势、薄弱点与学习重点。"
+        },
+        "matching": {
+          "title": "导师匹配",
+          "desc": "根据学生目标、性格与学术需求，匹配更合适的导师。"
+        },
+        "progress": {
+          "title": "进步可视化",
+          "desc": "家长可以通过反馈、目标与数据，更清楚地了解孩子的进步。"
+        },
+        "support": {
+          "title": "持续支持",
+          "desc": "我们会不断调整学习计划，而不是长期重复同一种上课方式。"
+        }
+      }
     },
     "process": {
-      "title": "清晰系统，带来真实进步",
-      "steps": [
-        "体验测评",
-        "综合报告",
-        "导师匹配",
-        "进度追踪",
-        "最终评估"
-      ]
-    },
-    "why": {
-      "title": "不只是补习，而是一套系统化学习方案。",
-      "desc": "我们结合个性化学习、结构化追踪与导师指导，帮助学生持续稳定进步。",
-      "button": "了解更多",
-      "points": [
-        "一对一个性化辅导",
-        "前测 / 中测 / 后测",
-        "导师匹配系统",
-        "学习反馈与进度追踪"
-      ]
-    },
-    "programs": {
-      "label": "课程项目",
-      "title": "为国际学生设计",
-      "desc": "从入学考试到语言能力提升，每个课程都围绕孩子的学术路径进行规划。",
-      "learnMore": "了解更多",
-      "items": [
-        {
-          "title": "入学考试",
-          "subtitle": "AEIS、CAT4、国际学校入学",
-          "points": [
-            "结构化备考规划",
-            "面试与笔试支持",
-            "真题风格练习"
-          ]
+      "label": "LUNA 学习系统 ✨",
+      "title": "清晰路径，带来真实进步",
+      "description": "从体验测评到最终评估，每一步都围绕可见进步、结构化学习与个性化支持设计。",
+      "stepLabel": "步骤",
+      "steps": {
+        "assessment": {
+          "title": "体验测评",
+          "desc": "我们会了解学生当前水平、优势与薄弱点。"
         },
-        {
-          "title": "英语与学术能力",
-          "subtitle": "MAP、WIDA、写作、阅读",
-          "points": [
-            "阅读理解提升",
-            "作文结构训练",
-            "词汇能力建设"
-          ]
+        "report": {
+          "title": "综合报告",
+          "desc": "家长会收到阅读、写作、口语与考试能力的清晰分析。"
         },
-        {
-          "title": "标化考试准备",
-          "subtitle": "TOEFL、IELTS、面试训练",
-          "points": [
-            "口语与写作训练",
-            "考试策略指导",
-            "模拟考试练习"
-          ]
+        "matching": {
+          "title": "导师匹配",
+          "desc": "我们会根据学生需求匹配最适合的导师与学习方式。"
+        },
+        "tracking": {
+          "title": "进度追踪",
+          "desc": "持续跟进作业、课堂记录与学习进步。"
+        },
+        "evaluation": {
+          "title": "最终评估",
+          "desc": "我们会复盘学生成长，并建议下一阶段学习计划。"
         }
-      ]
+      }
     },
-    "cta": {
-      "title": "开启孩子的进步之路",
-      "desc": "告诉我们您的目标，我们会推荐个性化学习方案。",
-      "button": "立即咨询"
+    "tutorsSection": {
+      "label": "认识我们的导师 ✨",
+      "titleLine1": "有经验的指导",
+      "titleLine2": "带来",
+      "highlight": "更强自信。",
+      "mobileTitle": "有经验的指导，带来更强自信。",
+      "description": "我们的导师结合国际教育经验、学术策略与个性化支持，陪伴每位学生成长。",
+      "button": "查看全部导师"
     },
     "tutors": {
       "mimi": {
         "role": "英语 · 日语导师",
-        "desc": "专注 MAP 阅读、TOEFL 口语及国际学校申请辅导。",
-        "education": "日本早稻田大学",
-        "languages": "日语 / 英语 / 中文",
-        "subjects": [
-          "日语",
-          "英语",
-          "TOEFL",
-          "IELTS",
-          "SAT",
-          "O Level"
-        ],
-        "experience": [
-          "日语 / 英语 / 中文三语教育",
-          "国际学校申请与入学辅导",
-          "TOEFL / IELTS / SAT / O Level 备考",
-          "个性化学习规划与学习策略制定"
-        ]
+        "desc": "专注 MAP 阅读、TOEFL 口语及国际学校申请辅导。"
       },
       "grace": {
-        "role": "英语导师",
-        "desc": "注重结构化解题能力与考试信心建立。",
-        "education": "新加坡国立大学 NUS",
-        "languages": "英语 / 中文",
-        "subjects": [
-          "IB 英语",
-          "TOEFL",
-          "学术写作",
-          "听力",
-          "发音提升"
-        ],
-        "experience": [
-          "学术英语与 IB 英语辅导",
-          "TOEFL 口语与写作训练",
-          "双语教育支持",
-          "帮助学生建立学术表达自信"
-        ]
+        "role": "IB · CAT4 · AEIS 导师",
+        "desc": "支持学生进行结构化备考、学术写作与阅读能力提升。"
+      },
+      "francis": {
+        "role": "数学 · 科学导师",
+        "desc": "帮助学生建立推理、解题与考试策略方面的信心。"
+      },
+      "cj": {
+        "role": "英语 · 面试指导",
+        "desc": "专注自信表达、学校面试与学术英语能力提升。"
+      },
+      "christine": {
+        "role": "阅读 · 写作导师",
+        "desc": "指导学生提升阅读理解、词汇积累与写作反馈能力。"
+      }
+    },
+    "enquiry": {
+      "label": "准备开始了吗？",
+      "titleLine1": "孩子的下一段",
+      "titleLine2": "成长旅程",
+      "titleLine3": "从一次咨询开始。",
+      "description": "告诉我们学生的目标、当前水平与学习困惑，我们会帮你选择最合适的支持路径。",
+      "button": "开始咨询",
+      "card": {
+        "badge": "免费咨询",
+        "title": "咨询表单",
+        "subtitle": "通常只需 2–3 分钟",
+        "steps": {
+          "grade": "学生年级 / 学校体系",
+          "level": "当前英语水平",
+          "goals": "学习目标或考试",
+          "schedule": "偏好的上课时间"
+        },
+        "continue": "点击继续"
       }
     }
   },
@@ -176,12 +255,34 @@
     "locations": "新加坡 · 东京 · 中国 · 线上课程"
   },
   "subjects": {
+    "seo": {
+      "title": "MAP、WIDA、AEIS 与国际教育课程 | LUNA Studies",
+      "description": "了解 LUNA Studies 的 MAP 备考、WIDA 支持、AEIS 英语、TOEFL、学术写作、面试准备与双语教育课程。"
+    },
     "hero": {
-      "title": "适合不同学生的课程体系"
+      "label": "LUNA 课程项目",
+      "titleLine1": "选择最适合孩子的",
+      "titleLine2": "学习支持。",
+      "description": "从 MAP、TOEFL 到口语、写作、数学、日语与学校转轨支持，每个课程都围绕清晰目标与可衡量进步设计。"
     },
     "learnMore": "了解更多",
     "suitableFor": "适合学生：",
     "close": "关闭",
+    "modal": {
+      "programLabel": "LUNA 课程",
+      "suitableFor": "适合学生",
+      "includedTitle": "课程包含",
+      "included": {
+        "items": {
+          "lessons": "一对一个性化课程",
+          "homework": "作业与反馈",
+          "tracking": "进度追踪",
+          "support": "学习答疑支持"
+        }
+      },
+      "enquiryTitle": "咨询该课程",
+      "enquiryDescription": "我们会根据学生目标，推荐合适的导师与学习方案。"
+    },
     "items": {
       "assessments": {
         "title": "MAP / WIDA / CAT4 备考",
@@ -224,27 +325,55 @@
         "body": "语法、词汇与阅读基础支持。",
         "details": "本课程强化英语核心能力，包括语法、词汇、句子结构和阅读理解。",
         "suitableFor": "英语基础较弱，需要循序渐进支持的学生。"
+      },
+      "mandarin": {
+        "title": "中文课程",
+        "body": "口语、阅读、写作与双语中文支持。",
+        "details": "为国际学校学生、初学者、华裔学生及希望建立双语自信的学生提供系统化中文课程。",
+        "suitableFor": "因学校、交流、阅读、写作或双语发展学习中文的学生。"
       }
     }
   },
   "enquire": {
-    "hero": {
-      "label": "咨询",
-      "title": "开启你的学习提升之旅",
-      "description": "告诉我们您的需求，我们会推荐最适合的学习方案。",
-      "trial": "试听课 $60 起 · 无需长期绑定"
+    "seo": {
+      "title": "预约咨询 | LUNA Studies",
+      "description": "联系 LUNA Studies，了解 MAP、WIDA、AEIS、TOEFL 及日本、新加坡和线上学生的个性化国际教育支持。"
     },
-    "trust": {
-      "response": "回复时间",
-      "responseValue": "24小时内回复",
-      "format": "上课形式",
-      "formatValue": "线上 · 线下",
-      "support": "学习支持",
-      "supportValue": "聊天咨询 + 导师指导"
+    "hero": {
+      "label": "LUNA 学习咨询",
+      "titleLine1": "告诉我们孩子",
+      "titleLine2": "现在的学习情况。",
+      "description": "我们会据此进行导师匹配、水平判断，并给出清晰的学习方向。",
+      "button": "开始咨询",
+      "cards": {
+        "level": "水平",
+        "goal": "目标",
+        "tutorFit": "导师匹配"
+      }
+    },
+    "timeline": {
+      "step1": {
+        "title": "分享学生当前情况",
+        "text": "包括年级、学校体系、优势与学习困难。"
+      },
+      "step2": {
+        "title": "我们了解学习目标",
+        "text": "例如 MAP、TOEFL、AEIS、写作、口语或学校申请。"
+      },
+      "step3": {
+        "title": "推荐导师与学习方案",
+        "text": "我们会建议合适的导师与学习方向。"
+      },
+      "step4": {
+        "title": "开始试听测评",
+        "text": "我们会判断学生水平，并制定下一步学习计划。"
+      }
     },
     "process": {
-      "title": "咨询后会发生什么",
-      "description": "清晰且系统化的流程，帮助学生真正提升。"
+      "label": "学习路径",
+      "titleLine1": "更清晰的流程。",
+      "titleLine2": "更好的学习成果。",
+      "description": "每位学生都会进入一套结构化支持流程，帮助实现可衡量的成长。"
     },
     "steps": {
       "step1": {
@@ -267,41 +396,53 @@
         "title": "最终评估",
         "text": "通过图表对比学生进步，并提供下一阶段建议。"
       }
-    },
-    "contact": {
-      "title": "想直接联系我们？"
     }
   },
   "enquiryForm": {
-    "enquireAbout": "咨询课程：",
+    "label": "从这里开始",
+    "enquireAbout": "咨询课程",
     "bookTrial": "预约试听课",
-    "description": "留下您的信息，我们会尽快联系您。",
+    "description": "告诉我们学生的情况，我们会推荐合适的学习方案。",
     "subject": "课程",
     "submit": "提交咨询",
     "submitting": "提交中...",
-    "success": "已收到您的咨询！确认邮件已发送。",
-    "placeholders": {
-      "name": "家长 / 学生姓名 *",
-      "email": "邮箱 *",
-      "grade": "年级（选填）",
-      "subjectHelp": "您希望在哪方面获得帮助：",
-      "generalHelp": "请告诉我们您需要什么帮助？"
+    "success": "谢谢！您的咨询已提交。",
+    "benefits": {
+      "matching": "个性化导师匹配",
+      "assessment": "可安排试听测评",
+      "support": "线上与线下支持"
+    },
+    "fields": {
+      "message": "留言"
     },
     "errors": {
       "fillRequired": "请填写姓名和邮箱。",
-      "invalidEmail": "请输入正确的邮箱地址。",
-      "general": "发生错误，请稍后再试。"
+      "invalidEmail": "请输入有效的邮箱地址。",
+      "general": "提交失败，请稍后再试。"
+    },
+    "placeholders": {
+      "name": "家长 / 学生姓名",
+      "email": "邮箱地址",
+      "grade": "学生年级",
+      "subjectHelp": "希望在这门课程中获得什么帮助：",
+      "generalHelp": "希望获得哪方面帮助？"
     }
   },
   "whyLuna": {
+    "seo": {
+      "title": "为什么选择 LUNA Studies | 个性化国际教育",
+      "description": "了解 LUNA Studies 如何通过个性化学习规划、导师匹配、学术追踪与国际学校准备，支持学生持续成长。"
+    },
     "hero": {
-      "label": "LUNA理念",
-      "title1": "高质量一对一辅导，",
-      "title2": "围绕真实成长而设计。",
+      "label": "我们的教学方式",
+      "titleLine1": "高质量辅导，",
+      "titleLine2": "围绕",
+      "titleHighlight": "真实成长。",
       "description": "LUNA Education 结合优秀导师、个性化规划、系统化评估与持续学习支持，让学生不只是上课，而是在清晰方向中真正进步。"
     },
     "buttons": {
-      "enquire": "立即咨询"
+      "enquire": "立即咨询",
+      "programs": "查看课程"
     },
     "highlights": {
       "personalised": "一对一个性化辅导",
@@ -314,35 +455,43 @@
     "planCard": {
       "label": "LUNA 学习计划",
       "title": "学生成长路径",
-      "pretest": {
-        "title": "前测",
-        "desc": "评估当前水平"
-      },
-      "midtest": {
-        "title": "中测",
-        "desc": "检查学习进步"
-      },
-      "posttest": {
-        "title": "后测",
-        "desc": "确认成长成果"
+      "badge": "1 对 1",
+      "items": {
+        "preTest": {
+          "title": "前测",
+          "desc": "评估当前水平"
+        },
+        "midTest": {
+          "title": "中测",
+          "desc": "检查学习进步"
+        },
+        "postTest": {
+          "title": "后测",
+          "desc": "确认成长成果"
+        }
       },
       "chat": {
         "label": "学习咨询",
-        "message": "这道题可以问老师吗？"
+        "message": "“这道题可以问老师吗？”"
       }
     },
     "comparison": {
       "label": "我们的不同之处",
-      "title": "不只是上课，而是一套完整学习体系。",
+      "titleLine1": "不只是上课。",
+      "titleLine2": "而是一套完整学习体系。",
       "typical": {
-        "title": "普通补习",
+        "label": "普通补习",
+        "titleLine1": "练习随机，",
+        "titleLine2": "进步不清晰。",
         "point1": "练习内容随机，缺少清晰学习路径",
         "point2": "课后支持有限",
         "point3": "家长难以判断进步是否真实",
         "point4": "统一教学方式，缺少个性化调整"
       },
       "luna": {
-        "title": "Luna Education",
+        "label": "LUNA Education",
+        "titleLine1": "结构化支持，",
+        "titleLine2": "看得见的进步。",
         "point1": "为每位学生制定一对一个性化学习规划",
         "point2": "提供答疑支持与题库练习资源",
         "point3": "通过前测、中测、后测追踪学习质量",
@@ -351,8 +500,9 @@
     },
     "values": {
       "label": "我们的理念",
-      "title": "我们相信，学习应该这样发生",
-      "description": "在 Luna Education，我们不相信随机刷题或被动学习。我们重视清晰理解、系统结构和可衡量的真实进步。",
+      "titleLine1": "我们相信，",
+      "titleLine2": "学习应该这样发生。",
+      "description": "在 LUNA Education，我们不相信随机刷题或被动学习。我们重视清晰理解、系统结构和可衡量的真实进步。",
       "items": {
         "clarity": {
           "title": "清晰理解",
@@ -380,6 +530,11 @@
     },
     "focusArea": "重点提升",
     "improving": "持续提升中",
+    "system": {
+      "label": "LUNA 学习系统",
+      "titleLine1": "每节课背后的",
+      "titleLine2": "四大支柱。"
+    },
     "sections": {
       "tutors": {
         "title": "拥有国际背景的优秀导师",
@@ -404,10 +559,26 @@
     },
     "questionBank": {
       "label": "注册学生福利",
-      "title": "免费使用精选题库资源",
+      "titleLine1": "免费使用",
+      "titleLine2": "精选题库资源。",
       "description": "注册学生可以根据目标练习系统化题库，导师也能够针对错误进行讲解与专项提升。",
-      "cardTitle": "题库系统",
       "available": "可使用",
+      "benefits": {
+        "targetedPractice": "针对性练习",
+        "mistakeReview": "错题复盘",
+        "tutorFollowUp": "导师跟进",
+        "goalBasedSets": "目标化题组"
+      },
+      "mockup": {
+        "label": "练习题库",
+        "title": "题库系统",
+        "badge": "注册学生福利",
+        "readiness": "练习组准备度"
+      },
+      "review": {
+        "label": "导师复盘",
+        "text": "每一道错题，都会成为下一步学习计划。"
+      },
       "items": {
         "map": "MAP 阅读",
         "toefl": "TOEFL 写作",
@@ -416,52 +587,80 @@
       }
     },
     "cta": {
-      "title": "从个性化试听课开始",
-      "description": "我们会评估学生目前水平，并根据目标推荐最适合的学习方案。"
+      "label": "开启学习旅程 ✨",
+      "titleLine1": "真实支持。",
+      "titleLine2": "清晰结构。",
+      "titleLine3": "看得见的成长。",
+      "description": "我们会评估学生目前水平，找出优势与薄弱点，并根据目标推荐个性化学习计划。",
+      "tags": {
+        "planning": "一对一规划",
+        "exams": "MAP / TOEFL / AEIS",
+        "questionBanks": "题库资源",
+        "progress": "进度追踪"
+      },
+      "card": {
+        "label": "体验课",
+        "title": "个性化测评",
+        "badge": "名额有限",
+        "steps": {
+          "assessment": "水平测评",
+          "matching": "导师匹配",
+          "planning": "成长规划",
+          "pathway": "推荐学习路径"
+        }
+      }
     }
   },
   "chat": {
-  "initialMessage": "你好，我是 Chokina。今天想了解哪方面的课程或学习支持？",
-  "header": {
-    "title": "Chokina AI 咨询顾问",
-    "subtitle": "为家长与学生提供课程咨询"
+    "initialMessage": "你好，我是 Chokina。今天想了解哪方面的课程或学习支持？",
+    "header": {
+      "title": "Chokina AI 咨询顾问",
+      "subtitle": "为家长与学生提供课程咨询"
+    },
+    "loading": "Chokina 正在整理个性化建议",
+    "quick": {
+      "english": "英语提升",
+      "map": "MAP 备考",
+      "cat4": "CAT4 备考",
+      "admissions": "学校申请",
+      "toefl": "IELTS / TOEFL"
+    },
+    "input": {
+      "placeholder": "向 Chokina 询问 MAP、TOEFL、CAT4...",
+      "loading": "Chokina 正在回复..."
+    },
+    "buttons": {
+      "submitEnquiry": "提交咨询",
+      "whatsapp": "联系 WhatsApp"
+    },
+    "lead": {
+      "title": "提交咨询",
+      "name": "家长 / 学生姓名",
+      "contact": "邮箱或 WhatsApp",
+      "grade": "学生年级",
+      "goal": "学习目标 / 考试 / 科目",
+      "submit": "提交",
+      "submitting": "提交中...",
+      "cancel": "取消",
+      "alert": "请填写姓名和联系方式。",
+      "noGoal": "来自 Chokina AI 咨询顾问的咨询，未填写具体学习目标。",
+      "success": "谢谢，您的咨询已成功提交。我们的团队会尽快联系您。",
+      "error": "抱歉，Chokina 暂时无法提交咨询。请通过 WhatsApp 联系我们，或稍后再试。"
+    },
+    "errors": {
+      "noReply": "抱歉，Chokina 暂时无法生成回复。",
+      "general": "抱歉，Chokina 暂时休息了一下。请稍后再试。"
+    }
   },
-  "loading": "Chokina 正在整理个性化建议",
-  "quick": {
-    "english": "英语提升",
-    "map": "MAP 备考",
-    "cat4": "CAT4 备考",
-    "admissions": "学校申请",
-    "toefl": "IELTS / TOEFL"
-  },
-  "input": {
-    "placeholder": "向 Chokina 询问 MAP、TOEFL、CAT4...",
-    "loading": "Chokina 正在回复..."
-  },
-  "buttons": {
-    "submitEnquiry": "提交咨询",
-    "whatsapp": "联系 WhatsApp"
-  },
-  "lead": {
-    "title": "提交咨询",
-    "name": "家长 / 学生姓名",
-    "contact": "邮箱或 WhatsApp",
-    "grade": "学生年级",
-    "goal": "学习目标 / 考试 / 科目",
-    "submit": "提交",
-    "submitting": "提交中...",
-    "cancel": "取消",
-    "alert": "请填写姓名和联系方式。",
-    "noGoal": "来自 Chokina AI 咨询顾问的咨询，未填写具体学习目标。",
-    "success": "谢谢，您的咨询已成功提交。我们的团队会尽快联系您。",
-    "error": "抱歉，Chokina 暂时无法提交咨询。请通过 WhatsApp 联系我们，或稍后再试。"
-  },
-  "errors": {
-    "noReply": "抱歉，Chokina 暂时无法生成回复。",
-    "general": "抱歉，Chokina 暂时休息了一下。请稍后再试。"
-  }
-},
   "tutorsPage": {
+    "seo": {
+      "title": "日本与新加坡国际导师团队 | LUNA Studies",
+      "description": "认识 LUNA Studies 的导师团队，涵盖 MAP、WIDA、TOEFL、英语、双语教育与国际学校支持。"
+    },
+    "buttons": {
+      "viewProfile": "查看资料",
+      "book": "预约咨询"
+    },
     "hero": {
       "label": "导师团队",
       "title": "认识 Luna Education 的导师团队",
@@ -587,77 +786,72 @@
     ]
   },
   "login": {
-  "hero": {
-    "title": "继续你的学习旅程",
-    "description": "登录您的学习系统，或使用邀请码创建新账号。"
+    "hero": {
+      "title": "继续你的学习旅程",
+      "description": "登录您的学习系统，或使用邀请码创建新账号。"
+    },
+    "signin": {
+      "label": "已有账号",
+      "title": "登录",
+      "description": "欢迎回来，查看课程、学习进度与作业。"
+    },
+    "signup": {
+      "label": "新用户",
+      "title": "创建账号",
+      "description": "邀请码会自动分配您的账号类型。"
+    },
+    "fields": {
+      "name": "姓名",
+      "email": "邮箱",
+      "password": "密码",
+      "accessCode": "邀请码"
+    },
+    "placeholders": {
+      "name": "请输入姓名",
+      "email": "you@example.com",
+      "password": "请输入密码",
+      "createPassword": "创建密码",
+      "accessCode": "输入邀请码"
+    },
+    "buttons": {
+      "signin": "登录",
+      "create": "创建账号",
+      "forgotPassword": "忘记密码？"
+    },
+    "alerts": {
+      "emailVerified": "邮箱验证成功，现在可以登录了。",
+      "verifyEmail": "请先完成邮箱验证后再登录。",
+      "disabled": "您的账号已被禁用，请联系管理员。",
+      "fillAll": "请填写所有必填信息。",
+      "invalidCode": "邀请码无效、已过期或已被使用。",
+      "expiredCode": "该邀请码已过期。",
+      "invalidRole": "邀请码角色无效。",
+      "checkEmail": "请检查邮箱并完成账号验证。"
+    }
   },
-
-  "signin": {
-    "label": "已有账号",
-    "title": "登录",
-    "description": "欢迎回来，查看课程、学习进度与作业。"
+  "forgotPassword": {
+    "label": "密码重置",
+    "title": "忘记密码？",
+    "description": "输入您的邮箱，我们会发送密码重置链接。",
+    "placeholder": "请输入邮箱",
+    "button": "发送重置邮件",
+    "loading": "发送中...",
+    "alerts": {
+      "enterEmail": "请输入邮箱。",
+      "success": "密码重置邮件已发送，请检查您的邮箱。"
+    }
   },
-
-  "signup": {
-    "label": "新用户",
-    "title": "创建账号",
-    "description": "邀请码会自动分配您的账号类型。"
-  },
-
-  "fields": {
-    "name": "姓名",
-    "email": "邮箱",
-    "password": "密码",
-    "accessCode": "邀请码"
-  },
-
-  "placeholders": {
-    "name": "请输入姓名",
-    "email": "you@example.com",
-    "password": "请输入密码",
-    "createPassword": "创建密码",
-    "accessCode": "输入邀请码"
-  },
-
-  "buttons": {
-    "signin": "登录",
-    "create": "创建账号",
-    "forgotPassword": "忘记密码？"
-  },
-  "alerts": {
-  "emailVerified": "邮箱验证成功，现在可以登录了。",
-  "verifyEmail": "请先完成邮箱验证后再登录。",
-  "disabled": "您的账号已被禁用，请联系管理员。",
-  "fillAll": "请填写所有必填信息。",
-  "invalidCode": "邀请码无效、已过期或已被使用。",
-  "expiredCode": "该邀请码已过期。",
-  "invalidRole": "邀请码角色无效。",
-  "checkEmail": "请检查邮箱并完成账号验证。"
-}
-},
-"forgotPassword": {
-  "label": "密码重置",
-  "title": "忘记密码？",
-  "description": "输入您的邮箱，我们会发送密码重置链接。",
-  "placeholder": "请输入邮箱",
-  "button": "发送重置邮件",
-  "loading": "发送中...",
-  "alerts": {
-    "enterEmail": "请输入邮箱。",
-    "success": "密码重置邮件已发送，请检查您的邮箱。"
+  "resetPassword": {
+    "label": "重置密码",
+    "title": "设置新密码",
+    "description": "请输入您的新密码。",
+    "placeholder": "输入新密码",
+    "button": "更新密码",
+    "loading": "更新中...",
+    "alerts": {
+      "enterPassword": "请输入新密码。",
+      "success": "密码更新成功。"
+    },
+    "passwordLength": "密码至少需要 6 个字符。"
   }
-},
-"resetPassword": {
-  "label": "重置密码",
-  "title": "设置新密码",
-  "description": "请输入您的新密码。",
-  "placeholder": "输入新密码",
-  "button": "更新密码",
-  "loading": "更新中...",
-  "alerts": {
-    "enterPassword": "请输入新密码。",
-    "success": "密码更新成功。"
-  },
-  "passwordLength": "密码至少需要 6 个字符。"
-}
 }

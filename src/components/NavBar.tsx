@@ -4,11 +4,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { LogOut, Sparkles, Menu, X } from "lucide-react";
-import en from "./locales/en.json";
 
-import zh from "./locales/zh.json";
-
-import ja from "./locales/ja.json";
 const NavBar = () => {
   const location = useLocation();
   const { t, i18n } = useTranslation();

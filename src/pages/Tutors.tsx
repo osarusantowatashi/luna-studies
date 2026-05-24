@@ -1,18 +1,38 @@
 import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import TutorProfileModal from "@/components/TutorProfileModal";
+import { motion } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 
 
 
 const Tutors = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+
+  const currentLang = location.pathname.startsWith("/zh")
+    ? "zh"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
+      : "en";
+
+  const isZh = currentLang === "zh";
+  const isJa = currentLang === "ja";
+
+  const withLang = (path: string) =>
+    `/${currentLang}${path === "/" ? "" : path}`;
+
+  const label = (key: string, fallback: string) => {
+    const value = t(key);
+    return value === key ? fallback : value;
+  };
   const [selectedTutor, setSelectedTutor] = useState<any | null>(null);
 
-  const tutors = t("tutorsPage.items", { returnObjects: true }) as {
+  type Tutor = {
     name: string;
     image: string;
     role: string;
@@ -21,114 +41,233 @@ const Tutors = () => {
     languages: string;
     bio: string;
     experience: string[];
-  }[];
+  };
 
+  const tutorsRaw = t("tutorsPage.items", { returnObjects: true });
+
+  const tutors: Tutor[] = Array.isArray(tutorsRaw)
+    ? (tutorsRaw as Tutor[])
+    : [
+      {
+        name: "Mimi",
+        image: "/tutors/mimi_new.jpg",
+        role: "Trilingual Educator & Head Tutor",
+        subjects: ["Japanese", "English", "TOEFL", "IELTS", "SAT"],
+        education: "Waseda University, Japan",
+        languages: "Japanese / English / Mandarin",
+        bio: "Specialises in trilingual education, international school preparation, and personalised academic planning.",
+        experience: [],
+      },
+      {
+        name: "Grace",
+        image: "/tutors/grace_new.jpg",
+        role: "Academic English & IB Tutor",
+        subjects: ["IB English", "TOEFL", "Academic Writing"],
+        education: "National University of Singapore, Singapore",
+        languages: "English / Mandarin",
+        bio: "Experienced in bilingual education, IB preparation, and academic English.",
+        experience: [],
+      },
+      {
+        name: "Francis",
+        image: "/tutors/francis_new.png",
+        role: "International Math Tutor",
+        subjects: ["IGCSE Math", "A Level Math", "AEIS Math"],
+        education: "University of Sydney, Australia",
+        languages: "English / Mandarin",
+        bio: "Focuses on mathematical logic, structured problem solving, and international curricula.",
+        experience: [],
+      },
+      {
+        name: "CJ",
+        image: "/tutors/cj_new.png",
+        role: "STEM & Singapore Curriculum Tutor",
+        subjects: ["AEIS", "A Level Math", "English"],
+        education: "Nanyang Technological University, Singapore",
+        languages: "English / Mandarin",
+        bio: "Experienced in Singapore local education pathways and bilingual teaching.",
+        experience: [],
+      },
+      {
+        name: "Christine",
+        image: "/tutors/christine_new.png",
+        role: "English Foundations Tutor",
+        subjects: ["English", "Grammar", "Writing"],
+        education: "University of Fuzhou, China",
+        languages: "English / Mandarin",
+        bio: "Specialises in building strong English foundations through structured learning.",
+        experience: [],
+      },
+    ];
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+        <title>{t("tutorsPage.seo.title")}</title>
+        <meta name="description" content={t("tutorsPage.seo.description")} />
+      </Helmet>
+      <div className="min-h-screen bg-background">
 
-      <section className="px-4 py-16 text-center sm:px-6 sm:py-24">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-accent">
-          {t("tutorsPage.hero.label")}
-        </p>
+        {/* HERO */}
+        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pt-28 pb-20 text-center sm:px-6 lg:px-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,#fff1bd_0%,transparent_28%),radial-gradient(circle_at_20%_70%,#f0eaff_0%,transparent_30%)]" />
 
-        <h1 className="mx-auto max-w-3xl font-serif text-3xl text-primary sm:text-5xl">
-          {t("tutorsPage.hero.title")}
-        </h1>
-
-        <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-          {t("tutorsPage.hero.description")}
-        </p>
-      </section>
-
-      <section className="container mx-auto px-4 pb-16 sm:px-6 sm:pb-24">
-      <div className="grid gap-5 sm:gap-8 md:grid-cols-2 xl:grid-cols-3">
-          {tutors.map((tutor) => (
-            <div
-              key={tutor.name}
-              className="rounded-[1.8rem] border bg-card p-5 shadow-soft transition md:hover:-translate-y-1 md:hover:shadow-elegant sm:rounded-3xl sm:p-7"
+          <div className="relative z-10 mx-auto max-w-5xl">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]"
             >
-              <div className="mb-5 h-16 w-16 overflow-hidden rounded-full bg-secondary shadow-soft sm:h-20 sm:w-20">
-  <img
-    src={tutor.image}
-    alt={tutor.name}
-    className="h-full w-full object-cover object-[center_top]"
-  />
-</div>
+              {label("tutorsPage.hero.label", "Our Tutors")}    </motion.p>
 
-              <h2 className="font-serif text-2xl text-primary sm:text-3xl">
-                {tutor.name}
-              </h2>
+            <motion.h1
+              initial={{ opacity: 0, y: 35 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className={`mt-5 mx-auto max-w-6xl font-poppins font-black text-primary
+  ${isZh
+                  ? "text-[2.8rem] leading-[1.15] tracking-[-0.015em] sm:text-[4.2rem]"
+                  : isJa
+                    ? "text-[3rem] leading-[1.08] tracking-[-0.025em] sm:text-[4.4rem]"
+                    : "text-[3.2rem] leading-[0.95] tracking-[-0.045em] sm:text-[4.8rem]"
+                }`}
+            >
+              {label("tutorsPage.hero.title", "Meet Our Tutors")}
+            </motion.h1>
 
-              <p className="mt-1 text-sm font-semibold text-accent">
-                {tutor.role}
-              </p>
+            <motion.p
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className={`mx-auto mt-7 text-primary/60
+                ${
+                  isZh
+                    ? "max-w-4xl text-[1.05rem] leading-[2.2] tracking-[0.01em]"
+                    : isJa
+                    ? "max-w-3xl text-[1.02rem] leading-8"
+                    : "max-w-2xl text-base leading-8 sm:text-lg"
+                }`}
+            >
+              {label(
+                "tutorsPage.hero.description",
+                "Our tutors are selected for strong academic backgrounds, clear communication, and the ability to adapt lessons to each student."
+              )}    </motion.p>
+          </div>
+        </section>
 
-              <p className="mt-4 line-clamp-2 text-sm leading-7 text-muted-foreground">
-                {tutor.bio}
-              </p>
+        {/* TUTOR CARDS */}
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-20 sm:px-6 lg:px-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,#f0eaff_0%,transparent_25%),radial-gradient(circle_at_85%_80%,#fff1bd_0%,transparent_25%)]" />
 
-              <div className="mt-5 space-y-3 text-sm">
-                <p className="leading-7">
-                  <span className="font-semibold text-primary">
-                    {t("tutorsPage.labels.education")}:
-                  </span>{" "}
-                  {tutor.education}
-                </p>
+          <div className="relative z-10 mx-auto max-w-[1280px]">
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">      {tutors.map((tutor, i) => (
+              <motion.div
+                key={tutor.name}
+                initial={{ opacity: 0, y: 50, rotate: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.25 }}
+                transition={{ duration: 0.55, delay: i * 0.06 }}
+                whileHover={{
+                  y: -12,
+                  scale: 1.025,
+                  rotate: i % 2 === 0 ? -2 : 2,
+                }}
+                className="group relative flex min-h-[520px] flex-col overflow-hidden rounded-[2rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl sm:rounded-[2.4rem] sm:p-6 lg:min-h-[560px]"        >
+                <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[#f0eaff]" />
 
-                <p className="leading-7">
-                  <span className="font-semibold text-primary">
-                    {t("tutorsPage.labels.languages")}:
-                  </span>{" "}
-                  {tutor.languages}
-                </p>
-              </div>
+                <div className="relative z-10 h-[220px] overflow-hidden rounded-[2rem] bg-[#f6f2ff] sm:h-[240px] lg:h-[260px]">
+                  <img
+                    src={tutor.image}
+                    alt={tutor.name}
+                    className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+                  />
+                </div>
+                {/* content */}
+                <div className="relative z-10 mt-6 flex flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h2 className="font-poppins text-3xl font-black text-primary">
+                        {tutor.name}
+                      </h2>
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                {tutor.subjects.slice(0, 3).map((subject) => (
-                  <span
-                    key={subject}
-                    className="rounded-full bg-secondary px-3 py-1.5 text-[11px] font-medium text-primary"
-                  >
-                    {subject}
-                  </span>
-                ))}
+                      <p className="mt-1 text-sm font-black text-[#8d73ff]">
+                        {tutor.role}
+                      </p>
+                    </div>
 
-                {tutor.subjects.length > 3 && (
-                  <span className="rounded-full bg-secondary px-3 py-1.5 text-[11px] font-medium text-primary">
-                    ...
-                  </span>
-                )}
-              </div>
-              <div className="mt-6 flex flex-col gap-3 pt-2 sm:flex-row sm:flex-nowrap sm:items-center">
-                <Button
-                  onClick={() => setSelectedTutor(tutor)}
-                  className="h-11 w-full rounded-xl bg-primary px-6 text-sm sm:w-auto"
-                >
-                  {t("landing.headTutors.viewProfile")}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                    <span className="rounded-full bg-[#fff6da] px-3 py-1 text-xs font-black text-[#d4a100]">
+                      5.0
+                    </span>
+                  </div>
 
-                <Link to="/enquiry" className="w-full sm:w-auto">
-                  <Button
-                    variant="outline"
-                    className="h-11 w-full rounded-xl border-[#b8873a]/30 bg-white px-6 text-sm text-[#b8873a] sm:w-auto"
-                  >
-                    {t("landing.headTutors.book")}
-                  </Button>
-                </Link>
-              </div>
+                  <p className="mt-4 line-clamp-3 text-sm leading-7 text-primary/60">
+                    {tutor.bio}
+                  </p>
+
+                  <div className="mt-5 space-y-2 text-sm">
+                    <p className="leading-6 text-primary/65">
+                      <span className="font-black text-primary">
+                        {label("tutorsPage.labels.education", "Education")}:                </span>{" "}
+                      {tutor.education}
+                    </p>
+
+                    <p className="leading-6 text-primary/65">
+                      <span className="font-black text-primary">
+                        {label("tutorsPage.labels.languages", "Languages")}:                </span>{" "}
+                      {tutor.languages}
+                    </p>
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {(tutor.subjects || []).slice(0, 3).map((subject) => (<span
+                      key={subject}
+                      className="rounded-full bg-[#f6f2ff] px-3 py-1.5 text-[11px] font-black text-primary/70"
+                    >
+                      #{subject}
+                    </span>
+                    ))}
+
+                    {(tutor.subjects || []).length > 3 && (<span className="rounded-full bg-[#f6f2ff] px-3 py-1.5 text-[11px] font-black text-primary/70">
+                      ...
+                    </span>
+                    )}
+                  </div>
+
+                  <div className="mt-auto flex flex-col gap-3 pt-6 sm:flex-row">
+                    <Button
+                      onClick={() => setSelectedTutor(tutor)}
+                      className="h-12 flex-1 rounded-2xl bg-primary px-6 text-sm font-bold"
+                    >
+                      {t("tutorsPage.buttons.viewProfile")}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+
+                    <Link to={withLang("/enquiry")} className="flex-1">
+                      <Button
+                        variant="outline"
+                        className="h-12 w-full rounded-2xl border-primary/10 bg-white px-6 text-sm font-bold text-primary"
+                      >
+                        {t("tutorsPage.buttons.book")}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <TutorProfileModal
-        tutor={selectedTutor}
-        onClose={() => setSelectedTutor(null)}
-      />
 
-      <Footer />
-    </div>
+        <TutorProfileModal
+
+          tutor={selectedTutor}
+
+          onClose={() => setSelectedTutor(null)}
+
+        />
+        <Footer />
+      </div>
+    </>
   );
 };
 

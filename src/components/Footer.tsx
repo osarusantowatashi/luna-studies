@@ -129,7 +129,7 @@ export default function Footer() {
                   </p>
 
                   <p className="text-base text-[#0b234a]">
-                    +65 94235165
+                    +65 81381999
                   </p>
                 </div>
               </div>

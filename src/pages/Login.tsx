@@ -5,6 +5,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 
 const Login = () => {
@@ -192,177 +193,190 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f7f6f3] via-[#f1eee7] to-[#e8e3d8]">
-      <NavBar />
+    <>
+      <Helmet>
+        <title>
+          Login/Sign up to your LUNA Studies account
+        </title>
+        <meta
+          name="description"
+          content="Login to the LUNA Studies student portal to access lessons, practice, progress tracking and personalised learning support."
+        />
 
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-        <div className="mb-12 text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.28em] text-accent">
-            Luna Studies
-          </p>
-          <h1 className="font-serif text-3xl text-primary sm:text-4xl md:text-5xl">
-            {t("login.hero.title")}
-          </h1>
-          <p className="mt-4 text-muted-foreground">
-            {t("login.hero.description")}
-          </p>
-        </div>
+      </Helmet>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
-            <div className="mb-8">
-              <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-                {t("login.signin.label")}
-              </p>
-              <h2 className="mt-2 font-serif text-3xl text-primary">
-                {t("login.signin.title")}
-              </h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t("login.signin.description")}
-              </p>
-            </div>
+      <div className="min-h-screen bg-gradient-to-br from-[#f7f6f3] via-[#f1eee7] to-[#e8e3d8]">
+        <NavBar />
 
-            <div className="space-y-5">
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {t("login.fields.email")}
-                </label>
-                <input
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder={t("login.placeholders.email")}
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {t("login.fields.password")}
-                </label>
-                <input
-                  type="password"
-                  autoComplete="current-password"
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder={t("login.placeholders.password")}
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                />
-              </div>
-              <Link
-                to={
-                  window.location.pathname.startsWith("/zh")
-                    ? "/zh/forgot-password"
-                    : "/en/forgot-password"
-                }
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                {t("login.buttons.forgotPassword")}
-              </Link>
-
-              <Button
-                type="button"
-                className="h-12 w-full rounded-2xl"
-                onClick={handleLogin}
-              >
-                {t("login.buttons.signin")}
-
-              </Button>
-            </div>
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.28em] text-accent">
+              Luna Studies
+            </p>
+            <h1 className="font-serif text-3xl text-primary sm:text-4xl md:text-5xl">
+              {t("login.hero.title")}
+            </h1>
+            <p className="mt-4 text-muted-foreground">
+              {t("login.hero.description")}
+            </p>
           </div>
 
-          <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
-            <div className="mb-8">
-              <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-                {t("login.signup.label")}
-              </p>
-              <h2 className="mt-2 font-serif text-3xl text-primary">
+          <div className="grid gap-8 md:grid-cols-2">
+            <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
+              <div className="mb-8">
+                <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+                  {t("login.signin.label")}
+                </p>
+                <h2 className="mt-2 font-serif text-3xl text-primary">
+                  {t("login.signin.title")}
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("login.signin.description")}
+                </p>
+              </div>
 
-                {t("login.signup.title")}
+              <div className="space-y-5">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("login.fields.email")}
+                  </label>
+                  <input
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                    placeholder={t("login.placeholders.email")}
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                  />
+                </div>
 
-              </h2>
-              <p className="mt-2 text-sm text-muted-foreground">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("login.fields.password")}
+                  </label>
+                  <input
+                    type="password"
+                    autoComplete="current-password"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                    placeholder={t("login.placeholders.password")}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                  />
+                </div>
+                <Link
+                  to={
+                    window.location.pathname.startsWith("/zh")
+                      ? "/zh/forgot-password"
+                      : "/en/forgot-password"
+                  }
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  {t("login.buttons.forgotPassword")}
+                </Link>
 
-                {t("login.signup.description")}
+                <Button
+                  type="button"
+                  className="h-12 w-full rounded-2xl"
+                  onClick={handleLogin}
+                >
+                  {t("login.buttons.signin")}
 
-              </p>
+                </Button>
+              </div>
             </div>
 
-            <div className="space-y-5">
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {t("login.fields.name")}
-                </label>
-                <input
-                  autoComplete="name"
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder={t("login.placeholders.name")}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+            <div className="rounded-[1.8rem] border bg-white/80 p-5 shadow-xl backdrop-blur sm:rounded-[2rem] sm:p-8">
+              <div className="mb-8">
+                <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+                  {t("login.signup.label")}
+                </p>
+                <h2 className="mt-2 font-serif text-3xl text-primary">
+
+                  {t("login.signup.title")}
+
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+
+                  {t("login.signup.description")}
+
+                </p>
               </div>
 
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="space-y-5">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("login.fields.name")}
+                  </label>
+                  <input
+                    autoComplete="name"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                    placeholder={t("login.placeholders.name")}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
 
-                  {t("login.fields.email")}
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
 
-                </label>
-                <input
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder={t("login.placeholders.email")}
-                  value={signupEmail}
-                  onChange={(e) => setSignupEmail(e.target.value)}
-                />
+                    {t("login.fields.email")}
+
+                  </label>
+                  <input
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                    placeholder={t("login.placeholders.email")}
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+
+                    {t("login.fields.password")}
+
+                  </label>
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                    placeholder={t("login.placeholders.createPassword")}
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("login.fields.accessCode")}
+                  </label>
+                  <input
+                    autoComplete="off"
+                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                    placeholder={t("login.placeholders.accessCode")}
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value)}
+                  />
+                </div>
+
+                <Button
+                  type="button"
+                  className="h-12 w-full rounded-2xl"
+                  onClick={handleSignup}
+                >
+                  {t("login.buttons.create")}
+                </Button>
               </div>
-
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-
-                  {t("login.fields.password")}
-
-                </label>
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder={t("login.placeholders.createPassword")}
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {t("login.fields.accessCode")}
-                </label>
-                <input
-                  autoComplete="off"
-                  className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder={t("login.placeholders.accessCode")}
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value)}
-                />
-              </div>
-
-              <Button
-                type="button"
-                className="h-12 w-full rounded-2xl"
-                onClick={handleSignup}
-              >
-                {t("login.buttons.create")}
-              </Button>
             </div>
           </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 };
 

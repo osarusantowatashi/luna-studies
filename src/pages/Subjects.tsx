@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import EnquiryForm from "@/pages/EnquiryForm";
 import {
@@ -13,6 +14,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Footer from "@/components/Footer";
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
 const Subjects = () => {
   const { t } = useTranslation();
@@ -67,6 +70,13 @@ const Subjects = () => {
       details: t("subjects.items.foundation.details"),
       suitableFor: t("subjects.items.foundation.suitableFor"),
     },
+    {
+      icon: Languages,
+      title: t("subjects.items.mandarin.title"),
+      body: t("subjects.items.mandarin.body"),
+      details: t("subjects.items.mandarin.details"),
+      suitableFor: t("subjects.items.mandarin.suitableFor"),
+    },
   ];
 
   const [selectedSubject, setSelectedSubject] = useState<
@@ -74,83 +84,212 @@ const Subjects = () => {
   >(null);
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+  <title>{t("subjects.seo.title")}</title>
+  <meta name="description" content={t("subjects.seo.description")} />
+</Helmet>
+      <div className="min-h-screen bg-background">
 
-      <section className="bg-hero px-4 py-10 text-center sm:px-6 sm:py-24">
-        <h1 className="font-serif text-3xl text-primary sm:text-5xl">
-          {t("subjects.hero.title")}
-        </h1>
-      </section>
+        {/* HERO */}
+        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pt-28 pb-20 text-center sm:px-6 lg:px-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,#fff1bd_0%,transparent_28%),radial-gradient(circle_at_20%_70%,#f0eaff_0%,transparent_30%)]" />
 
-      <section className="container mx-auto px-4 py-14 sm:px-6 sm:py-20">
-        <div className="grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {subjects.map((subject) => (
-            <div
-              key={subject.title}
-              className="group flex h-full flex-col rounded-[1.8rem] border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant sm:rounded-2xl sm:p-6"
+          <div className="relative z-10 mx-auto max-w-5xl">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]"
             >
-              <subject.icon className="mb-4 h-7 w-7 text-primary sm:h-8 sm:w-8" />
+             {t("subjects.hero.label")}
+            </motion.p>
 
-              <h3 className="text-xl font-serif leading-tight text-primary">
-                {subject.title}
-              </h3>
-
-              <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">{subject.body}</p>
-
-              <button
-                onClick={() => setSelectedSubject(subject)}
-                className="mt-6 flex items-center text-sm font-medium text-accent"
-              >
-                {t("subjects.learnMore")}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {selectedSubject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:px-6">
-          <div className="relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[1.8rem] bg-white p-5 shadow-[0_30px_100px_rgba(0,0,0,0.25)] sm:rounded-3xl sm:p-8">
-            <button
-              onClick={() => setSelectedSubject(null)}
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-lg text-primary transition hover:bg-secondary/80 sm:right-5 sm:top-5"
+            <motion.h1
+              initial={{ opacity: 0, y: 35 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mt-5 font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.8rem]"
             >
-              ✕
-            </button>
+              {t("subjects.hero.titleLine1")}<br />
+              {t("subjects.hero.titleLine2")}
+            </motion.h1>
 
-            <h2 className="pr-12 font-serif text-2xl leading-tight text-primary sm:text-3xl">
-              {selectedSubject.title}
-            </h2>
+            <motion.p
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mx-auto mt-7 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg"
+            >
+           {t("subjects.hero.description")}
+             </motion.p>
+          </div>
+        </section>
 
-            <p className="mt-4 text-sm leading-7 text-muted-foreground sm:text-base">
-              {selectedSubject.details}
-            </p>
+        {/* SUBJECT CARDS */}
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-20 sm:px-6 lg:px-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,#f0eaff_0%,transparent_25%),radial-gradient(circle_at_85%_80%,#fff1bd_0%,transparent_25%)]" />
 
-            <div className="mt-6 rounded-2xl bg-secondary/50 p-5">
-              <p className="font-semibold">{t("subjects.suitableFor")}</p>
-              <p>{selectedSubject.suitableFor}</p>
-            </div>
+          <div className="relative z-10 mx-auto max-w-[1280px]">
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {subjects.map((subject, i) => (
+                <motion.div
+                  key={subject.title}
+                  initial={{ opacity: 0, y: 50, rotate: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.25 }}
+                  transition={{ duration: 0.55, delay: i * 0.06 }}
+                  whileHover={{
+                    y: -12,
+                    scale: 1.025,
+                    rotate: i % 2 === 0 ? -2 : 2,
+                  }}
+                  className="group relative flex min-h-[300px] flex-col overflow-hidden rounded-[2.4rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl"
+                >
+                  <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#f0eaff]" />
 
-            <div className="mt-8">
-              <EnquiryForm subject={selectedSubject.title} />
-            </div>
+                  <div className="relative z-10">
+                    <motion.div
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{
+                        duration: 3 + i * 0.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                      className="mb-6 flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-[#8d73ff]"
+                    >
+                      <subject.icon className="h-7 w-7 text-white" />
+                    </motion.div>
 
-            <div className="mt-8 flex justify-end">
-              <Button
-                type="button"
-                onClick={() => setSelectedSubject(null)}
-                className="w-full rounded-2xl sm:w-auto"
-              >
-                {t("subjects.close")}
-              </Button>
+                    <h3 className="font-poppins text-2xl font-black leading-tight text-primary">
+                      {subject.title}
+                    </h3>
+
+                    <p className="mt-4 text-sm leading-7 text-primary/60">
+                      {subject.body}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedSubject(subject)}
+                    className="relative z-10 mt-auto flex items-center pt-6 text-sm font-black text-[#8d73ff]"
+                  >
+                    {t("subjects.learnMore")}
+                    <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                  </button>
+                </motion.div>
+              ))}
             </div>
           </div>
-        </div>
-      )}
+        </section>
+        {selectedSubject && (
+<div
+  className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-md"
+  onClick={() => setSelectedSubject(null)}
+>            <motion.div
+  onClick={(e) => e.stopPropagation()}
+  initial={{ opacity: 0, y: 40, scale: 0.96 }}
+  animate={{ opacity: 1, y: 0, scale: 1 }}
+  exit={{ opacity: 0 }}
+  transition={{ duration: 0.35 }}
+  className="relative z-[10000] max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2.5rem] bg-white p-7 shadow-[0_40px_120px_rgba(0,0,0,0.22)] sm:p-10"
+>
+              {/* close button */}
+              <button
+                onClick={() => setSelectedSubject(null)}
+                  className="absolute right-6 top-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#f3efff] text-primary transition hover:scale-110 hover:bg-[#e8deff]"
 
-      <Footer />
-    </div>
+>
+                ✕
+              </button>
+
+              {/* top */}
+              <div className="flex flex-col gap-8 lg:flex-row">
+                {/* left */}
+                <div className="flex-1">
+                  <div className="inline-flex rounded-full bg-[#8d73ff] px-5 py-2 text-sm font-black text-white">
+                  {t("subjects.modal.programLabel")}
+                  </div>
+
+                  <h2 className="mt-5 font-poppins text-4xl font-black leading-tight text-primary">
+                    {selectedSubject.title}
+                  </h2>
+
+                  <p className="mt-6 text-base leading-8 text-primary/65">
+                    {selectedSubject.details}
+                  </p>
+
+                  {/* suitable */}
+                  <div className="mt-8 rounded-[2rem] bg-[#fbfaff] p-6">
+                    <p className="text-sm font-black uppercase tracking-[0.15em] text-[#8d73ff]">
+                    {t("subjects.modal.suitableFor")}
+                    </p>
+
+                    <p className="mt-3 leading-7 text-primary/70">
+                      {selectedSubject.suitableFor}
+                    </p>
+                  </div>
+                </div>
+
+                {/* right floating card */}
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="w-full rounded-[2.2rem] bg-[#fbfaff] p-7 lg:w-[340px]"
+                >
+                  <div className="rounded-[1.8rem] bg-white p-6 shadow-[0_12px_40px_rgba(66,56,120,0.08)]">
+                    <p className="text-sm font-black uppercase tracking-[0.15em] text-[#8d73ff]">
+                    {t("subjects.modal.includedTitle")}
+                    </p>
+
+                    <div className="mt-6 space-y-4">
+                      {[
+  t("subjects.modal.included.items.lessons"),
+  t("subjects.modal.included.items.homework"),
+  t("subjects.modal.included.items.tracking"),
+  t("subjects.modal.included.items.support"),
+].map((item) => (
+                        <div
+                          key={item}
+                          className="flex items-center gap-3 rounded-2xl bg-[#fbfaff] p-4"
+                        >
+                          <div className="h-3 w-3 rounded-full bg-[#8d73ff]" />
+                          <p className="text-sm font-semibold text-primary">
+                            {item}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* enquiry button only */}
+<div className="mt-10 rounded-[2rem] bg-[#fffdf8] p-6 sm:p-8">
+  <h3 className="font-poppins text-2xl font-black text-primary">
+    Interested in this program?
+  </h3>
+
+  <p className="mt-3 text-sm leading-7 text-primary/60">
+    Send us an enquiry and we’ll recommend the right tutor and learning plan.
+  </p>
+
+<Link to={`/enquiry?subject=${encodeURIComponent(selectedSubject.title)}#enquiry-form`}>
+  <Button className="mt-6 h-13 rounded-2xl bg-primary px-7 text-sm font-bold">
+      Enquire about {selectedSubject.title}
+      <ArrowRight className="ml-2 h-4 w-4" />
+    </Button>
+  </Link>
+</div>
+            </motion.div>
+          </div>
+        )}
+        <Footer />
+      </div>
+    </>
   );
 };
 

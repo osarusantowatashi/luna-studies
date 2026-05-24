@@ -10,160 +10,239 @@
     "getStarted": "Get started"
   },
   "landing": {
+    "seo": {
+      "title": "LUNA Studies | International Education for Global Students",
+      "description": "LUNA Studies provides personalised tutoring for MAP, WIDA, AEIS, TOEFL, English and bilingual education for students in Japan, Singapore and online."
+    },
     "hero": {
-      "label": "Personalised 1–1 Tutoring",
-      "title": "Clear thinking for students",
-      "accent": "Learn confidently.",
-      "subtitle": "Personalised support that builds clarity, stronger study habits, and real academic results.",
-      "note": "Online & offline support · Trial lesson available"
+      "label": "Empowering Students",
+      "titleLine1": "English skills",
+      "titleLine2": "for a",
+      "titleHighlight": "world",
+      "titleLine3": "beyond school",
+      "description": "Personalised learning, expert tutors, and global programs that help students build confidence and succeed anywhere.",
+      "primaryButton": "Discover Luna",
+      "secondaryButton": "View Programs",
+      "rating": "4.9/5 from 2,000+ students"
     },
-    "buttons": {
-      "enquire": "Enquire now",
-      "programs": "View Programs"
-    },
-    "features": {
-      "tutors": {
-        "title": "Expert Tutors",
-        "subtitle": "Top graduates"
+    "dashboard": {
+      "writingFeedback": {
+        "title": "Writing Feedback",
+        "comment": "Great job! Keep it up! 🎉",
+        "items": {
+          "ideas": "Ideas",
+          "structure": "Structure",
+          "vocabulary": "Vocabulary",
+          "grammar": "Grammar"
+        }
       },
-      "personalised": {
-        "title": "Personalised",
-        "subtitle": "Custom plans"
+      "upcomingLesson": {
+        "title": "Upcoming Lesson",
+        "lesson": "Speaking Practice",
+        "time": "Today, 7:00 PM",
+        "action": "Join lesson →"
       },
-      "results": {
-        "title": "Proven Results",
-        "subtitle": "Clear progress"
+      "vocabularyGrowth": {
+        "title": "Vocabulary Growth",
+        "badge": "+42 words"
       },
-      "language": {
-        "title": "Multilingual",
-        "subtitle": "EN / CN / JP"
+      "mapProgress": {
+        "title": "MAP Score Progress",
+        "badge": "+18%",
+        "reading": {
+          "title": "Reading",
+          "subtitle": "Comprehension & vocabulary"
+        },
+        "math": {
+          "title": "Math",
+          "subtitle": "Problem solving & reasoning"
+        }
+      },
+      "tutorFeedback": {
+        "title": "Tutor Feedback",
+        "imageAlt": "Tutor",
+        "name": "Ms. Christine",
+        "role": "Expert Tutor",
+        "comment": "Excellent effort! Your arguments are well-structured and clear."
+      },
+      "weeklyGoals": {
+        "title": "Weekly Goals",
+        "badge": "3/4 Done",
+        "items": {
+          "readingHomework": "Complete Reading Homework",
+          "vocabulary": "Learn 15 new vocabulary words",
+          "speakingPractice": "Finish speaking practice",
+          "grammarReview": "Review grammar corrections"
+        }
       }
     },
-    "floating": {
-      "title": "Student Transformation",
-      "subtitle": "Clear structure · Confident answers · Stronger results"
+    "programs": {
+      "labelLine1": "We prepare",
+      "labelLine2": "you for",
+      "titleLine1": "Every exam.",
+      "titleLine2": "Every goal.",
+      "titleLine3": "Every",
+      "highlight": "future.",
+      "items": {
+        "map": {
+          "title": "MAP",
+          "sub": "Growth Assessment"
+        },
+        "toefl": {
+          "title": "TOEFL",
+          "sub": "iBT / Junior Preparation"
+        },
+        "wida": {
+          "title": "WIDA",
+          "sub": "Language Development"
+        },
+        "writing": {
+          "title": "Academic Writing",
+          "sub": "Think. Write. Succeed."
+        },
+        "interview": {
+          "title": "Interview Prep",
+          "sub": "Confidently You."
+        }
+      }
     },
-    "stats": {
-      "students": "Students supported",
-      "improve": "Students improve within 3 months",
-      "countries": "Countries represented",
-      "worldwide": "Worldwide support",
-      "rating": "Average parent rating"
+    "pathways": {
+      "label": "Global Pathways",
+      "titleLine1": "From international school",
+      "titleLine2": "to the world.",
+      "description": "Luna supports students across Singapore, Japan, international schools, and global university pathways through English, test prep, and academic confidence.",
+      "items": {
+        "japan": {
+          "country": "Japan",
+          "desc": "International schools, bilingual education, MAP/WIDA support, and interview preparation."
+        },
+        "singapore": {
+          "country": "Singapore",
+          "desc": "English foundations, AEIS pathways, international school transition, and academic confidence."
+        },
+        "australia": {
+          "country": "Australia",
+          "desc": "Academic writing, speaking confidence, IELTS-style communication, and global learning skills."
+        },
+        "others": {
+          "country": "Others",
+          "desc": "Critical thinking, reading comprehension, presentation skills, and boarding school readiness."
+        }
+      },
+      "tags": {
+        "interview": "Interview",
+        "english": "English",
+        "transition": "Transition",
+        "writing": "Writing",
+        "speaking": "Speaking",
+        "reading": "Reading",
+        "criticalThinking": "Critical Thinking",
+        "presentation": "Presentation"
+      }
     },
-    "headTutors": {
-      "label": "Head Tutors",
-      "title": "Academic guidance led by experienced mentors.",
-      "desc": "Our head tutors oversee student assessment, learning plans, and progress reviews to ensure every child receives structured support.",
-      "button": "Meet Our Tutors",
-      "cardLabel": "Head Tutor",
-      "viewProfile": "View Profile",
-      "book": "Book Consultation"
-    },
-    "trust": {
-      "schools": "International schools",
-      "subjects": "Subjects",
-      "languages": "Languages"
+    "whyPreview": {
+      "label": "Why Luna?",
+      "titleLine1": "Not just lessons.",
+      "titleLine2": "A learning system",
+      "titleLine3": "built for growth.",
+      "description": "Luna combines assessment, tutor matching, progress tracking, and parent feedback so every lesson has a clear purpose.",
+      "button": "Discover why Luna works",
+      "cards": {
+        "assessment": {
+          "title": "Assessment first",
+          "desc": "We identify strengths, weak points, and learning priorities before lessons begin."
+        },
+        "matching": {
+          "title": "Tutor matching",
+          "desc": "Students are matched with tutors based on learning goals, personality, and academic needs."
+        },
+        "progress": {
+          "title": "Visible progress",
+          "desc": "Parents can understand progress through feedback, goals, and measurable improvement."
+        },
+        "support": {
+          "title": "Continuous support",
+          "desc": "We adjust learning plans instead of repeating the same lesson style forever."
+        }
+      }
     },
     "process": {
-      "title": "A clear system for real improvement",
-      "steps": [
-        "Trial Assessment",
-        "Comprehensive Report",
-        "Tutor Matching",
-        "Progress Tracking",
-        "Final Evaluation"
-      ]
-    },
-    "why": {
-      "title": "Not just tuition. A structured learning system.",
-      "desc": "We combine personalised learning, structured tracking, and tutor guidance to ensure consistent progress.",
-      "button": "Learn more",
-      "points": [
-        "1–1 personalised tutoring",
-        "Pre-test / Mid-test / Post-test",
-        "Tutor matching system",
-        "Progress tracking with feedback"
-      ]
-    },
-    "programs": {
-      "label": "Programs",
-      "title": "Designed for international students",
-      "desc": "From entrance exams to language development, each program is structured to support your child’s academic journey.",
-      "learnMore": "Learn more",
-      "items": [
-        {
-          "title": "Entrance Exams",
-          "subtitle": "AEIS, CAT4, International School Entry",
-          "points": [
-            "Structured preparation plan",
-            "Interview + written support",
-            "Past-style practice questions"
-          ]
+      "label": "Luna Learning System ✨",
+      "title": "A clear path to real improvement",
+      "description": "From trial assessment to final evaluation, every step is designed to make progress visible, structured, and personal.",
+      "stepLabel": "Step",
+      "steps": {
+        "assessment": {
+          "title": "Trial Assessment",
+          "desc": "We check the student’s current level, strengths, and weak points."
         },
-        {
-          "title": "English & Academic Skills",
-          "subtitle": "MAP, WIDA, Writing, Reading",
-          "points": [
-            "Reading comprehension",
-            "Essay structure",
-            "Vocabulary building"
-          ]
+        "report": {
+          "title": "Comprehensive Report",
+          "desc": "Parents receive a clear breakdown of reading, writing, speaking, and test skills."
         },
-        {
-          "title": "Test Preparation",
-          "subtitle": "TOEFL, IELTS, Interview Training",
-          "points": [
-            "Speaking & writing training",
-            "Exam strategies",
-            "Mock test simulations"
-          ]
+        "matching": {
+          "title": "Tutor Matching",
+          "desc": "We match each student with the most suitable tutor and learning style."
+        },
+        "tracking": {
+          "title": "Progress Tracking",
+          "desc": "Homework, lesson notes, and improvement are followed continuously."
+        },
+        "evaluation": {
+          "title": "Final Evaluation",
+          "desc": "We review growth and suggest the next learning plan."
         }
-      ]
+      }
     },
-    "cta": {
-      "title": "Start your child’s improvement journey",
-      "desc": "Tell us your goals and we’ll recommend a personalised plan.",
-      "button": "Enquire now"
+    "tutorsSection": {
+      "label": "Meet our tutors ✨",
+      "titleLine1": "Experience that",
+      "titleLine2": "inspires",
+      "highlight": "confidence.",
+      "mobileTitle": "Experience that inspires confidence.",
+      "description": "Our tutors bring global experience, academic strategy, and personal support to every student.",
+      "button": "View All Tutors"
     },
     "tutors": {
       "mimi": {
         "role": "English · Japanese Instructor",
-        "desc": "Specialises in MAP Reading, TOEFL speaking, and international school admissions.",
-        "education": "Japan Waseda University",
-        "languages": "Japanese / English / Mandarin",
-        "subjects": [
-          "Japanese",
-          "English",
-          "TOEFL",
-          "IELTS",
-          "SAT",
-          "O Level"
-        ],
-        "experience": [
-          "Trilingual education in Japanese, English, and Mandarin",
-          "International school admission preparation",
-          "TOEFL / IELTS / SAT / O Level preparation",
-          "Personalised academic planning and learning strategy"
-        ]
+        "desc": "Specialises in MAP Reading, TOEFL speaking, and international school admissions."
       },
       "grace": {
-        "role": "English Tutor",
-        "desc": "Focuses on structured problem solving and exam confidence building.",
-        "education": "National University of Singapore (NUS)",
-        "languages": "English / Mandarin",
-        "subjects": [
-          "IB English",
-          "TOEFL",
-          "Academic Writing",
-          "Listening",
-          "Accent Reduction"
-        ],
-        "experience": [
-          "Academic English and IB English tutoring",
-          "TOEFL speaking and writing preparation",
-          "Bilingual education support",
-          "Confidence building for academic communication"
-        ]
+        "role": "IB · CAT4 · AEIS Tutor",
+        "desc": "Supports students with structured test prep, academic writing, and reading skills."
+      },
+      "francis": {
+        "role": "Math · Science Tutor",
+        "desc": "Helps students build confidence in reasoning, problem-solving, and exam strategies."
+      },
+      "cj": {
+        "role": "English · Interview Coach",
+        "desc": "Focuses on confident communication, school interviews, and academic English."
+      },
+      "christine": {
+        "role": "Reading · Writing Specialist",
+        "desc": "Guides students through comprehension, vocabulary growth, and writing feedback."
+      }
+    },
+    "enquiry": {
+      "label": "Ready to begin?",
+      "titleLine1": "Your child’s next",
+      "titleLine2": "chapter starts",
+      "titleLine3": "with one message.",
+      "description": "Tell us the student’s goals, current level, and learning concerns. We’ll help you choose the right support path.",
+      "button": "Start an enquiry",
+      "card": {
+        "badge": "Free consultation",
+        "title": "Enquiry Form",
+        "subtitle": "Usually takes 2–3 minutes",
+        "steps": {
+          "grade": "Student grade / school system",
+          "level": "Current English level",
+          "goals": "Learning goals or exams",
+          "schedule": "Preferred schedule"
+        },
+        "continue": "Click to continue"
       }
     }
   },
@@ -176,12 +255,34 @@
     "locations": "Singapore · Tokyo · China · Online"
   },
   "subjects": {
+    "seo": {
+      "title": "MAP, WIDA, AEIS & Other Educational Programs | LUNA Studies",
+      "description": "Explore LUNA Studies programs including MAP preparation, WIDA support, AEIS English, TOEFL, academic writing, interview preparation and bilingual education."
+    },
     "hero": {
-      "title": "Programs for every student"
+      "label": "Luna Programs",
+      "titleLine1": "Choose the support",
+      "titleLine2": "that fits your child.",
+      "description": "From MAP and TOEFL to speaking, writing, math, Japanese, and school transition support — each program is designed with clear goals and measurable growth."
     },
     "learnMore": "Learn more",
     "suitableFor": "Suitable for:",
     "close": "Close",
+    "modal": {
+      "programLabel": "Luna Program",
+      "suitableFor": "Suitable For",
+      "includedTitle": "What’s Included",
+      "included": {
+        "items": {
+          "lessons": "1–1 Personalised Lessons",
+          "homework": "Homework & Feedback",
+          "tracking": "Progress Tracking",
+          "support": "Question Support"
+        }
+      },
+      "enquiryTitle": "Enquire about this program",
+      "enquiryDescription": "We’ll recommend the right tutor and learning plan based on the student’s goals."
+    },
     "items": {
       "assessments": {
         "title": "MAP / WIDA / CAT4 Preparation",
@@ -224,27 +325,55 @@
         "body": "Grammar, vocabulary, and reading support.",
         "details": "This program strengthens core English skills including grammar, vocabulary, sentence structure, and reading comprehension.",
         "suitableFor": "Students with weaker English foundations who need step-by-step support."
+      },
+      "mandarin": {
+        "title": "Mandarin Lessons",
+        "body": "Speaking, reading, writing, and bilingual Mandarin support.",
+        "details": "Structured Mandarin lessons for international school students, beginners, heritage learners, and students building bilingual confidence.",
+        "suitableFor": "Students learning Mandarin for school, communication, reading, writing, or bilingual development."
       }
     }
   },
   "enquire": {
-    "hero": {
-      "label": "Enquire",
-      "title": "Start your learning journey",
-      "description": "Tell us about your needs and we’ll recommend the most suitable plan.",
-      "trial": "Trial lesson from $60 · No commitment"
+    "seo": {
+      "title": "Book a Consultation | LUNA Studies",
+      "description": "Contact LUNA Studies for MAP, WIDA, AEIS, TOEFL and personalised international tutoring support for students in Japan, Singapore and online."
     },
-    "trust": {
-      "response": "Response time",
-      "responseValue": "Within 24 hours",
-      "format": "Lesson format",
-      "formatValue": "Online & Offline",
-      "support": "Support",
-      "supportValue": "Chat + Tutor guidance"
+    "hero": {
+      "label": "Luna Intake Pass",
+      "titleLine1": "Tell us where",
+      "titleLine2": "your child is now.",
+      "description": "We’ll turn that into a tutor match, level diagnosis, and clear learning direction.",
+      "button": "Start enquiry",
+      "cards": {
+        "level": "Level",
+        "goal": "Goal",
+        "tutorFit": "Tutor Fit"
+      }
+    },
+    "timeline": {
+      "step1": {
+        "title": "Share the student’s current level",
+        "text": "Grade, school system, strengths, and struggles."
+      },
+      "step2": {
+        "title": "We review the learning goal",
+        "text": "MAP, TOEFL, AEIS, writing, speaking, or school admission."
+      },
+      "step3": {
+        "title": "Tutor + plan recommendation",
+        "text": "A suitable tutor and learning direction are suggested."
+      },
+      "step4": {
+        "title": "Trial assessment begins",
+        "text": "We check level and create the next learning step."
+      }
     },
     "process": {
-      "title": "What happens after you enquire",
-      "description": "A clear and structured process designed to ensure real improvement."
+      "label": "Learning Journey",
+      "titleLine1": "A clearer process.",
+      "titleLine2": "Better student outcomes.",
+      "description": "Every student follows a structured support system designed for measurable growth."
     },
     "steps": {
       "step1": {
@@ -267,41 +396,53 @@
         "title": "Final Evaluation",
         "text": "Clear progress comparison with graphs and next-step guidance."
       }
-    },
-    "contact": {
-      "title": "Prefer to contact us directly?"
     }
   },
   "enquiryForm": {
+    "label": "Start here",
     "enquireAbout": "Enquire about",
-    "bookTrial": "Book a Trial Lesson",
-    "description": "Leave your details and we’ll contact you soon.",
+    "bookTrial": "Book a trial lesson",
+    "description": "Tell us about the student and we’ll recommend the right support.",
     "subject": "Subject",
-    "submit": "Submit Enquiry",
+    "submit": "Submit enquiry",
     "submitting": "Submitting...",
-    "success": "Enquiry received! A confirmation email has been sent.",
-    "placeholders": {
-      "name": "Parent / Student Name *",
-      "email": "Email *",
-      "grade": "Grade (optional)",
-      "subjectHelp": "What do you need help with for",
-      "generalHelp": "What do you need help with?"
+    "success": "Thank you! Your enquiry has been submitted.",
+    "benefits": {
+      "matching": "Personalised tutor matching",
+      "assessment": "Trial assessment available",
+      "support": "Online & offline support"
+    },
+    "fields": {
+      "message": "Message"
     },
     "errors": {
       "fillRequired": "Please fill in your name and email.",
       "invalidEmail": "Please enter a valid email address.",
       "general": "Something went wrong. Please try again."
+    },
+    "placeholders": {
+      "name": "Parent / student name",
+      "email": "Email address",
+      "grade": "Student grade / year level",
+      "subjectHelp": "What would you like help with for",
+      "generalHelp": "What would you like help with?"
     }
   },
   "whyLuna": {
+    "seo": {
+      "title": "Why Families Choose LUNA Studies | Personalised International Education",
+      "description": "Discover how LUNA Studies supports students through personalised learning plans, tutor matching, academic tracking and international school preparation."
+    },
     "hero": {
       "label": "Our Approach",
-      "title1": "Premium tutoring,",
-      "title2": "built around real growth.",
+      "titleLine1": "Premium tutoring,",
+      "titleLine2": "built around",
+      "titleHighlight": "real growth.",
       "description": "Luna Education combines elite tutors, personalised planning, structured assessments, and continuous support — so students don’t just attend lessons, they improve with direction."
     },
     "buttons": {
-      "enquire": "Enquire now"
+      "enquire": "Enquire now",
+      "programs": "View Programs"
     },
     "highlights": {
       "personalised": "1–1 personalised tutoring",
@@ -314,35 +455,43 @@
     "planCard": {
       "label": "LUNA PLAN",
       "title": "Student Growth Map",
-      "pretest": {
-        "title": "Pre-test",
-        "desc": "Identify current level"
-      },
-      "midtest": {
-        "title": "Mid-test",
-        "desc": "Check improvement"
-      },
-      "posttest": {
-        "title": "Post-test",
-        "desc": "Confirm growth"
+      "badge": "1–1",
+      "items": {
+        "preTest": {
+          "title": "Pre-test",
+          "desc": "Identify current level"
+        },
+        "midTest": {
+          "title": "Mid-test",
+          "desc": "Check improvement"
+        },
+        "postTest": {
+          "title": "Post-test",
+          "desc": "Confirm growth"
+        }
       },
       "chat": {
         "label": "Chat support",
-        "message": "Can I ask about this question?"
+        "message": "“Can I ask about this question?”"
       }
     },
     "comparison": {
       "label": "What makes us different",
-      "title": "Not just lessons. A complete learning system.",
+      "titleLine1": "Not just lessons.",
+      "titleLine2": "A complete learning system.",
       "typical": {
-        "title": "Typical tuition",
+        "label": "Typical tuition",
+        "titleLine1": "Random effort,",
+        "titleLine2": "unclear progress.",
         "point1": "Random worksheets without a clear learning path",
         "point2": "Limited support outside class time",
         "point3": "Parents unsure whether progress is real",
         "point4": "One-size-fits-all lesson style"
       },
       "luna": {
-        "title": "Luna Education",
+        "label": "Luna Education",
+        "titleLine1": "Structured support,",
+        "titleLine2": "visible growth.",
         "point1": "Personalised 1–1 planning for each student",
         "point2": "Chat support and question-bank access",
         "point3": "Pre-test, mid-test, and post-test quality checks",
@@ -351,7 +500,8 @@
     },
     "values": {
       "label": "Our Values",
-      "title": "What we believe learning should be",
+      "titleLine1": "What we believe",
+      "titleLine2": "learning should be.",
       "description": "At Luna Education, we don’t believe in random practice or passive learning. We focus on clarity, structure, and measurable improvement.",
       "items": {
         "clarity": {
@@ -380,6 +530,11 @@
     },
     "focusArea": "Focus Area",
     "improving": "Improving",
+    "system": {
+      "label": "Luna System",
+      "titleLine1": "Four pillars behind",
+      "titleLine2": "every lesson."
+    },
     "sections": {
       "tutors": {
         "title": "Elite tutors with international backgrounds",
@@ -404,10 +559,26 @@
     },
     "questionBank": {
       "label": "Registered Student Benefit",
-      "title": "Free access to curated question banks",
+      "titleLine1": "Free access to",
+      "titleLine2": "curated question banks.",
       "description": "Registered students can practise with structured question banks matched to their goals. Tutors can then review mistakes and turn practice into targeted improvement.",
-      "cardTitle": "Question Bank",
       "available": "Available",
+      "benefits": {
+        "targetedPractice": "Targeted practice",
+        "mistakeReview": "Mistake review",
+        "tutorFollowUp": "Tutor follow-up",
+        "goalBasedSets": "Goal-based sets"
+      },
+      "mockup": {
+        "label": "Practice Library",
+        "title": "Question Bank",
+        "badge": "Registered benefit",
+        "readiness": "Practice set readiness"
+      },
+      "review": {
+        "label": "Tutor Review",
+        "text": "Mistakes become the next lesson plan."
+      },
       "items": {
         "map": "MAP Reading",
         "toefl": "TOEFL Writing",
@@ -416,52 +587,80 @@
       }
     },
     "cta": {
-      "title": "Start with a personalised trial lesson",
-      "description": "We’ll assess the student’s level and recommend the right plan based on their goals."
+      "label": "Start your journey ✨",
+      "titleLine1": "Real support.",
+      "titleLine2": "Real structure.",
+      "titleLine3": "Real growth.",
+      "description": "We’ll assess the student’s current level, identify strengths and weaknesses, and recommend a personalised learning plan designed around their goals.",
+      "tags": {
+        "planning": "1–1 Planning",
+        "exams": "MAP / TOEFL / AEIS",
+        "questionBanks": "Question Banks",
+        "progress": "Progress Tracking"
+      },
+      "card": {
+        "label": "Trial Lesson",
+        "title": "Personalised Assessment",
+        "badge": "Limited Slots",
+        "steps": {
+          "assessment": "Level assessment",
+          "matching": "Tutor matching",
+          "planning": "Growth planning",
+          "pathway": "Recommended pathway"
+        }
+      }
     }
   },
   "chat": {
-  "initialMessage": "Hi, I’m Chokina. What would you like help with today?",
-  "header": {
-    "title": "Chokina AI Consultant",
-    "subtitle": "Course guidance for parents & students"
+    "initialMessage": "Hi, I’m Chokina. What would you like help with today?",
+    "header": {
+      "title": "Chokina AI Consultant",
+      "subtitle": "Course guidance for parents & students"
+    },
+    "loading": "Chokina is preparing personalised guidance",
+    "quick": {
+      "english": "English improvement",
+      "map": "MAP preparation",
+      "cat4": "CAT4 preparation",
+      "admissions": "School admissions",
+      "toefl": "IELTS / TOEFL"
+    },
+    "input": {
+      "placeholder": "Ask Chokina about MAP, TOEFL, CAT4...",
+      "loading": "Chokina is replying..."
+    },
+    "buttons": {
+      "submitEnquiry": "Submit Enquiry",
+      "whatsapp": "WhatsApp Team"
+    },
+    "lead": {
+      "title": "Submit an enquiry",
+      "name": "Parent / Student name",
+      "contact": "Email or WhatsApp",
+      "grade": "Student grade / year level",
+      "goal": "Learning goal / exam / subject",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "cancel": "Cancel",
+      "alert": "Please enter your name and contact.",
+      "noGoal": "Submitted from Chokina AI Consultant. No learning goal provided.",
+      "success": "Thank you. Your enquiry has been submitted successfully. Our team will contact you soon.",
+      "error": "Sorry, Chokina could not submit the enquiry. Please contact us via WhatsApp or try again later."
+    },
+    "errors": {
+      "noReply": "Sorry, Chokina could not generate a reply.",
+      "general": "Sorry, Chokina is taking a short break. Please try again."
+    }
   },
-  "loading": "Chokina is preparing personalised guidance",
-  "quick": {
-    "english": "English improvement",
-    "map": "MAP preparation",
-    "cat4": "CAT4 preparation",
-    "admissions": "School admissions",
-    "toefl": "IELTS / TOEFL"
-  },
-  "input": {
-    "placeholder": "Ask Chokina about MAP, TOEFL, CAT4...",
-    "loading": "Chokina is replying..."
-  },
-  "buttons": {
-    "submitEnquiry": "Submit Enquiry",
-    "whatsapp": "WhatsApp Team"
-  },
-  "lead": {
-    "title": "Submit an enquiry",
-    "name": "Parent / Student name",
-    "contact": "Email or WhatsApp",
-    "grade": "Student grade / year level",
-    "goal": "Learning goal / exam / subject",
-    "submit": "Submit",
-    "submitting": "Submitting...",
-    "cancel": "Cancel",
-    "alert": "Please enter your name and contact.",
-    "noGoal": "Submitted from Chokina AI Consultant. No learning goal provided.",
-    "success": "Thank you. Your enquiry has been submitted successfully. Our team will contact you soon.",
-    "error": "Sorry, Chokina could not submit the enquiry. Please contact us via WhatsApp or try again later."
-  },
-  "errors": {
-    "noReply": "Sorry, Chokina could not generate a reply.",
-    "general": "Sorry, Chokina is taking a short break. Please try again."
-  }
-},
   "tutorsPage": {
+    "seo": {
+      "title": "International Tutors in Japan & Singapore | LUNA Studies",
+      "description": "Meet LUNA Studies tutors specialising in MAP, WIDA, TOEFL, English, bilingual education and international school support."
+    },
+    "buttons": {
+      "viewProfile": "View Profile",
+      "book": "Book Consultation"
+    },
     "hero": {
       "label": "Our Tutors",
       "title": "Meet the tutors behind Luna Education",
@@ -587,77 +786,72 @@
     ]
   },
   "login": {
-  "hero": {
-    "title": "Continue your learning journey",
-    "description": "Sign in to your dashboard, or create a new account with your access code."
+    "hero": {
+      "title": "Continue your learning journey",
+      "description": "Sign in to your dashboard, or create a new account with your access code."
+    },
+    "signin": {
+      "label": "Existing user",
+      "title": "Sign in",
+      "description": "Welcome back. Access your lessons, progress, and assignments."
+    },
+    "signup": {
+      "label": "New user",
+      "title": "Create account",
+      "description": "Your access code will automatically assign your account type."
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "accessCode": "Access Code"
+    },
+    "placeholders": {
+      "name": "Your name",
+      "email": "you@example.com",
+      "password": "Enter password",
+      "createPassword": "Create password",
+      "accessCode": "Enter access code"
+    },
+    "buttons": {
+      "signin": "Sign in",
+      "create": "Create account",
+      "forgotPassword": "Forgot password?"
+    },
+    "alerts": {
+      "emailVerified": "Email verified successfully. You can now sign in.",
+      "verifyEmail": "Please verify your email before signing in.",
+      "disabled": "Your account has been disabled. Please contact admin.",
+      "fillAll": "Please fill in all required fields.",
+      "invalidCode": "Invalid, expired, or already used access code.",
+      "expiredCode": "This access code has expired.",
+      "invalidRole": "Invalid access code role.",
+      "checkEmail": "Please check your email to verify your account."
+    }
   },
-
-  "signin": {
-    "label": "Existing user",
-    "title": "Sign in",
-    "description": "Welcome back. Access your lessons, progress, and assignments."
+  "forgotPassword": {
+    "label": "Password Reset",
+    "title": "Forgot your password?",
+    "description": "Enter your email and we'll send you a reset link.",
+    "placeholder": "you@example.com",
+    "button": "Send reset email",
+    "loading": "Sending...",
+    "alerts": {
+      "enterEmail": "Please enter your email.",
+      "success": "Password reset email sent. Please check your inbox."
+    }
   },
-
-  "signup": {
-    "label": "New user",
-    "title": "Create account",
-    "description": "Your access code will automatically assign your account type."
-  },
-
-  "fields": {
-    "name": "Name",
-    "email": "Email",
-    "password": "Password",
-    "accessCode": "Access Code"
-  },
-
-  "placeholders": {
-    "name": "Your name",
-    "email": "you@example.com",
-    "password": "Enter password",
-    "createPassword": "Create password",
-    "accessCode": "Enter access code"
-  },
-
-  "buttons": {
-    "signin": "Sign in",
-    "create": "Create account",
-    "forgotPassword": "Forgot password?"
-  },
-  "alerts": {
-  "emailVerified": "Email verified successfully. You can now sign in.",
-  "verifyEmail": "Please verify your email before signing in.",
-  "disabled": "Your account has been disabled. Please contact admin.",
-  "fillAll": "Please fill in all required fields.",
-  "invalidCode": "Invalid, expired, or already used access code.",
-  "expiredCode": "This access code has expired.",
-  "invalidRole": "Invalid access code role.",
-  "checkEmail": "Please check your email to verify your account."
-}
-},
-"forgotPassword": {
-  "label": "Password Reset",
-  "title": "Forgot your password?",
-  "description": "Enter your email and we'll send you a reset link.",
-  "placeholder": "you@example.com",
-  "button": "Send reset email",
-  "loading": "Sending...",
-  "alerts": {
-    "enterEmail": "Please enter your email.",
-    "success": "Password reset email sent. Please check your inbox."
+  "resetPassword": {
+    "label": "Reset Password",
+    "title": "Create a new password",
+    "description": "Enter your new password below.",
+    "placeholder": "New password",
+    "button": "Update password",
+    "loading": "Updating...",
+    "alerts": {
+      "enterPassword": "Please enter a new password.",
+      "success": "Password updated successfully."
+    },
+    "passwordLength": "Password must be at least 6 characters."
   }
-},
-"resetPassword": {
-  "label": "Reset Password",
-  "title": "Create a new password",
-  "description": "Enter your new password below.",
-  "placeholder": "New password",
-  "button": "Update password",
-  "loading": "Updating...",
-  "alerts": {
-    "enterPassword": "Please enter a new password.",
-    "success": "Password updated successfully."
-  },
-  "passwordLength": "Password must be at least 6 characters."
-}
 }
