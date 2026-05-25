@@ -22,12 +22,12 @@ import {
 
 const Login = () => {
   const currentLang = window.location.pathname.startsWith("/zh")
-  ? "zh"
-  : window.location.pathname.startsWith("/jp")
-  ? "ja"
-  : "en";
+    ? "zh"
+    : window.location.pathname.startsWith("/jp")
+      ? "jp"
+      : "en";
 
-const langPath = (path: string) => `/${currentLang}${path}`;
+  const langPath = (path: string) => `/${currentLang}${path}`;
   const { t } = useTranslation();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 
@@ -213,11 +213,8 @@ const langPath = (path: string) => `/${currentLang}${path}`;
   return (
     <>
       <Helmet>
-        <title>Login/Sign up to your LUNA Studies account</title>
-        <meta
-          name="description"
-          content="Login to the LUNA Studies student portal to access lessons, practice, progress tracking and personalised learning support."
-        />
+        <title>{t("login.seo.title")}</title>
+        <meta name="description" content={t("login.seo.description")} />
       </Helmet>
 
       <div className="min-h-screen overflow-hidden bg-[#fbfaff]">
@@ -243,24 +240,37 @@ const langPath = (path: string) => `/${currentLang}${path}`;
                 className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]"
               >
                 <Sparkles className="h-5 w-5" />
-                Student Portal
+                {t("login.portal.label")}
               </motion.p>
 
-<h1 className="mt-5 font-poppins text-[2.8rem] font-black leading-[1] text-primary sm:text-[4rem]">
-  Access your<br />
-  learning portal.
-</h1>
+              <h1 className="mt-5 font-poppins text-[2.8rem] font-black leading-[1] text-primary sm:text-[4rem]">
+                {t("login.portal.titleLine1")}<br />
 
-<p className="mt-6 max-w-lg text-base leading-8 text-primary/60">
-  Lessons, progress tracking, homework, tutor support, and personalised learning plans — all in one place.
-</p>
-            
+                {t("login.portal.titleLine2")}
+              </h1>
+
+              <p className="mt-6 max-w-lg text-base leading-8 text-primary/60">
+                {t("login.portal.description")}
+              </p>
+
 
               <div className="mt-9 grid max-w-xl gap-4 sm:grid-cols-3">
                 {[
-                  { icon: BookOpen, title: "Lessons", text: "Track learning" },
-                  { icon: BarChart3, title: "Progress", text: "See growth" },
-                  { icon: GraduationCap, title: "Support", text: "Stay guided" },
+                  {
+                    icon: BookOpen,
+                    title: t("login.portal.cards.lessons.title"),
+                    text: t("login.portal.cards.lessons.text"),
+                  },
+                  {
+                    icon: BarChart3,
+                    title: t("login.portal.cards.progress.title"),
+                    text: t("login.portal.cards.progress.text"),
+                  },
+                  {
+                    icon: GraduationCap,
+                    title: t("login.portal.cards.support.title"),
+                    text: t("login.portal.cards.support.text"),
+                  },
                 ].map((item, i) => (
                   <motion.div
                     key={item.title}
@@ -290,7 +300,7 @@ const langPath = (path: string) => `/${currentLang}${path}`;
                 <div className="flex items-center gap-3">
                   <CheckCircle className="h-5 w-5 text-[#8d73ff]" />
                   <p className="text-sm font-bold text-primary/70">
-                    Secure login for students, tutors, and admins.
+                    {t("login.portal.secure")}
                   </p>
                 </div>
               </motion.div>
@@ -313,11 +323,10 @@ const langPath = (path: string) => `/${currentLang}${path}`;
                       <button
                         key={tab.key}
                         onClick={() => setMode(tab.key as "signin" | "signup")}
-                        className={`relative h-12 rounded-[1.2rem] text-sm font-black transition ${
-                          mode === tab.key
-                            ? "text-white"
-                            : "text-primary/55 hover:text-primary"
-                        }`}
+                        className={`relative h-12 rounded-[1.2rem] text-sm font-black transition ${mode === tab.key
+                          ? "text-white"
+                          : "text-primary/55 hover:text-primary"
+                          }`}
                       >
                         {mode === tab.key && (
                           <motion.div
@@ -383,11 +392,7 @@ const langPath = (path: string) => `/${currentLang}${path}`;
                           </Field>
 
                           <Link
-                            to={
-                              window.location.pathname.startsWith("/zh")
-                                ? "/zh/forgot-password"
-                                : "/en/forgot-password"
-                            }
+                            to={langPath("/forgot-password")}
                             className="inline-block text-sm font-bold text-[#8d73ff] hover:underline"
                           >
                             {t("login.buttons.forgotPassword")}
@@ -401,8 +406,8 @@ const langPath = (path: string) => `/${currentLang}${path}`;
                             {t("login.buttons.signin")}
                             <ArrowRight className="ml-2 h-5 w-5 transition group-hover:translate-x-1" />
                           </Button>
-                          
-                         <TermsText langPath={langPath} />
+
+                          <TermsText langPath={langPath} />
                         </div>
                       </motion.div>
                     ) : (
@@ -483,35 +488,7 @@ const langPath = (path: string) => `/${currentLang}${path}`;
                             {t("login.buttons.create")}
                             <ArrowRight className="ml-2 h-5 w-5 transition group-hover:translate-x-1" />
                           </Button>
-                          <p className="mt-5 text-center text-xs leading-6 text-primary/45">
-  By continuing, you agree to our{" "}
-
-  <Link
-
-    to={
-
-      window.location.pathname.startsWith("/zh")
-
-        ? "/zh/terms"
-
-        : "/en/terms"
-
-    }
-
-    className="font-semibold text-[#8d73ff] hover:underline"
-
-  >
-
-    Terms of Service
-
-  </Link>{" "}
-  and{" "}
-  <Link
-to={langPath("/privacy")}    className="font-semibold text-[#8d73ff] hover:underline"
-  >
-    Privacy Policy
-  </Link>.
-</p>
+                          <TermsText langPath={langPath} />
                         </div>
                       </motion.div>
                     )}
@@ -573,22 +550,29 @@ const Field = ({
   );
 };
 const TermsText = ({ langPath }: { langPath: (path: string) => string }) => {
+  const { t } = useTranslation();
+
   return (
     <p className="mt-5 text-center text-xs leading-6 text-primary/45">
-      By continuing, you agree to our{" "}
+      {t("login.terms.prefix")}{" "}
+
       <Link
         to={langPath("/terms")}
         className="font-semibold text-[#8d73ff] hover:underline"
       >
-        Terms of Service
+        {t("login.terms.terms")}
       </Link>{" "}
-      and{" "}
+
+      {t("login.terms.and")}{" "}
+
       <Link
-to={langPath("/privacy")}        className="font-semibold text-[#8d73ff] hover:underline"
+        to={langPath("/privacy")}
+        className="font-semibold text-[#8d73ff] hover:underline"
       >
-        Privacy Policy
+        {t("login.terms.privacy")}
       </Link>
-      .
+
+      {t("login.terms.suffix")}
     </p>
   );
 };

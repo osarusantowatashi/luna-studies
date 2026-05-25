@@ -269,23 +269,21 @@
     "suitableFor": "Suitable for:",
     "close": "Close",
     "modal": {
-  "programLabel": "Luna Program",
-  "suitableFor": "Suitable For",
-  "includedTitle": "What’s Included",
-
-  "included": {
-    "items": {
-      "lessons": "1–1 Personalised Lessons",
-      "homework": "Homework & Feedback",
-      "tracking": "Progress Tracking",
-      "support": "Question Support"
-    }
-  },
-
-  "enquiryTitle": "Interested in this program?",
-  "enquiryDescription": "Send us an enquiry and we’ll recommend the right tutor and learning plan.",
-  "enquiryButton": "Enquire about {{subject}}"
-},
+      "programLabel": "Luna Program",
+      "suitableFor": "Suitable For",
+      "includedTitle": "What’s Included",
+      "included": {
+        "items": {
+          "lessons": "1–1 Personalised Lessons",
+          "homework": "Homework & Feedback",
+          "tracking": "Progress Tracking",
+          "support": "Question Support"
+        }
+      },
+      "enquiryTitle": "Interested in this program?",
+      "enquiryDescription": "Send us an enquiry and we’ll recommend the right tutor and learning plan.",
+      "enquiryButton": "Enquire about {{subject}}"
+    },
     "items": {
       "assessments": {
         "title": "MAP / WIDA / CAT4 Preparation",
@@ -831,6 +829,38 @@
       "expiredCode": "This access code has expired.",
       "invalidRole": "Invalid access code role.",
       "checkEmail": "Please check your email to verify your account."
+    },
+    "seo": {
+      "title": "Login to LUNA Education",
+      "description": "Access your lessons, learning progress, homework, and personalised academic support through the LUNA Education portal."
+    },
+    "portal": {
+      "label": "Student Portal",
+      "titleLine1": "Access your",
+      "titleLine2": "learning portal",
+      "description": "Lessons, progress tracking, homework, tutor support, and personalised learning plans — all in one place.",
+      "secure": "Secure login for students, tutors, and admins.",
+      "cards": {
+        "lessons": {
+          "title": "Lessons",
+          "text": "Track learning"
+        },
+        "progress": {
+          "title": "Progress",
+          "text": "See growth"
+        },
+        "support": {
+          "title": "Support",
+          "text": "Stay guided"
+        }
+      }
+    },
+    "terms": {
+      "prefix": "By continuing, you agree to our",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy",
+      "suffix": "."
     }
   },
   "forgotPassword": {
@@ -857,5 +887,85 @@
       "success": "Password updated successfully."
     },
     "passwordLength": "Password must be at least 6 characters."
+  },
+  "privacy": {
+    "seoTitle": "Privacy Policy | LUNA Studies",
+    "back": "Back to Login",
+    "title": "Privacy Policy",
+    "updated": "Last updated: May 2026",
+    "sections": [
+      {
+        "title": "1. Information We Collect",
+        "text": "We may collect information such as names, email addresses, lesson preferences, student levels, and communication history when you use our services or submit enquiries."
+      },
+      {
+        "title": "2. How We Use Information",
+        "text": "Your information is used to provide tutoring services, manage accounts, respond to enquiries, improve learning support, and communicate important updates."
+      },
+      {
+        "title": "3. Student Data Protection",
+        "text": "We take reasonable steps to protect student information and restrict access to authorised tutors, staff, and administrators only."
+      },
+      {
+        "title": "4. Payments and Third-Party Services",
+        "text": "Some services may involve trusted third-party providers such as payment processors, email systems, scheduling tools, or analytics platforms."
+      },
+      {
+        "title": "5. Cookies and Analytics",
+        "text": "Our website may use cookies or analytics tools to improve user experience, understand website usage, and maintain platform functionality."
+      },
+      {
+        "title": "6. Sharing of Information",
+        "text": "We do not sell personal information. Information may only be shared where necessary for educational support, legal compliance, or operational purposes."
+      },
+      {
+        "title": "7. Data Retention",
+        "text": "We may retain account and learning information for operational, educational, and administrative purposes unless deletion is requested."
+      },
+      {
+        "title": "8. Contact",
+        "text": "For privacy-related questions, please contact us at enquiries@lunastudies.com."
+      }
+    ]
+  },
+  "terms": {
+    "seoTitle": "Terms of Service | LUNA Studies",
+    "back": "Back to Login",
+    "title": "Terms of Service",
+    "updated": "Last updated: May 2026",
+    "sections": [
+      {
+        "title": "1. Use of Our Services",
+        "text": "LUNA Studies provides tutoring, academic support, consultation, and related educational services. By using our website or services, you agree to use them responsibly and lawfully."
+      },
+      {
+        "title": "2. Student Accounts",
+        "text": "Students, tutors, and administrators may access protected areas using approved accounts or invite codes. You are responsible for keeping your login details secure."
+      },
+      {
+        "title": "3. Lessons and Scheduling",
+        "text": "Lesson schedules, formats, and tutor arrangements may vary depending on availability, student needs, and agreed learning plans."
+      },
+      {
+        "title": "4. Payments and Cancellations",
+        "text": "Fees, payment timing, cancellation rules, and rescheduling policies will be communicated separately before or during enrolment."
+      },
+      {
+        "title": "5. Learning Materials",
+        "text": "Worksheets, question banks, lesson materials, and feedback documents are provided for personal learning use only and may not be copied, shared, sold, or redistributed without permission."
+      },
+      {
+        "title": "6. Limitation of Guarantee",
+        "text": "We aim to support student improvement through structured tutoring, but we cannot guarantee specific exam scores, school admission results, or academic outcomes."
+      },
+      {
+        "title": "7. Changes to Terms",
+        "text": "We may update these terms from time to time. Continued use of our services means you accept the updated terms."
+      },
+      {
+        "title": "8. Contact",
+        "text": "For questions about these terms, please contact us at enquiries@lunastudies.com."
+      }
+    ]
   }
 }

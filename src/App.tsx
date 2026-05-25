@@ -50,9 +50,9 @@ const App = () => {
         <Route path="/:lang/auth" element={<Auth />} />
         <Route path="/:lang/login" element={<Login />} />
 
-<Route path="/en/terms" element={<Terms />} />
-<Route path="/jp/terms" element={<Terms />} />
-<Route path="/zh/terms" element={<Terms />} />
+        <Route path="/en/terms" element={<Terms />} />
+        <Route path="/jp/terms" element={<Terms />} />
+        <Route path="/zh/terms" element={<Terms />} />
         <Route path="/:lang/subjects" element={<Layout><Subjects /></Layout>} />
         <Route path="/:lang/whyluna" element={<Layout><WhyLuna /></Layout>} />
         <Route path="/:lang/tutors" element={<Layout><Tutors /></Layout>} />
@@ -62,14 +62,28 @@ const App = () => {
 
         {/* Old public links redirect */}
         <Route path="/login" element={<Navigate to="/en/login" replace />} />
+        {/* Wrong language-prefixed protected links redirect */}
+        <Route path="/:lang/studentoverview" element={<Navigate to="/studentoverview" replace />} />
+        <Route path="/:lang/dashboard" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/:lang/admin/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/:lang/tutor/lessons" element={<Navigate to="/tutor/lessons" replace />} />
+        <Route path="/:lang/practice" element={<Navigate to="/practice" replace />} />
+        <Route path="/:lang/mistakes" element={<Navigate to="/mistakes" replace />} />
+        <Route path="/:lang/admin/assign" element={<Navigate to="/admin/assign" replace />} />
+        <Route path="/:lang/admin/questions" element={<Navigate to="/admin/questions" replace />} />
+        <Route path="/:lang/admin/lessons" element={<Navigate to="/admin/lessons" replace />} />
+        <Route path="/:lang/admin/enquiries" element={<Navigate to="/admin/enquiries" replace />} />
+        <Route path="/:lang/admin/progress" element={<Navigate to="/admin/progress" replace />} />
+        <Route path="/:lang/generate" element={<Navigate to="/generate" replace />} />
+
         <Route path="/subjects" element={<Navigate to="/en/subjects" replace />} />
         <Route path="/whyluna" element={<Navigate to="/en/whyluna" replace />} />
         <Route path="/tutors" element={<Navigate to="/en/tutors" replace />} />
         <Route path="/enquiry" element={<Navigate to="/en/enquiry" replace />} />
 
-<Route path="/en/privacy" element={<Privacy />} />
-<Route path="/jp/privacy" element={<Privacy />} />
-<Route path="/zh/privacy" element={<Privacy />} />
+        <Route path="/en/privacy" element={<Privacy />} />
+        <Route path="/jp/privacy" element={<Privacy />} />
+        <Route path="/zh/privacy" element={<Privacy />} />
         {/* Admin */}
         <Route
           path="/admin/dashboard"

@@ -4,20 +4,28 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Privacy = () => {
   const location = useLocation();
 
+  const { t } = useTranslation();
+
+  const sections = t("privacy.sections", { returnObjects: true }) as {
+    title: string;
+    text: string;
+  }[];
+
   const currentLang = location.pathname.startsWith("/zh")
     ? "zh"
     : location.pathname.startsWith("/jp")
-    ? "jp"
-    : "en";
+      ? "jp"
+      : "en";
 
   return (
     <>
       <Helmet>
-        <title>Privacy Policy | LUNA Studies</title>
+        <title>{t("privacy.seoTitle")}</title>
       </Helmet>
 
       <div className="min-h-screen bg-[#fbfaff]">
@@ -32,7 +40,7 @@ const Privacy = () => {
               className="mb-8 inline-flex items-center gap-2 rounded-full bg-white/90 px-5 py-3 text-sm font-bold text-primary shadow-[0_12px_35px_rgba(66,56,120,0.08)] transition hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(66,56,120,0.12)]"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Login
+              {t("privacy.back")}
             </Link>
 
             <motion.p
@@ -49,48 +57,15 @@ const Privacy = () => {
               transition={{ delay: 0.1 }}
               className="mt-5 font-poppins text-5xl font-black leading-tight text-primary sm:text-6xl"
             >
-              Privacy Policy
+              {t("privacy.title")}
             </motion.h1>
 
             <p className="mt-5 text-primary/60">
-              Last updated: May 2026
+              {t("privacy.updated")}
             </p>
 
             <div className="mt-12 space-y-6 rounded-[3rem] bg-white/90 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:p-10">
-              {[
-                {
-                  title: "1. Information We Collect",
-                  text: "We may collect information such as names, email addresses, lesson preferences, student levels, and communication history when you use our services or submit enquiries.",
-                },
-                {
-                  title: "2. How We Use Information",
-                  text: "Your information is used to provide tutoring services, manage accounts, respond to enquiries, improve learning support, and communicate important updates.",
-                },
-                {
-                  title: "3. Student Data Protection",
-                  text: "We take reasonable steps to protect student information and restrict access to authorised tutors, staff, and administrators only.",
-                },
-                {
-                  title: "4. Payments and Third-Party Services",
-                  text: "Some services may involve trusted third-party providers such as payment processors, email systems, scheduling tools, or analytics platforms.",
-                },
-                {
-                  title: "5. Cookies and Analytics",
-                  text: "Our website may use cookies or analytics tools to improve user experience, understand website usage, and maintain platform functionality.",
-                },
-                {
-                  title: "6. Sharing of Information",
-                  text: "We do not sell personal information. Information may only be shared where necessary for educational support, legal compliance, or operational purposes.",
-                },
-                {
-                  title: "7. Data Retention",
-                  text: "We may retain account and learning information for operational, educational, and administrative purposes unless deletion is requested.",
-                },
-                {
-                  title: "8. Contact",
-                  text: "For privacy-related questions, please contact us at enquiries@lunastudies.com.",
-                },
-              ].map((section, i) => (
+              {sections.map((section, i) => (
                 <motion.div
                   key={section.title}
                   initial={{ opacity: 0, y: 24 }}
