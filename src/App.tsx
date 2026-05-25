@@ -36,7 +36,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
-import CustomCursor from "./components/CustomCursor";
 
 const App = () => {
   return (
@@ -226,7 +225,6 @@ const App = () => {
 
       <LunaMascotChat />
       <HapikoGuide />
-      <CustomCursor />
     </BrowserRouter>
   );
 };
