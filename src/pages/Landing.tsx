@@ -11,7 +11,6 @@ import {
 } from "recharts";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import {
-  CheckCircle,
   ArrowRight,
   BookOpen,
   Target,
@@ -19,17 +18,12 @@ import {
   Globe2,
   Star,
   Users,
-  GraduationCap,
-  Heart,
   Sparkles,
-  Plane,
-  X,
   MessageCircle
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
 import { useState, useRef } from "react";
-import TutorProfileModal from "@/components/TutorProfileModal";
 import { Helmet } from "react-helmet-async";
 
 
@@ -57,8 +51,8 @@ const Landing = () => {
 
   const currentLang = location.pathname.startsWith("/zh")
     ? "zh"
-    : location.pathname.startsWith("/ja")
-      ? "ja"
+    : location.pathname.startsWith("/jp")
+      ? "jp"
       : "en";
 
   const withLang = (path: string) =>
@@ -116,7 +110,6 @@ const Landing = () => {
   const routeY = useTransform(pathwayProgress, [0, 0.3, 0.6, 1], [20, -30, 30, -10]);
 
   const { t } = useTranslation();
-  const [selectedTutor, setSelectedTutor] = useState<any | null>(null);
 
   const { scrollYProgress } = useScroll();
 
@@ -127,15 +120,6 @@ const Landing = () => {
     { date: "Jun 01", words: 29 },
     { date: "Jun 08", words: 42 },
   ];
-  const chokinaY = useTransform(scrollYProgress, [0, 0.08, 0.16], [120, 0, 0]);
-  const hapikoY = useTransform(scrollYProgress, [0, 0.08, 0.16], [120, 0, 0]);
-  const dogOpacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
-
-  const cardY = useTransform(scrollYProgress, [0.05, 0.16], [90, 0]);
-  const cardOpacity = useTransform(scrollYProgress, [0.05, 0.12], [0, 1]);
-
-  const floatY = useTransform(scrollYProgress, [0, 0.18], [40, -10]);
-
   const tutors = [
     {
       name: "Mimi",
@@ -173,7 +157,7 @@ const Landing = () => {
       <div className="min-h-screen bg-background">
 
         {/* HERO */}
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pt-24 pb-16 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pt-20 pb-14 sm:px-6 lg:px-8 lg:pt-24 lg:pb-16">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,#fff1bd_0%,transparent_22%),radial-gradient(circle_at_82%_78%,#fff5e4_0%,transparent_28%),linear-gradient(180deg,#f8f6ff_0%,#fffdf8_100%)]" />
 
           <div className="relative z-10 mx-auto max-w-[1440px]">
@@ -184,7 +168,7 @@ const Landing = () => {
                   {t("landing.hero.label")}
                 </p>
 
-                <h1 className="font-poppins text-[3rem] font-black leading-[1.02] tracking-[-0.045em] text-primary sm:text-[4rem] lg:text-[5rem]">
+                <h1 className="font-poppins text-[2.65rem] font-black leading-[1.02] tracking-[-0.045em] text-primary sm:text-[4rem] lg:text-[5rem]">
                   {t("landing.hero.titleLine1")}<br />
                   {t("landing.hero.titleLine2")} <span className="text-[#8d73ff]">{t("landing.hero.titleHighlight")}</span><br />
                   {t("landing.hero.titleLine3")}<span className="text-[#ffc928]">.</span>
@@ -195,7 +179,7 @@ const Landing = () => {
                 </p>
 
                 <div className="mt-9 flex flex-wrap items-center gap-4">
-                <Link to={withLang("/whyLuna")}>
+                  <Link to={withLang("/whyluna")}>
                     <Button className="h-14 rounded-full bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.20)]">
                       {t("landing.hero.primaryButton")}
                       <ArrowRight className="ml-2 h-5 w-5" />
@@ -265,10 +249,9 @@ const Landing = () => {
                     transition={{ duration: 0.25 }}
 
 
-                    className="rounded-[2rem] border border-white bg-white/90 p-6 shadow-[0_25px_80px_rgba(66,56,120,0.14)] backdrop-blur-xl sm:col-span-2 lg:col-span-3"
-                  >
+                    className="rounded-[2rem] border border-white bg-white/90 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.14)] backdrop-blur-xl sm:col-span-2 sm:p-6 lg:col-span-3"  >
                     <p className="text-sm font-black text-primary">{t("landing.dashboard.writingFeedback.title")}</p>
-                    <p className="mt-5 text-5xl font-black text-[#52bd7f]">
+                    <p className="mt-4 text-4xl font-black text-[#52bd7f] sm:mt-5 sm:text-5xl">
                       8.5<span className="text-xl text-primary">/10</span>
                     </p>
                     <p className="mt-2 text-sm text-primary/70">{t("landing.dashboard.writingFeedback.comment")}</p>
@@ -584,7 +567,7 @@ lg:pb-0 lg:pr-10
             {/* RIGHT PROGRAMS */}
             <div className="
 mt-7
-grid grid-cols-2 gap-y-8
+grid grid-cols-2 gap-x-3 gap-y-6
 sm:gap-x-6
 lg:mt-0
 lg:grid-cols-5
@@ -634,13 +617,15 @@ lg:gap-x-2
                   scale: 1.015,
                   rotate: [-5, 4.5, -4, 5, -3.5][i],
                 }} className="
-relative flex flex-col items-center justify-start
-px-3 py-4
-text-center
-sm:px-5
-lg:min-h-[210px]
-lg:border-r lg:border-primary/10 lg:last:border-r-0
-"      >
+                relative flex flex-col items-center justify-start
+                rounded-[1.5rem] bg-white/45
+                px-3 py-4
+                text-center
+                sm:px-5
+                lg:min-h-[210px]
+                lg:rounded-none lg:bg-transparent
+                lg:border-r lg:border-primary/10 lg:last:border-r-0
+                "    >
                 <motion.div
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 3 + i * 0.25, repeat: Infinity, ease: "easeInOut" }}
@@ -687,7 +672,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
               </p>
             </div>
 
-            <div className="relative mx-auto min-h-[620px] max-w-[1100px] rounded-[3rem] bg-white/55 p-6 backdrop-blur-xl sm:p-8 lg:p-10">
+            <div className="relative mx-auto max-w-[1100px] rounded-[2.4rem] bg-white/55 p-4 backdrop-blur-xl sm:p-6 lg:min-h-[620px] lg:rounded-[3rem] lg:p-10">
               {/* dotted route */}
               <svg
                 className="pointer-events-none absolute inset-0 h-full w-full"
@@ -728,28 +713,28 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                 className="absolute left-0 top-[48%] z-30 hidden w-20 drop-shadow-xl lg:block"
               />
 
-              <div className="relative z-20 grid gap-6 md:grid-cols-2">
+              <div className="relative z-20 grid gap-4 sm:gap-5 md:grid-cols-2 lg:gap-6">
                 {[
                   {
                     flag: "🇯🇵",
                     country: t("landing.pathways.items.japan.country"),
                     desc: t("landing.pathways.items.japan.desc"),
                     tags: ["MAP", "WIDA", t("landing.pathways.tags.interview")],
-                    rotate: "-rotate-2",
+                    rotate: "lg:-rotate-2",
                   },
                   {
                     flag: "🇸🇬",
                     country: t("landing.pathways.items.singapore.country"),
                     desc: t("landing.pathways.items.singapore.desc"),
                     tags: ["AEIS", t("landing.pathways.tags.english"), t("landing.pathways.tags.transition")],
-                    rotate: "rotate-2",
+                    rotate: "lg:rotate-2",
                   },
                   {
                     flag: "🇦🇺",
                     country: t("landing.pathways.items.australia.country"),
                     desc: t("landing.pathways.items.australia.desc"),
                     tags: ["IELTS", t("landing.pathways.tags.writing"), t("landing.pathways.tags.speaking")],
-                    rotate: "rotate-1",
+                    rotate: "lg:rotate-1",
                   },
                   {
                     flag: "🌏",
@@ -760,7 +745,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                       t("landing.pathways.tags.criticalThinking"),
                       t("landing.pathways.tags.presentation"),
                     ],
-                    rotate: "-rotate-1",
+                    rotate: "lg:-rotate-1",
                   },
                 ].map((path, i) => (
                   <motion.div
@@ -774,7 +759,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                       scale: 1.025,
                       rotate: i % 2 === 0 ? -3 : 3,
                     }}
-                    className={`group relative rounded-[2.2rem] bg-white/95 p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl ${path.rotate}`}
+                    className={`group relative rounded-[2rem] bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl lg:rounded-[2.2rem] lg:p-6 ${path.rotate}`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[#f6f2ff] text-4xl">
@@ -839,7 +824,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
               <p className="mt-7 max-w-xl text-lg leading-8 text-primary/65">
                 {t("landing.whyPreview.description")} </p>
 
-                <Link to={withLang("/whyluna")}>
+              <Link to={withLang("/whyluna")}>
                 <Button className="group mt-9 h-14 rounded-full bg-primary px-8 text-base">
                   {t("landing.whyPreview.button")}
                   <ArrowRight className="ml-2 h-5 w-5 transition group-hover:translate-x-1" />
@@ -848,24 +833,24 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
             </div>
 
             {/* RIGHT INTERACTIVE CARDS */}
-            <div className="relative min-h-[520px]">
+            <div className="relative mt-10 grid gap-4 sm:grid-cols-2 lg:mt-0 lg:min-h-[520px] lg:block">
               {[
                 {
                   icon: Target,
                   title: t("landing.whyPreview.cards.assessment.title"),
                   desc: t("landing.whyPreview.cards.assessment.desc"),
-                  top: "top-[0%]",
-                  left: "left-[10%]",
-                  rotate: "-rotate-3",
+                  top: "lg:top-[0%]",
+                  left: "lg:left-[10%]",
+                  rotate: "lg:-rotate-3",
                   color: "bg-[#ffe66d]",
                 },
                 {
                   icon: Users,
                   title: t("landing.whyPreview.cards.matching.title"),
                   desc: t("landing.whyPreview.cards.matching.desc"),
-                  top: "top-[22%]",
-                  left: "left-[36%]",
-                  rotate: "rotate-3",
+                  top: "lg:top-[22%]",
+                  left: "lg:left-[36%]",
+                  rotate: "lg:rotate-3",
                   color: "bg-[#8d73ff]",
                   light: true,
                 },
@@ -873,18 +858,18 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                   icon: BarChart3,
                   title: t("landing.whyPreview.cards.progress.title"),
                   desc: t("landing.whyPreview.cards.progress.desc"),
-                  top: "top-[48%]",
-                  left: "left-[8%]",
-                  rotate: "rotate-2",
+                  top: "lg:top-[48%]",
+                  left: "lg:left-[8%]",
+                  rotate: "lg:rotate-2",
                   color: "bg-[#b8f36c]",
                 },
                 {
                   icon: MessageCircle,
                   title: t("landing.whyPreview.cards.support.title"),
                   desc: t("landing.whyPreview.cards.support.desc"),
-                  top: "top-[66%]",
-                  left: "left-[44%]",
-                  rotate: "-rotate-2",
+                  top: "lg:top-[66%]",
+                  left: "lg:left-[44%]",
+                  rotate: "lg:-rotate-2",
                   color: "bg-[#ff8bd2]",
                 },
               ].map((item, i) => (
@@ -899,7 +884,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                     scale: 1.03,
                     rotate: i % 2 === 0 ? -4 : 4,
                   }}
-                  className={`absolute ${item.top} ${item.left} ${item.rotate} w-[320px] rounded-[2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.10)] backdrop-blur-xl`}
+                  className={`relative rounded-[2rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:p-6 lg:absolute lg:w-[320px] ${item.top} ${item.left} ${item.rotate}`}
                 >
                   <div
                     className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl ${item.color}`}
@@ -926,12 +911,12 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
         {/* PROCESS */}
         <section
           ref={processRef}
-          className="relative overflow-hidden bg-[#fffdf8] px-4 py-24 sm:px-6 lg:px-8"
+          className="relative overflow-hidden bg-[#fffdf8] px-4 py-20 sm:px-6 lg:px-8 lg:py-24"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_80%_60%,#fff1bd_0%,transparent_25%)]" />
 
           <div className="relative z-10 mx-auto max-w-[1280px]">
-            <div className="mb-16 text-center">
+            <div className="mb-10 text-center lg:mb-16">
               <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
                 {t("landing.process.label")}
               </p>
@@ -960,7 +945,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
 
               </motion.div>
 
-              <div className="grid gap-5 lg:grid-cols-5">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-5">
                 {[
                   {
                     num: "01",
@@ -1010,7 +995,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                       rotate: i % 2 === 0 ? -3 : 3,
                       scale: 1.03,
                     }}
-                    className="group relative rounded-[2rem] bg-white/90 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+                    className="group relative rounded-[2rem] bg-white/90 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.10)] backdrop-blur-xl lg:p-6"
                   >
                     <div className="mb-6 flex items-center justify-between">
                       <span className="font-poppins text-3xl font-black text-primary/15">
@@ -1145,11 +1130,11 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                       }}
                       whileHover={{ y: -8, scale: 1.015 }}
                       transition={{ duration: 0.25 }}
-                      className="absolute left-[2%] top-0 h-[300px] w-[720px] rounded-[2.6rem] bg-white/95 p-7 backdrop-blur-xl">
-                      <div className="flex h-full gap-7">
+                      className="absolute left-[2%] top-0 h-[260px] w-[620px] rounded-[2.6rem] bg-white/95 p-5 backdrop-blur-xl xl:h-[300px] xl:w-[720px] xl:p-7">
+                      <div className="flex h-full gap-5 xl:gap-7">
 
                         {/* IMAGE */}
-                        <div className="w-[220px] shrink-0 overflow-hidden rounded-[2rem] bg-[#f3efff]">
+                        <div className="w-[170px] shrink-0 overflow-hidden rounded-[2rem] bg-[#f3efff] xl:w-[220px]">
                           <img
                             src={tutor.image}
                             alt={tutor.name}
@@ -1162,11 +1147,11 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
 
                           <div className="flex items-start justify-between">
                             <div>
-                              <h3 className="font-poppins text-4xl font-black text-primary">
+                              <h3 className="font-poppins text-3xl font-black text-primary xl:text-4xl">
                                 {tutor.name}
                               </h3>
 
-                              <p className="mt-2 text-lg font-semibold text-[#8d73ff]">
+                              <p className="mt-2 text-base font-semibold text-[#8d73ff] xl:text-lg">
                                 {tutor.role}
                               </p>
                             </div>
@@ -1176,15 +1161,14 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                             </span>
                           </div>
 
-                          <p className="mt-6 max-w-[420px] text-[17px] leading-8 text-primary/65">
-                            {tutor.desc}
+                          <p className="mt-4 max-w-[360px] text-sm leading-6 text-primary/65 xl:mt-6 xl:max-w-[420px] xl:text-[17px] xl:leading-8">      {tutor.desc}
                           </p>
 
-                          <div className="mt-6 flex flex-wrap gap-3">
+                          <div className="mt-4 flex flex-nowrap gap-2 xl:mt-6 xl:gap-3">
                             {tutor.tags.map((tag) => (
                               <span
                                 key={tag}
-                                className="rounded-full bg-[#f6f2ff] px-4 py-2 text-sm font-bold text-primary/70"
+                                className="rounded-full bg-[#f6f2ff] px-3 py-1.5 text-xs font-bold text-primary/70 xl:px-4 xl:py-2 xl:text-sm"
                               >
                                 #{tag}
                               </span>
@@ -1202,40 +1186,92 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
         </section>
 
         {/* MOBILE / TABLET TUTORS */}
-        <section className=" px-4 py-16 lg:hidden">
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
-            {t("landing.tutorsSection.label")}
-          </p>
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-20 sm:px-6 lg:hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,#f0eaff_0%,transparent_30%),radial-gradient(circle_at_85%_78%,#fff1bd_0%,transparent_28%)]" />
 
-          <h2 className="mt-4 font-poppins text-4xl font-black leading-tight text-primary">
-            {t("landing.tutorsSection.mobileTitle")}
-          </h2>
+          <div className="relative z-10 mx-auto max-w-3xl">
+            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
+              {t("landing.tutorsSection.label")}
+            </p>
 
-          <div className="mt-8 grid gap-5">
-            {tutors.map((tutor) => (
-              <div
-                key={tutor.name}
-                className="rounded-[2rem] border border-white bg-white/90 p-5 shadow-[0_18px_60px_rgba(66,56,120,0.12)]"
-              >
-                <img
-                  src={tutor.image}
-                  alt={tutor.name}
-                  className="h-56 w-full rounded-[1.5rem] object-cover object-top"
-                />
-                <h3 className="mt-4 font-poppins text-2xl font-black text-primary">
-                  {tutor.name}
-                </h3>
-                <p className="mt-1 text-sm text-primary/60">{tutor.role}</p>
-              </div>
-            ))}
+            <h2 className="mt-4 font-poppins text-4xl font-black leading-tight text-primary sm:text-5xl">
+              {t("landing.tutorsSection.mobileTitle")}
+            </h2>
+
+            <p className="mt-5 max-w-xl text-sm leading-7 text-primary/60 sm:text-base">
+              {t("landing.tutorsSection.description")}
+            </p>
+
+            <div className="mt-8 grid gap-5">
+              {tutors.map((tutor, i) => (
+                <motion.div
+                  key={tutor.name}
+                  initial={{ opacity: 0, y: 30, rotate: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.25 }}
+                  transition={{ duration: 0.5, delay: i * 0.08 }}
+                  whileHover={{ y: -6, scale: 1.01 }}
+                  className="rounded-[2.2rem] bg-white/95 p-4 shadow-[0_18px_55px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:p-5"
+                >
+                  <div className="grid grid-cols-[108px_minmax(0,1fr)] gap-4 sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-5">
+                    <div className="h-[145px] overflow-hidden rounded-[1.6rem] bg-[#f3efff] sm:h-[190px] sm:rounded-[2rem]">
+                      <img
+                        src={tutor.image}
+                        alt={tutor.name}
+                        className="h-full w-full object-cover object-top"
+                      />
+                    </div>
+
+                    <div className="flex min-w-0 flex-col justify-center">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <h3 className="font-poppins text-2xl font-black text-primary sm:text-3xl">
+                            {tutor.name}
+                          </h3>
+
+                          <p className="mt-1 text-xs font-semibold text-[#8d73ff] sm:text-sm">
+                            {tutor.role}
+                          </p>
+                        </div>
+
+                        <span className="shrink-0 rounded-full bg-[#fff6da] px-3 py-1 text-xs font-bold text-[#d4a100]">
+                          5.0
+                        </span>
+                      </div>
+
+                      <p className="mt-3 line-clamp-3 text-xs leading-5 text-primary/65 sm:text-sm sm:leading-6">
+                        {tutor.desc}
+                      </p>
+
+                      <div className="mt-4 flex flex-wrap gap-1.5 sm:gap-2">
+                        {tutor.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="whitespace-nowrap rounded-full bg-[#f6f2ff] px-2.5 py-1 text-[10px] font-bold text-primary/70 sm:px-3 sm:py-1.5 sm:text-xs"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <Link to={withLang("/tutors")}>
+              <Button className="mt-8 h-12 rounded-full bg-primary px-8">
+                {t("landing.tutorsSection.button")}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </section>
 
         {/* ARTISTIC ENQUIRY */}
         <section
           ref={enquiryRef}
-          className="relative overflow-hidden bg-[#fffdf8] px-4 py-28 sm:px-6 lg:px-8"
-        >
+          className="relative overflow-hidden bg-[#fffdf8] px-4 py-20 sm:px-6 lg:px-8 lg:py-28"  >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_80%_75%,#fff1bd_0%,transparent_30%)]" />
 
           <motion.div
@@ -1252,7 +1288,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                   {t("landing.enquiry.label")}
                 </p>
 
-                <h2 className="mt-5 font-poppins text-5xl font-black leading-tight text-primary sm:text-6xl">
+                <h2 className="mt-5 font-poppins text-4xl font-black leading-tight text-primary sm:text-5xl lg:text-6xl">
                   {t("landing.enquiry.titleLine1")}<br />
                   {t("landing.enquiry.titleLine2")}<br />
                   {t("landing.enquiry.titleLine3")}
@@ -1286,13 +1322,13 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                     y: -10,
                   }}
                   transition={{ duration: 0.35 }}
-                  className="group relative rounded-[3rem] bg-white/90 p-8 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl"
+                  className="group relative rounded-[2.4rem] bg-white/90 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:p-8 lg:rounded-[3rem]"
                 >
                   <div className="absolute -right-4 -top-4 rounded-full bg-[#ffc928] px-5 py-3 text-sm font-black text-primary shadow-lg">
                     {t("landing.enquiry.card.badge")}
                   </div>
 
-                  <div className="rounded-[2.3rem] bg-[#f8f6ff] p-6">
+                  <div className="rounded-[2rem] bg-[#f8f6ff] p-5 sm:rounded-[2.3rem] sm:p-6">
                     <div className="flex items-center gap-4">
                       <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[#8d73ff] text-3xl">
                         💬
