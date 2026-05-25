@@ -15,10 +15,21 @@ import {
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Subjects = () => {
   const { t } = useTranslation();
+
+  const location = useLocation();
+
+  const currentLang = location.pathname.startsWith("/zh")
+    ? "zh"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
+      : "en";
+
+  const withLang = (path: string) =>
+    `/${currentLang}${path === "/" ? "" : path}`;
 
   const subjects = [
     {
@@ -86,9 +97,9 @@ const Subjects = () => {
   return (
     <>
       <Helmet>
-  <title>{t("subjects.seo.title")}</title>
-  <meta name="description" content={t("subjects.seo.description")} />
-</Helmet>
+        <title>{t("subjects.seo.title")}</title>
+        <meta name="description" content={t("subjects.seo.description")} />
+      </Helmet>
       <div className="min-h-screen bg-background">
 
         {/* HERO */}
@@ -101,7 +112,7 @@ const Subjects = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]"
             >
-             {t("subjects.hero.label")}
+              {t("subjects.hero.label")}
             </motion.p>
 
             <motion.h1
@@ -120,8 +131,8 @@ const Subjects = () => {
               transition={{ delay: 0.2 }}
               className="mx-auto mt-7 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg"
             >
-           {t("subjects.hero.description")}
-             </motion.p>
+              {t("subjects.hero.description")}
+            </motion.p>
           </div>
         </section>
 
@@ -182,23 +193,23 @@ const Subjects = () => {
           </div>
         </section>
         {selectedSubject && (
-<div
-  className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-md"
-  onClick={() => setSelectedSubject(null)}
->            <motion.div
-  onClick={(e) => e.stopPropagation()}
-  initial={{ opacity: 0, y: 40, scale: 0.96 }}
-  animate={{ opacity: 1, y: 0, scale: 1 }}
-  exit={{ opacity: 0 }}
-  transition={{ duration: 0.35 }}
-  className="relative z-[10000] max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2.5rem] bg-white p-7 shadow-[0_40px_120px_rgba(0,0,0,0.22)] sm:p-10"
->
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-md"
+            onClick={() => setSelectedSubject(null)}
+          >            <motion.div
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, y: 40, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="relative z-[10000] max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2.5rem] bg-white p-7 shadow-[0_40px_120px_rgba(0,0,0,0.22)] sm:p-10"
+          >
               {/* close button */}
               <button
                 onClick={() => setSelectedSubject(null)}
-                  className="absolute right-6 top-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#f3efff] text-primary transition hover:scale-110 hover:bg-[#e8deff]"
+                className="absolute right-6 top-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#f3efff] text-primary transition hover:scale-110 hover:bg-[#e8deff]"
 
->
+              >
                 ✕
               </button>
 
@@ -207,7 +218,7 @@ const Subjects = () => {
                 {/* left */}
                 <div className="flex-1">
                   <div className="inline-flex rounded-full bg-[#8d73ff] px-5 py-2 text-sm font-black text-white">
-                  {t("subjects.modal.programLabel")}
+                    {t("subjects.modal.programLabel")}
                   </div>
 
                   <h2 className="mt-5 font-poppins text-4xl font-black leading-tight text-primary">
@@ -221,7 +232,7 @@ const Subjects = () => {
                   {/* suitable */}
                   <div className="mt-8 rounded-[2rem] bg-[#fbfaff] p-6">
                     <p className="text-sm font-black uppercase tracking-[0.15em] text-[#8d73ff]">
-                    {t("subjects.modal.suitableFor")}
+                      {t("subjects.modal.suitableFor")}
                     </p>
 
                     <p className="mt-3 leading-7 text-primary/70">
@@ -242,16 +253,16 @@ const Subjects = () => {
                 >
                   <div className="rounded-[1.8rem] bg-white p-6 shadow-[0_12px_40px_rgba(66,56,120,0.08)]">
                     <p className="text-sm font-black uppercase tracking-[0.15em] text-[#8d73ff]">
-                    {t("subjects.modal.includedTitle")}
+                      {t("subjects.modal.includedTitle")}
                     </p>
 
                     <div className="mt-6 space-y-4">
                       {[
-  t("subjects.modal.included.items.lessons"),
-  t("subjects.modal.included.items.homework"),
-  t("subjects.modal.included.items.tracking"),
-  t("subjects.modal.included.items.support"),
-].map((item) => (
+                        t("subjects.modal.included.items.lessons"),
+                        t("subjects.modal.included.items.homework"),
+                        t("subjects.modal.included.items.tracking"),
+                        t("subjects.modal.included.items.support"),
+                      ].map((item) => (
                         <div
                           key={item}
                           className="flex items-center gap-3 rounded-2xl bg-[#fbfaff] p-4"
@@ -268,22 +279,28 @@ const Subjects = () => {
               </div>
 
               {/* enquiry button only */}
-<div className="mt-10 rounded-[2rem] bg-[#fffdf8] p-6 sm:p-8">
-  <h3 className="font-poppins text-2xl font-black text-primary">
-    Interested in this program?
-  </h3>
+              <div className="mt-10 rounded-[2rem] bg-[#fffdf8] p-6 sm:p-8">
+                <h3 className="font-poppins text-2xl font-black text-primary">
+                  {t("subjects.modal.enquiryTitle")}
+                </h3>
 
-  <p className="mt-3 text-sm leading-7 text-primary/60">
-    Send us an enquiry and we’ll recommend the right tutor and learning plan.
-  </p>
+                <p className="mt-3 text-sm leading-7 text-primary/60">
+                  {t("subjects.modal.enquiryDescription")}
+                </p>
 
-<Link to={`/enquiry?subject=${encodeURIComponent(selectedSubject.title)}#enquiry-form`}>
-  <Button className="mt-6 h-13 rounded-2xl bg-primary px-7 text-sm font-bold">
-      Enquire about {selectedSubject.title}
-      <ArrowRight className="ml-2 h-4 w-4" />
-    </Button>
-  </Link>
-</div>
+                <Link
+                  to={`${withLang("/enquiry")}?subject=${encodeURIComponent(
+                    selectedSubject.title
+                  )}#enquiry-form`}
+                >
+                  <Button className="mt-6 h-13 rounded-2xl bg-primary px-7 text-sm font-bold">
+                    {t("subjects.modal.enquiryButton", {
+                      subject: selectedSubject.title,
+                    })}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             </motion.div>
           </div>
         )}

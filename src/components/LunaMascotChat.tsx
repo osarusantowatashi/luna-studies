@@ -52,6 +52,20 @@ const LunaMascotChat = () => {
   const [leadSubmitting, setLeadSubmitting] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 1 && prev[0].role === "assistant") {
+        return [
+          {
+            role: "assistant",
+            text: t("chat.initialMessage"),
+          },
+        ];
+      }
+
+      return prev;
+    });
+  }, [i18n.language, t]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
@@ -441,9 +455,9 @@ const LunaMascotChat = () => {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className="absolute bottom-[190px] right-[128px] z-30 isolate"
+            className="absolute bottom-[98px] right-[72px] z-30 isolate sm:bottom-[150px] sm:right-[105px]"
           >
-            <div className="relative w-[280px] rounded-[36px] border border-white/60 bg-white/95 px-6 py-5 shadow-[0_20px_55px_rgba(8,42,85,0.12)] backdrop-blur-md">
+            <div className="relative w-[185px] rounded-[26px] border border-white/60 bg-white/95 px-4 py-3 shadow-[0_20px_55px_rgba(8,42,85,0.12)] backdrop-blur-md sm:w-[280px] sm:rounded-[36px] sm:px-6 sm:py-5">
 
               {/* sparkle */}
               <div className="absolute left-5 top-4 text-[#F6C65B] opacity-90 text-[14px]">
@@ -455,24 +469,21 @@ const LunaMascotChat = () => {
               </div>
 
               {/* bubble tail */}
-<svg
-  className="absolute -bottom-[18px] right-[58px] h-[28px] w-[46px] drop-shadow-[0_10px_14px_rgba(8,42,85,0.06)]"
-  viewBox="0 0 46 28"
-  fill="none"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <path
-    d="M8 0C14 11 22 20 36 24C25 29 10 25 0 8C-2 4 2 0 8 0Z"
-    fill="rgba(255,255,255,0.95)"
-  />
-</svg>
-              
-               <div className="pl-6">
-                <p className="text-[18px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#082A55]">
-                  <span className="text-[#F6C65B]">
-                    Chokina
-                  </span>{" "}
-                  is here for you
+              <svg
+                className="absolute -bottom-[18px] right-[58px] h-[28px] w-[46px] drop-shadow-[0_10px_14px_rgba(8,42,85,0.06)]"
+                viewBox="0 0 46 28"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 0C14 11 22 20 36 24C25 29 10 25 0 8C-2 4 2 0 8 0Z"
+                  fill="rgba(255,255,255,0.95)"
+                />
+              </svg>
+
+              <div className="pl-6">
+                <p className="text-[14px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#082A55] sm:text-[18px]">
+                  {t("chat.bubbleText")}
                 </p>
               </div>
             </div>
@@ -482,12 +493,11 @@ const LunaMascotChat = () => {
         <motion.button
           type="button"
           onClick={() => setOpen(true)}
-          className="relative ml-auto flex h-[160px] w-[160px] items-center justify-center bg-transparent sm:h-[190px] sm:w-[190px] lg:h-[205px] lg:w-[205px]"
-
+          className="relative ml-auto flex h-[96px] w-[96px] items-center justify-center bg-transparent sm:h-[140px] sm:w-[140px] lg:h-[180px] lg:w-[180px]"
           whileHover={{ scale: 1.06, rotate: -2 }}
         >
           <motion.div
-            className="relative z-10 h-[225px] w-[225px] max-w-none opacity-100 sm:h-[260px] sm:w-[260px] lg:h-[285px] lg:w-[285px]"
+            className="relative z-10 h-[96px] w-[96px] max-w-none opacity-100 sm:h-[140px] sm:w-[140px] lg:h-[180px] lg:w-[180px]"
             animate={{
               y: [0, -9, 0],
               rotate: [-2.8, 2.8, -2.8],
@@ -501,7 +511,7 @@ const LunaMascotChat = () => {
             <img
               src={isBlinking ? "/mascot/chokina_blink.png" : "/mascot/chokina.png"}
               alt="Chokina AI Assistant"
-              className="absolute inset-0 h-full w-full scale-[1.08] object-contain"
+              className="h-full w-full object-contain"
             />
           </motion.div>
 

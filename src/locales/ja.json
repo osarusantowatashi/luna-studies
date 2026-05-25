@@ -12,7 +12,7 @@
   "landing": {
     "seo": {
       "title": "LUNA Studies | 世界へつながる国際教育",
-      "description": "LUNA Studies は、日本・シンガポール・オンラインの生徒向けに、MAP、WIDA、AEIS、TOEFL、英語教育、バイリンガル教育を提供しています。"
+      "description": "LUNA Studies (Luna Education) は、日本・シンガポール・オンラインの生徒向けに、MAP、WIDA、AEIS、TOEFL、英語教育、バイリンガル教育を提供しています。"
     },
     "hero": {
       "label": "生徒の可能性を広げる",
@@ -61,7 +61,7 @@
       "tutorFeedback": {
         "title": "講師フィードバック",
         "imageAlt": "講師",
-        "name": "Christine先生",
+        "name": "Francis先生",
         "role": "専門講師",
         "comment": "論理構成が非常に分かりやすく、表現力も素晴らしいです。"
       },
@@ -249,7 +249,7 @@
   "whyLuna": {
     "seo": {
       "title": "LUNA Studies が選ばれる理由 | 一人ひとりに合わせた国際教育",
-      "description": "LUNA Studies は、個別学習プラン、講師マッチング、学習進捗管理、インターナショナルスクール対策を通じて、生徒の成長をサポートします。"
+      "description": "LUNA Studies (Luna Education) は、個別学習プラン、講師マッチング、学習進捗管理、インターナショナルスクール対策を通じて、生徒の成長をサポートします。"
     },
     "hero": {
       "label": "私たちのアプローチ",
@@ -432,7 +432,7 @@
   "subjects": {
     "seo": {
       "title": "MAP・WIDA・AEIS・国際教育プログラム | LUNA Studies",
-      "description": "LUNA Studies の MAP対策、WIDAサポート、AEIS英語、TOEFL、アカデミックライティング、面接対策、バイリンガル教育プログラムをご覧ください。"
+      "description": "LUNA Studies (Luna Education) の MAP対策、WIDAサポート、AEIS英語、TOEFL、アカデミックライティング、面接対策、バイリンガル教育プログラムをご覧ください。"
     },
     "hero": {
       "label": "LUNA プログラム",
@@ -455,8 +455,9 @@
           "support": "学習質問サポート"
         }
       },
-      "enquiryTitle": "このプログラムについて相談する",
-      "enquiryDescription": "生徒の目標に合わせて、最適な講師と学習プランをご提案します。"
+      "enquiryTitle": "このプログラムに興味がありますか？",
+      "enquiryDescription": "お問い合わせ後、生徒の目標に合わせて最適な講師と学習プランをご提案します。",
+      "enquiryButton": "{{subject}} について相談する"
     },
     "items": {
       "assessments": {
@@ -512,7 +513,7 @@
   "tutorsPage": {
     "seo": {
       "title": "日本・シンガポールの国際講師 | LUNA Studies",
-      "description": "MAP、WIDA、TOEFL、英語、バイリンガル教育、インターナショナルスクールサポートを専門とする LUNA Studies の講師陣をご紹介します。"
+      "description": "MAP、WIDA、TOEFL、英語、バイリンガル教育、インターナショナルスクールサポートを専門とする LUNA Studies (Luna Education) の講師陣をご紹介します。"
     },
     "buttons": {
       "viewProfile": "プロフィールを見る",
@@ -560,7 +561,7 @@
       {
         "name": "Grace",
         "image": "/tutors/grace_new.jpg",
-        "role": "アカデミック英語・IB講師",
+        "role": "アカデミック英語・ヘッドチューター",
         "subjects": [
           "IB English",
           "TOEFL",
@@ -645,7 +646,7 @@
   "enquire": {
     "seo": {
       "title": "相談を予約する | LUNA Studies",
-      "description": "LUNA Studies では、日本・シンガポール・オンラインの生徒向けに、MAP、WIDA、AEIS、TOEFL、個別国際教育サポートを提供しています。"
+      "description": "LUNA Studies (Luna Education) では、日本・シンガポール・オンラインの生徒向けに、MAP、WIDA、AEIS、TOEFL、個別国際教育サポートを提供しています。"
     },
     "hero": {
       "label": "LUNA 学習相談",
@@ -737,121 +738,122 @@
     }
   },
   "footer": {
-  "description": "シンガポール、日本、そしてオンラインの生徒に向けた個別国際教育サポート。",
-  "quickLinks": "クイックリンク",
-  "programmes": "プログラム",
-  "contact": "お問い合わせ",
-  "copyright": "© 2026 Luna Education. All rights reserved.",
-  "locations": "シンガポール · 東京 · 中国 · オンライン"
-},
-"chat": {
-  "initialMessage": "こんにちは、Chokinaです。今日はどのようなことでお困りですか？",
-  "header": {
-    "title": "Chokina AI コンサルタント",
-    "subtitle": "保護者・生徒向けコース案内"
+    "description": "シンガポール、日本、そしてオンラインの生徒に向けた個別国際教育サポート。",
+    "quickLinks": "クイックリンク",
+    "programmes": "プログラム",
+    "contact": "お問い合わせ",
+    "copyright": "© 2026 Luna Education. All rights reserved.",
+    "locations": "シンガポール · 東京 · 中国 · オンライン"
   },
-  "loading": "Chokina が個別案内を準備しています",
-  "quick": {
-    "english": "英語力向上",
-    "map": "MAP対策",
-    "cat4": "CAT4対策",
-    "admissions": "学校入学サポート",
-    "toefl": "IELTS / TOEFL"
+  "chat": {
+    "initialMessage": "こんにちは、Chokinaです。今日はどのようなことでお困りですか？",
+    "header": {
+      "title": "Chokina AI コンサルタント",
+      "subtitle": "保護者・生徒向けコース案内"
+    },
+    "loading": "Chokina が個別案内を準備しています",
+    "quick": {
+      "english": "英語力向上",
+      "map": "MAP対策",
+      "cat4": "CAT4対策",
+      "admissions": "学校入学サポート",
+      "toefl": "IELTS / TOEFL"
+    },
+    "input": {
+      "placeholder": "MAP、TOEFL、CAT4について Chokina に質問する...",
+      "loading": "Chokina が返信中..."
+    },
+    "buttons": {
+      "submitEnquiry": "お問い合わせを送信",
+      "whatsapp": "WhatsAppで相談"
+    },
+    "lead": {
+      "title": "お問い合わせを送信",
+      "name": "保護者 / 生徒氏名",
+      "contact": "メールまたは WhatsApp",
+      "grade": "学年 / 年級レベル",
+      "goal": "学習目標 / 試験 / 科目",
+      "submit": "送信",
+      "submitting": "送信中...",
+      "cancel": "キャンセル",
+      "alert": "お名前と連絡先を入力してください。",
+      "noGoal": "Chokina AI コンサルタントから送信されました。学習目標は未入力です。",
+      "success": "ありがとうございます。お問い合わせを送信しました。担当者よりご連絡いたします。",
+      "error": "申し訳ありません。お問い合わせを送信できませんでした。WhatsAppでご連絡いただくか、後ほど再度お試しください。"
+    },
+    "errors": {
+      "noReply": "申し訳ありません。Chokina は返信を生成できませんでした。",
+      "general": "申し訳ありません。Chokina は少し休憩中です。もう一度お試しください。"
+    },
+    "bubbleText": "Chokina がサポートします"
   },
-  "input": {
-    "placeholder": "MAP、TOEFL、CAT4について Chokina に質問する...",
-    "loading": "Chokina が返信中..."
+  "login": {
+    "hero": {
+      "title": "学習を続けましょう",
+      "description": "ダッシュボードにログインするか、アクセスコードで新しいアカウントを作成してください。"
+    },
+    "signin": {
+      "label": "既存ユーザー",
+      "title": "ログイン",
+      "description": "レッスン、進捗、課題にアクセスできます。"
+    },
+    "signup": {
+      "label": "新規ユーザー",
+      "title": "アカウント作成",
+      "description": "アクセスコードにより、アカウントタイプが自動的に設定されます。"
+    },
+    "fields": {
+      "name": "名前",
+      "email": "メール",
+      "password": "パスワード",
+      "accessCode": "アクセスコード"
+    },
+    "placeholders": {
+      "name": "お名前",
+      "email": "you@example.com",
+      "password": "パスワードを入力",
+      "createPassword": "パスワードを作成",
+      "accessCode": "アクセスコードを入力"
+    },
+    "buttons": {
+      "signin": "ログイン",
+      "create": "アカウント作成",
+      "forgotPassword": "パスワードをお忘れですか？"
+    },
+    "alerts": {
+      "emailVerified": "メール認証が完了しました。ログインできます。",
+      "verifyEmail": "ログイン前にメール認証を完了してください。",
+      "disabled": "このアカウントは無効化されています。管理者にお問い合わせください。",
+      "fillAll": "必須項目をすべて入力してください。",
+      "invalidCode": "アクセスコードが無効、期限切れ、または使用済みです。",
+      "expiredCode": "このアクセスコードは期限切れです。",
+      "invalidRole": "アクセスコードの権限が無効です。",
+      "checkEmail": "認証メールをご確認ください。"
+    }
   },
-  "buttons": {
-    "submitEnquiry": "お問い合わせを送信",
-    "whatsapp": "WhatsAppで相談"
+  "forgotPassword": {
+    "label": "パスワードリセット",
+    "title": "パスワードをお忘れですか？",
+    "description": "メールアドレスを入力すると、リセットリンクを送信します。",
+    "placeholder": "you@example.com",
+    "button": "リセットメールを送信",
+    "loading": "送信中...",
+    "alerts": {
+      "enterEmail": "メールアドレスを入力してください。",
+      "success": "パスワードリセットメールを送信しました。受信箱をご確認ください。"
+    }
   },
-  "lead": {
-    "title": "お問い合わせを送信",
-    "name": "保護者 / 生徒氏名",
-    "contact": "メールまたは WhatsApp",
-    "grade": "学年 / 年級レベル",
-    "goal": "学習目標 / 試験 / 科目",
-    "submit": "送信",
-    "submitting": "送信中...",
-    "cancel": "キャンセル",
-    "alert": "お名前と連絡先を入力してください。",
-    "noGoal": "Chokina AI コンサルタントから送信されました。学習目標は未入力です。",
-    "success": "ありがとうございます。お問い合わせを送信しました。担当者よりご連絡いたします。",
-    "error": "申し訳ありません。お問い合わせを送信できませんでした。WhatsAppでご連絡いただくか、後ほど再度お試しください。"
-  },
-  "errors": {
-    "noReply": "申し訳ありません。Chokina は返信を生成できませんでした。",
-    "general": "申し訳ありません。Chokina は少し休憩中です。もう一度お試しください。"
+  "resetPassword": {
+    "label": "パスワード再設定",
+    "title": "新しいパスワードを作成",
+    "description": "新しいパスワードを入力してください。",
+    "placeholder": "新しいパスワード",
+    "button": "パスワードを更新",
+    "loading": "更新中...",
+    "alerts": {
+      "enterPassword": "新しいパスワードを入力してください。",
+      "success": "パスワードを更新しました。"
+    },
+    "passwordLength": "パスワードは6文字以上である必要があります。"
   }
-},
-"login": {
-  "hero": {
-    "title": "学習を続けましょう",
-    "description": "ダッシュボードにログインするか、アクセスコードで新しいアカウントを作成してください。"
-  },
-  "signin": {
-    "label": "既存ユーザー",
-    "title": "ログイン",
-    "description": "レッスン、進捗、課題にアクセスできます。"
-  },
-  "signup": {
-    "label": "新規ユーザー",
-    "title": "アカウント作成",
-    "description": "アクセスコードにより、アカウントタイプが自動的に設定されます。"
-  },
-  "fields": {
-    "name": "名前",
-    "email": "メール",
-    "password": "パスワード",
-    "accessCode": "アクセスコード"
-  },
-  "placeholders": {
-    "name": "お名前",
-    "email": "you@example.com",
-    "password": "パスワードを入力",
-    "createPassword": "パスワードを作成",
-    "accessCode": "アクセスコードを入力"
-  },
-  "buttons": {
-    "signin": "ログイン",
-    "create": "アカウント作成",
-    "forgotPassword": "パスワードをお忘れですか？"
-  },
-  "alerts": {
-    "emailVerified": "メール認証が完了しました。ログインできます。",
-    "verifyEmail": "ログイン前にメール認証を完了してください。",
-    "disabled": "このアカウントは無効化されています。管理者にお問い合わせください。",
-    "fillAll": "必須項目をすべて入力してください。",
-    "invalidCode": "アクセスコードが無効、期限切れ、または使用済みです。",
-    "expiredCode": "このアクセスコードは期限切れです。",
-    "invalidRole": "アクセスコードの権限が無効です。",
-    "checkEmail": "認証メールをご確認ください。"
-  }
-},
-"forgotPassword": {
-  "label": "パスワードリセット",
-  "title": "パスワードをお忘れですか？",
-  "description": "メールアドレスを入力すると、リセットリンクを送信します。",
-  "placeholder": "you@example.com",
-  "button": "リセットメールを送信",
-  "loading": "送信中...",
-  "alerts": {
-    "enterEmail": "メールアドレスを入力してください。",
-    "success": "パスワードリセットメールを送信しました。受信箱をご確認ください。"
-  }
-},
-"resetPassword": {
-  "label": "パスワード再設定",
-  "title": "新しいパスワードを作成",
-  "description": "新しいパスワードを入力してください。",
-  "placeholder": "新しいパスワード",
-  "button": "パスワードを更新",
-  "loading": "更新中...",
-  "alerts": {
-    "enterPassword": "新しいパスワードを入力してください。",
-    "success": "パスワードを更新しました。"
-  },
-  "passwordLength": "パスワードは6文字以上である必要があります。"
-}
 }

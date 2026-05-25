@@ -232,24 +232,25 @@ const Tutors = () => {
                     )}
                   </div>
 
-                  <div className="mt-auto flex flex-col gap-3 pt-6 sm:flex-row">
-                    <Button
-                      onClick={() => setSelectedTutor(tutor)}
-                      className="h-12 flex-1 rounded-2xl bg-primary px-6 text-sm font-bold"
-                    >
-                      {t("tutorsPage.buttons.viewProfile")}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                  <div className="mt-auto grid gap-3 pt-6 sm:grid-cols-1 lg:grid-cols-2">
+  <Button
+    onClick={() => setSelectedTutor(tutor)}
+    className="h-12 w-full rounded-2xl bg-primary px-4 text-sm font-bold"
+  >
+    <span className="truncate">View Profile</span>
+    <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
+  </Button>
 
-                    <Link to={withLang("/enquiry")} className="flex-1">
-                      <Button
-                        variant="outline"
-                        className="h-12 w-full rounded-2xl border-primary/10 bg-white px-6 text-sm font-bold text-primary"
-                      >
-                        {t("tutorsPage.buttons.book")}
-                      </Button>
-                    </Link>
-                  </div>
+  <Button
+    asChild
+    variant="outline"
+    className="h-12 w-full rounded-2xl border-primary/10 bg-white px-4 text-sm font-bold text-primary"
+  >
+    <Link to="/enquiry">
+      <span className="truncate">Book Consultation</span>
+    </Link>
+  </Button>
+</div>
                 </div>
               </motion.div>
             ))}

@@ -12,7 +12,7 @@
   "landing": {
     "seo": {
       "title": "LUNA Studies | 面向全球学生的国际教育",
-      "description": "LUNA Studies 为日本、新加坡及线上学生提供 MAP、WIDA、AEIS、TOEFL、英语与双语教育的一对一个性化辅导。"
+      "description": "LUNA Studies (Luna Education) 为日本、新加坡及线上学生提供 MAP、WIDA、AEIS、TOEFL、英语与双语教育的一对一个性化辅导。"
     },
     "hero": {
       "label": "赋能学生成长",
@@ -61,7 +61,7 @@
       "tutorFeedback": {
         "title": "导师反馈",
         "imageAlt": "导师",
-        "name": "Christine 老师",
+        "name": "Francis 老师",
         "role": "专业导师",
         "comment": "表现非常好！你的论点结构清晰，表达也很完整。"
       },
@@ -257,7 +257,7 @@
   "subjects": {
     "seo": {
       "title": "MAP、WIDA、AEIS 与国际教育课程 | LUNA Studies",
-      "description": "了解 LUNA Studies 的 MAP 备考、WIDA 支持、AEIS 英语、TOEFL、学术写作、面试准备与双语教育课程。"
+      "description": "了解 LUNA Studies (Luna Education) 的 MAP 备考、WIDA 支持、AEIS 英语、TOEFL、学术写作、面试准备与双语教育课程。"
     },
     "hero": {
       "label": "LUNA 课程项目",
@@ -269,19 +269,20 @@
     "suitableFor": "适合学生：",
     "close": "关闭",
     "modal": {
-      "programLabel": "LUNA 课程",
+      "programLabel": "Luna 课程",
       "suitableFor": "适合学生",
       "includedTitle": "课程包含",
       "included": {
         "items": {
           "lessons": "一对一个性化课程",
           "homework": "作业与反馈",
-          "tracking": "进度追踪",
-          "support": "学习答疑支持"
+          "tracking": "学习进度追踪",
+          "support": "学习问题答疑"
         }
       },
-      "enquiryTitle": "咨询该课程",
-      "enquiryDescription": "我们会根据学生目标，推荐合适的导师与学习方案。"
+      "enquiryTitle": "对这个课程感兴趣？",
+      "enquiryDescription": "提交咨询后，我们会根据学生目标推荐合适的导师与学习方案。",
+      "enquiryButton": "咨询 {{subject}}"
     },
     "items": {
       "assessments": {
@@ -337,7 +338,7 @@
   "enquire": {
     "seo": {
       "title": "预约咨询 | LUNA Studies",
-      "description": "联系 LUNA Studies，了解 MAP、WIDA、AEIS、TOEFL 及日本、新加坡和线上学生的个性化国际教育支持。"
+      "description": "联系 LUNA Studies (Luna Education)，了解 MAP、WIDA、AEIS、TOEFL 及日本、新加坡和线上学生的个性化国际教育支持。"
     },
     "hero": {
       "label": "LUNA 学习咨询",
@@ -431,7 +432,7 @@
   "whyLuna": {
     "seo": {
       "title": "为什么选择 LUNA Studies | 个性化国际教育",
-      "description": "了解 LUNA Studies 如何通过个性化学习规划、导师匹配、学术追踪与国际学校准备，支持学生持续成长。"
+      "description": "了解 LUNA Studies (Luna Education) 如何通过个性化学习规划、导师匹配、学术追踪与国际学校准备，支持学生持续成长。"
     },
     "hero": {
       "label": "我们的教学方式",
@@ -650,12 +651,13 @@
     "errors": {
       "noReply": "抱歉，Chokina 暂时无法生成回复。",
       "general": "抱歉，Chokina 暂时休息了一下。请稍后再试。"
-    }
+    },
+    "bubbleText": "Chokina 在这里帮助你"
   },
   "tutorsPage": {
     "seo": {
       "title": "日本与新加坡国际导师团队 | LUNA Studies",
-      "description": "认识 LUNA Studies 的导师团队，涵盖 MAP、WIDA、TOEFL、英语、双语教育与国际学校支持。"
+      "description": "认识 LUNA Studies (Luna Education) 的导师团队，涵盖 MAP、WIDA、TOEFL、英语、双语教育与国际学校支持。"
     },
     "buttons": {
       "viewProfile": "查看资料",
@@ -703,7 +705,7 @@
       {
         "name": "Grace",
         "image": "/tutors/grace_new.jpg",
-        "role": "学术英语与 IB 导师",
+        "role": "学术英语与 首席导师",
         "subjects": [
           "IB 英语",
           "TOEFL",

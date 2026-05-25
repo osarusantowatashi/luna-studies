@@ -34,6 +34,9 @@ import HapikoGuide from "./components/HapikoGuide";
 
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import CustomCursor from "./components/CustomCursor";
 
 const App = () => {
   return (
@@ -48,6 +51,9 @@ const App = () => {
         <Route path="/:lang/auth" element={<Auth />} />
         <Route path="/:lang/login" element={<Login />} />
 
+<Route path="/en/terms" element={<Terms />} />
+<Route path="/jp/terms" element={<Terms />} />
+<Route path="/zh/terms" element={<Terms />} />
         <Route path="/:lang/subjects" element={<Layout><Subjects /></Layout>} />
         <Route path="/:lang/whyluna" element={<Layout><WhyLuna /></Layout>} />
         <Route path="/:lang/tutors" element={<Layout><Tutors /></Layout>} />
@@ -62,6 +68,9 @@ const App = () => {
         <Route path="/tutors" element={<Navigate to="/en/tutors" replace />} />
         <Route path="/enquiry" element={<Navigate to="/en/enquiry" replace />} />
 
+<Route path="/en/privacy" element={<Privacy />} />
+<Route path="/jp/privacy" element={<Privacy />} />
+<Route path="/zh/privacy" element={<Privacy />} />
         {/* Admin */}
         <Route
           path="/admin/dashboard"
@@ -217,6 +226,7 @@ const App = () => {
 
       <LunaMascotChat />
       <HapikoGuide />
+      <CustomCursor />
     </BrowserRouter>
   );
 };

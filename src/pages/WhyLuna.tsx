@@ -13,7 +13,7 @@ import {
   Route,
   Sprout,
   ShieldCheck,
-}  from "lucide-react";
+} from "lucide-react";
 import Footer from "@/components/Footer";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
@@ -23,7 +23,11 @@ const WhyLuna = () => {
   const { t } = useTranslation();
   const location = useLocation();
 
-  const currentLang = location.pathname.startsWith("/zh") ? "zh" : "en";
+  const currentLang = location.pathname.startsWith("/zh")
+    ? "zh"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
+      : "en";
 
   const withLang = (path: string) =>
     `/${currentLang}${path === "/" ? "" : path}`;
@@ -66,9 +70,9 @@ const WhyLuna = () => {
   return (
     <>
       <Helmet>
-  <title>{t("whyLuna.seo.title")}</title>
-  <meta name="description" content={t("whyLuna.seo.description")} />
-</Helmet>
+        <title>{t("whyLuna.seo.title")}</title>
+        <meta name="description" content={t("whyLuna.seo.description")} />
+      </Helmet>
 
       <div className="min-h-screen bg-background">
         {/* HERO */}
@@ -102,10 +106,10 @@ const WhyLuna = () => {
                 className="font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.6rem] lg:text-[5.6rem]"
               >
                 {t("whyLuna.hero.titleLine1")}<br />
-{t("whyLuna.hero.titleLine2")}<br />
-<span className="text-[#8d73ff]">
-  {t("whyLuna.hero.titleHighlight")}
-</span>
+                {t("whyLuna.hero.titleLine2")}<br />
+                <span className="text-[#8d73ff]">
+                  {t("whyLuna.hero.titleHighlight")}
+                </span>
               </motion.h1>
 
               <motion.p
@@ -154,33 +158,33 @@ const WhyLuna = () => {
                       {t("whyLuna.planCard.label")}
                     </p>
                     <h3 className="mt-2 font-poppins text-3xl font-black text-primary">
-                    {t("whyLuna.planCard.title")}
+                      {t("whyLuna.planCard.title")}
                     </h3>
                   </div>
 
                   <div className="rounded-full bg-[#f6f2ff] px-4 py-2 text-sm font-bold text-[#8d73ff]">
-                  {t("whyLuna.planCard.badge")}
+                    {t("whyLuna.planCard.badge")}
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   {[
-  [
-    t("whyLuna.planCard.items.preTest.title"),
-    t("whyLuna.planCard.items.preTest.desc"),
-    "35%",
-  ],
-  [
-    t("whyLuna.planCard.items.midTest.title"),
-    t("whyLuna.planCard.items.midTest.desc"),
-    "68%",
-  ],
-  [
-    t("whyLuna.planCard.items.postTest.title"),
-    t("whyLuna.planCard.items.postTest.desc"),
-    "86%",
-  ],
-].map(([label, text, score], i) => (
+                    [
+                      t("whyLuna.planCard.items.preTest.title"),
+                      t("whyLuna.planCard.items.preTest.desc"),
+                      "35%",
+                    ],
+                    [
+                      t("whyLuna.planCard.items.midTest.title"),
+                      t("whyLuna.planCard.items.midTest.desc"),
+                      "68%",
+                    ],
+                    [
+                      t("whyLuna.planCard.items.postTest.title"),
+                      t("whyLuna.planCard.items.postTest.desc"),
+                      "86%",
+                    ],
+                  ].map(([label, text, score], i) => (
                     <motion.div
                       key={label}
                       initial={{ opacity: 0, x: 40 }}
@@ -221,7 +225,7 @@ const WhyLuna = () => {
                   {t("whyLuna.planCard.chat.label")}
                 </p>
                 <p className="mt-2 text-sm font-bold text-primary">
-                {t("whyLuna.planCard.chat.message")}
+                  {t("whyLuna.planCard.chat.message")}
                 </p>
               </motion.div>
             </motion.div>
@@ -269,8 +273,8 @@ const WhyLuna = () => {
               </p>
 
               <h2 className="mt-4 font-poppins text-4xl font-black leading-tight text-primary sm:text-5xl">
-              {t("whyLuna.comparison.titleLine1")}<br />
-              {t("whyLuna.comparison.titleLine2")}
+                {t("whyLuna.comparison.titleLine1")}<br />
+                {t("whyLuna.comparison.titleLine2")}
               </h2>
             </div>
 
@@ -285,12 +289,12 @@ const WhyLuna = () => {
                 className="relative rounded-[3rem] bg-white/60 p-7 shadow-[0_18px_55px_rgba(66,56,120,0.06)] backdrop-blur-xl"
               >
                 <div className="absolute -top-4 left-8 rounded-full bg-slate-200 px-5 py-2 text-xs font-black text-slate-500">
-                {t("whyLuna.comparison.typical.label")}
+                  {t("whyLuna.comparison.typical.label")}
                 </div>
 
                 <h3 className="font-poppins text-3xl font-black text-slate-400">
-                {t("whyLuna.comparison.typical.titleLine1")}<br />
-                {t("whyLuna.comparison.typical.titleLine2")}
+                  {t("whyLuna.comparison.typical.titleLine1")}<br />
+                  {t("whyLuna.comparison.typical.titleLine2")}
                 </h3>
 
                 <div className="mt-8 space-y-4">
@@ -327,12 +331,12 @@ const WhyLuna = () => {
                 className="relative rounded-[3rem] bg-white/95 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl"
               >
                 <div className="absolute -top-4 left-8 rounded-full bg-[#8d73ff] px-5 py-2 text-xs font-black text-white">
-                {t("whyLuna.comparison.luna.label")}
+                  {t("whyLuna.comparison.luna.label")}
                 </div>
 
                 <h3 className="font-poppins text-3xl font-black text-primary">
-                {t("whyLuna.comparison.luna.titleLine1")}<br />
-                {t("whyLuna.comparison.luna.titleLine2")}
+                  {t("whyLuna.comparison.luna.titleLine1")}<br />
+                  {t("whyLuna.comparison.luna.titleLine2")}
                 </h3>
 
                 <div className="mt-8 space-y-4">
@@ -373,8 +377,8 @@ const WhyLuna = () => {
               </p>
 
               <h2 className="mt-4 font-poppins text-4xl font-black leading-tight text-primary sm:text-5xl">
-              {t("whyLuna.values.titleLine1")}<br />
-              {t("whyLuna.values.titleLine2")}
+                {t("whyLuna.values.titleLine1")}<br />
+                {t("whyLuna.values.titleLine2")}
               </h2>
 
               <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-primary/60">
@@ -385,82 +389,82 @@ const WhyLuna = () => {
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {[
                 {
-  title: t("whyLuna.values.items.clarity.title"),
-  text: t("whyLuna.values.items.clarity.text"),
-  icon: Search,
-  color: "bg-[#ffe66d]",
-  rotate: "-rotate-2",
-},
-{
-  title: t("whyLuna.values.items.structure.title"),
-  text: t("whyLuna.values.items.structure.text"),
-  icon: Route,
-  color: "bg-[#8d73ff]",
-  rotate: "rotate-2",
-  light: true,
-},
-{
-  title: t("whyLuna.values.items.growth.title"),
-  text: t("whyLuna.values.items.growth.text"),
-  icon: Sprout,
-  color: "bg-[#b8f36c]",
-  rotate: "-rotate-1",
-},
-{
-  title: t("whyLuna.values.items.responsibility.title"),
-  text: t("whyLuna.values.items.responsibility.text"),
-  icon: ShieldCheck,
-  color: "bg-[#ff8bd2]",
-  rotate: "rotate-1",
-},
+                  title: t("whyLuna.values.items.clarity.title"),
+                  text: t("whyLuna.values.items.clarity.text"),
+                  icon: Search,
+                  color: "bg-[#ffe66d]",
+                  rotate: "-rotate-2",
+                },
+                {
+                  title: t("whyLuna.values.items.structure.title"),
+                  text: t("whyLuna.values.items.structure.text"),
+                  icon: Route,
+                  color: "bg-[#8d73ff]",
+                  rotate: "rotate-2",
+                  light: true,
+                },
+                {
+                  title: t("whyLuna.values.items.growth.title"),
+                  text: t("whyLuna.values.items.growth.text"),
+                  icon: Sprout,
+                  color: "bg-[#b8f36c]",
+                  rotate: "-rotate-1",
+                },
+                {
+                  title: t("whyLuna.values.items.responsibility.title"),
+                  text: t("whyLuna.values.items.responsibility.text"),
+                  icon: ShieldCheck,
+                  color: "bg-[#ff8bd2]",
+                  rotate: "rotate-1",
+                },
               ].map((value, i) => {
 
-  const Icon = value.icon;
-  return (
-                <motion.div
-                  key={value.title}
-                  initial={{ opacity: 0, y: 50, rotate: 0 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, amount: 0.35 }}
-                  transition={{ duration: 0.55, delay: i * 0.08 }}
-                  whileHover={{
-                    y: -12,
-                    scale: 1.03,
-                    rotate: i % 2 === 0 ? -4 : 4,
-                  }}
-                  className={`group rounded-[2.4rem] bg-white/95 p-7 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl ${value.rotate}`}
-                >
+                const Icon = value.icon;
+                return (
                   <motion.div
-  animate={{ y: [0, -6, 0] }}
-  transition={{ duration: 3 + i * 0.3, repeat: Infinity }}
-  className={`mb-6 flex h-16 w-16 items-center justify-center rounded-[1.5rem] ${value.color}`}
->
-  <Icon
-    className={`h-7 w-7 ${value.light ? "text-white" : "text-primary"}`}
-    strokeWidth={2.5}
-  />
-</motion.div>
-
-                  <h3 className="font-poppins text-2xl font-black text-primary">
-                    {value.title}
-                  </h3>
-
-                  <p className="mt-4 text-sm leading-7 text-primary/60">
-                    {value.text}
-                  </p>
-
-                  <div className="mt-6 h-2 overflow-hidden rounded-full bg-[#f3efff]">
+                    key={value.title}
+                    initial={{ opacity: 0, y: 50, rotate: 0 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, amount: 0.35 }}
+                    transition={{ duration: 0.55, delay: i * 0.08 }}
+                    whileHover={{
+                      y: -12,
+                      scale: 1.03,
+                      rotate: i % 2 === 0 ? -4 : 4,
+                    }}
+                    className={`group rounded-[2.4rem] bg-white/95 p-7 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl ${value.rotate}`}
+                  >
                     <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${65 + i * 8}%` }}
-                      viewport={{ once: false }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                      className="h-full rounded-full bg-[#8d73ff]"
-                    />
-                  </div>
-                </motion.div>
-              );
-}              )}
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ duration: 3 + i * 0.3, repeat: Infinity }}
+                      className={`mb-6 flex h-16 w-16 items-center justify-center rounded-[1.5rem] ${value.color}`}
+                    >
+                      <Icon
+                        className={`h-7 w-7 ${value.light ? "text-white" : "text-primary"}`}
+                        strokeWidth={2.5}
+                      />
+                    </motion.div>
+
+                    <h3 className="font-poppins text-2xl font-black text-primary">
+                      {value.title}
+                    </h3>
+
+                    <p className="mt-4 text-sm leading-7 text-primary/60">
+                      {value.text}
+                    </p>
+
+                    <div className="mt-6 h-2 overflow-hidden rounded-full bg-[#f3efff]">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${65 + i * 8}%` }}
+                        viewport={{ once: false }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="h-full rounded-full bg-[#8d73ff]"
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* BOTTOM BULLETS */}
@@ -503,12 +507,12 @@ const WhyLuna = () => {
           <div className="mx-auto max-w-[1280px]">
             <div className="mb-16 text-center">
               <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
-              {t("whyLuna.system.label")}
+                {t("whyLuna.system.label")}
               </p>
 
               <h2 className="mt-4 font-poppins text-4xl font-black leading-tight text-primary sm:text-5xl">
-              {t("whyLuna.system.titleLine1")}<br />
-              {t("whyLuna.system.titleLine2")}
+                {t("whyLuna.system.titleLine1")}<br />
+                {t("whyLuna.system.titleLine2")}
               </h2>
             </div>
 
@@ -586,8 +590,8 @@ const WhyLuna = () => {
               </p>
 
               <h2 className="mt-5 font-poppins text-4xl font-black leading-tight text-primary sm:text-5xl">
-              {t("whyLuna.questionBank.titleLine1")}<br />
-              {t("whyLuna.questionBank.titleLine2")}
+                {t("whyLuna.questionBank.titleLine1")}<br />
+                {t("whyLuna.questionBank.titleLine2")}
               </h2>
 
               <p className="mt-6 max-w-xl text-base leading-8 text-primary/60 sm:text-lg">
@@ -596,11 +600,11 @@ const WhyLuna = () => {
 
               <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
                 {[
-  t("whyLuna.questionBank.benefits.targetedPractice"),
-  t("whyLuna.questionBank.benefits.mistakeReview"),
-  t("whyLuna.questionBank.benefits.tutorFollowUp"),
-  t("whyLuna.questionBank.benefits.goalBasedSets"),
-].map((item, i) => (
+                  t("whyLuna.questionBank.benefits.targetedPractice"),
+                  t("whyLuna.questionBank.benefits.mistakeReview"),
+                  t("whyLuna.questionBank.benefits.tutorFollowUp"),
+                  t("whyLuna.questionBank.benefits.goalBasedSets"),
+                ].map((item, i) => (
                   <motion.div
                     key={item}
                     initial={{ opacity: 0, y: 18 }}
@@ -633,16 +637,16 @@ const WhyLuna = () => {
 
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff]">
-                      {t("whyLuna.questionBank.mockup.label")}
+                        {t("whyLuna.questionBank.mockup.label")}
                       </p>
                       <h3 className="mt-1 font-poppins text-3xl font-black text-primary">
-                      {t("whyLuna.questionBank.mockup.title")}
+                        {t("whyLuna.questionBank.mockup.title")}
                       </h3>
                     </div>
                   </div>
 
                   <span className="rounded-full bg-[#fff6da] px-4 py-2 text-xs font-black text-[#d4a100]">
-                  {t("whyLuna.questionBank.mockup.badge")}
+                    {t("whyLuna.questionBank.mockup.badge")}
                   </span>
                 </div>
 
@@ -699,7 +703,7 @@ const WhyLuna = () => {
                           <div>
                             <p className="font-bold text-primary">{item.title}</p>
                             <p className="mt-1 text-xs text-primary/50">
-                            {t("whyLuna.questionBank.mockup.readiness")}
+                              {t("whyLuna.questionBank.mockup.readiness")}
                             </p>
                           </div>
                         </div>
@@ -729,10 +733,10 @@ const WhyLuna = () => {
                 className="mt-5 rounded-[1.7rem] bg-white p-5 shadow-[0_18px_50px_rgba(66,56,120,0.10)] lg:absolute lg:-bottom-8 lg:-left-8 lg:w-[300px]"
               >
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8d73ff]">
-                {t("whyLuna.questionBank.review.label")}
+                  {t("whyLuna.questionBank.review.label")}
                 </p>
                 <p className="mt-2 text-sm font-bold text-primary">
-                {t("whyLuna.questionBank.review.text")}
+                  {t("whyLuna.questionBank.review.text")}
                 </p>
               </motion.div>
             </motion.div>
@@ -769,27 +773,27 @@ const WhyLuna = () => {
                 {/* LEFT */}
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.25em] text-[#ffe66d]">
-                  {t("whyLuna.cta.label")}
+                    {t("whyLuna.cta.label")}
                   </p>
 
                   <h2 className="mt-5 font-poppins text-4xl font-black leading-tight text-white sm:text-6xl">
-                  {t("whyLuna.cta.titleLine1")}<br />
-{t("whyLuna.cta.titleLine2")}<br />
-{t("whyLuna.cta.titleLine3")}
+                    {t("whyLuna.cta.titleLine1")}<br />
+                    {t("whyLuna.cta.titleLine2")}<br />
+                    {t("whyLuna.cta.titleLine3")}
                   </h2>
 
                   <p className="mt-7 max-w-2xl text-lg leading-8 text-white/70">
-                  {t("whyLuna.cta.description")}
+                    {t("whyLuna.cta.description")}
                   </p>
 
                   {/* floating benefits */}
                   <div className="mt-10 flex flex-wrap gap-3">
                     {[
-  t("whyLuna.cta.tags.planning"),
-  t("whyLuna.cta.tags.exams"),
-  t("whyLuna.cta.tags.questionBanks"),
-  t("whyLuna.cta.tags.progress"),
-].map((item, i) => (
+                      t("whyLuna.cta.tags.planning"),
+                      t("whyLuna.cta.tags.exams"),
+                      t("whyLuna.cta.tags.questionBanks"),
+                      t("whyLuna.cta.tags.progress"),
+                    ].map((item, i) => (
                       <motion.div
                         key={item}
                         initial={{ opacity: 0, y: 16 }}
@@ -821,27 +825,27 @@ const WhyLuna = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8d73ff]">
-                        {t("whyLuna.cta.card.label")}
+                          {t("whyLuna.cta.card.label")}
                         </p>
 
                         <h3 className="mt-2 font-poppins text-3xl font-black text-primary">
-                        {t("whyLuna.cta.card.title")}
+                          {t("whyLuna.cta.card.title")}
                         </h3>
                       </div>
 
                       <div className="rounded-full bg-[#f6f2ff] px-4 py-2 text-xs font-black text-[#8d73ff]">
-                      {t("whyLuna.cta.card.badge")}
+                        {t("whyLuna.cta.card.badge")}
                       </div>
                     </div>
 
                     {/* mini process */}
                     <div className="mt-8 space-y-5">
                       {[
-  [t("whyLuna.cta.card.steps.assessment"), "✓"],
-  [t("whyLuna.cta.card.steps.matching"), "✓"],
-  [t("whyLuna.cta.card.steps.planning"), "✓"],
-  [t("whyLuna.cta.card.steps.pathway"), "✓"],
-].map(([step, icon], i) => (
+                        [t("whyLuna.cta.card.steps.assessment"), "✓"],
+                        [t("whyLuna.cta.card.steps.matching"), "✓"],
+                        [t("whyLuna.cta.card.steps.planning"), "✓"],
+                        [t("whyLuna.cta.card.steps.pathway"), "✓"],
+                      ].map(([step, icon], i) => (
                         <motion.div
                           key={step}
                           initial={{ opacity: 0, x: 20 }}
@@ -862,7 +866,7 @@ const WhyLuna = () => {
                     <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                       <Link to={withLang("/enquiry")} className="flex-1">
                         <Button className="h-14 w-full rounded-2xl bg-[#8d73ff] text-base font-bold shadow-[0_18px_45px_rgba(141,115,255,0.35)]">
-                        {t("whyLuna.buttons.enquire")}
+                          {t("whyLuna.buttons.enquire")}
                         </Button>
                       </Link>
 
@@ -871,7 +875,7 @@ const WhyLuna = () => {
                           variant="outline"
                           className="h-14 w-full rounded-2xl border-primary/10 bg-white text-base font-bold"
                         >
-                         {t("whyLuna.buttons.programs")}
+                          {t("whyLuna.buttons.programs")}
                         </Button>
                       </Link>
                     </div>

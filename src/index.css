@@ -10,8 +10,6 @@
 /* Luna Studies design system — navy, moonlight white, soft yellow.
    All colors MUST be HSL. */
 
-   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
-
    @keyframes titleReveal {
   0% {
     opacity: 0;
@@ -24,6 +22,9 @@
     transform: translateY(0%);
     filter: blur(0px);
   }
+}
+* {
+  cursor: none;
 }
 
 .animate-title-1 {

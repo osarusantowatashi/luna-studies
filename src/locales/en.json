@@ -12,7 +12,7 @@
   "landing": {
     "seo": {
       "title": "LUNA Studies | International Education for Global Students",
-      "description": "LUNA Studies provides personalised tutoring for MAP, WIDA, AEIS, TOEFL, English and bilingual education for students in Japan, Singapore and online."
+      "description": "LUNA Studies (Luna Education) provides personalised tutoring for MAP, WIDA, AEIS, TOEFL, English and bilingual education for students in Japan, Singapore and online."
     },
     "hero": {
       "label": "Empowering Students",
@@ -61,7 +61,7 @@
       "tutorFeedback": {
         "title": "Tutor Feedback",
         "imageAlt": "Tutor",
-        "name": "Ms. Christine",
+        "name": "Mr. Francis",
         "role": "Expert Tutor",
         "comment": "Excellent effort! Your arguments are well-structured and clear."
       },
@@ -257,7 +257,7 @@
   "subjects": {
     "seo": {
       "title": "MAP, WIDA, AEIS & Other Educational Programs | LUNA Studies",
-      "description": "Explore LUNA Studies programs including MAP preparation, WIDA support, AEIS English, TOEFL, academic writing, interview preparation and bilingual education."
+      "description": "Explore LUNA Studies (Luna Education) programs including MAP preparation, WIDA support, AEIS English, TOEFL, academic writing, interview preparation and bilingual education."
     },
     "hero": {
       "label": "Luna Programs",
@@ -269,20 +269,23 @@
     "suitableFor": "Suitable for:",
     "close": "Close",
     "modal": {
-      "programLabel": "Luna Program",
-      "suitableFor": "Suitable For",
-      "includedTitle": "What’s Included",
-      "included": {
-        "items": {
-          "lessons": "1–1 Personalised Lessons",
-          "homework": "Homework & Feedback",
-          "tracking": "Progress Tracking",
-          "support": "Question Support"
-        }
-      },
-      "enquiryTitle": "Enquire about this program",
-      "enquiryDescription": "We’ll recommend the right tutor and learning plan based on the student’s goals."
-    },
+  "programLabel": "Luna Program",
+  "suitableFor": "Suitable For",
+  "includedTitle": "What’s Included",
+
+  "included": {
+    "items": {
+      "lessons": "1–1 Personalised Lessons",
+      "homework": "Homework & Feedback",
+      "tracking": "Progress Tracking",
+      "support": "Question Support"
+    }
+  },
+
+  "enquiryTitle": "Interested in this program?",
+  "enquiryDescription": "Send us an enquiry and we’ll recommend the right tutor and learning plan.",
+  "enquiryButton": "Enquire about {{subject}}"
+},
     "items": {
       "assessments": {
         "title": "MAP / WIDA / CAT4 Preparation",
@@ -337,7 +340,7 @@
   "enquire": {
     "seo": {
       "title": "Book a Consultation | LUNA Studies",
-      "description": "Contact LUNA Studies for MAP, WIDA, AEIS, TOEFL and personalised international tutoring support for students in Japan, Singapore and online."
+      "description": "Contact LUNA Studies (Luna Education) for MAP, WIDA, AEIS, TOEFL and personalised international tutoring support for students in Japan, Singapore and online."
     },
     "hero": {
       "label": "Luna Intake Pass",
@@ -431,7 +434,7 @@
   "whyLuna": {
     "seo": {
       "title": "Why Families Choose LUNA Studies | Personalised International Education",
-      "description": "Discover how LUNA Studies supports students through personalised learning plans, tutor matching, academic tracking and international school preparation."
+      "description": "Discover how LUNA Studies (Luna Education) supports students through personalised learning plans, tutor matching, academic tracking and international school preparation."
     },
     "hero": {
       "label": "Our Approach",
@@ -650,12 +653,13 @@
     "errors": {
       "noReply": "Sorry, Chokina could not generate a reply.",
       "general": "Sorry, Chokina is taking a short break. Please try again."
-    }
+    },
+    "bubbleText": "Chokina is here for you"
   },
   "tutorsPage": {
     "seo": {
       "title": "International Tutors in Japan & Singapore | LUNA Studies",
-      "description": "Meet LUNA Studies tutors specialising in MAP, WIDA, TOEFL, English, bilingual education and international school support."
+      "description": "Meet LUNA Studies (Luna Education) tutors specialising in MAP, WIDA, TOEFL, English, bilingual education and international school support."
     },
     "buttons": {
       "viewProfile": "View Profile",
@@ -703,7 +707,7 @@
       {
         "name": "Grace",
         "image": "/tutors/grace_new.jpg",
-        "role": "Academic English & IB Tutor",
+        "role": "Academic English & Head Tutor",
         "subjects": [
           "IB English",
           "TOEFL",

@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   LineChart,
@@ -53,6 +53,16 @@ const HeroFeature = ({
 );
 
 const Landing = () => {
+  const location = useLocation();
+
+  const currentLang = location.pathname.startsWith("/zh")
+    ? "zh"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
+      : "en";
+
+  const withLang = (path: string) =>
+    `/${currentLang}${path === "/" ? "" : path}`;
 
   const tutorScrollRef = useRef(null);
 
@@ -185,14 +195,14 @@ const Landing = () => {
                 </p>
 
                 <div className="mt-9 flex flex-wrap items-center gap-4">
-                  <Link to="/enquiry">
+                <Link to={withLang("/whyLuna")}>
                     <Button className="h-14 rounded-full bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.20)]">
                       {t("landing.hero.primaryButton")}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
 
-                  <Link to="/subjects">
+                  <Link to={withLang("/subjects")}>
                     <Button
                       variant="outline"
                       className="h-14 rounded-full border-primary/15 bg-white/85 px-8 text-base text-primary shadow-sm backdrop-blur"
@@ -429,7 +439,7 @@ const Landing = () => {
                     className="rounded-[1.8rem] border border-white bg-white/90 p-5 shadow-[0_18px_60px_rgba(66,56,120,0.12)] backdrop-blur-xl lg:col-span-3"    >
                     <p className="text-sm font-black text-primary">{t("landing.dashboard.tutorFeedback.title")}</p>
                     <div className="mt-4 flex items-center gap-3">
-                      <img src="/tutors/christine_new.png" alt={t("landing.dashboard.tutorFeedback.imageAlt")} className="h-12 w-12 rounded-full object-cover" />
+                      <img src="/tutors/francis_new.png" alt={t("landing.dashboard.tutorFeedback.imageAlt")} className="h-12 w-12 rounded-full object-cover" />
                       <div>
                         <p className="font-bold text-primary">{t("landing.dashboard.tutorFeedback.name")}</p>
                         <p className="text-xs text-[#8d73ff]">{t("landing.dashboard.tutorFeedback.role")}</p>
@@ -829,7 +839,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
               <p className="mt-7 max-w-xl text-lg leading-8 text-primary/65">
                 {t("landing.whyPreview.description")} </p>
 
-              <Link to="/why-luna">
+                <Link to={withLang("/whyluna")}>
                 <Button className="group mt-9 h-14 rounded-full bg-primary px-8 text-base">
                   {t("landing.whyPreview.button")}
                   <ArrowRight className="ml-2 h-5 w-5 transition group-hover:translate-x-1" />
@@ -1076,7 +1086,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                   {t("landing.tutorsSection.description")}
                 </p>
 
-                <Link to="/tutors">
+                <Link to={withLang("/tutors")}>
                   <Button className="mt-8 h-12 rounded-full bg-primary px-8">
                     {t("landing.tutorsSection.button")}
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -1252,7 +1262,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
                   {t("landing.enquiry.description")}
                 </p>
 
-                <Link to="/enquiry">
+                <Link to={withLang("/enquiry")}>
                   <Button className="group mt-9 h-16 rounded-full bg-primary px-9 text-base shadow-[0_20px_55px_rgba(10,36,84,0.20)]">
                     {t("landing.enquiry.button")}
                     <motion.span
@@ -1267,7 +1277,7 @@ lg:border-r lg:border-primary/10 lg:last:border-r-0
               </div>
 
               {/* RIGHT ART CARD */}
-              <Link to="/enquiry" className="block">
+              <Link to={withLang("/enquiry")} className="block">
                 <motion.div
                   style={{ rotate: enquiryCardRotate }}
                   whileHover={{
