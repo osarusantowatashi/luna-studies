@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase";
 
-const userId = localStorage.getItem("userId");
-
-const GUIDE_KEY = `hapiko_student_guide_hidden_${userId}`;
+const getGuideKey = (userId?: string | null) => {
+    if (!userId) return null;
+    return `hapiko_student_guide_hidden_${userId}`;
+};
 
 const steps = [
     {
@@ -67,13 +69,38 @@ const HapikoGuide = () => {
     const step = steps[stepIndex];
 
     useEffect(() => {
-        const hidden = localStorage.getItem(GUIDE_KEY);
-        const role = localStorage.getItem("role");
-        const isStudentGuidePage = allowedPages.includes(location.pathname);
-
-        if (!hidden && role === "student" && isStudentGuidePage) {
+        const checkGuide = async () => {
+            const role = localStorage.getItem("role");
+            const isStudentGuidePage = allowedPages.includes(location.pathname);
+    
+            if (role !== "student" || !isStudentGuidePage) {
+                setShow(false);
+                return;
+            }
+    
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
+    
+            const userId = session?.user?.id || localStorage.getItem("userId");
+            const guideKey = getGuideKey(userId);
+    
+            if (!guideKey) {
+                setShow(false);
+                return;
+            }
+    
+            const hidden = localStorage.getItem(guideKey);
+    
+            if (hidden === "true") {
+                setShow(false);
+                return;
+            }
+    
             setShow(true);
-        }
+        };
+    
+        checkGuide();
     }, [location.pathname]);
 
     useEffect(() => {
@@ -109,17 +136,29 @@ const HapikoGuide = () => {
 
     const next = () => {
         if (stepIndex >= steps.length - 1) {
-            localStorage.setItem(GUIDE_KEY, "true");
+            const userId = localStorage.getItem("userId");
+            const guideKey = getGuideKey(userId);
+    
+            if (guideKey) {
+                localStorage.setItem(guideKey, "true");
+            }
+    
             setShow(false);
             return;
         }
-
+    
         setTargetRect(null);
         setStepIndex((prev) => prev + 1);
     };
 
     const skipForever = () => {
-        localStorage.setItem(GUIDE_KEY, "true");
+        const userId = localStorage.getItem("userId");
+        const guideKey = getGuideKey(userId);
+    
+        if (guideKey) {
+            localStorage.setItem(guideKey, "true");
+        }
+    
         setShow(false);
     };
 

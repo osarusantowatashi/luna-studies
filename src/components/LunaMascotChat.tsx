@@ -256,11 +256,11 @@ const LunaMascotChat = () => {
   if (shouldHide) return null;
 
   return (
-    <div className="fixed bottom-5 right-4 z-[999] w-[92vw] max-w-[360px] md:bottom-8 md:right-6 md:w-[360px]">
+    <div className="fixed bottom-5 right-4 z-[999] w-[calc(100vw-2rem)] max-w-[360px] overflow-hidden md:bottom-8 md:right-6 md:w-[360px]">
       <AnimatePresence>
         {open && (
           <motion.div
-            className="mb-4 w-full overflow-hidden rounded-[28px] border border-[#E8D8B5] bg-white shadow-[0_25px_80px_rgba(8,42,85,0.25)]"
+           className="mb-4 w-full max-w-full overflow-hidden rounded-[28px] border border-[#E8D8B5] bg-white shadow-[0_25px_80px_rgba(8,42,85,0.25)]"
             initial={{ opacity: 0, y: 20, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.92 }}
@@ -291,7 +291,7 @@ const LunaMascotChat = () => {
                       }`}
                   >
                     <div
-                      className={`max-w-[82%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${msg.role === "user"
+                     className={`max-w-[82%] overflow-hidden break-words [overflow-wrap:anywhere] rounded-2xl px-4 py-2 text-sm leading-relaxed ${msg.role === "user"
                         ? "bg-[#082A55] text-white"
                         : "bg-white text-slate-700 shadow-sm"
                         }`}
