@@ -333,7 +333,7 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
                           margin-top:8px;
                           color:#555;
                         ">
-                          luna.education
+                          luna-education
                         </p>
                       </td>
 
@@ -358,7 +358,7 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
                           margin-top:8px;
                           color:#555;
                         ">
-                          +65 XXXX XXXX
+                          +65 8138 1999
                         </p>
                       </td>
 
