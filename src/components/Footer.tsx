@@ -128,9 +128,14 @@ export default function Footer() {
                     WhatsApp
                   </p>
 
-                  <p className="text-base text-[#0b234a]">
+                  <a
+                    href="https://wa.me/6581381999?text=Hello%20LUNA%20Education%2C%20I%20would%20like%20to%20enquire%20about%20lessons."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base text-[#0b234a] transition hover:text-[#25D366]"
+                  >
                     +65 81381999
-                  </p>
+                  </a>
                 </div>
               </div>
 
@@ -143,9 +148,12 @@ export default function Footer() {
                     Email
                   </p>
 
-                  <p className="break-all text-base text-[#0b234a]">
-                    admin@lunastudies.com
-                  </p>
+                  <a
+                    href="mailto:enquiries@lunastudies.com"
+                    className="break-all text-base text-[#0b234a] transition hover:text-[#F6C65B]"
+                  >
+                    enquiries@lunastudies.com
+                  </a>
                 </div>
               </div>
 

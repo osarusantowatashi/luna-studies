@@ -354,11 +354,17 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
                           WhatsApp
                         </p>
 
-                        <p style="
-                          margin-top:8px;
-                          color:#555;
-                        ">
-                          +65 8138 1999
+                        <p style="margin-top:8px;">
+                          <a
+                            href="https://wa.me/6581381999?text=Hello%20LUNA%20Education%2C%20I%20would%20like%20to%20enquire%20about%20lessons."
+                            style="
+                              color:#25D366;
+                              text-decoration:none;
+                              font-weight:600;
+                            "
+                          >
+                            +65 8138 1999
+                          </a>
                         </p>
                       </td>
 
