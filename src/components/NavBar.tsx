@@ -24,6 +24,9 @@ const NavBar = () => {
     "/mistakes",
     "/redo-mistakes",
     "/generate",
+    "/generate-games",
+    "/games",
+    "/memory-flip",
     "/tutor/lessons",
     "/admin/lessons",
     "/admin",
@@ -132,6 +135,7 @@ const NavBar = () => {
       ? [
         ["Dashboard", "/admin/dashboard"],
         ["Generate", "/generate"],
+        ["Game Gen", "/generate-games"],
         ["Assign", "/admin/assign"],
         ["Lessons", "/admin/lessons"],
         ["Questions", "/admin/questions"],
@@ -146,6 +150,7 @@ const NavBar = () => {
           ? [
             ["Overview", "/studentoverview"],
             ["Practice", "/practice"],
+            ["Games", "/games"],
             ["Mistakes", "/mistakes"],
           ]
           : [
@@ -160,10 +165,10 @@ const NavBar = () => {
 
   const logout = async () => {
     await supabase.auth.signOut();
-  
+
     localStorage.removeItem("role");
     localStorage.removeItem("userName");
-  
+
     window.location.href = "/en";
   };
 
@@ -203,8 +208,8 @@ const NavBar = () => {
                 key={path}
                 to={path}
                 className={`rounded-full px-5 py-2 text-[13px] font-medium uppercase tracking-wider transition-all duration-200 ${active
-                    ? "scale-105 bg-yellow-400 text-black shadow-md"
-                    : "text-muted-foreground hover:scale-105 hover:bg-secondary hover:text-primary"
+                  ? "scale-105 bg-yellow-400 text-black shadow-md"
+                  : "text-muted-foreground hover:scale-105 hover:bg-secondary hover:text-primary"
                   }`}
               >
                 {label}
@@ -294,8 +299,8 @@ const NavBar = () => {
                   to={path}
                   onClick={() => setMobileOpen(false)}
                   className={`block rounded-2xl px-4 py-3 text-sm font-semibold ${active
-                      ? "bg-yellow-400 text-black"
-                      : "bg-card text-primary"
+                    ? "bg-yellow-400 text-black"
+                    : "bg-card text-primary"
                     }`}
                 >
                   {label}

@@ -682,46 +682,94 @@ const difficultyRules = {
 
 app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
   try {
+    console.log("🎮 GAME QUESTION ROUTE HIT");
+    console.log("BODY:", req.body);
+
     const {
       gameType,
+      examType = "English Foundation",
       grade,
+      skill = "Vocabulary",
       difficulty = "Easy",
-      questionCount = 12,
+      pairCount = 8,
+      languagePair = "zh_en",
     } = req.body;
 
-    let prompt = "";
+    if (gameType !== "memory_flip") {
+      return res.status(400).json({
+        error: "Only memory_flip is supported now.",
+      });
+    }
 
-    if (gameType === "memory_flip") {
-      prompt = `
-Generate ${questionCount} educational matching pairs for children.
+    const languageRules = {
+      zh_en: `
+- Left side must be English.
+- Right side must be Simplified Chinese.
+Example:
+{ "left": "apple", "right": "苹果" }
+`,
+      zh_ja: `
+- Left side must be Simplified Chinese.
+- Right side must be Japanese.
+Example:
+{ "left": "苹果", "right": "りんご" }
+`,
+      en_ja: `
+- Left side must be English.
+- Right side must be Japanese.
+Example:
+{ "left": "apple", "right": "りんご" }
+`,
+    };
+
+    const selectedLanguageRule =
+      languageRules[languagePair] || languageRules.zh_en;
+
+    const prompt = `
+Generate ${pairCount} educational matching pairs for children.
 
 Game Type:
 Memory Flip Matching Game
 
+Exam Type:
+${examType}
+
 Grade:
 ${grade}
+
+Skill:
+${skill}
 
 Difficulty:
 ${difficulty}
 
+Language Pair:
+${languagePair}
+
+LANGUAGE RULES:
+${selectedLanguageRule}
+
 Rules:
-- Generate matching word pairs
-- Educational only
-- Keep answers short
-- Make content age appropriate
-- Return ONLY JSON
-- No explanations
+- Generate matching word pairs.
+- Educational only.
+- Keep each card short.
+- Make content age appropriate.
+- Avoid duplicate words.
+- Avoid overly advanced vocabulary for young grades.
+- Return ONLY valid JSON.
+- No explanations.
+- No markdown.
 
 Format:
-[
-  {
-    "pair_id": 1,
-    "left": "Apple",
-    "right": "苹果"
-  }
-]
-`;
+{
+  "pairs": [
+    {
+      "left": "apple",
+      "right": "苹果"
     }
+  ]
+}
+`;
 
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
@@ -733,13 +781,47 @@ Format:
       .replace(/```/g, "")
       .trim();
 
-    return res.json(JSON.parse(text));
+    const parsed = JSON.parse(text);
 
+    if (!parsed.pairs || !Array.isArray(parsed.pairs)) {
+      return res.status(500).json({
+        error: "Invalid generated format. Missing pairs array.",
+      });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("game_questions")
+      .insert([
+        {
+          game_type: gameType,
+          exam_type: examType,
+          grade,
+          skill,
+          difficulty,
+          language_pair: languagePair,
+          question_data: parsed,
+          created_by: req.user.id,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("SUPABASE GAME INSERT ERROR:", error);
+      return res.status(500).json({
+        error: error.message,
+      });
+    }
+
+    return res.json({
+      success: true,
+      gameQuestion: data,
+    });
   } catch (err) {
     console.error("GAME QUESTION ERROR:", err);
 
     return res.status(500).json({
-      error: err.message,
+      error: err.message || "Failed to generate game questions.",
     });
   }
 });

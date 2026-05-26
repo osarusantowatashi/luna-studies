@@ -37,6 +37,10 @@ import ResetPassword from "./pages/ResetPassword";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 
+import MemoryFlip from "@/pages/games/MemoryFlip";
+import GenerateGameQuestions from "@/pages/GenerateGameQuestions";
+import GamesArcade from "@/pages/games/GamesArcade";
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -80,6 +84,11 @@ const App = () => {
         <Route path="/whyluna" element={<Navigate to="/en/whyluna" replace />} />
         <Route path="/tutors" element={<Navigate to="/en/tutors" replace />} />
         <Route path="/enquiry" element={<Navigate to="/en/enquiry" replace />} />
+
+
+        <Route path="/memory-flip" element={ <ProtectedRoute allowedRoles={["admin", "student"]}>  <MemoryFlip /> </ProtectedRoute> }/>
+        <Route path="/generate-games" element={  <ProtectedRoute allowedRoles={["admin"]}>  <GenerateGameQuestions /> </ProtectedRoute> }/>
+        <Route path="/games"  element={  <ProtectedRoute allowedRoles={["admin", "student"]}>   <GamesArcade />  </ProtectedRoute> }/>
 
         <Route path="/en/privacy" element={<Privacy />} />
         <Route path="/jp/privacy" element={<Privacy />} />
