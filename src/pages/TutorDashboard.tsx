@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-
+import { motion } from "framer-motion";
 
 const TIME_FILTERS = [
   { label: "All", value: "all" },
@@ -263,331 +263,306 @@ const TutorDashboard = () => {
     "practice";
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
-      <div className="mx-auto max-w-6xl space-y-8">
-      <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-8">
-          <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
-            Tutor Dashboard
-          </p>
+  <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-12">
+    <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_28%)]" />
 
-          <h1 className="font-serif text-3xl text-primary sm:text-5xl">
-            Student Mistake Review
-          </h1>
+    <div className="relative z-10 mx-auto max-w-[1350px] space-y-8">
+      {/* HERO */}
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="overflow-hidden rounded-[3rem] bg-white/90 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:p-10"
+      >
+        <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
+          Tutor Dashboard
+        </p>
 
-          <p className="mt-3 max-w-2xl text-muted-foreground">
-            Review assigned students, check mistakes, and post feedback to their dashboard.
-          </p>
-        </div>
+        <h1 className="mt-4 font-poppins text-4xl font-black leading-tight text-primary sm:text-6xl">
+          Student mistake<br />
+          review center.
+        </h1>
 
-        <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-6">
-          <label className="mb-2 block text-sm font-semibold text-primary">
-            Select Student
-          </label>
+        <p className="mt-5 max-w-2xl text-base leading-8 text-primary/60">
+          Review student performance, identify weak areas, and send clear feedback after practice.
+        </p>
+      </motion.div>
 
-          <select
-            className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-            value={selectedStudentId}
-            onChange={(e) => setSelectedStudentId(e.target.value)}
-          >
-            {students.length === 0 && (
-              <option value="">No assigned students</option>
-            )}
+      {/* STUDENT SELECT */}
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="rounded-[2.2rem] bg-white/90 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl"
+      >
+        <label className="mb-3 block text-sm font-black text-primary">
+          Select Student
+        </label>
 
-            {students.map((student) => (
-              <option key={student.id} value={student.id}>
-                {student.name || student.id}
-                {student.is_active === false ? " (Inactive)" : ""}
-              </option>
+        <select
+          className="h-14 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-5 text-base outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+          value={selectedStudentId}
+          onChange={(e) => setSelectedStudentId(e.target.value)}
+        >
+          {students.length === 0 && <option value="">No assigned students</option>}
+
+          {students.map((student) => (
+            <option key={student.id} value={student.id}>
+              {student.name || student.id}
+              {student.is_active === false ? " (Inactive)" : ""}
+            </option>
+          ))}
+        </select>
+      </motion.div>
+
+      {selectedStudent && (
+        <>
+          {/* STATS */}
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["Student", selectedStudent.name],
+              ["Total Attempts", total],
+              ["Accuracy", `${accuracy}%`],
+              ["Mistakes", mistakes],
+            ].map(([label, value], i) => (
+              <motion.div
+                key={label}
+                initial={{ opacity: 0, y: 35 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false }}
+                transition={{ delay: i * 0.07 }}
+                whileHover={{ y: -8, rotate: i % 2 === 0 ? -1.5 : 1.5 }}
+                className="rounded-[2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl"
+              >
+                <p className="text-sm font-bold text-primary/45">{label}</p>
+                <p
+                  className={`mt-3 font-poppins text-3xl font-black ${
+                    label === "Mistakes" ? "text-red-500" : "text-primary"
+                  }`}
+                >
+                  {value}
+                </p>
+              </motion.div>
             ))}
-          </select>
+          </div>
 
-          {students.length === 0 && (
-            <p className="mt-3 text-sm text-muted-foreground">
-              No students assigned yet. Admin needs to connect students to this tutor.
-            </p>
-          )}
-        </div>
+          {/* WEAK AREAS + FEEDBACK */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <motion.div
+              initial={{ opacity: 0, x: -35 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false }}
+              className="rounded-[2.5rem] bg-white/95 p-7 shadow-[0_22px_65px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+            >
+              <h2 className="font-poppins text-3xl font-black text-primary">
+                Weak Areas
+              </h2>
 
-        {selectedStudent && (
-          <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-2xl border bg-card p-5 shadow-soft sm:p-6">
-                <p className="text-sm text-muted-foreground">Student</p>
-                <p className="mt-3 text-2xl font-bold text-primary">
-                  {selectedStudent.name}
-                </p>
-              </div>
-
-              <div className="rounded-2xl border bg-card p-5 shadow-soft sm:p-6">
-                <p className="text-sm text-muted-foreground">Total Attempts</p>
-                <p className="mt-3 text-3xl sm:text-4xl font-bold text-primary">{total}</p>
-              </div>
-
-              <div className="rounded-2xl border bg-card p-5 shadow-soft sm:p-6">
-                <p className="text-sm text-muted-foreground">Accuracy</p>
-                <p className="mt-3 text-3xl sm:text-4xl font-bold text-primary">
-                  {accuracy}%
-                </p>
-              </div>
-
-              <div className="rounded-2xl border bg-card p-5 shadow-soft sm:p-6">
-                <p className="text-sm text-muted-foreground">Mistakes</p>
-                <p className="mt-3 text-3xl sm:text-4xl font-bold text-red-600">
-                  {mistakes}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-7">
-              <h2 className="font-serif text-2xl text-primary sm:text-3xl">
-                  Weak Areas
-                </h2>
-
-                <div className="mt-6 space-y-4">
-                  {Object.keys(stats).length === 0 ? (
-                    <p className="text-muted-foreground">
-                      No weak areas yet.
-                    </p>
-                  ) : (
-                    Object.entries(stats).map(([skill, count]: any) => (
-                      <div key={skill}>
-                        <div className="mb-2 flex justify-between text-sm">
-                          <span className="font-medium">{skill}</span>
-                          <span>{count} mistakes</span>
-                        </div>
-
-                        <div className="h-2 rounded-full bg-secondary">
-                          <div
-                            className="h-2 rounded-full bg-primary"
-                            style={{
-                              width: `${Math.min(Number(count) * 20, 100)}%`,
-                            }}
-                          />
-                        </div>
+              <div className="mt-7 space-y-5">
+                {Object.keys(stats).length === 0 ? (
+                  <p className="text-primary/50">No weak areas yet.</p>
+                ) : (
+                  Object.entries(stats).map(([skill, count]: any, i) => (
+                    <div key={skill}>
+                      <div className="mb-2 flex justify-between text-sm">
+                        <span className="font-bold text-primary">{skill}</span>
+                        <span className="text-primary/50">{count} mistakes</span>
                       </div>
-                    ))
-                  )}
-                </div>
+
+                      <div className="h-3 overflow-hidden rounded-full bg-[#eee9ff]">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{
+                            width: `${Math.min(Number(count) * 20, 100)}%`,
+                          }}
+                          viewport={{ once: false }}
+                          transition={{ duration: 0.8, delay: i * 0.08 }}
+                          className="h-full rounded-full bg-[#8d73ff]"
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
+            </motion.div>
 
-              <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-7">
-                <h2 className="font-serif text-2xl text-primary sm:text-3xl">
-                  Tutor Feedback
-                </h2>
+            <motion.div
+              initial={{ opacity: 0, x: 35 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false }}
+              className="rounded-[2.5rem] bg-white/95 p-7 shadow-[0_22px_65px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+            >
+              <h2 className="font-poppins text-3xl font-black text-primary">
+                Tutor Feedback
+              </h2>
 
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Write feedback that will appear on the student's dashboard.
-                </p>
+              <p className="mt-2 text-sm text-primary/55">
+                Write feedback that will appear on the student dashboard.
+              </p>
 
-                <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                    onClick={() =>
-                      setFeedbackText(
-                        `Please focus more on ${weakestSkill}. Review your mistakes carefully before moving to new questions.`
-                      )
-                    }
-                  >
-                    Weak Area Template
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                    onClick={() =>
-                      setFeedbackText(
-                        "Good effort. Please continue practising regularly and review your incorrect answers before the next lesson."
-                      )
-                    }
-                  >
-                    General Template
-                  </Button>
-                </div>
-
-                <textarea
-                  autoComplete="off"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  className="mt-5 min-h-[140px] w-full resize-none rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                  placeholder="Write feedback for this student..."
-                  value={feedbackText}
-                  onChange={(e) => setFeedbackText(e.target.value)}
-                />
-
-<Button type="button" className="mt-4 h-12 w-full rounded-2xl" onClick={submitFeedback}>
-                  Post Feedback
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  variant="outline"
+                  className="rounded-2xl"
+                  onClick={() =>
+                    setFeedbackText(
+                      `Please focus more on ${weakestSkill}. Review your mistakes carefully before moving to new questions.`
+                    )
+                  }
+                >
+                  Weak Area Template
                 </Button>
 
-                {latestFeedback && (
-                  <div className="mt-5 rounded-2xl bg-secondary/60 p-5">
-                    <p className="text-sm font-semibold text-primary">
-                      Latest Feedback
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      {latestFeedback.message}
-                    </p>
-                    <p className="mt-3 text-xs text-muted-foreground">
-                      Posted on{" "}
-                      {new Date(latestFeedback.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                )}
+                <Button
+                  variant="outline"
+                  className="rounded-2xl"
+                  onClick={() =>
+                    setFeedbackText(
+                      "Good effort. Please continue practising regularly and review your incorrect answers before the next lesson."
+                    )
+                  }
+                >
+                  General Template
+                </Button>
+              </div>
+
+              <textarea
+                className="mt-5 min-h-[150px] w-full resize-none rounded-[1.6rem] border border-primary/10 bg-[#fbfaff] px-5 py-4 outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+                placeholder="Write feedback for this student..."
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+              />
+
+              <Button
+                className="mt-4 h-13 w-full rounded-2xl bg-[#8d73ff] font-bold"
+                onClick={submitFeedback}
+              >
+                Post Feedback
+              </Button>
+
+              {latestFeedback && (
+                <div className="mt-5 rounded-2xl bg-[#fbfaff] p-5">
+                  <p className="text-sm font-black text-primary">
+                    Latest Feedback
+                  </p>
+                  <p className="mt-2 text-sm leading-7 text-primary/60">
+                    {latestFeedback.message}
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </div>
+
+          {/* MISTAKE LIST */}
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            className="rounded-[2.5rem] bg-white/95 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+          >
+            <div className="mb-7 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+              <div>
+                <h2 className="font-poppins text-3xl font-black text-primary">
+                  Mistake List
+                </h2>
+                <p className="mt-2 text-sm text-primary/55">
+                  Showing {filteredWrongAttempts.length} mistakes from{" "}
+                  {filteredAttempts.length} filtered attempts.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  [timeFilter, setTimeFilter, TIME_FILTERS.map((f) => [f.value, f.label])],
+                  [gradeFilter, setGradeFilter, grades.map((g) => [g, g])],
+                  [skillFilter, setSkillFilter, skills.map((s) => [s, s])],
+                  [difficultyFilter, setDifficultyFilter, difficulties.map((d) => [d, d])],
+                ].map(([value, setter, options]: any, i) => (
+                  <select
+                    key={i}
+                    className="h-12 rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 text-sm outline-none focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+                    value={value}
+                    onChange={(e) => setter(e.target.value)}
+                  >
+                    {options.map(([v, label]: any) => (
+                      <option key={v} value={v}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                ))}
               </div>
             </div>
 
-            <div className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:rounded-3xl sm:p-7">
-              <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                <h2 className="font-serif text-2xl text-primary sm:text-3xl">
-                    Mistake List
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Only incorrect attempts are shown here.
-                  </p>
-                </div>
+            <div className="space-y-5">
+              {filteredWrongAttempts.length === 0 ? (
+                <p className="text-primary/50">No mistakes found for this filter.</p>
+              ) : (
+                filteredWrongAttempts.slice(0, 5).map((attempt, index) => {
+                  const q = attempt.questions;
+                  const correctText = getCorrectAnswerText(q);
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <select
-                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                    value={timeFilter}
-                    onChange={(e) => setTimeFilter(e.target.value)}
-                  >
-                    {TIME_FILTERS.map((filter) => (
-                      <option key={filter.value} value={filter.value}>
-                        {filter.label}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                    value={gradeFilter}
-                    onChange={(e) => setGradeFilter(e.target.value)}
-                  >
-                    {grades.map((grade) => (
-                      <option key={grade} value={grade}>
-                        {grade}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                    value={skillFilter}
-                    onChange={(e) => setSkillFilter(e.target.value)}
-                  >
-                    {skills.map((skill) => (
-                      <option key={skill} value={skill}>
-                        {skill}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-                    value={difficultyFilter}
-                    onChange={(e) => setDifficultyFilter(e.target.value)}
-                  >
-                    {difficulties.map((difficulty) => (
-                      <option key={difficulty} value={difficulty}>
-                        {difficulty}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="mb-4 text-sm text-muted-foreground">
-                Showing {filteredWrongAttempts.length} mistakes from{" "}
-                {filteredAttempts.length} filtered attempts.
-              </div>
-
-              <div className="space-y-5">
-                {filteredWrongAttempts.length === 0 ? (
-                  <p className="text-muted-foreground">
-                    No mistakes found for this filter.
-                  </p>
-                ) : (
-                  filteredWrongAttempts.slice(0, 5).map((attempt, index) => {
-                    const q = attempt.questions;
-                    const correctText = getCorrectAnswerText(q);
-
-                    return (
-                      <div
-                        key={attempt.id}
-                        className="rounded-2xl border bg-background p-4 sm:p-5"
-                      >
-                        <div className="mb-3 flex flex-wrap gap-2 text-xs">
-                          <span className="rounded-full bg-secondary px-3 py-1">
-                            {q?.exam_type}
-                          </span>
-                          <span className="rounded-full bg-secondary px-3 py-1">
-                            {q?.grade}
-                          </span>
-                          <span className="rounded-full bg-secondary px-3 py-1">
-                            {q?.skill}
-                          </span>
-                          <span className="rounded-full bg-secondary px-3 py-1">
-                            {q?.difficulty}
-                          </span>
-                          <span className="rounded-full bg-secondary px-3 py-1">
-                            {new Date(attempt.created_at).toLocaleString()}
-                          </span>
-                        </div>
-
-                        {q?.passage && (
-                          <div className="mb-4 max-h-[45vh] overflow-y-auto rounded-2xl border bg-white p-4">
-                            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
-                              Passage
-                            </p>
-                            <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">
-                              {q.passage}
-                            </p>
-                          </div>
-                        )}
-
-<p className="text-base font-semibold leading-7 text-primary">
-                          {index + 1}. {q?.question_text}
-                        </p>
-
-                        <div className="mt-3 grid gap-3 text-sm leading-7 md:grid-cols-2">
-                          <p>A. {q?.option_a}</p>
-                          <p>B. {q?.option_b}</p>
-                          <p>C. {q?.option_c}</p>
-                          <p>D. {q?.option_d}</p>
-                        </div>
-
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-7 text-red-700">
-                            Student answer: {attempt.selected_answer}
-                          </div>
-
-                          <div className="rounded-2xl border border-green-200 bg-green-50 p-4 text-sm leading-7 text-green-700">
-                            Correct answer: {correctText}
-                          </div>
-                        </div>
-
-                        {q?.explanation && (
-                          <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                            Explanation: {q.explanation}
-                          </p>
+                  return (
+                    <motion.div
+                      key={attempt.id}
+                      initial={{ opacity: 0, y: 24 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: false }}
+                      transition={{ delay: index * 0.06 }}
+                      whileHover={{ y: -5 }}
+                      className="rounded-[2rem] bg-[#fbfaff] p-5 shadow-[0_12px_35px_rgba(66,56,120,0.06)]"
+                    >
+                      <div className="mb-4 flex flex-wrap gap-2 text-xs">
+                        {[q?.exam_type, q?.grade, q?.skill, q?.difficulty].map(
+                          (tag) =>
+                            tag && (
+                              <span
+                                key={tag}
+                                className="rounded-full bg-white px-3 py-1 font-bold text-primary/60"
+                              >
+                                {tag}
+                              </span>
+                            )
                         )}
                       </div>
-                    );
-                  })
-                )}
-              </div>
+
+                      <p className="font-bold leading-7 text-primary">
+                        {index + 1}. {q?.question_text}
+                      </p>
+
+                      <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
+                        <p>A. {q?.option_a}</p>
+                        <p>B. {q?.option_b}</p>
+                        <p>C. {q?.option_c}</p>
+                        <p>D. {q?.option_d}</p>
+                      </div>
+
+                      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-2xl bg-red-50 p-4 text-sm text-red-700">
+                          Student answer: {attempt.selected_answer}
+                        </div>
+
+                        <div className="rounded-2xl bg-green-50 p-4 text-sm text-green-700">
+                          Correct answer: {correctText}
+                        </div>
+                      </div>
+
+                      {q?.explanation && (
+                        <p className="mt-4 text-sm leading-7 text-primary/55">
+                          Explanation: {q.explanation}
+                        </p>
+                      )}
+                    </motion.div>
+                  );
+                })
+              )}
             </div>
-          </>
-        )}
-      </div>
+          </motion.div>
+        </>
+      )}
     </div>
-    
-  );
+  </div>
+);
 };
 
 export default TutorDashboard;

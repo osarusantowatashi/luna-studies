@@ -1120,6 +1120,13 @@ lg:gap-x-2
                       tags: ["Reading", "Writing", "WIDA"],
                       desc: t("landing.tutors.christine.desc"),
                     },
+                    {
+                      name: "Kana",
+                      role: t("landing.tutors.kana.role"),
+                      image: "/tutors/kana_new.png",
+                      tags: ["Japanese", "JLPT", "Conversational"],
+                      desc: t("landing.tutors.kana.desc"),
+                    }
                   ].map((tutor, i) => (
                     <motion.div
                       key={tutor.name}
@@ -1134,13 +1141,18 @@ lg:gap-x-2
                       <div className="flex h-full gap-5 xl:gap-7">
 
                         {/* IMAGE */}
-                        <div className="w-[170px] shrink-0 overflow-hidden rounded-[2rem] bg-[#f3efff] xl:w-[220px]">
-                          <img
-                            src={tutor.image}
-                            alt={tutor.name}
-                            className="h-full w-full object-cover object-top"
-                          />
-                        </div>
+                        <img
+  src={tutor.image}
+  alt={tutor.name}
+  className={`
+    h-full w-full transition duration-500
+    ${
+      tutor.name === "Kana"
+        ? "object-cover object-[center_18%] scale-[0.9]"
+        : "object-cover object-top"
+    }
+  `}
+/>
 
                         {/* CONTENT */}
                         <div className="flex flex-1 flex-col justify-center">

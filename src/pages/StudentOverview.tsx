@@ -2,7 +2,17 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  Flame,
+  MessageCircle,
+  Sparkles,
+  Target,
+  Calendar,
+} from "lucide-react";
 
 const DAILY_GOAL = 30;
 
@@ -23,6 +33,9 @@ const StudentOverview = () => {
   const [loading, setLoading] = useState(true);
   const [streak, setStreak] = useState(0);
   const [todayCount, setTodayCount] = useState(0);
+
+  const [nextLesson, setNextLesson] = useState<any | null>(null);
+  const [lessonTutorName, setLessonTutorName] = useState("Tutor");
 
   const [latestFeedback, setLatestFeedback] = useState<any | null>(null);
   const [feedbackTutorName, setFeedbackTutorName] = useState("Tutor");
@@ -64,6 +77,51 @@ const StudentOverview = () => {
         return;
       }
 
+      const { data: lessonData, error: lessonError } = await supabase
+        .from("tutor_lessons")
+        .select("*")
+        .eq("student_id", user.id)
+        .in("status", ["pending", "reschedule_requested"])
+        .order("lesson_date", { ascending: true });
+
+      if (lessonError) {
+        console.error("Next lesson error:", lessonError);
+      }
+
+      console.log("CURRENT STUDENT ID:", user.id);
+      console.log("LESSON DATA:", lessonData);
+      console.log("LESSON ERROR:", lessonError);
+
+      const todayDate = new Date();
+      todayDate.setHours(0, 0, 0, 0);
+
+      const upcomingLessons = (lessonData || []).filter((lesson) => {
+        const effectiveDate = lesson.rescheduled_date || lesson.lesson_date;
+        const lessonDate = new Date(effectiveDate);
+        lessonDate.setHours(0, 0, 0, 0);
+
+        return lessonDate >= todayDate;
+      });
+
+      const next = upcomingLessons.sort((a, b) => {
+        const dateA = new Date(a.rescheduled_date || a.lesson_date).getTime();
+        const dateB = new Date(b.rescheduled_date || b.lesson_date).getTime();
+
+        return dateA - dateB;
+      })[0];
+
+      setNextLesson(next || null);
+
+      if (next?.tutor_id) {
+        const { data: tutorProfile } = await supabase
+          .from("profiles")
+          .select("name")
+          .eq("id", next.tutor_id)
+          .maybeSingle();
+
+        setLessonTutorName(tutorProfile?.name || "Tutor");
+      }
+
       const { data: profile } = await supabase
         .from("profiles")
         .select("name")
@@ -85,6 +143,7 @@ const StudentOverview = () => {
       const wrong = allAttempts.length - correct;
 
       setMistakes(wrong);
+
       setAccuracy(
         allAttempts.length === 0
           ? 0
@@ -93,19 +152,23 @@ const StudentOverview = () => {
 
       setStreak(calculateStreak(allAttempts));
 
-      const today = new Date().toDateString();
+      const todayString = new Date().toDateString();
+
       const todayAttempts = allAttempts.filter(
-        (a) => new Date(a.created_at).toDateString() === today
+        (a) => new Date(a.created_at).toDateString() === todayString
       );
+
       setTodayCount(todayAttempts.length);
 
       const skillCount: any = {};
+
       allAttempts.forEach((a) => {
         if (!a.is_correct) {
           const skill = a.questions?.skill || "Other";
           skillCount[skill] = (skillCount[skill] || 0) + 1;
         }
       });
+
       setStats(skillCount);
 
       const { data: feedback } = await supabase
@@ -144,162 +207,370 @@ const StudentOverview = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
-      <div className="mx-auto max-w-5xl">
-        <div className="rounded-[1.8rem] border bg-card p-5 shadow-elegant sm:rounded-[2rem] sm:p-8">
-          <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-14">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
+
+      <div className="relative z-10 mx-auto max-w-[1200px] space-y-8">
+        <section className="relative overflow-hidden rounded-[3rem] border border-[#eee8ff] bg-white p-7 shadow-[0_35px_120px_rgba(66,56,120,0.10)] sm:p-10">
+          <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
+          <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
+
+          <div className="relative z-10 grid gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
             <div>
-              <h1 className="font-serif text-3xl font-semibold leading-tight text-primary sm:text-4xl">
+              <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
+                <Sparkles className="h-5 w-5" />
+                Student Dashboard
+              </p>
+
+              <h1 className="mt-5 font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.8rem] lg:text-[5.4rem]">
                 {loading ? (
-                  <div className="h-10 w-40 animate-pulse rounded-xl bg-secondary" />
+                  <span className="block h-24 w-72 animate-pulse rounded-[2rem] bg-[#f6f1ff]" />
                 ) : (
-                  `Welcome back, ${name} 👋`
+                  <>
+                    Welcome back,
+                    <br />
+                    {name}.
+                  </>
                 )}
               </h1>
 
-              <p className="mt-2 text-sm leading-7 text-muted-foreground sm:text-lg">
-                Here’s your study overview
+              <p className="mt-6 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg">
+                Track your learning progress, review weak areas, and keep your
+                daily practice streak alive.
               </p>
             </div>
 
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary text-xl sm:h-14 sm:w-14 sm:text-2xl">
-              🌙
-            </div>
-          </div>
+            <motion.div
+              whileHover={{ y: -8, rotate: 1.5 }}
+              className="relative rounded-[2.2rem] bg-[#fbfaff] p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)]"
+            >
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8d73ff]">
+                Today’s Goal
+              </p>
 
-          <div data-guide="overview-stats" className="grid gap-4 sm:gap-6 md:grid-cols-3">
-            <div className="rounded-2xl border p-5 sm:p-6">
-              <p className="text-sm font-semibold text-muted-foreground">
-                Overall Accuracy
-              </p>
-              <p className="mt-4 text-4xl font-bold text-primary sm:text-5xl">
-                {accuracy}%
-              </p>
-            </div>
-
-            <div className="rounded-2xl border p-5 sm:p-6">
-              <p className="text-sm font-semibold text-muted-foreground">
-                Study Streak
-              </p>
-              <p className="mt-4 text-4xl font-bold text-primary sm:text-5xl text-yellow-500">
-                {streak}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border p-5 sm:p-6">
-              <p className="text-sm font-semibold text-muted-foreground">
-                Questions Solved
-              </p>
-              <p className="mt-4 text-4xl font-bold text-primary sm:text-5xl">
-                {attempts.length}
-              </p>
-            </div>
-          </div>
-
-          <div data-guide="overview-practice-feedback" className="mt-8 grid gap-5 sm:gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border p-5 sm:p-7">
-              <h2 className="font-serif text-2xl font-semibold text-primary">
-                Recommended Practice
-              </h2>
-
-              <div className="mt-6 space-y-6">
-                <div>
-                  <div className="mb-2 flex justify-between text-lg font-medium">
-                    <span>Daily Practice Goal</span>
-                    <span>
-                      {todayCount} / {DAILY_GOAL}
+              <div className="mt-5">
+                <div className="mb-3 flex items-end justify-between">
+                  <p className="font-poppins text-4xl font-black text-primary">
+                    {todayCount}
+                    <span className="text-lg text-primary/40">
+                      {" "}
+                      / {DAILY_GOAL}
                     </span>
-                  </div>
+                  </p>
 
-                  <div className="h-3 rounded-full bg-secondary">
-                    <div
-                      className="h-3 rounded-full bg-primary"
-                      style={{ width: `${Math.max(dailyProgress, 8)}%` }}
-                    />
-                  </div>
-
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Complete 30 questions today to reach your daily target.
+                  <p className="text-sm font-bold text-[#8d73ff]">
+                    {dailyProgress}%
                   </p>
                 </div>
 
-                <div>
-                  <div className="mb-2 flex justify-between text-lg font-medium">
-                    <span>Overall Accuracy</span>
-                    <span>{accuracy}%</span>
-                  </div>
-
-                  <div className="h-3 rounded-full bg-secondary">
-                    <div
-                      className="h-3 rounded-full bg-yellow-400"
-                      style={{ width: `${Math.max(accuracy, 8)}%` }}
-                    />
-                  </div>
+                <div className="h-3 overflow-hidden rounded-full bg-[#eee9ff]">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.max(dailyProgress, 8)}%` }}
+                    transition={{ duration: 0.9 }}
+                    className="h-full rounded-full bg-[#8d73ff]"
+                  />
                 </div>
+
+                <p className="mt-3 text-sm leading-6 text-primary/55">
+                  Complete 30 questions today to reach your daily target.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        <motion.section
+          initial={{ opacity: 0, x: -35 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false }}
+          whileHover={{ y: -6, rotate: -0.5 }}
+          className="relative overflow-hidden rounded-[2.5rem] bg-white p-7 shadow-[0_22px_65px_rgba(66,56,120,0.10)]"
+        >
+          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#f0eaff]" />
+
+          <div className="relative z-10">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+                  Next Lesson
+                </p>
+
+                {nextLesson ? (
+                  <h2 className="mt-3 font-poppins text-3xl font-black text-primary">
+                    {nextLesson.rescheduled_date || nextLesson.lesson_date}
+                  </h2>
+                ) : (
+                  <h2 className="mt-3 font-poppins text-3xl font-black text-primary">
+                    No upcoming lesson
+                  </h2>
+                )}
               </div>
 
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Link to="/practice" className="w-full sm:w-auto">
-                  <Button type="button" className="w-full sm:w-auto">
-                    Practice
-                  </Button>
-                </Link>
-
-                <Link to="/mistakes" className="w-full sm:w-auto">
-                  <Button type="button" variant="outline" className="w-full sm:w-auto">
-                    View Mistakes
-                  </Button>
-                </Link>
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f6f1ff] text-[#8d73ff]">
+                <Calendar className="h-6 w-6" />
               </div>
             </div>
 
-            <div className="rounded-2xl border p-5 sm:p-7">
-              <h2 className="font-serif text-2xl font-semibold text-primary">
-                Recent Tutor Feedback
-              </h2>
+            {nextLesson ? (
+              <>
+                <p className="mt-3 text-sm leading-7 text-primary/60">
+                  With {lessonTutorName} · {nextLesson.hours} hour(s)
+                </p>
+
+                {nextLesson.lesson_contents && (
+                  <div className="mt-5 rounded-2xl bg-[#fbfaff] p-4 text-sm font-semibold text-primary/70">
+                    {nextLesson.lesson_contents}
+                  </div>
+                )}
+
+                {nextLesson.status === "reschedule_requested" && (
+                  <div className="mt-4 rounded-2xl bg-blue-50 p-4 text-sm font-semibold text-blue-700">
+                    Reschedule requested: {nextLesson.lesson_date} →{" "}
+                    {nextLesson.rescheduled_date}
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="mt-3 text-sm leading-7 text-primary/60">
+                Your next lesson will appear here once your tutor adds it.
+              </p>
+            )}
+          </div>
+        </motion.section>
+
+        <div data-guide="overview-stats" className="grid gap-4 md:grid-cols-3">
+          {[
+            {
+              title: "Overall Accuracy",
+              value: `${accuracy}%`,
+              icon: BarChart3,
+              tone: "purple",
+            },
+            {
+              title: "Study Streak",
+              value: streak,
+              icon: Flame,
+              tone: "yellow",
+            },
+            {
+              title: "Questions Solved",
+              value: attempts.length,
+              icon: BookOpen,
+              tone: "purple",
+            },
+          ].map((item, i) => {
+            const Icon = item.icon;
+
+            return (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false }}
+                transition={{ delay: i * 0.06 }}
+                whileHover={{ y: -8, rotate: i % 2 === 0 ? -1.5 : 1.5 }}
+                className="rounded-[2.2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl"
+              >
+                <div
+                  className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl ${
+                    item.tone === "yellow"
+                      ? "bg-[#fff6da] text-[#d4a100]"
+                      : "bg-[#f6f1ff] text-[#8d73ff]"
+                  }`}
+                >
+                  <Icon className="h-6 w-6" />
+                </div>
+
+                <p className="mb-1 text-sm font-bold text-primary/50">
+                  {item.title}
+                </p>
+
+                <h3 className="font-poppins text-4xl font-black text-primary">
+                  {loading ? "—" : item.value}
+                </h3>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div
+          data-guide="overview-practice-feedback"
+          className="grid gap-6 lg:grid-cols-[1fr_0.9fr]"
+        >
+          <motion.section
+            initial={{ opacity: 0, x: -35 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false }}
+            className="rounded-[2.5rem] bg-white/95 p-7 shadow-[0_22px_65px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+                  Recommended Practice
+                </p>
+
+                <h2 className="mt-3 font-poppins text-3xl font-black text-primary">
+                  Focus on {weakestSkill}
+                </h2>
+              </div>
+
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f6f1ff] text-[#8d73ff]">
+                <Target className="h-6 w-6" />
+              </div>
+            </div>
+
+            <div className="mt-7 space-y-6">
+              <ProgressRow
+                title="Daily Practice Goal"
+                value={`${todayCount} / ${DAILY_GOAL}`}
+                percent={dailyProgress}
+                color="bg-[#8d73ff]"
+              />
+
+              <ProgressRow
+                title="Overall Accuracy"
+                value={`${accuracy}%`}
+                percent={accuracy}
+                color="bg-[#ffd84d]"
+              />
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link to="/practice" className="flex-1">
+                <Button className="group h-14 w-full rounded-2xl bg-primary text-base font-black shadow-[0_18px_45px_rgba(10,36,84,0.20)]">
+                  Practice
+                  <ArrowRight className="ml-2 h-5 w-5 transition group-hover:translate-x-1" />
+                </Button>
+              </Link>
+
+              <Link to="/mistakes" className="flex-1">
+                <Button
+                  variant="outline"
+                  className="h-14 w-full rounded-2xl border-primary/10 bg-white text-base font-black text-primary transition hover:-translate-y-1 hover:bg-[#f6f1ff]"
+                >
+                  View Mistakes
+                </Button>
+              </Link>
+            </div>
+          </motion.section>
+
+          <motion.section
+            initial={{ opacity: 0, x: 35 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false }}
+            whileHover={{ y: -6, rotate: 0.7 }}
+            className="relative overflow-hidden rounded-[2.5rem] bg-white/95 p-7 shadow-[0_22px_65px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+          >
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#f0eaff]" />
+
+            <div className="relative z-10">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+                    Tutor Feedback
+                  </p>
+
+                  <h2 className="mt-3 font-poppins text-3xl font-black text-primary">
+                    Latest message
+                  </h2>
+                </div>
+
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#fff6da] text-[#d4a100]">
+                  <MessageCircle className="h-6 w-6" />
+                </div>
+              </div>
 
               {latestFeedback ? (
                 <>
-                  <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                    {latestFeedback.message}
+                  <p className="mt-7 text-base leading-8 text-primary/65">
+                    “{latestFeedback.message}”
                   </p>
 
-                  <p className="mt-6 text-lg font-semibold text-primary">
-                    — {feedbackTutorName}
-                  </p>
+                  <div className="mt-7 rounded-2xl bg-[#fbfaff] p-5">
+                    <p className="font-poppins text-lg font-black text-primary">
+                      {feedbackTutorName}
+                    </p>
 
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {new Date(latestFeedback.created_at).toLocaleDateString()}
-                  </p>
+                    <p className="mt-1 text-sm text-primary/45">
+                      {new Date(latestFeedback.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
                 </>
               ) : (
                 <>
-                  <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                  <p className="mt-7 text-base leading-8 text-primary/65">
                     No tutor feedback yet.
                   </p>
 
-                  <p className="mt-6 text-lg font-semibold text-primary">
-                    — Luna Studies
-                  </p>
+                  <div className="mt-7 rounded-2xl bg-[#fbfaff] p-5">
+                    <p className="font-poppins text-lg font-black text-primary">
+                      Luna Studies
+                    </p>
+
+                    <p className="mt-1 text-sm text-primary/45">
+                      Keep practising regularly.
+                    </p>
+                  </div>
                 </>
               )}
             </div>
-          </div>
+          </motion.section>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          className="flex flex-col gap-3 rounded-[2.2rem] bg-white/80 p-4 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:flex-row sm:justify-center"
+        >
           <Link to="/practice" className="w-full sm:w-auto">
-            <Button type="button" className="w-full px-8 sm:w-auto">
+            <Button className="h-13 w-full rounded-2xl bg-[#8d73ff] px-8 font-black sm:w-auto">
               Practice
             </Button>
           </Link>
 
           <Link to="/mistakes" className="w-full sm:w-auto">
-            <Button type="button" variant="outline" className="w-full px-8 sm:w-auto">
+            <Button
+              variant="outline"
+              className="h-13 w-full rounded-2xl border-primary/10 bg-white px-8 font-black text-primary transition hover:-translate-y-1 hover:bg-[#f6f1ff] sm:w-auto"
+            >
               View Mistakes
             </Button>
           </Link>
-        </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+const ProgressRow = ({
+  title,
+  value,
+  percent,
+  color,
+}: {
+  title: string;
+  value: string;
+  percent: number;
+  color: string;
+}) => {
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between gap-4">
+        <p className="font-bold text-primary">{title}</p>
+
+        <p className="font-poppins text-lg font-black text-primary">{value}</p>
+      </div>
+
+      <div className="h-3 overflow-hidden rounded-full bg-[#eee9ff]">
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: `${Math.max(percent, 8)}%` }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8 }}
+          className={`h-full rounded-full ${color}`}
+        />
       </div>
     </div>
   );

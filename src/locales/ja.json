@@ -537,6 +537,26 @@
     },
     "items": [
       {
+        "name": "Grace",
+        "image": "/tutors/grace_new.jpg",
+        "role": "アカデミック英語・ヘッドチューター",
+        "subjects": [
+          "IB English",
+          "TOEFL",
+          "Academic Writing",
+          "Listening",
+          "発音改善"
+        ],
+        "education": "シンガポール国立大学（シンガポール）",
+        "languages": "英語 / 中国語",
+        "bio": "バイリンガル教育、IB対策、アカデミック英語の自信づくりをサポートします。",
+        "experience": [
+          "アカデミック英語とIB英語の指導",
+          "TOEFLスピーキング・ライティング対策",
+          "バイリンガル教育サポート",
+          "学術的な表現力と自信の育成"
+        ]
+      },{
         "name": "Mimi",
         "image": "/tutors/mimi_new.jpg",
         "role": "トリリンガル教育講師・ヘッドチューター",
@@ -558,27 +578,7 @@
           "個別学習計画と学習戦略の設計"
         ]
       },
-      {
-        "name": "Grace",
-        "image": "/tutors/grace_new.jpg",
-        "role": "アカデミック英語・ヘッドチューター",
-        "subjects": [
-          "IB English",
-          "TOEFL",
-          "Academic Writing",
-          "Listening",
-          "発音改善"
-        ],
-        "education": "シンガポール国立大学（シンガポール）",
-        "languages": "英語 / 中国語",
-        "bio": "バイリンガル教育、IB対策、アカデミック英語の自信づくりをサポートします。",
-        "experience": [
-          "アカデミック英語とIB英語の指導",
-          "TOEFLスピーキング・ライティング対策",
-          "バイリンガル教育サポート",
-          "学術的な表現力と自信の育成"
-        ]
-      },
+      
       {
         "name": "Francis",
         "image": "/tutors/francis_new.png",
@@ -640,7 +640,26 @@
           "体系的な言語学習指導",
           "自信とコミュニケーション力を育てる指導"
         ]
-      }
+      },
+      {
+  "name": "Kana",
+  "image": "/tutors/kana_new.png",
+  "role": "日本語講師",
+  "subjects": [
+    "日本語",
+    "初級日本語",
+    "JLPT対策"
+  ],
+  "education": "慶應義塾大学(日本)",
+  "languages": "日本語 / English / 中文",
+  "bio": "文法・語彙・会話・読解をバランスよく指導し、生徒一人ひとりに合わせた丁寧なサポートを行います。わかりやすい説明と実践的な会話練習を通して、自信を持って日本語を使える力を育てます。",
+  "experience": [
+    "初級〜中級日本語指導",
+    "JLPT文法・語彙対策",
+    "日常会話・アカデミック日本語指導",
+    "日本での学校生活・日常生活への適応サポート"
+  ]
+}
     ]
   },
   "enquire": {

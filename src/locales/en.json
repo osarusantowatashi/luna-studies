@@ -681,6 +681,27 @@
     },
     "items": [
       {
+        "name": "Grace",
+        "image": "/tutors/grace_new.jpg",
+        "role": "Academic English & Head Tutor",
+        "subjects": [
+          "IB English",
+          "TOEFL",
+          "Academic Writing",
+          "Listening",
+          "Accent Reduction"
+        ],
+        "education": "National University of Singapore, Singapore",
+        "languages": "English / Mandarin",
+        "bio": "Experienced in bilingual education, IB preparation, and helping students build confidence in academic English.",
+        "experience": [
+          "Academic English and IB English tutoring",
+          "TOEFL speaking and writing preparation",
+          "Bilingual education support",
+          "Confidence building for academic communication"
+        ]
+      },
+      {
         "name": "Mimi",
         "image": "/tutors/mimi_new.jpg",
         "role": "Trilingual Educator & Head Tutor",
@@ -702,27 +723,7 @@
           "Personalised academic planning and learning strategy"
         ]
       },
-      {
-        "name": "Grace",
-        "image": "/tutors/grace_new.jpg",
-        "role": "Academic English & Head Tutor",
-        "subjects": [
-          "IB English",
-          "TOEFL",
-          "Academic Writing",
-          "Listening",
-          "Accent Reduction"
-        ],
-        "education": "National University of Singapore, Singapore",
-        "languages": "English / Mandarin",
-        "bio": "Experienced in bilingual education, IB preparation, and helping students build confidence in academic English.",
-        "experience": [
-          "Academic English and IB English tutoring",
-          "TOEFL speaking and writing preparation",
-          "Bilingual education support",
-          "Confidence building for academic communication"
-        ]
-      },
+      
       {
         "name": "Francis",
         "image": "/tutors/francis_new.png",
@@ -784,7 +785,26 @@
           "Structured language-learning guidance",
           "Patient coaching for confidence and communication skills"
         ]
-      }
+      },
+      {
+  "name": "Kana",
+  "image": "/tutors/kana_new.png",
+  "role": "Japanese Language Tutor",
+  "subjects": [
+    "Japanese Language",
+    "Beginner Japanese",
+    "JLPT Preparation"
+  ],
+  "education": "Keio University, Japan",
+  "languages": "Japanese / English / Mandarin",
+  "bio": "A patient and structured Japanese tutor who helps students build strong foundations in grammar, vocabulary, speaking, and reading. She supports learners in gaining confidence through clear explanations and practical communication practice.",
+  "experience": [
+    "Beginner to intermediate Japanese language tutoring",
+    "JLPT vocabulary and grammar preparation",
+    "Conversation practice for daily and academic situations",
+    "Support for students adapting to Japanese school or daily life"
+  ]
+}
     ]
   },
   "login": {

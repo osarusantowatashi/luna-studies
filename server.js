@@ -680,6 +680,70 @@ const difficultyRules = {
    OPENAI GENERATOR
 ========================= */
 
+app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
+  try {
+    const {
+      gameType,
+      grade,
+      difficulty = "Easy",
+      questionCount = 12,
+    } = req.body;
+
+    let prompt = "";
+
+    if (gameType === "memory_flip") {
+      prompt = `
+Generate ${questionCount} educational matching pairs for children.
+
+Game Type:
+Memory Flip Matching Game
+
+Grade:
+${grade}
+
+Difficulty:
+${difficulty}
+
+Rules:
+- Generate matching word pairs
+- Educational only
+- Keep answers short
+- Make content age appropriate
+- Return ONLY JSON
+- No explanations
+
+Format:
+[
+  {
+    "pair_id": 1,
+    "left": "Apple",
+    "right": "苹果"
+  }
+]
+`;
+    }
+
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      input: prompt,
+    });
+
+    const text = response.output_text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    return res.json(JSON.parse(text));
+
+  } catch (err) {
+    console.error("GAME QUESTION ERROR:", err);
+
+    return res.status(500).json({
+      error: err.message,
+    });
+  }
+});
+
 app.post("/api/generate-questions", requireAdmin, async (req, res) => {
   try {
     console.log("🔥 GENERATE ROUTE HIT");
