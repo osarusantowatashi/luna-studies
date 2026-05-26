@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-const GUIDE_KEY = "hapiko_student_guide_hidden";
+const userId = localStorage.getItem("userId");
+
+const GUIDE_KEY = `hapiko_student_guide_hidden_${userId}`;
 
 const steps = [
     {

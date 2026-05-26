@@ -60,6 +60,7 @@ const NavBar = () => {
         "userName",
         profile?.name || user.email || "User"
       );
+      localStorage.setItem("userId", user.id);
     };
 
     syncUser();
@@ -159,7 +160,10 @@ const NavBar = () => {
 
   const logout = async () => {
     await supabase.auth.signOut();
-    localStorage.clear();
+  
+    localStorage.removeItem("role");
+    localStorage.removeItem("userName");
+  
     window.location.href = "/en";
   };
 
