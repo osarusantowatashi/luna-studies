@@ -455,6 +455,12 @@ const getPexelsImage = async (keyword) => {
       }
     );
 
+    const normalizeText = (text = "") =>
+      String(text).trim().toLowerCase();
+    
+    const getPairKey = (left = "", right = "") =>
+      `${normalizeText(left)}__${normalizeText(right)}`;
+
     const photo = response.data.photos?.[0];
 
     return (
@@ -728,6 +734,36 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       });
     }
 
+    const { data: existingRows, error: existingError } = await supabaseAdmin
+      .from("game_questions")
+      .select("question_data")
+      .eq("game_type", gameType)
+      .eq("language_pair", languagePair)
+      .eq("grade", grade)
+      .eq("difficulty", difficulty);
+
+    if (existingError) {
+      return res.status(500).json({
+        error: existingError.message,
+      });
+    }
+
+    const existingPairs = (existingRows || []).flatMap((row) => {
+      const pairs = row.question_data?.pairs || [];
+      return pairs.map((pair) => ({
+        left: pair.left,
+        right: pair.right,
+        key: getPairKey(pair.left, pair.right),
+      }));
+    });
+
+    const existingPairKeys = new Set(existingPairs.map((pair) => pair.key));
+
+    const existingPairText = existingPairs
+      .slice(-80)
+      .map((pair) => `- ${pair.left} ↔ ${pair.right}`)
+      .join("\n");
+
     const languageRules = {
       zh_en: `
 - Left side must be English.
@@ -753,7 +789,7 @@ Example:
       languageRules[languagePair] || languageRules.zh_en;
 
     const prompt = `
-Generate ${pairCount} educational matching pairs for children.
+Generate ${pairCount} NEW educational matching pairs for children.
 
 Game Type:
 Memory Flip Matching Game
@@ -776,12 +812,17 @@ ${languagePair}
 LANGUAGE RULES:
 ${selectedLanguageRule}
 
+Already existing pairs for this setup. DO NOT generate these again:
+${existingPairText || "- None"}
+
 Rules:
-- Generate matching educational word pairs.
+- Generate NEW matching educational word pairs.
+- Do NOT repeat any existing pair listed above.
+- Do NOT repeat the same left word.
+- Do NOT repeat the same right word.
 - Content must be suitable for children and students.
 - Keep each word or phrase short and easy to read.
 - Make all content age-appropriate for the selected grade.
-- Avoid duplicate words or repeated meanings.
 - Avoid overly advanced vocabulary for younger grades.
 - Use realistic educational vocabulary only.
 - Focus on useful learning topics such as:
@@ -800,30 +841,27 @@ Rules:
 - Keep translations natural and commonly used.
 - Avoid slang or rare vocabulary.
 
-- Each pair MUST include:
-  "image_keyword"
+- Every pair MUST include "image_keyword".
+- image_keyword must be English only.
+- image_keyword must be short and simple.
+- image_keyword must describe a real searchable object or concept.
+- image_keyword must work well with Pexels image search.
+- image_keyword must NOT be abstract.
 
-- image_keyword must:
-  - be written in English only
-  - be short and simple
-  - describe a real searchable object or concept
-  - work well with Pexels image search
-  - NOT be abstract
+Good image_keyword examples:
+apple
+school bus
+happy child
+cat
+pencil
+banana
+doctor
+airplane
 
-- Good image_keyword examples:
-  apple
-  school bus
-  happy child
-  cat
-  pencil
-  banana
-  doctor
-  airplane
-
-- Return ONLY valid JSON.
-- Do NOT include explanations.
-- Do NOT include markdown.
-- Do NOT include extra text outside JSON.
+Return ONLY valid JSON.
+Do NOT include explanations.
+Do NOT include markdown.
+Do NOT include extra text outside JSON.
 
 Return this exact JSON shape:
 {
@@ -856,21 +894,46 @@ Return this exact JSON shape:
       });
     }
 
-    const pairsWithImages = await Promise.all(
-      parsed.pairs.map(async (pair) => {
-        const imageKeyword = pair.image_keyword || pair.left;
-        const imageUrl = await getPexelsImage(imageKeyword);
+    const cleanedPairs = [];
 
-        return {
-          ...pair,
-          image_keyword: imageKeyword,
-          image_url: imageUrl,
-        };
-      })
-    );
+    for (const pair of parsed.pairs) {
+      const left = String(pair.left || "").trim();
+      const right = String(pair.right || "").trim();
+
+      if (!left || !right) continue;
+
+      const key = getPairKey(left, right);
+
+      if (existingPairKeys.has(key)) continue;
+
+      if (cleanedPairs.some((item) => getPairKey(item.left, item.right) === key)) {
+        continue;
+      }
+
+      const imageKeyword = String(pair.image_keyword || left)
+        .trim()
+        .toLowerCase();
+
+      const imageUrl = await getPexelsImage(imageKeyword);
+
+      cleanedPairs.push({
+        pair_id: cleanedPairs.length + 1,
+        left,
+        right,
+        image_keyword: imageKeyword,
+        image_url: imageUrl,
+      });
+    }
+
+    if (cleanedPairs.length === 0) {
+      return res.status(500).json({
+        error:
+          "OpenAI generated duplicate or invalid pairs only. Please try generating again.",
+      });
+    }
 
     const finalQuestionData = {
-      pairs: pairsWithImages,
+      pairs: cleanedPairs,
     };
 
     const { data, error } = await supabaseAdmin
