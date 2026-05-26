@@ -6,6 +6,7 @@ import { Resend } from "resend";
 import fs from "fs";
 import path from "path";
 import { createClient } from "@supabase/supabase-js";
+import axios from "axios";
 
 const chatRateLimitMap = new Map();
 
@@ -441,6 +442,32 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
    HELPERS
 ========================= */
 
+const getPexelsImage = async (keyword) => {
+  try {
+    const response = await axios.get(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(
+        keyword
+      )}&per_page=1`,
+      {
+        headers: {
+          Authorization: process.env.PEXELS_API_KEY,
+        },
+      }
+    );
+
+    const photo = response.data.photos?.[0];
+
+    return (
+      photo?.src?.medium ||
+      photo?.src?.large ||
+      null
+    );
+  } catch (err) {
+    console.error("PEXELS ERROR:", err.message);
+    return null;
+  }
+};
+
 
 const safeName = (text = "") =>
   text.replace(/\s+/g, "_").replace(/[^\w]/g, "");
@@ -750,22 +777,62 @@ LANGUAGE RULES:
 ${selectedLanguageRule}
 
 Rules:
-- Generate matching word pairs.
-- Educational only.
-- Keep each card short.
-- Make content age appropriate.
-- Avoid duplicate words.
-- Avoid overly advanced vocabulary for young grades.
-- Return ONLY valid JSON.
-- No explanations.
-- No markdown.
+- Generate matching educational word pairs.
+- Content must be suitable for children and students.
+- Keep each word or phrase short and easy to read.
+- Make all content age-appropriate for the selected grade.
+- Avoid duplicate words or repeated meanings.
+- Avoid overly advanced vocabulary for younger grades.
+- Use realistic educational vocabulary only.
+- Focus on useful learning topics such as:
+  animals,
+  food,
+  colors,
+  transportation,
+  school items,
+  emotions,
+  actions,
+  daily objects,
+  nature,
+  basic academic vocabulary.
 
-Format:
+- "left" and "right" must always be correct translations of each other.
+- Keep translations natural and commonly used.
+- Avoid slang or rare vocabulary.
+
+- Each pair MUST include:
+  "image_keyword"
+
+- image_keyword must:
+  - be written in English only
+  - be short and simple
+  - describe a real searchable object or concept
+  - work well with Pexels image search
+  - NOT be abstract
+
+- Good image_keyword examples:
+  apple
+  school bus
+  happy child
+  cat
+  pencil
+  banana
+  doctor
+  airplane
+
+- Return ONLY valid JSON.
+- Do NOT include explanations.
+- Do NOT include markdown.
+- Do NOT include extra text outside JSON.
+
+Return this exact JSON shape:
 {
   "pairs": [
     {
-      "left": "apple",
-      "right": "苹果"
+      "pair_id": 1,
+      "left": "Apple",
+      "right": "苹果",
+      "image_keyword": "apple"
     }
   ]
 }
@@ -789,6 +856,23 @@ Format:
       });
     }
 
+    const pairsWithImages = await Promise.all(
+      parsed.pairs.map(async (pair) => {
+        const imageKeyword = pair.image_keyword || pair.left;
+        const imageUrl = await getPexelsImage(imageKeyword);
+
+        return {
+          ...pair,
+          image_keyword: imageKeyword,
+          image_url: imageUrl,
+        };
+      })
+    );
+
+    const finalQuestionData = {
+      pairs: pairsWithImages,
+    };
+
     const { data, error } = await supabaseAdmin
       .from("game_questions")
       .insert([
@@ -799,7 +883,9 @@ Format:
           skill,
           difficulty,
           language_pair: languagePair,
-          question_data: parsed,
+          question_data: finalQuestionData,
+          image_provider: "pexels",
+          image_cached_at: new Date().toISOString(),
           created_by: req.user.id,
         },
       ])

@@ -186,9 +186,32 @@ export default function GenerateGameQuestions() {
               </div>
             </div>
 
-            <pre className="mt-4 max-h-[400px] overflow-auto rounded-2xl bg-slate-50 p-4 text-xs">
-              {JSON.stringify(result.question_data, null, 2)}
-            </pre>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {result.question_data?.pairs?.map((pair: any, index: number) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4"
+                >
+                  {pair.image_url && (
+                    <img
+                      src={pair.image_url}
+                      alt={pair.image_keyword || pair.left}
+                      className="h-16 w-16 rounded-xl object-cover"
+                    />
+                  )}
+
+                  <div>
+                    <p className="font-semibold text-primary">
+                      {pair.left} ↔ {pair.right}
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Image: {pair.image_keyword || "-"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

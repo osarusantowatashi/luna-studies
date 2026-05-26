@@ -3,31 +3,69 @@ import { RotateCcw, Trophy, Zap, Clock, MousePointerClick } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 type Pair = {
+  pair_id?: number;
   left: string;
   right: string;
+  image_keyword?: string;
+  image_url?: string;
 };
 
 type Card = {
   id: string;
   pairId: number;
+  pairKey: string;
   text: string;
+  imageKeyword?: string;
+  imageUrl?: string;
   flipped: boolean;
   matched: boolean;
 };
 
+type PlayedPair = {
+  pairKey: string;
+  left: string;
+  right: string;
+  imageKeyword?: string;
+};
+
 const shuffle = <T,>(array: T[]) => [...array].sort(() => Math.random() - 0.5);
+
+const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
+
+const FALLBACK_IMAGE =
+  "https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg";
+
+const getNextGrade = (currentGrade: string) => {
+  const index = grades.indexOf(currentGrade);
+  return grades[index + 1] || null;
+};
+
+const getTimeLimit = (pairCount: number, difficulty: string) => {
+  if (difficulty === "Easy") return pairCount * 18;
+  if (difficulty === "Medium") return pairCount * 14;
+  return pairCount * 10;
+};
 
 export default function MemoryFlip() {
   const [languagePair, setLanguagePair] = useState("zh_en");
+  const [grade, setGrade] = useState("Grade 1");
+  const [difficulty, setDifficulty] = useState("Easy");
+  const [pairCount, setPairCount] = useState(8);
+
+  const [activeGrade, setActiveGrade] = useState("Grade 1");
   const [cards, setCards] = useState<Card[]>([]);
+  const [playedPairs, setPlayedPairs] = useState<PlayedPair[]>([]);
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
   const [moves, setMoves] = useState(0);
   const [combo, setCombo] = useState(0);
   const [score, setScore] = useState(0);
-  const [seconds, setSeconds] = useState(0);
+  const [secondsLeft, setSecondsLeft] = useState(getTimeLimit(8, "Easy"));
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [timeUp, setTimeUp] = useState(false);
+  const [historySaved, setHistorySaved] = useState(false);
 
+  
   const matchedCount = useMemo(
     () => cards.filter((card) => card.matched).length / 2,
     [cards]
@@ -35,82 +73,224 @@ export default function MemoryFlip() {
 
   const totalPairs = cards.length / 2;
   const isWin = totalPairs > 0 && matchedCount === totalPairs;
+  const isGameEnded = isWin || timeUp;
 
   useEffect(() => {
-    loadGame(languagePair);
-  }, [languagePair]);
+    loadGame({
+      selectedLanguagePair: languagePair,
+      selectedGrade: grade,
+      selectedDifficulty: difficulty,
+      selectedPairCount: pairCount,
+    });
+  }, [languagePair, grade, difficulty, pairCount]);
 
   useEffect(() => {
-    if (loading || isWin || errorMsg) return;
+    if (loading || errorMsg || isGameEnded) return;
 
     const timer = setInterval(() => {
-      setSeconds((prev) => prev + 1);
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setTimeUp(true);
+          return 0;
+        }
+
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [loading, isWin, errorMsg]);
+  }, [loading, errorMsg, isGameEnded]);
 
-  const loadGame = async (selectedLanguagePair = languagePair) => {
+  const findGameQuestion = async (
+    selectedLanguagePair: string,
+    selectedGrade: string,
+    selectedDifficulty: string,
+    selectedPairCount: number
+  ) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+
+    let currentGrade: string | null = selectedGrade;
+
+    while (currentGrade) {
+      const { data, error } = await supabase
+        .from("game_questions")
+        .select("*")
+        .eq("game_type", "memory_flip")
+        .eq("language_pair", selectedLanguagePair)
+        .eq("grade", currentGrade)
+        .eq("difficulty", selectedDifficulty)
+        .order("created_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        let recentPairKeys: string[] = [];
+
+        if (user) {
+          const { data: recentHistory } = await supabase
+            .from("student_game_pair_history")
+            .select("pair_key")
+            .eq("student_id", user.id)
+            .eq("game_type", "memory_flip")
+            .eq("language_pair", selectedLanguagePair)
+            .eq("grade", currentGrade)
+            .eq("difficulty", selectedDifficulty)
+            .gte("last_seen_at", fourteenDaysAgo.toISOString());
+
+          recentPairKeys = recentHistory?.map((item) => item.pair_key) || [];
+        }
+
+        const allAvailablePairs = data.flatMap((questionSet) => {
+          const pairs: Pair[] = questionSet.question_data?.pairs || [];
+
+          return pairs
+            .map((pair) => {
+              const pairKey = `${selectedLanguagePair}_${currentGrade}_${selectedDifficulty}_${pair.left}_${pair.right}`;
+
+              return {
+                ...pair,
+                pairKey,
+                questionSet,
+              };
+            })
+            .filter((pair) => !recentPairKeys.includes(pair.pairKey));
+        });
+
+        if (allAvailablePairs.length >= selectedPairCount) {
+          return {
+            pairs: shuffle(allAvailablePairs).slice(0, selectedPairCount),
+            usedGrade: currentGrade,
+          };
+        }
+      }
+
+      currentGrade = getNextGrade(currentGrade);
+    }
+
+    return {
+      pairs: [],
+      usedGrade: null,
+    };
+  };
+
+  const loadGame = async ({
+    selectedLanguagePair = languagePair,
+    selectedGrade = grade,
+    selectedDifficulty = difficulty,
+    selectedPairCount = pairCount,
+  } = {}) => {
     setLoading(true);
     setErrorMsg("");
+    setTimeUp(false);
 
-    const { data, error } = await supabase
-      .from("game_questions")
-      .select("*")
-      .eq("game_type", "memory_flip")
-      .eq("language_pair", selectedLanguagePair)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
 
-    if (error || !data) {
+    const { pairs, usedGrade } = await findGameQuestion(
+      selectedLanguagePair,
+      selectedGrade,
+      selectedDifficulty,
+      selectedPairCount
+    );
+
+    if (!pairs.length || !usedGrade) {
       setCards([]);
+      setActiveGrade(selectedGrade);
+      setPlayedPairs([]);
       setErrorMsg(
-        "No Memory Flip questions found for this language pair. Please ask admin to generate game questions first."
+        "No new Memory Flip questions available. Please ask admin to generate more game questions."
       );
       setLoading(false);
       return;
     }
 
-    const pairs: Pair[] = data.question_data?.pairs || [];
 
-    if (!pairs.length) {
-      setCards([]);
-      setErrorMsg("This game question has no pairs.");
-      setLoading(false);
-      return;
-    }
+    const currentPlayedPairs: PlayedPair[] = pairs.map((pair) => ({
+      pairKey: pair.pairKey,
+      left: pair.left,
+      right: pair.right,
+      imageKeyword: pair.image_keyword,
+    }));
+
 
     const newCards: Card[] = shuffle(
-      pairs.flatMap((pair, index) => [
-        {
-          id: `${index}-left`,
-          pairId: index,
-          text: pair.left,
-          flipped: false,
-          matched: false,
-        },
-        {
-          id: `${index}-right`,
-          pairId: index,
-          text: pair.right,
-          flipped: false,
-          matched: false,
-        },
-      ])
+      pairs.flatMap((pair, index) => {
+        const pairKey = `${selectedLanguagePair}_${usedGrade || selectedGrade}_${selectedDifficulty}_${pair.left}_${pair.right}`;
+
+        return [
+          {
+            id: `${index}-left`,
+            pairId: index,
+            pairKey,
+            text: pair.left,
+            imageKeyword: pair.image_keyword,
+            imageUrl: pair.image_url,
+            flipped: false,
+            matched: false,
+          },
+          {
+            id: `${index}-right`,
+            pairId: index,
+            pairKey,
+            text: pair.right,
+            imageKeyword: pair.image_keyword,
+            imageUrl: pair.image_url,
+            flipped: false,
+            matched: false,
+          },
+        ];
+      })
     );
 
+    setActiveGrade(usedGrade || selectedGrade);
+    setPlayedPairs(currentPlayedPairs);
     setCards(newCards);
     setSelectedCards([]);
     setMoves(0);
     setCombo(0);
     setScore(0);
-    setSeconds(0);
+    setHistorySaved(false);
+    setSecondsLeft(getTimeLimit(selectedPairCount, selectedDifficulty));
     setLoading(false);
   };
 
+  const saveHistory = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+  
+    if (!user || playedPairs.length === 0 || historySaved) return;
+  
+    const payload = playedPairs.map((pair) => ({
+      student_id: user.id,
+      game_type: "memory_flip",
+      language_pair: languagePair,
+      grade: activeGrade,
+      difficulty,
+      pair_key: pair.pairKey,
+      left_text: pair.left,
+      right_text: pair.right,
+      image_keyword: pair.imageKeyword || null,
+      last_seen_at: new Date().toISOString(),
+    }));
+  
+    await supabase.from("student_game_pair_history").upsert(payload, {
+      onConflict:
+        "student_id,game_type,language_pair,grade,difficulty,pair_key",
+    });
+    setHistorySaved(true);
+  };
+  
+  useEffect(() => {
+    if (isWin) {
+      saveHistory();
+    }
+  }, [isWin]);
+
   const flipCard = (card: Card) => {
-    if (isWin) return;
+    if (isGameEnded) return;
     if (card.flipped || card.matched) return;
     if (selectedCards.length >= 2) return;
 
@@ -162,10 +342,10 @@ export default function MemoryFlip() {
 
   const stars = useMemo(() => {
     if (!isWin) return 0;
-    if (moves <= totalPairs + 4) return 3;
+    if (moves <= totalPairs + 4 && secondsLeft > 10) return 3;
     if (moves <= totalPairs + 8) return 2;
     return 1;
-  }, [isWin, moves, totalPairs]);
+  }, [isWin, moves, totalPairs, secondsLeft]);
 
   const languageLabel =
     languagePair === "zh_en"
@@ -188,12 +368,19 @@ export default function MemoryFlip() {
             </h1>
 
             <p className="mt-3 max-w-xl text-slate-500">
-              Choose two languages and match the correct pairs.
+              Choose your level, beat the timer, and match the correct language pairs.
             </p>
           </div>
 
           <button
-            onClick={() => loadGame(languagePair)}
+            onClick={() =>
+              loadGame({
+                selectedLanguagePair: languagePair,
+                selectedGrade: grade,
+                selectedDifficulty: difficulty,
+                selectedPairCount: pairCount,
+              })
+            }
             className="flex h-12 items-center justify-center gap-2 rounded-full bg-[#082A55] px-6 text-sm font-bold text-white shadow-lg transition hover:bg-[#123A70]"
           >
             <RotateCcw className="h-4 w-4" />
@@ -202,33 +389,57 @@ export default function MemoryFlip() {
         </div>
 
         <div className="mb-6 rounded-[2rem] border bg-white p-4 shadow-sm">
-          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
-            Choose Language Pair
-          </p>
+          <div className="grid gap-3 sm:grid-cols-4">
+            <select
+              value={languagePair}
+              onChange={(e) => setLanguagePair(e.target.value)}
+              className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold text-[#082A55]"
+            >
+              <option value="zh_en">中英 Chinese ↔ English</option>
+              <option value="zh_ja">中日 Chinese ↔ Japanese</option>
+              <option value="en_ja">英日 English ↔ Japanese</option>
+            </select>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            {[
-              { value: "zh_en", label: "中英 Chinese ↔ English" },
-              { value: "zh_ja", label: "中日 Chinese ↔ Japanese" },
-              { value: "en_ja", label: "英日 English ↔ Japanese" },
-            ].map((item) => (
-              <button
-                key={item.value}
-                onClick={() => setLanguagePair(item.value)}
-                className={`rounded-2xl border px-4 py-3 text-sm font-bold transition ${
-                  languagePair === item.value
-                    ? "border-[#082A55] bg-[#082A55] text-white"
-                    : "border-slate-200 bg-white text-[#082A55] hover:bg-slate-50"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+            <select
+              value={grade}
+              onChange={(e) => setGrade(e.target.value)}
+              className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold text-[#082A55]"
+            >
+              {grades.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+
+            <select
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+              className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold text-[#082A55]"
+            >
+              <option>Easy</option>
+              <option>Medium</option>
+              <option>Hard</option>
+            </select>
+
+            <select
+              value={pairCount}
+              onChange={(e) => setPairCount(Number(e.target.value))}
+              className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold text-[#082A55]"
+            >
+              <option value={6}>6 pairs</option>
+              <option value={8}>8 pairs</option>
+              <option value={10}>10 pairs</option>
+              <option value={12}>12 pairs</option>
+            </select>
           </div>
 
           <p className="mt-3 text-sm text-slate-500">
             Current mode:{" "}
             <span className="font-bold text-[#082A55]">{languageLabel}</span>
+            {" · "}
+            Selected: <span className="font-bold">{grade}</span>
+            {" · "}
+            Playing: <span className="font-bold">{activeGrade}</span>
+            {activeGrade !== grade && " (auto advanced)"}
           </p>
         </div>
 
@@ -267,15 +478,21 @@ export default function MemoryFlip() {
                 </p>
               </div>
 
-              <div className="rounded-3xl bg-white p-4 shadow-sm">
+              <div
+                className={`rounded-3xl bg-white p-4 shadow-sm ${secondsLeft <= 10 ? "ring-2 ring-red-300" : ""
+                  }`}
+              >
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-[#52bd7f]" />
                   <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                    Time
+                    Time Left
                   </p>
                 </div>
-                <p className="mt-1 text-2xl font-black text-[#082A55]">
-                  {seconds}s
+                <p
+                  className={`mt-1 text-2xl font-black ${secondsLeft <= 10 ? "text-red-500" : "text-[#082A55]"
+                    }`}
+                >
+                  {secondsLeft}s
                 </p>
               </div>
 
@@ -292,19 +509,19 @@ export default function MemoryFlip() {
               </div>
             </div>
 
-            {isWin && (
+            {(isWin || timeUp) && (
               <div className="mb-6 rounded-[2rem] border border-[#E8D8B5] bg-white p-6 text-center shadow-sm">
                 <Trophy className="mx-auto h-10 w-10 text-[#F6C65B]" />
 
                 <h2 className="mt-3 text-2xl font-black text-[#082A55]">
-                  Great Job!
+                  {isWin ? "Great Job!" : "Time's Up!"}
                 </h2>
 
                 <p className="mt-2 text-slate-500">
-                  Final Score: {score} · Moves: {moves} · Time: {seconds}s
+                  Final Score: {score} · Moves: {moves}
                 </p>
 
-                <p className="mt-3 text-2xl">{"⭐".repeat(stars)}</p>
+                {isWin && <p className="mt-3 text-2xl">{"⭐".repeat(stars)}</p>}
               </div>
             )}
 
@@ -318,20 +535,31 @@ export default function MemoryFlip() {
                     onClick={() => flipCard(card)}
                     className={`
                       relative h-[120px] rounded-[28px] border text-xl font-black shadow-sm transition-all duration-300 sm:h-[145px]
-                      ${
-                        visible
-                          ? "scale-[1.02] border-[#E8D8B5] bg-white text-[#082A55]"
-                          : "border-[#082A55] bg-[#082A55] text-white hover:-translate-y-1"
+                      ${visible
+                        ? "scale-[1.02] border-[#E8D8B5] bg-white text-[#082A55]"
+                        : "border-[#082A55] bg-[#082A55] text-white hover:-translate-y-1"
                       }
-                      ${
-                        card.matched
-                          ? "border-[#52bd7f] bg-[#f0fff6] text-[#16824b]"
-                          : ""
+                      ${card.matched
+                        ? "border-[#52bd7f] bg-[#f0fff6] text-[#16824b]"
+                        : ""
                       }
                     `}
                   >
                     {visible ? (
-                      <span>{card.text}</span>
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <img
+                          src={card.imageUrl || FALLBACK_IMAGE}
+                          alt={card.text}
+                          className="h-20 w-20 rounded-2xl object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = FALLBACK_IMAGE;
+                          }}
+                        />
+
+                        <span className="text-center text-lg sm:text-xl">
+                          {card.text}
+                        </span>
+                      </div>
                     ) : (
                       <span className="text-3xl">?</span>
                     )}
