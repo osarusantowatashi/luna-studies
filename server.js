@@ -449,13 +449,63 @@ const normalizeText = (text = "") =>
 const getPairKey = (left = "", right = "") =>
   `${normalizeText(left)}__${normalizeText(right)}`;
 
-const generateLunaVocabImage = async (keyword) => {
+const getImageTypeInstruction = (imageType = "object") => {
+  const rules = {
+    object:
+      "Show one clear object only, centered, easy to recognize.",
+    animal:
+      "Show one cute animal only, centered, full body if possible.",
+    person:
+      "Show one child or person clearly, friendly and simple.",
+    action:
+      "Show a child clearly performing the action. The action must be obvious.",
+    emotion:
+      "Show a child face clearly expressing the emotion. Focus on facial expression.",
+    color:
+      "Show only a clean color swatch, paint splash, or simple color card. Do not show random objects.",
+    place:
+      "Show a clear place or building scene, simple and easy for children to recognize.",
+    nature:
+      "Show one clear natural element, such as sun, tree, flower, rain, cloud, or river.",
+    food:
+      "Show one clear food item only, centered and appetizing.",
+    transport:
+      "Show one clear vehicle only, centered.",
+    school_item:
+      "Show one clear school item only, centered.",
+    abstract_concept:
+      "Show a simple child-friendly scene that represents the concept clearly. Avoid complex metaphors.",
+  };
+
+  return rules[imageType] || rules.object;
+};
+
+const generateLunaVocabImage = async (keyword, imageType = "object") => {
+  const typeInstruction = getImageTypeInstruction(imageType);
+
   const prompt = `
-Cute minimal educational flashcard illustration of "${keyword}".
-Single clear object, centered, white background.
-Soft pastel colors, rounded shapes, child-friendly.
-No text, no letters, no watermark, no extra objects.
-Consistent premium LUNA learning app style.
+Create a premium educational flashcard illustration for the vocabulary concept: "${keyword}".
+
+Image type:
+${imageType}
+
+Specific visual instruction:
+${typeInstruction}
+
+Style rules:
+- Cute minimal educational illustration.
+- Single main visual focus.
+- Centered composition.
+- White or very light warm background.
+- Soft pastel colors.
+- Rounded friendly shapes.
+- Child-friendly.
+- Clean and modern.
+- No text.
+- No letters.
+- No watermark.
+- No extra distracting objects.
+- Consistent LUNA learning app style.
 `;
 
   const result = await client.images.generate({
@@ -497,7 +547,7 @@ const saveVocabImageToStorage = async (keyword, b64, nextCount) => {
   };
 };
 
-const getOrCreateVocabImage = async (keyword) => {
+const getOrCreateVocabImage = async (keyword, imageType = "object") => {
   const cleanKeyword = normalizeText(keyword);
 
   const { data: existing, error } = await supabaseAdmin
@@ -519,7 +569,7 @@ const getOrCreateVocabImage = async (keyword) => {
     return existing.image_url || null;
   }
 
-  const b64 = await generateLunaVocabImage(cleanKeyword);
+  const b64 = await generateLunaVocabImage(cleanKeyword, imageType);
   if (!b64) return existing?.image_url || null;
 
   const nextCount = (existing?.generation_count || 0) + 1;
@@ -530,6 +580,7 @@ const getOrCreateVocabImage = async (keyword) => {
   await supabaseAdmin.from("vocab_images").upsert(
     {
       keyword: cleanKeyword,
+      image_type: imageType,
       image_url: saved.imageUrl,
       storage_path: saved.storagePath,
       style_version: STYLE_VERSION,
@@ -911,39 +962,62 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
     - Keep translations natural and commonly used.
     - Avoid slang or rare vocabulary.
 
-    - Every pair MUST include "image_keyword".
-    - image_keyword must be English only.
-    - image_keyword must be short and simple.
-    - image_keyword must describe a real searchable object or concept.
-    - image_keyword must work well for generating a clear educational flashcard image.
-    - image_keyword must NOT be abstract.
+    - Every pair MUST include:
+  "image_keyword"
+  "image_type"
 
-    Good image_keyword examples:
-    apple
-    school bus
-    happy child
-    cat
-    pencil
-    banana
-    doctor
-    airplane
+- image_keyword must be English only.
+- image_keyword must be short and clear.
+- image_keyword should describe the visual scene, not only the word.
+- image_keyword must help generate the most accurate educational image.
 
-    Return ONLY valid JSON.
-    Do NOT include explanations.
-    Do NOT include markdown.
-    Do NOT include extra text outside JSON.
+- image_type must be one of:
+  object
+  animal
+  person
+  action
+  emotion
+  color
+  place
+  nature
+  food
+  transport
+  school_item
+  abstract_concept
 
-    Return this exact JSON shape:
+Examples:
+- red / 红色:
+  image_keyword = "red color swatch"
+  image_type = "color"
+
+- eat / 吃:
+  image_keyword = "child eating food"
+  image_type = "action"
+
+- happy / 开心:
+  image_keyword = "happy child face"
+  image_type = "emotion"
+
+- school / 学校:
+  image_keyword = "school building"
+  image_type = "place"
+
+- responsibility / 责任:
+  image_keyword = "student taking care of classroom materials"
+  image_type = "abstract_concept"
+
+Return this exact JSON shape:
+{
+  "pairs": [
     {
-      "pairs": [
-        {
-          "pair_id": 1,
-          "left": "Apple",
-          "right": "苹果",
-          "image_keyword": "apple"
-        }
-      ]
+      "pair_id": 1,
+      "left": "Red",
+      "right": "红色",
+      "image_keyword": "red color swatch",
+      "image_type": "color"
     }
+  ]
+}
     `;
 
     const response = await client.responses.create({
@@ -984,13 +1058,18 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
         .trim()
         .toLowerCase();
 
-      const imageUrl = await getOrCreateVocabImage(imageKeyword);
+      const imageType = String(pair.image_type || "object")
+        .trim()
+        .toLowerCase();
+
+      const imageUrl = await getOrCreateVocabImage(imageKeyword, imageType);
 
       cleanedPairs.push({
         pair_id: cleanedPairs.length + 1,
         left,
         right,
         image_keyword: imageKeyword,
+        image_type: imageType,
         image_url: imageUrl,
       });
     }
@@ -1140,7 +1219,10 @@ app.post("/api/admin/vocab-images/:id/regenerate", requireAdmin, async (req, res
       });
     }
 
-    const b64 = await generateLunaVocabImage(existing.keyword);
+    const b64 = await generateLunaVocabImage(
+      existing.keyword,
+      existing.image_type || "object"
+    );
 
     if (!b64) {
       return res.status(500).json({ error: "Failed to generate image." });
@@ -1188,9 +1270,20 @@ app.post("/api/admin/vocab-images/:id/change-keyword", requireAdmin, async (req,
       return res.status(400).json({ error: "Keyword is required." });
     }
 
-    const cleanKeyword = normalizeText(keyword);
+    const { data: existing, error: fetchError } = await supabaseAdmin
+      .from("vocab_images")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    const b64 = await generateLunaVocabImage(cleanKeyword);
+    if (fetchError || !existing) {
+      return res.status(404).json({ error: "Image record not found." });
+    }
+
+    const cleanKeyword = normalizeText(keyword);
+    const imageType = existing.image_type || "object";
+
+    const b64 = await generateLunaVocabImage(cleanKeyword, imageType);
 
     if (!b64) {
       return res.status(500).json({ error: "Failed to generate image." });
@@ -1206,6 +1299,7 @@ app.post("/api/admin/vocab-images/:id/change-keyword", requireAdmin, async (req,
       .from("vocab_images")
       .update({
         keyword: cleanKeyword,
+        image_type: imageType,
         image_url: saved.imageUrl,
         storage_path: saved.storagePath,
         status: "needs_review",
