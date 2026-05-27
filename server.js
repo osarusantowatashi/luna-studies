@@ -6,7 +6,6 @@ import { Resend } from "resend";
 import fs from "fs";
 import path from "path";
 import { createClient } from "@supabase/supabase-js";
-import axios from "axios";
 
 const chatRateLimitMap = new Map();
 
@@ -544,39 +543,6 @@ const getOrCreateVocabImage = async (keyword) => {
 
   return saved.imageUrl;
 };
-
-const getPexelsImage = async (keyword) => {
-  try {
-    if (!process.env.PEXELS_API_KEY) {
-      console.error("PEXELS_API_KEY is missing");
-      return null;
-    }
-
-    const response = await axios.get(
-      `https://api.pexels.com/v1/search?query=${encodeURIComponent(
-        keyword
-      )}&per_page=1`,
-      {
-        timeout: 8000,
-        headers: {
-          Authorization: process.env.PEXELS_API_KEY,
-        },
-      }
-    );
-
-    const photo = response.data.photos?.[0];
-
-    return (
-      photo?.src?.medium ||
-      photo?.src?.large ||
-      null
-    );
-  } catch (err) {
-    console.error("PEXELS ERROR:", err.message);
-    return null;
-  }
-};
-
 
 const safeName = (text = "") =>
   text.replace(/\s+/g, "_").replace(/[^\w]/g, "");
