@@ -569,6 +569,9 @@ const getOrCreateVocabImage = async (
   if (existing?.status === "approved" && existing.image_url) {
     return existing.image_url;
   }
+  if (existing?.status === "rejected") {
+    return null;
+  }
 
   if (existing?.generation_count >= 2) {
     return existing.image_url || null;

@@ -188,13 +188,34 @@ export default function MemoryFlip() {
     setTimeUp(false);
 
 
-    const { pairs, usedGrade } = await findGameQuestion(
+    const { pairs: rawPairs, usedGrade } = await findGameQuestion(
       selectedLanguagePair,
       selectedGrade,
       selectedDifficulty,
       selectedPairCount
     );
-
+    
+    const imageKeywords = rawPairs
+      .map((pair: any) => pair.image_keyword)
+      .filter(Boolean);
+    
+    const { data: approvedImages } = await supabase
+      .from("vocab_images")
+      .select("keyword, image_url, status")
+      .in("keyword", imageKeywords)
+      .eq("status", "approved");
+    
+    const approvedImageMap = new Map(
+      (approvedImages || []).map((img) => [img.keyword, img.image_url])
+    );
+    
+    const pairs = rawPairs
+      .map((pair: any) => ({
+        ...pair,
+        image_url: approvedImageMap.get(pair.image_keyword) || null,
+      }))
+      .filter((pair: any) => pair.image_url);
+    
     if (!pairs.length || !usedGrade) {
       setCards([]);
       setActiveGrade(selectedGrade);
