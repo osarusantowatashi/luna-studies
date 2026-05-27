@@ -547,8 +547,13 @@ const saveVocabImageToStorage = async (keyword, b64, nextCount) => {
   };
 };
 
-const getOrCreateVocabImage = async (keyword, imageType = "object") => {
-  const cleanKeyword = normalizeText(keyword);
+const getOrCreateVocabImage = async (
+  vocabWord,
+  imageKeyword,
+  imageType = "object"
+) => {
+  const cleanVocabWord = normalizeText(vocabWord);
+  const cleanKeyword = normalizeText(imageKeyword);
 
   const { data: existing, error } = await supabaseAdmin
     .from("vocab_images")
@@ -569,7 +574,15 @@ const getOrCreateVocabImage = async (keyword, imageType = "object") => {
     return existing.image_url || null;
   }
 
-  const b64 = await generateLunaVocabImage(cleanKeyword, imageType);
+  let b64 = null;
+
+  try {
+    b64 = await generateLunaVocabImage(cleanKeyword, imageType);
+  } catch (err) {
+    console.error("OPENAI IMAGE ERROR:", err.message);
+    return existing?.image_url || null;
+  }
+
   if (!b64) return existing?.image_url || null;
 
   const nextCount = (existing?.generation_count || 0) + 1;
@@ -580,6 +593,7 @@ const getOrCreateVocabImage = async (keyword, imageType = "object") => {
   await supabaseAdmin.from("vocab_images").upsert(
     {
       keyword: cleanKeyword,
+      vocab_word: cleanVocabWord,
       image_type: imageType,
       image_url: saved.imageUrl,
       storage_path: saved.storagePath,
@@ -961,63 +975,68 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
     - "left" and "right" must always be correct translations of each other.
     - Keep translations natural and commonly used.
     - Avoid slang or rare vocabulary.
+    - vocab_word must be the main vocabulary word only.
+    - vocab_word should be 1 word for lower grades.
+    - For higher grades, vocab_word can be 1–2 words.
+    - image_keyword can be more descriptive for image accuracy.
 
     - Every pair MUST include:
-  "image_keyword"
-  "image_type"
+    "image_keyword"
+    "image_type"
 
-- image_keyword must be English only.
-- image_keyword must be short and clear.
-- image_keyword should describe the visual scene, not only the word.
-- image_keyword must help generate the most accurate educational image.
+    - image_keyword must be English only.
+    - image_keyword must be short and clear.
+    - image_keyword should describe the visual scene, not only the word.
+    - image_keyword must help generate the most accurate educational image.
 
-- image_type must be one of:
-  object
-  animal
-  person
-  action
-  emotion
-  color
-  place
-  nature
-  food
-  transport
-  school_item
-  abstract_concept
+    - image_type must be one of:
+      object
+      animal
+      person
+      action
+      emotion
+      color
+      place
+      nature
+      food
+      transport
+      school_item
+      abstract_concept
 
-Examples:
-- red / 红色:
-  image_keyword = "red color swatch"
-  image_type = "color"
+    Examples:
+    - red / 红色:
+      image_keyword = "red color swatch"
+      image_type = "color"
 
-- eat / 吃:
-  image_keyword = "child eating food"
-  image_type = "action"
+    - eat / 吃:
+      image_keyword = "child eating food"
+      image_type = "action"
 
-- happy / 开心:
-  image_keyword = "happy child face"
-  image_type = "emotion"
+    - happy / 开心:
+      image_keyword = "happy child face"
+      image_type = "emotion"
 
-- school / 学校:
-  image_keyword = "school building"
-  image_type = "place"
+    - school / 学校:
+      image_keyword = "school building"
+      image_type = "place"
 
-- responsibility / 责任:
-  image_keyword = "student taking care of classroom materials"
-  image_type = "abstract_concept"
+    - responsibility / 责任:
+      image_keyword = "student taking care of classroom materials"
+      image_type = "abstract_concept"
 
-Return this exact JSON shape:
-{
-  "pairs": [
+    Return this exact JSON shape:
     {
-      "pair_id": 1,
-      "left": "Red",
-      "right": "红色",
-      "image_keyword": "red color swatch",
-      "image_type": "color"
+      "pairs": [
+        {
+          "pair_id": 1,
+          "left": "Red",
+          "right": "红色",
+          "vocab_word": "red",
+          "image_keyword": "red color swatch",
+          "image_type": "color"
+        }
+      ]
     }
-  ]
-}
     `;
 
     const response = await client.responses.create({
@@ -1062,12 +1081,18 @@ Return this exact JSON shape:
         .trim()
         .toLowerCase();
 
-      const imageUrl = await getOrCreateVocabImage(imageKeyword, imageType);
+      const vocabWord = String(pair.vocab_word || left).trim();
 
+      const imageUrl = await getOrCreateVocabImage(
+        vocabWord,
+        imageKeyword,
+        imageType
+      );
       cleanedPairs.push({
         pair_id: cleanedPairs.length + 1,
         left,
         right,
+        vocab_word: vocabWord,
         image_keyword: imageKeyword,
         image_type: imageType,
         image_url: imageUrl,
@@ -1219,10 +1244,19 @@ app.post("/api/admin/vocab-images/:id/regenerate", requireAdmin, async (req, res
       });
     }
 
-    const b64 = await generateLunaVocabImage(
-      existing.keyword,
-      existing.image_type || "object"
-    );
+    let b64 = null;
+
+    try {
+      b64 = await generateLunaVocabImage(
+        existing.keyword,
+        existing.image_type || "object"
+      );
+    } catch (err) {
+      console.error("REGENERATE IMAGE ERROR:", err.message);
+      return res.status(500).json({
+        error: "OpenAI image generation failed.",
+      });
+    }
 
     if (!b64) {
       return res.status(500).json({ error: "Failed to generate image." });
@@ -1238,6 +1272,7 @@ app.post("/api/admin/vocab-images/:id/regenerate", requireAdmin, async (req, res
     const { data, error } = await supabaseAdmin
       .from("vocab_images")
       .update({
+        vocab_word: existing.vocab_word,
         image_url: saved.imageUrl,
         storage_path: saved.storagePath,
         status: "needs_review",
@@ -1264,9 +1299,10 @@ app.post("/api/admin/vocab-images/:id/regenerate", requireAdmin, async (req, res
 app.post("/api/admin/vocab-images/:id/change-keyword", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { keyword } = req.body;
+    const { keyword, imageKeyword } = req.body;
+const finalKeyword = imageKeyword || keyword;
 
-    if (!keyword) {
+if (!finalKeyword) {
       return res.status(400).json({ error: "Keyword is required." });
     }
 
@@ -1280,7 +1316,7 @@ app.post("/api/admin/vocab-images/:id/change-keyword", requireAdmin, async (req,
       return res.status(404).json({ error: "Image record not found." });
     }
 
-    const cleanKeyword = normalizeText(keyword);
+    const cleanKeyword = normalizeText(finalKeyword);
     const imageType = existing.image_type || "object";
 
     const b64 = await generateLunaVocabImage(cleanKeyword, imageType);
@@ -1299,6 +1335,7 @@ app.post("/api/admin/vocab-images/:id/change-keyword", requireAdmin, async (req,
       .from("vocab_images")
       .update({
         keyword: cleanKeyword,
+        vocab_word: existing.vocab_word,
         image_type: imageType,
         image_url: saved.imageUrl,
         storage_path: saved.storagePath,
@@ -2338,7 +2375,7 @@ app.post("/api/send-package-low-balance-reminders", async (req, res) => {
     const rows = lowBalanceStudents
       .map(
         (student) => `
-      < tr >
+      <tr>
             <td style="padding:10px;border-bottom:1px solid #e5e7eb;">
               ${student.student_name}
             </td>
@@ -2361,7 +2398,7 @@ app.post("/api/send-package-low-balance-reminders", async (req, res) => {
       to: "admin@lunastudies.com",
       subject: "Low Balance Student Package Reminder",
       html: `
-      < div style = "font-family: Arial, sans-serif; line-height: 1.6;" >
+      <div style = "font-family: Arial, sans-serif; line-height: 1.6;" >
           <h2>Low Balance Student Package Reminder</h2>
 
           <p>
