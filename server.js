@@ -442,6 +442,12 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
    HELPERS
 ========================= */
 
+const normalizeText = (text = "") =>
+  String(text).trim().toLowerCase();
+
+const getPairKey = (left = "", right = "") =>
+  `${normalizeText(left)}__${normalizeText(right)}`;
+
 const getPexelsImage = async (keyword) => {
   try {
     if (!process.env.PEXELS_API_KEY) {
@@ -460,12 +466,6 @@ const getPexelsImage = async (keyword) => {
         },
       }
     );
-
-    const normalizeText = (text = "") =>
-      String(text).trim().toLowerCase();
-    
-    const getPairKey = (left = "", right = "") =>
-      `${normalizeText(left)}__${normalizeText(right)}`;
 
     const photo = response.data.photos?.[0];
 
