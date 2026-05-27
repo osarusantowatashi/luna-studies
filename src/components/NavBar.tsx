@@ -31,6 +31,8 @@ const NavBar = () => {
     "/admin/lessons",
     "/admin",
     "/studentoverview",
+    "/admin/games",
+    "/admin/games/memory-flip",
   ];
 
   const isApp = appRoutes.some((route) =>
@@ -135,7 +137,7 @@ const NavBar = () => {
       ? [
         ["Dashboard", "/admin/dashboard"],
         ["Generate", "/generate"],
-        ["Game Gen", "/generate-games"],
+        ["Game Gen", "/admin/games"],
         ["Assign", "/admin/assign"],
         ["Lessons", "/admin/lessons"],
         ["Questions", "/admin/questions"],

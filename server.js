@@ -441,12 +441,109 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
 /* =========================
    HELPERS
 ========================= */
+const VOCAB_BUCKET = "vocab-images";
+const STYLE_VERSION = "luna_flashcard_v1";
 
 const normalizeText = (text = "") =>
   String(text).trim().toLowerCase();
 
 const getPairKey = (left = "", right = "") =>
   `${normalizeText(left)}__${normalizeText(right)}`;
+
+const generateLunaVocabImage = async (keyword) => {
+  const prompt = `
+Cute minimal educational flashcard illustration of "${keyword}".
+Single clear object, centered, white background.
+Soft pastel colors, rounded shapes, child-friendly.
+No text, no letters, no watermark, no extra objects.
+Consistent premium LUNA learning app style.
+`;
+
+  const result = await client.images.generate({
+    model: "gpt-image-1",
+    prompt,
+    size: "1024x1024",
+    quality: "low",
+    n: 1,
+  });
+
+  return result.data?.[0]?.b64_json || null;
+};
+
+const saveVocabImageToStorage = async (keyword, b64, nextCount) => {
+  const cleanKeyword = normalizeText(keyword);
+  const buffer = Buffer.from(b64, "base64");
+
+  const storagePath = `${STYLE_VERSION}/${cleanKeyword.replace(/\s+/g, "-")}-${nextCount}.png`;
+
+  const { error: uploadError } = await supabaseAdmin.storage
+    .from(VOCAB_BUCKET)
+    .upload(storagePath, buffer, {
+      contentType: "image/png",
+      upsert: true,
+    });
+
+  if (uploadError) {
+    console.error("VOCAB IMAGE UPLOAD ERROR:", uploadError);
+    return null;
+  }
+
+  const { data: publicUrlData } = supabaseAdmin.storage
+    .from(VOCAB_BUCKET)
+    .getPublicUrl(storagePath);
+
+  return {
+    imageUrl: publicUrlData.publicUrl,
+    storagePath,
+  };
+};
+
+const getOrCreateVocabImage = async (keyword) => {
+  const cleanKeyword = normalizeText(keyword);
+
+  const { data: existing, error } = await supabaseAdmin
+    .from("vocab_images")
+    .select("*")
+    .eq("keyword", cleanKeyword)
+    .maybeSingle();
+
+  if (error) {
+    console.error("VOCAB IMAGE FETCH ERROR:", error);
+    return null;
+  }
+
+  if (existing?.status === "approved" && existing.image_url) {
+    return existing.image_url;
+  }
+
+  if (existing?.generation_count >= 2) {
+    return existing.image_url || null;
+  }
+
+  const b64 = await generateLunaVocabImage(cleanKeyword);
+  if (!b64) return existing?.image_url || null;
+
+  const nextCount = (existing?.generation_count || 0) + 1;
+  const saved = await saveVocabImageToStorage(cleanKeyword, b64, nextCount);
+
+  if (!saved?.imageUrl) return existing?.image_url || null;
+
+  await supabaseAdmin.from("vocab_images").upsert(
+    {
+      keyword: cleanKeyword,
+      image_url: saved.imageUrl,
+      storage_path: saved.storagePath,
+      style_version: STYLE_VERSION,
+      status: "needs_review",
+      generation_count: nextCount,
+      last_generated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "keyword" }
+  );
+
+  return saved.imageUrl;
+};
 
 const getPexelsImage = async (keyword) => {
   try {
@@ -773,115 +870,115 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
 
     const languageRules = {
       zh_en: `
-- Left side must be English.
-- Right side must be Simplified Chinese.
-Example:
-{ "left": "apple", "right": "苹果" }
-`,
+      - Left side must be English.
+      - Right side must be Simplified Chinese.
+      Example:
+      { "left": "apple", "right": "苹果" }
+      `,
       zh_ja: `
-- Left side must be Simplified Chinese.
-- Right side must be Japanese.
-Example:
-{ "left": "苹果", "right": "りんご" }
-`,
+      - Left side must be Simplified Chinese.
+      - Right side must be Japanese.
+      Example:
+      { "left": "苹果", "right": "りんご" }
+      `,
       en_ja: `
-- Left side must be English.
-- Right side must be Japanese.
-Example:
-{ "left": "apple", "right": "りんご" }
-`,
+      - Left side must be English.
+      - Right side must be Japanese.
+      Example:
+      { "left": "apple", "right": "りんご" }
+      `,
     };
 
     const selectedLanguageRule =
       languageRules[languagePair] || languageRules.zh_en;
 
     const prompt = `
-Generate ${pairCount} NEW educational matching pairs for children.
+    Generate ${pairCount} NEW educational matching pairs for children.
 
-Game Type:
-Memory Flip Matching Game
+    Game Type:
+    Memory Flip Matching Game
 
-Exam Type:
-${examType}
+    Exam Type:
+    ${examType}
 
-Grade:
-${grade}
+    Grade:
+    ${grade}
 
-Skill:
-${skill}
+    Skill:
+    ${skill}
 
-Difficulty:
-${difficulty}
+    Difficulty:
+    ${difficulty}
 
-Language Pair:
-${languagePair}
+    Language Pair:
+    ${languagePair}
 
-LANGUAGE RULES:
-${selectedLanguageRule}
+    LANGUAGE RULES:
+    ${selectedLanguageRule}
 
-Already existing pairs for this setup. DO NOT generate these again:
-${existingPairText || "- None"}
+    Already existing pairs for this setup. DO NOT generate these again:
+    ${existingPairText || "- None"}
 
-Rules:
-- Generate NEW matching educational word pairs.
-- Do NOT repeat any existing pair listed above.
-- Do NOT repeat the same left word.
-- Do NOT repeat the same right word.
-- Content must be suitable for children and students.
-- Keep each word or phrase short and easy to read.
-- Make all content age-appropriate for the selected grade.
-- Avoid overly advanced vocabulary for younger grades.
-- Use realistic educational vocabulary only.
-- Focus on useful learning topics such as:
-  animals,
-  food,
-  colors,
-  transportation,
-  school items,
-  emotions,
-  actions,
-  daily objects,
-  nature,
-  basic academic vocabulary.
+    Rules:
+    - Generate NEW matching educational word pairs.
+    - Do NOT repeat any existing pair listed above.
+    - Do NOT repeat the same left word.
+    - Do NOT repeat the same right word.
+    - Content must be suitable for children and students.
+    - Keep each word or phrase short and easy to read.
+    - Make all content age-appropriate for the selected grade.
+    - Avoid overly advanced vocabulary for younger grades.
+    - Use realistic educational vocabulary only.
+    - Focus on useful learning topics such as:
+      animals,
+      food,
+      colors,
+      transportation,
+      school items,
+      emotions,
+      actions,
+      daily objects,
+      nature,
+      basic academic vocabulary.
 
-- "left" and "right" must always be correct translations of each other.
-- Keep translations natural and commonly used.
-- Avoid slang or rare vocabulary.
+    - "left" and "right" must always be correct translations of each other.
+    - Keep translations natural and commonly used.
+    - Avoid slang or rare vocabulary.
 
-- Every pair MUST include "image_keyword".
-- image_keyword must be English only.
-- image_keyword must be short and simple.
-- image_keyword must describe a real searchable object or concept.
-- image_keyword must work well with Pexels image search.
-- image_keyword must NOT be abstract.
+    - Every pair MUST include "image_keyword".
+    - image_keyword must be English only.
+    - image_keyword must be short and simple.
+    - image_keyword must describe a real searchable object or concept.
+    - image_keyword must work well for generating a clear educational flashcard image.
+    - image_keyword must NOT be abstract.
 
-Good image_keyword examples:
-apple
-school bus
-happy child
-cat
-pencil
-banana
-doctor
-airplane
+    Good image_keyword examples:
+    apple
+    school bus
+    happy child
+    cat
+    pencil
+    banana
+    doctor
+    airplane
 
-Return ONLY valid JSON.
-Do NOT include explanations.
-Do NOT include markdown.
-Do NOT include extra text outside JSON.
+    Return ONLY valid JSON.
+    Do NOT include explanations.
+    Do NOT include markdown.
+    Do NOT include extra text outside JSON.
 
-Return this exact JSON shape:
-{
-  "pairs": [
+    Return this exact JSON shape:
     {
-      "pair_id": 1,
-      "left": "Apple",
-      "right": "苹果",
-      "image_keyword": "apple"
+      "pairs": [
+        {
+          "pair_id": 1,
+          "left": "Apple",
+          "right": "苹果",
+          "image_keyword": "apple"
+        }
+      ]
     }
-  ]
-}
-`;
+    `;
 
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
@@ -921,7 +1018,7 @@ Return this exact JSON shape:
         .trim()
         .toLowerCase();
 
-      const imageUrl = await getPexelsImage(imageKeyword);
+      const imageUrl = await getOrCreateVocabImage(imageKeyword);
 
       cleanedPairs.push({
         pair_id: cleanedPairs.length + 1,
@@ -954,7 +1051,7 @@ Return this exact JSON shape:
           difficulty,
           language_pair: languagePair,
           question_data: finalQuestionData,
-          image_provider: "pexels",
+          image_provider: "openai",
           image_cached_at: new Date().toISOString(),
           created_by: req.user.id,
         },
@@ -978,6 +1075,190 @@ Return this exact JSON shape:
 
     return res.status(500).json({
       error: err.message || "Failed to generate game questions.",
+    });
+  }
+});
+
+
+app.get("/api/admin/vocab-images", requireAdmin, async (req, res) => {
+  try {
+    const status = req.query.status || "needs_review";
+
+    const { data, error } = await supabaseAdmin
+      .from("vocab_images")
+      .select("*")
+      .eq("status", status)
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({ images: data || [] });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to load vocab images.",
+    });
+  }
+});
+
+app.post("/api/admin/vocab-images/:id/approve", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabaseAdmin
+      .from("vocab_images")
+      .update({
+        status: "approved",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({ success: true, image: data });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to approve image.",
+    });
+  }
+});
+
+app.post("/api/admin/vocab-images/:id/reject", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabaseAdmin
+      .from("vocab_images")
+      .update({
+        status: "rejected",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({ success: true, image: data });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to reject image.",
+    });
+  }
+});
+
+app.post("/api/admin/vocab-images/:id/regenerate", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data: existing, error: fetchError } = await supabaseAdmin
+      .from("vocab_images")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !existing) {
+      return res.status(404).json({ error: "Image record not found." });
+    }
+
+    if (existing.generation_count >= 2) {
+      return res.status(400).json({
+        error: "Generation limit reached. Please change keyword or manually review.",
+      });
+    }
+
+    const b64 = await generateLunaVocabImage(existing.keyword);
+
+    if (!b64) {
+      return res.status(500).json({ error: "Failed to generate image." });
+    }
+
+    const nextCount = existing.generation_count + 1;
+    const saved = await saveVocabImageToStorage(existing.keyword, b64, nextCount);
+
+    if (!saved?.imageUrl) {
+      return res.status(500).json({ error: "Failed to upload image." });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("vocab_images")
+      .update({
+        image_url: saved.imageUrl,
+        storage_path: saved.storagePath,
+        status: "needs_review",
+        generation_count: nextCount,
+        last_generated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({ success: true, image: data });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to regenerate image.",
+    });
+  }
+});
+
+app.post("/api/admin/vocab-images/:id/change-keyword", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { keyword } = req.body;
+
+    if (!keyword) {
+      return res.status(400).json({ error: "Keyword is required." });
+    }
+
+    const cleanKeyword = normalizeText(keyword);
+
+    const b64 = await generateLunaVocabImage(cleanKeyword);
+
+    if (!b64) {
+      return res.status(500).json({ error: "Failed to generate image." });
+    }
+
+    const saved = await saveVocabImageToStorage(cleanKeyword, b64, 1);
+
+    if (!saved?.imageUrl) {
+      return res.status(500).json({ error: "Failed to upload image." });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("vocab_images")
+      .update({
+        keyword: cleanKeyword,
+        image_url: saved.imageUrl,
+        storage_path: saved.storagePath,
+        status: "needs_review",
+        generation_count: 1,
+        last_generated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({ success: true, image: data });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to change keyword.",
     });
   }
 });

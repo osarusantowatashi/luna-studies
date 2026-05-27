@@ -21,12 +21,14 @@ import AdminAssign from "./pages/AdminAssign";
 import AdminEnquiries from "./pages/AdminEnquiries";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProgress from "./pages/AdminProgress";
+import AdminGames from "./pages/AdminGames";
+import AdminMemoryFlip from "./pages/AdminMemoryFlip";
+import AdminLessons from "./pages/AdminLessons";
 
 import Layout from "./pages/Layout";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import TutorLessons from "./pages/TutorLessons";
-import AdminLessons from "./pages/AdminLessons";
 import ScrollToTop from "./components/ScrollToTop";
 
 import LunaMascotChat from "./components/LunaMascotChat";
@@ -78,6 +80,26 @@ const App = () => {
         <Route path="/:lang/admin/lessons" element={<Navigate to="/admin/lessons" replace />} />
         <Route path="/:lang/admin/enquiries" element={<Navigate to="/admin/enquiries" replace />} />
         <Route path="/:lang/admin/progress" element={<Navigate to="/admin/progress" replace />} />
+        <Route path="/admin/games"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Layout>
+                <AdminGames />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/games/memory-flip"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Layout>
+                <AdminMemoryFlip />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
         <Route path="/:lang/generate" element={<Navigate to="/generate" replace />} />
 
         <Route path="/subjects" element={<Navigate to="/en/subjects" replace />} />
@@ -86,10 +108,29 @@ const App = () => {
         <Route path="/enquiry" element={<Navigate to="/en/enquiry" replace />} />
 
 
-        <Route path="/memory-flip" element={ <ProtectedRoute allowedRoles={["admin", "student"]}>  <MemoryFlip /> </ProtectedRoute> }/>
-        <Route path="/generate-games" element={  <ProtectedRoute allowedRoles={["admin"]}>  <GenerateGameQuestions /> </ProtectedRoute> }/>
-        <Route path="/games"  element={  <ProtectedRoute allowedRoles={["admin", "student"]}>   <GamesArcade />  </ProtectedRoute> }/>
 
+        <Route path="/generate-games" element={<ProtectedRoute allowedRoles={["admin"]}>  <GenerateGameQuestions /> </ProtectedRoute>} />
+        <Route
+          path="/games"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "student"]}>
+              <Layout>
+                <GamesArcade />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/memory-flip"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "student"]}>
+              <Layout>
+                <MemoryFlip />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
         <Route path="/en/privacy" element={<Privacy />} />
         <Route path="/jp/privacy" element={<Privacy />} />
         <Route path="/zh/privacy" element={<Privacy />} />
