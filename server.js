@@ -444,11 +444,17 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
 
 const getPexelsImage = async (keyword) => {
   try {
+    if (!process.env.PEXELS_API_KEY) {
+      console.error("PEXELS_API_KEY is missing");
+      return null;
+    }
+
     const response = await axios.get(
       `https://api.pexels.com/v1/search?query=${encodeURIComponent(
         keyword
       )}&per_page=1`,
       {
+        timeout: 8000,
         headers: {
           Authorization: process.env.PEXELS_API_KEY,
         },
@@ -714,6 +720,7 @@ const difficultyRules = {
 ========================= */
 
 app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
+  console.log("🎮 NEW IMAGE VERSION ACTIVE");
   try {
     console.log("🎮 GAME QUESTION ROUTE HIT");
     console.log("BODY:", req.body);
