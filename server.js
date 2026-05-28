@@ -43,8 +43,6 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-console.log("RESEND KEY:", process.env.RESEND_API_KEY);
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -442,6 +440,43 @@ app.post("/api/send-admin-enquiry-email", async (req, res) => {
 ========================= */
 const VOCAB_BUCKET = "vocab-images";
 const STYLE_VERSION = "luna_flashcard_v1";
+
+const GAME_PAIR_COUNT_BY_DIFFICULTY = {
+  Easy: 6,
+  Medium: 8,
+  Hard: 10,
+  Advanced: 12,
+};
+
+const GAME_VOCAB_DIFFICULTY_RULES = {
+  Easy: `
+- Use simple everyday words for young learners.
+- Use concrete words that are easy to visualize.
+- Examples: apple, dog, red, run, chair, school.
+- Avoid abstract or academic vocabulary.
+`,
+
+  Medium: `
+- Use common school and daily-life vocabulary.
+- Words may be slightly more specific than Easy.
+- Examples: library, healthy, weather, compare, describe.
+- Avoid very abstract academic vocabulary.
+`,
+
+  Hard: `
+- Use stronger academic and descriptive vocabulary.
+- Words can include school subjects, emotions, actions, and concepts.
+- Examples: confident, solution, environment, responsibility, improve.
+- Avoid words already suitable for Easy level.
+`,
+
+  Advanced: `
+- Use advanced academic and international school vocabulary.
+- Words may be abstract but still suitable for children.
+- Examples: evidence, perspective, consequence, communicate, analyze.
+- Avoid simple beginner words.
+`,
+};
 
 const normalizeText = (text = "") =>
   String(text).trim().toLowerCase();
@@ -862,9 +897,14 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       grade,
       skill = "Vocabulary",
       difficulty = "Easy",
-      pairCount = 8,
       languagePair = "zh_en",
     } = req.body;
+
+    const finalDifficulty = GAME_PAIR_COUNT_BY_DIFFICULTY[difficulty]
+      ? difficulty
+      : "Easy";
+
+    const finalPairCount = GAME_PAIR_COUNT_BY_DIFFICULTY[finalDifficulty];
 
     if (gameType !== "memory_flip") {
       return res.status(400).json({
@@ -877,8 +917,7 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       .select("question_data")
       .eq("game_type", gameType)
       .eq("language_pair", languagePair)
-      .eq("grade", grade)
-      .eq("difficulty", difficulty);
+      .eq("grade", grade);
 
     if (existingError) {
       return res.status(500).json({
@@ -927,7 +966,7 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       languageRules[languagePair] || languageRules.zh_en;
 
     const prompt = `
-    Generate ${pairCount} NEW educational matching pairs for children.
+    Generate exactly ${finalPairCount} NEW educational matching pairs for children.
 
     Game Type:
     Memory Flip Matching Game
@@ -942,7 +981,10 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
     ${skill}
 
     Difficulty:
-    ${difficulty}
+${finalDifficulty}
+
+DIFFICULTY VOCABULARY RULES:
+${GAME_VOCAB_DIFFICULTY_RULES[finalDifficulty]}
 
     Language Pair:
     ${languagePair}
@@ -1052,7 +1094,17 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       .replace(/```/g, "")
       .trim();
 
-    const parsed = JSON.parse(text);
+      let parsed;
+
+      try {
+        parsed = JSON.parse(text);
+      } catch (err) {
+        console.error("GAME JSON PARSE ERROR:", text);
+      
+        return res.status(500).json({
+          error: "Failed to parse generated game questions.",
+        });
+      }
 
     if (!parsed.pairs || !Array.isArray(parsed.pairs)) {
       return res.status(500).json({
@@ -1109,8 +1161,14 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       });
     }
 
+    if (cleanedPairs.length < finalPairCount) {
+      return res.status(500).json({
+        error: `Only generated ${cleanedPairs.length}/${finalPairCount} valid pairs. Please try again.`,
+      });
+    }
+
     const finalQuestionData = {
-      pairs: cleanedPairs,
+      pairs: cleanedPairs.slice(0, finalPairCount),
     };
 
     const { data, error } = await supabaseAdmin
@@ -1121,7 +1179,7 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
           exam_type: examType,
           grade,
           skill,
-          difficulty,
+          difficulty: finalDifficulty,
           language_pair: languagePair,
           question_data: finalQuestionData,
           image_provider: "openai",
@@ -1156,12 +1214,27 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
 app.get("/api/admin/vocab-images", requireAdmin, async (req, res) => {
   try {
     const status = req.query.status || "needs_review";
+    const page = Number(req.query.page || 0);
+    const limit = Number(req.query.limit || 18);
+    const search = String(req.query.search || "").trim();
 
-    const { data, error } = await supabaseAdmin
+    const from = page * limit;
+    const to = from + limit - 1;
+
+    let query = supabaseAdmin
       .from("vocab_images")
       .select("*")
       .eq("status", status)
-      .order("updated_at", { ascending: false });
+      .order("updated_at", { ascending: false })
+      .range(from, to);
+
+    if (search) {
+      query = query.or(
+        `keyword.ilike.%${search}%,vocab_word.ilike.%${search}%,image_type.ilike.%${search}%`
+      );
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       return res.status(500).json({ error: error.message });
@@ -1303,9 +1376,9 @@ app.post("/api/admin/vocab-images/:id/change-keyword", requireAdmin, async (req,
   try {
     const { id } = req.params;
     const { keyword, imageKeyword } = req.body;
-const finalKeyword = imageKeyword || keyword;
+    const finalKeyword = imageKeyword || keyword;
 
-if (!finalKeyword) {
+    if (!finalKeyword) {
       return res.status(400).json({ error: "Keyword is required." });
     }
 

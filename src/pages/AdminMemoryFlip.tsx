@@ -10,11 +10,17 @@ const statusLabel: Record<string, string> = {
   approved: "Approved",
   rejected: "Rejected",
 };
+const pairCountByDifficulty: Record<string, number> = {
+  Easy: 6,
+  Medium: 8,
+  Hard: 10,
+  Advanced: 12,
+};
 
 export default function AdminMemoryFlip() {
   const [grade, setGrade] = useState("Grade 1");
   const [difficulty, setDifficulty] = useState("Easy");
-  const [pairCount, setPairCount] = useState("8");
+  const pairCount = pairCountByDifficulty[difficulty];
   const [languagePair, setLanguagePair] = useState("zh_en");
 
   const [images, setImages] = useState<any[]>([]);
@@ -25,27 +31,48 @@ export default function AdminMemoryFlip() {
   const [keywordDrafts, setKeywordDrafts] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
 
+  const PAGE_SIZE = 18;
+
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+
   const getToken = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.access_token) throw new Error("Please log in again as admin.");
     return session.access_token;
   };
 
-  const loadImages = async () => {
+  const loadImages = async ({
+    nextPage = 0,
+    append = false,
+    searchText = search,
+  } = {}) => {
     setImageLoading(true);
     setErrorMsg("");
 
     try {
       const token = await getToken();
 
-      const res = await fetch(`${API_URL}/api/admin/vocab-images?status=${status}`, {
+      const params = new URLSearchParams({
+        status,
+        page: String(nextPage),
+        limit: String(PAGE_SIZE),
+        search: searchText.trim(),
+      });
+
+      const res = await fetch(`${API_URL}/api/admin/vocab-images?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load images.");
 
-      setImages(data.images || []);
+      const newImages = data.images || [];
+
+      setImages((prev) => (append ? [...prev, ...newImages] : newImages));
+      setPage(nextPage);
+      setHasMore(newImages.length === PAGE_SIZE);
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to load images.");
     } finally {
@@ -72,7 +99,7 @@ export default function AdminMemoryFlip() {
           grade,
           skill: "Vocabulary",
           difficulty,
-          pairCount: Number(pairCount),
+          pairCount,
           languagePair,
         }),
       });
@@ -143,8 +170,12 @@ export default function AdminMemoryFlip() {
   };
 
   useEffect(() => {
-    loadImages();
-  }, [status]);
+    loadImages({
+      nextPage: 0,
+      append: false,
+      searchText: search,
+    });
+  }, [status, search]);
 
   return (
     <div className="min-h-screen bg-background px-4 py-10 sm:px-6">
@@ -192,14 +223,12 @@ export default function AdminMemoryFlip() {
               <option>Easy</option>
               <option>Medium</option>
               <option>Hard</option>
+              <option>Advanced</option>
             </select>
 
-            <select value={pairCount} onChange={(e) => setPairCount(e.target.value)} className="rounded-2xl border bg-white px-4 py-3">
-              <option value="6">6 pairs</option>
-              <option value="8">8 pairs</option>
-              <option value="10">10 pairs</option>
-              <option value="12">12 pairs</option>
-            </select>
+            <div className="rounded-2xl border bg-secondary/60 px-4 py-3 text-sm font-bold text-primary">
+              {pairCount} pairs
+            </div>
           </div>
 
           <Button onClick={generate} disabled={loading} className="mt-5 h-12 w-full rounded-2xl">
@@ -217,13 +246,37 @@ export default function AdminMemoryFlip() {
               </p>
             </div>
 
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={loadImages} disabled={imageLoading}>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by keyword..."
+                className="h-12 rounded-2xl border bg-white px-4 text-sm font-semibold text-primary outline-none"
+              />
+
+              <Button
+                variant="outline"
+                onClick={() =>
+                  loadImages({
+                    nextPage: 0,
+                    append: false,
+                    searchText: search,
+                  })
+                }
+                disabled={imageLoading}
+              >
                 <RefreshCcw className="mr-2 h-4 w-4" />
                 Refresh
               </Button>
 
-              <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-2xl border bg-white px-4 py-3">
+              <select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value);
+                  setPage(0);
+                }}
+                className="rounded-2xl border bg-white px-4 py-3"
+              >
                 <option value="needs_review">Needs Review</option>
                 <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
@@ -240,100 +293,118 @@ export default function AdminMemoryFlip() {
               No images found.
             </div>
           ) : (
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {images.map((item) => {
-                const isBusy = busyId === item.id;
-                const canRegenerate = Number(item.generation_count || 0) < 2;
+            <>
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {images.map((item) => {
+                  const isBusy = busyId === item.id;
+                  const canRegenerate = Number(item.generation_count || 0) < 2;
 
-                return (
-                  <div key={item.id} className="rounded-[1.5rem] border bg-white p-4 shadow-sm">
-                    <img
-                      src={item.image_url}
-                      alt={item.keyword}
-                      className="h-48 w-full rounded-2xl object-contain bg-[#FAFAFA]"
-                    />
+                  return (
+                    <div key={item.id} className="rounded-[1.5rem] border bg-white p-4 shadow-sm">
+                      <img
+                        src={item.image_url}
+                        alt={item.keyword}
+                        className="h-48 w-full rounded-2xl object-contain bg-[#FAFAFA]"
+                      />
 
-                    <div className="mt-4 space-y-1">
-                      <p className="text-lg font-bold text-primary">
-                        {item.vocab_word || item.keyword}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Image keyword: <span className="font-semibold text-primary">{item.keyword}</span>
-                      </p>
+                      <div className="mt-4 space-y-1">
+                        <p className="text-lg font-bold text-primary">
+                          {item.vocab_word || item.keyword}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Image keyword: <span className="font-semibold text-primary">{item.keyword}</span>
+                        </p>
 
-                      <p className="text-sm text-muted-foreground">
-                        Type: <span className="font-semibold text-primary">{item.image_type || "object"}</span>
-                      </p>
+                        <p className="text-sm text-muted-foreground">
+                          Type: <span className="font-semibold text-primary">{item.image_type || "object"}</span>
+                        </p>
 
-                      <p className="text-sm text-muted-foreground">
-                        Status: <span className="font-semibold text-primary">{statusLabel[item.status] || item.status}</span>
-                      </p>
+                        <p className="text-sm text-muted-foreground">
+                          Status: <span className="font-semibold text-primary">{statusLabel[item.status] || item.status}</span>
+                        </p>
 
-                      <p className="text-sm text-muted-foreground">
-                        Generated: <span className="font-semibold text-primary">{item.generation_count || 0} / 2</span>
-                      </p>
-                    </div>
+                        <p className="text-sm text-muted-foreground">
+                          Generated: <span className="font-semibold text-primary">{item.generation_count || 0} / 2</span>
+                        </p>
+                      </div>
 
-                    <div className="mt-4 grid grid-cols-1 gap-2">
-                      <Button
-                        onClick={() => action(item.id, "approve")}
-                        disabled={isBusy}
-                        className="rounded-xl bg-[#082A55]"
-                      >
-                        Approve
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        onClick={() => action(item.id, "regenerate")}
-                        className="rounded-xl"
-                        disabled={isBusy || !canRegenerate}
-                      >
-                        {canRegenerate ? "Regenerate Image" : "Generation Limit Reached"}
-                      </Button>
-
-                      <Button
-                        variant="destructive"
-                        onClick={() => action(item.id, "reject")}
-                        className="rounded-xl"
-                        disabled={isBusy}
-                      >
-                        Reject
-                      </Button>
-                    </div>
-
-                    <div className="mt-4 rounded-2xl bg-secondary p-3">
-                      <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                        Change Keyword
-                      </p>
-
-                      <div className="flex gap-2">
-                        <input
-                          value={keywordDrafts[item.id] || ""}
-                          onChange={(e) =>
-                            setKeywordDrafts((prev) => ({
-                              ...prev,
-                              [item.id]: e.target.value,
-                            }))
-                          }
-                          placeholder="e.g. red color swatch"
-                          className="min-w-0 flex-1 rounded-xl border bg-white px-3 py-2 text-sm"
-                        />
+                      <div className="mt-4 grid grid-cols-1 gap-2">
+                        <Button
+                          onClick={() => action(item.id, "approve")}
+                          disabled={isBusy}
+                          className="rounded-xl bg-[#082A55]"
+                        >
+                          Approve
+                        </Button>
 
                         <Button
                           variant="outline"
-                          onClick={() => changeKeyword(item.id)}
-                          className="rounded-xl bg-white"
+                          onClick={() => action(item.id, "regenerate")}
+                          className="rounded-xl"
+                          disabled={isBusy || !canRegenerate}
+                        >
+                          {canRegenerate ? "Regenerate Image" : "Generation Limit Reached"}
+                        </Button>
+
+                        <Button
+                          variant="destructive"
+                          onClick={() => action(item.id, "reject")}
+                          className="rounded-xl"
                           disabled={isBusy}
                         >
-                          Change
+                          Reject
                         </Button>
                       </div>
+
+                      <div className="mt-4 rounded-2xl bg-secondary p-3">
+                        <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                          Change Keyword
+                        </p>
+
+                        <div className="flex gap-2">
+                          <input
+                            value={keywordDrafts[item.id] || ""}
+                            onChange={(e) =>
+                              setKeywordDrafts((prev) => ({
+                                ...prev,
+                                [item.id]: e.target.value,
+                              }))
+                            }
+                            placeholder="e.g. red color swatch"
+                            className="min-w-0 flex-1 rounded-xl border bg-white px-3 py-2 text-sm"
+                          />
+
+                          <Button
+                            variant="outline"
+                            onClick={() => changeKeyword(item.id)}
+                            className="rounded-xl bg-white"
+                            disabled={isBusy}
+                          >
+                            Change
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+
+              {hasMore && (
+                <Button
+                  onClick={() =>
+                    loadImages({
+                      nextPage: page + 1,
+                      append: true,
+                      searchText: search,
+                    })
+                  }
+                  disabled={imageLoading}
+                  className="mt-6 h-12 w-full rounded-2xl bg-[#082A55]"
+                >
+                  {imageLoading ? "Loading..." : "Load More"}
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>

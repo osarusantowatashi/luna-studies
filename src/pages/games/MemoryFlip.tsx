@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { RotateCcw, Trophy, Zap, Clock, MousePointerClick } from "lucide-react";
+import {
+  RotateCcw,
+  Trophy,
+  Zap,
+  Clock,
+  MousePointerClick,
+  Sparkles,
+  Brain,
+  Target,
+  Flame,
+  Crown,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+
 
 type Pair = {
   pair_id?: number;
@@ -673,446 +686,346 @@ export default function MemoryFlip() {
     },
   ];
   return (
-    <div className="min-h-screen bg-[#F6F8FC] px-4 py-8 sm:px-6">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
-              Luna Learning Arcade
-            </p>
-
-            <h1 className="mt-2 text-4xl font-black tracking-tight text-[#082A55] sm:text-5xl">
-              Memory Flip
-            </h1>
-
-            <p className="mt-3 max-w-xl text-slate-500">
-              Choose your level, beat the timer, and match the correct language pairs.
-            </p>
-          </div>
-
-          {gameStarted && (
-            <button
-              onClick={() =>
-                loadGame({
-                  selectedLanguagePair: languagePair,
-                  selectedGrade: grade,
-                  selectedDifficulty: difficulty,
-                  selectedPairCount: pairCount,
-                })
-              }
-              className="flex h-12 items-center justify-center gap-2 rounded-full bg-[#082A55] px-6 text-sm font-bold text-white shadow-lg transition hover:bg-[#123A70]"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Retry Challenge
-            </button>
-          )}
-        </div>
-
-        {!gameStarted && (
-          <div className="mb-8 rounded-[2.5rem] border border-[#DDE7F5] bg-white p-8 shadow-[0_20px_60px_rgba(8,42,85,0.08)]">
-            <div className="mb-8 flex flex-col items-center gap-4 text-center">
-              <img
-                src="/mascot/hapiko-step-2.png"
-                alt="Hapiko"
-                className="h-24 w-24 object-contain"
-              />
-
-              <div>
-                <h2 className="text-3xl font-black text-[#082A55]">
-                  Ready for your Memory Challenge?
-                </h2>
-
-                <p className="mt-2 text-slate-500">
-                  Match the word pairs, clear 4 levels, then Hapiko will give you a mastery test.
-                </p>
+    <div className="relative min-h-screen overflow-hidden bg-[#071426]">
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute left-[-120px] top-[-120px] h-[340px] w-[340px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
+        <div className="absolute bottom-[-140px] right-[-100px] h-[380px] w-[380px] rounded-full bg-[#2563EB]/20 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
+      </div>
+  
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        {/* HERO */}
+        <div className="mb-8 overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 backdrop-blur-xl">
+          <div className="grid gap-8 p-8 lg:grid-cols-[1.2fr_420px] lg:p-10">
+            <div>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/40 bg-[#8B5CF6]/10 px-4 py-2">
+                <Sparkles className="h-4 w-4 text-[#C4B5FD]" />
+  
+                <span className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
+                  Luna Memory Arcade
+                </span>
+              </div>
+  
+              <h1 className="max-w-2xl text-5xl font-black leading-[1.05] tracking-tight text-white sm:text-6xl">
+                Train Memory.
+                <br />
+                Master Vocabulary.
+              </h1>
+  
+              <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">
+                Match vocabulary cards, clear harder challenges,
+                and unlock advanced memory stages with Hapiko.
+              </p>
+  
+              <div className="mt-8 flex flex-wrap gap-3">
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
+                  <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                    Language
+                  </p>
+  
+                  <p className="mt-1 text-sm font-bold text-white">
+                    {languageLabel}
+                  </p>
+                </div>
+  
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
+                  <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                    Grade
+                  </p>
+  
+                  <p className="mt-1 text-sm font-bold text-white">
+                    {grade}
+                  </p>
+                </div>
+  
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
+                  <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                    Difficulty
+                  </p>
+  
+                  <p className="mt-1 text-sm font-bold text-[#C4B5FD]">
+                    {difficulty}
+                  </p>
+                </div>
               </div>
             </div>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-
+  
+            <div className="relative hidden items-center justify-center lg:flex">
+              <div className="absolute h-[300px] w-[300px] rounded-full bg-[#8B5CF6]/30 blur-3xl" />
+  
+              <motion.img
+                animate={{
+                  y: [0, -12, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                }}
+                src="/mascot/hapiko-step-2.png"
+                alt="Hapiko"
+                className="relative z-10 h-[320px] object-contain drop-shadow-[0_20px_60px_rgba(139,92,246,0.5)]"
+              />
+            </div>
+          </div>
+        </div>
+  
+        {!gameStarted && (
+          <div className="rounded-[2.5rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
+            {/* SELECTORS */}
+            <div className="grid gap-4 lg:grid-cols-3">
               <select
                 value={languagePair}
-                onChange={(e) => {
-                  setLanguagePair(e.target.value);
-                  setLevel(1);
-
-                }}
-                className="h-14 rounded-2xl border border-[#D8E3F2] bg-[#F8FAFF] px-4 text-sm font-black text-[#082A55]"
+                onChange={(e) => setLanguagePair(e.target.value)}
+                className="h-16 rounded-3xl border border-white/10 bg-[#0D1B2E] px-5 text-sm font-black text-white outline-none"
               >
                 <option value="zh_en">Chinese ↔ English</option>
                 <option value="zh_ja">Chinese ↔ Japanese</option>
                 <option value="en_ja">English ↔ Japanese</option>
               </select>
-
+  
               <select
-
                 value={grade}
-
-                onChange={(e) => {
-
-                  setGrade(e.target.value);
-
-                  setLevel(1);
-
-
-
-                }}
-                className="h-14 rounded-2xl border border-[#D8E3F2] bg-[#F8FAFF] px-4 text-sm font-black text-[#082A55]"
+                onChange={(e) => setGrade(e.target.value)}
+                className="h-16 rounded-3xl border border-white/10 bg-[#0D1B2E] px-5 text-sm font-black text-white outline-none"
               >
                 {grades.map((item) => (
-                  <option
-                    key={item}
-                    value={item}
-                  >
+                  <option key={item} value={item}>
                     {item}
-                    {grade === item && gradeCleared ? " ✅" : ""}
                   </option>
                 ))}
               </select>
-
-              <div className="flex h-14 items-center justify-center rounded-2xl border border-[#D8E3F2] bg-[#EEF3FF] px-4 text-sm font-black text-[#082A55]">
-                Current Difficulty:
-                <span className="ml-2 text-[#8d73ff]">
-                  {unlockedDifficulty}
-                </span>
+  
+              <div className="flex h-16 items-center justify-center rounded-3xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-5 text-sm font-black text-[#C4B5FD]">
+                Current Difficulty: {difficulty}
               </div>
-
-
             </div>
-
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-
-              <div className="rounded-full bg-[#EEF3FF] px-5 py-2 font-bold text-[#082A55]">
-                {languageLabel}
-              </div>
-
-              <div className="rounded-full bg-[#FFF7E3] px-5 py-2 font-bold text-[#082A55]">
-                {grade}
-              </div>
-
-              <div className="rounded-full bg-[#F1EEFF] px-5 py-2 font-bold text-[#082A55]">
-                {difficulty}
-              </div>
-
-              <div className="rounded-full bg-[#EFFFF6] px-5 py-2 font-bold text-[#082A55]">
-                {pairCount} Pairs
-              </div>
-
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center">
-                {levelStages.map((stage, index) => {
-                  const isCurrent = level === stage.level;
-                  const isUnlocked = stage.level <= level;
-
-                  return (
-                    <div
-                      key={stage.level}
-                      className="flex items-center"
-                    >
-                      <div
-                        className={`
-          relative rounded-[2rem] border p-5 text-center transition-all duration-300
-          w-[170px]
-          ${isCurrent
-                            ? "border-[#8d73ff] bg-[#F1EEFF] shadow-[0_10px_40px_rgba(141,115,255,0.35)] scale-[1.05]"
-                            : isUnlocked
-                              ? "border-[#DDE7F5] bg-white"
-                              : "border-slate-200 bg-slate-50 opacity-50"
-                          }
-        `}
-                      >
-                        {isCurrent && (
-                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#8d73ff] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
-                            Current
-                          </div>
-                        )}
-
-                        <div className="text-5xl">
-                          {stage.icon}
-                        </div>
-
-                        <p className="mt-4 text-sm font-black text-[#082A55]">
-                          Level {stage.level}
-                        </p>
-
-                        <p className="mt-1 text-xs font-bold text-slate-500">
-                          {stage.title}
-                        </p>
-
-                        <div className="mt-4 rounded-full bg-white px-3 py-1 text-xs font-black text-[#8d73ff]">
-                          {stage.pairs} pairs
-                        </div>
-                      </div>
-
-                      {index < levelStages.length - 1 && (
-                        <div className="hidden sm:flex w-12 items-center justify-center">
-                          <div
-                            className={`
-              h-1 w-full rounded-full
-              ${stage.level < level
-                                ? "bg-[#8d73ff]"
-                                : "bg-slate-200"
-                              }
-            `}
-                          />
-                        </div>
-                      )}
+  
+            {/* DIFFICULTY */}
+            <div className="mt-8 grid gap-4 lg:grid-cols-4">
+              {[
+                {
+                  key: "Easy",
+                  icon: Brain,
+                  pairs: 6,
+                  color:
+                    difficulty === "Easy"
+                      ? "border-[#52bd7f] bg-[#52bd7f]/20"
+                      : "border-white/10 bg-white/5",
+                },
+                {
+                  key: "Medium",
+                  icon: Zap,
+                  pairs: 8,
+                  color:
+                    difficulty === "Medium"
+                      ? "border-[#3B82F6] bg-[#3B82F6]/20"
+                      : "border-white/10 bg-white/5",
+                },
+                {
+                  key: "Hard",
+                  icon: Flame,
+                  pairs: 10,
+                  color:
+                    difficulty === "Hard"
+                      ? "border-[#F97316] bg-[#F97316]/20"
+                      : "border-white/10 bg-white/5",
+                },
+                {
+                  key: "Advanced",
+                  icon: Crown,
+                  pairs: 12,
+                  color:
+                    difficulty === "Advanced"
+                      ? "border-[#EAB308] bg-[#EAB308]/20"
+                      : "border-white/10 bg-white/5",
+                },
+              ].map((item) => {
+                const Icon = item.icon;
+  
+                const locked =
+                  (item.key === "Medium" &&
+                    unlockedDifficulty === "Easy") ||
+                  (item.key === "Hard" &&
+                    !["Hard", "Advanced"].includes(unlockedDifficulty)) ||
+                  (item.key === "Advanced" &&
+                    unlockedDifficulty !== "Advanced");
+  
+                return (
+                  <button
+                    key={item.key}
+                    disabled={locked}
+                    onClick={() => setDifficulty(item.key)}
+                    className={`
+                      relative overflow-hidden rounded-[2rem] border p-6 text-left transition-all duration-300
+                      ${item.color}
+                      ${locked ? "opacity-40 grayscale" : "hover:-translate-y-1"}
+                    `}
+                  >
+                    <div className="absolute right-4 top-4">
+                      <Icon className="h-6 w-6 text-white" />
                     </div>
-                  );
-                })}
-              </div>
-
-
+  
+                    <p className="text-sm font-black uppercase tracking-widest text-slate-300">
+                      {item.key}
+                    </p>
+  
+                    <h3 className="mt-3 text-3xl font-black text-white">
+                      {item.pairs}
+                    </h3>
+  
+                    <p className="mt-1 text-sm text-slate-400">
+                      Matching Pairs
+                    </p>
+  
+                    {locked && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-white">
+                          Locked
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
-
-            {gradeCleared && (
-              <div className="mt-6 rounded-3xl border border-[#52bd7f] bg-[#f0fff6] p-4 text-center">
-                <p className="text-lg font-black text-[#16824b]">
-                  Grade Cleared ✅
-                </p>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  {isReviewLocked
-                    ? `Hapiko will review this grade with you again after ${reviewDateText}.`
-                    : "Review is ready! Hapiko can test your memory again."}
-                </p>
-              </div>
-            )}
+  
+            {/* START */}
             <button
               onClick={startGame}
-              disabled={!!isReviewLocked}
-              className={`mt-8 flex h-16 w-full items-center justify-center rounded-[1.8rem] text-lg font-black text-white shadow-xl transition ${isReviewLocked
-                  ? "cursor-not-allowed bg-slate-300"
-                  : "bg-[#082A55] hover:scale-[1.01] hover:bg-[#123A70]"
-                }`}
+              className="mt-8 flex h-16 w-full items-center justify-center rounded-[2rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-lg font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01]"
             >
-              {gradeCleared ? "START REVIEW" : `START LEVEL ${level}`}
+              START MEMORY CHALLENGE
             </button>
           </div>
         )}
+  
+        {/* GAME */}
         {gameStarted && (
           <>
-            {showMasteryTest && masteryQuestions[masteryIndex] && (
-
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-
-                <div className="w-full max-w-xl rounded-[2rem] bg-white p-8 shadow-2xl">
-
-                  <img
-                    src="/mascot/hapiko-step-2.png"
-                    alt="Hapiko"
-                    className="mx-auto h-28 w-28 object-contain"
-                  />
-
-                  <h2 className="mt-4 text-center text-3xl font-black text-[#082A55]">
-                    Mastery Test
-                  </h2>
-
-                  <p className="mt-2 text-center text-slate-500">
-                    Hapiko is testing your memory!
-                  </p>
-
-                  <div className="mt-8">
-
-                    <div className="rounded-3xl bg-[#F8FAFF] p-6 text-center">
-
-                      <p className="text-4xl font-black text-[#082A55]">
-                        {masteryQuestions[masteryIndex].question}
-                      </p>
-
-                    </div>
-
-                    <div className="mt-6 grid gap-4">
-
-                      {masteryQuestions[masteryIndex].options.map((option: string) => (
-
-                        <button
-                          key={option}
-                          onClick={() => submitMasteryAnswer(option)}
-                          className="rounded-2xl border border-[#D8E3F2] bg-white p-4 text-lg font-bold text-[#082A55] transition hover:bg-[#EEF3FF]"
-                        >
-                          {option}
-                        </button>
-
-                      ))}
-
-                    </div>
-
-                  </div>
-
-                </div>
-
+            {/* HUD */}
+            <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+              <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+                <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Score
+                </p>
+  
+                <p className="mt-2 text-3xl font-black text-white">
+                  {score}
+                </p>
               </div>
-            )}
-            {showResultModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-                <div className="w-full max-w-md rounded-[2rem] bg-white p-7 text-center shadow-2xl">
-                  <img
-                    src="/mascot/hapiko-step-2.png"
-                    alt="Hapiko"
-                    className="mx-auto h-28 w-28 object-contain"
-                  />
-
-                  <h2 className="mt-4 text-2xl font-black text-[#082A55]">
-                    Great job!
-                  </h2>
-
-                  <p className="mt-3 text-slate-500">
-                    You completed Level {level}. Ready for the next challenge?
-                  </p>
-
-                  <button
-                    onClick={async () => {
-
-                      const nextLevel = Math.min(level + 1, 4);
-
-                      setShowResultModal(false);
-
-                      setLevel(nextLevel);
-
-                      await loadGame({
-                        selectedLanguagePair: languagePair,
-                        selectedGrade: grade,
-                        selectedDifficulty: difficulty,
-                        selectedPairCount: getPairCountByLevel(nextLevel),
-                      });
+  
+              <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+                <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Moves
+                </p>
+  
+                <p className="mt-2 text-3xl font-black text-white">
+                  {moves}
+                </p>
+              </div>
+  
+              <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+                <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Combo
+                </p>
+  
+                <p className="mt-2 text-3xl font-black text-[#FACC15]">
+                  x{combo}
+                </p>
+              </div>
+  
+              <div
+                className={`
+                  rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl
+                  ${secondsLeft <= 10 ? "animate-pulse border-red-400" : ""}
+                `}
+              >
+                <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Timer
+                </p>
+  
+                <p
+                  className={`
+                    mt-2 text-3xl font-black
+                    ${secondsLeft <= 10 ? "text-red-400" : "text-white"}
+                  `}
+                >
+                  {secondsLeft}s
+                </p>
+              </div>
+            </div>
+  
+            {/* CARDS */}
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {cards.map((card) => {
+                const visible = card.flipped || card.matched;
+  
+                return (
+                  <motion.button
+                    whileHover={{
+                      y: -6,
                     }}
-                    className="mt-6 h-14 w-full rounded-2xl bg-[#082A55] font-black text-white"
-                  >
-                    Continue
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {loading ? (
-              <div className="rounded-[2rem] bg-white p-10 text-center text-lg font-bold text-[#082A55] shadow-sm">
-                Loading Memory Flip...
-              </div>
-            ) : errorMsg ? (
-              <div className="rounded-[2rem] border border-red-200 bg-red-50 p-8 text-center">
-                <h2 className="text-2xl font-black text-[#082A55]">
-                  No Questions Yet
-                </h2>
-                <p className="mt-3 text-red-600">{errorMsg}</p>
-              </div>
-            ) : (
-              <>
-                <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                      Score
-                    </p>
-                    <p className="mt-1 text-2xl font-black text-[#082A55]">
-                      {score}
-                    </p>
-                  </div>
-
-                  <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <MousePointerClick className="h-4 w-4 text-[#8d73ff]" />
-                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                        Moves
-                      </p>
-                    </div>
-                    <p className="mt-1 text-2xl font-black text-[#082A55]">
-                      {moves}
-                    </p>
-                  </div>
-
-                  <div
-                    className={`rounded-3xl bg-white p-4 shadow-sm ${secondsLeft <= 10 ? "ring-2 ring-red-300" : ""
-                      }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-[#52bd7f]" />
-                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                        Time Left
-                      </p>
-                    </div>
-                    <p
-                      className={`mt-1 text-2xl font-black ${secondsLeft <= 10 ? "text-red-500" : "text-[#082A55]"
-                        }`}
-                    >
-                      {secondsLeft}s
-                    </p>
-                  </div>
-
-                  <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-yellow-500" />
-                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                        Combo
-                      </p>
-                    </div>
-                    <p className="mt-1 text-2xl font-black text-[#082A55]">
-                      x{combo}
-                    </p>
-                  </div>
-                </div>
-
-                {(isWin || timeUp) && !showResultModal && !showMasteryTest && (
-                  <div className="mb-6 rounded-[2rem] border border-[#E8D8B5] bg-white p-6 text-center shadow-sm">
-                    <Trophy className="mx-auto h-10 w-10 text-[#F6C65B]" />
-
-                    <h2 className="mt-3 text-2xl font-black text-[#082A55]">
-                      {isWin ? "Great Job!" : "Time's Up!"}
-                    </h2>
-
-                    <p className="mt-2 text-slate-500">
-                      Final Score: {score} · Moves: {moves}
-                    </p>
-
-                    {isWin && <p className="mt-3 text-2xl">{"⭐".repeat(stars)}</p>}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  {cards.map((card) => {
-                    const visible = card.flipped || card.matched;
-
-                    return (
-                      <button
-                        key={card.id}
-                        onClick={() => flipCard(card)}
-                        className={`
-                      relative h-[120px] rounded-[28px] border text-xl font-black shadow-sm transition-all duration-300 sm:h-[145px]
-                      ${visible
-                            ? "scale-[1.02] border-[#E8D8B5] bg-white text-[#082A55]"
-                            : "border-[#082A55] bg-[#082A55] text-white hover:-translate-y-1"
-                          }
-                      ${card.matched
-                            ? "border-[#52bd7f] bg-[#f0fff6] text-[#16824b]"
-                            : ""
-                          }
+                    whileTap={{
+                      scale: 0.97,
+                    }}
+                    key={card.id}
+                    onClick={() => flipCard(card)}
+                    className={`
+                      relative overflow-hidden rounded-[2rem] border transition-all duration-300
+                      aspect-square
+                      ${
+                        visible
+                          ? "border-white/10 bg-white/10 backdrop-blur-xl"
+                          : "border-[#1E2F4A] bg-gradient-to-br from-[#12243A] to-[#091423]"
+                      }
+                      ${
+                        card.matched
+                          ? "border-[#FACC15] shadow-[0_0_40px_rgba(250,204,21,0.35)]"
+                          : ""
+                      }
                     `}
-                      >
-                        {visible ? (
-                          <div className="flex flex-col items-center justify-center gap-2">
-                            <img
-                              src={card.imageUrl || FALLBACK_IMAGE}
-                              alt={card.text}
-                              className="h-20 w-20 rounded-2xl object-contain bg-white"
-                              onError={(e) => {
-                                e.currentTarget.src = FALLBACK_IMAGE;
-                              }}
-                            />
-
-                            <span className="text-center text-lg sm:text-xl">
-                              {card.text}
-                            </span>
+                  >
+                    {!visible && (
+                      <>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_50%)]" />
+  
+                        <div className="flex h-full items-center justify-center">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                            <Brain className="h-8 w-8 text-[#C4B5FD]" />
                           </div>
-                        ) : (
-                          <span className="text-3xl">?</span>
+                        </div>
+                      </>
+                    )}
+  
+                    {visible && (
+                      <div className="flex h-full flex-col items-center justify-center p-4">
+                        <img
+                          src={card.imageUrl || FALLBACK_IMAGE}
+                          alt={card.text}
+                          className="h-24 w-24 rounded-2xl object-cover shadow-lg"
+                          onError={(e) => {
+                            e.currentTarget.src = FALLBACK_IMAGE;
+                          }}
+                        />
+  
+                        <p className="mt-4 text-center text-lg font-black text-white">
+                          {card.text}
+                        </p>
+  
+                        {card.matched && (
+                          <div className="mt-3 rounded-full bg-[#FACC15]/20 px-3 py-1 text-xs font-black uppercase tracking-wider text-[#FACC15]">
+                            Matched
+                          </div>
                         )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+                      </div>
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
           </>
         )}
-
       </div>
     </div>
   );
