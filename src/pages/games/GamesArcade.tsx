@@ -169,7 +169,7 @@ export default function GamesArcade() {
                         <div
                           className={`flex h-24 w-24 items-center justify-center rounded-[2rem] ${game.color}`}
                         >
-                          {Icon && <Icon className="h-10 w-10 text-primary" />}
+                          {game.icon && <game.icon className="h-10 w-10 text-primary" />}
                         </div>
                       </div>
                     )}
@@ -197,8 +197,8 @@ export default function GamesArcade() {
 
                     <div
                       className={`mt-6 flex h-12 items-center justify-center rounded-2xl text-sm font-black transition ${available
-                          ? "bg-primary text-white group-hover:bg-[#123A70]"
-                          : "bg-[#f5f5f5] text-primary/45"
+                        ? "bg-primary text-white group-hover:bg-[#123A70]"
+                        : "bg-[#f5f5f5] text-primary/45"
                         }`}
                     >
                       {available ? "Play Now" : "Coming Soon"}
