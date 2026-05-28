@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  RotateCcw,
-  Trophy,
   Zap,
-  Clock,
-  MousePointerClick,
+
+
   Sparkles,
   Brain,
-  Target,
+
   Flame,
   Crown,
 } from "lucide-react";
@@ -59,11 +57,20 @@ const getTimeLimit = (pairCount: number, difficulty: string) => {
   return pairCount * 10;
 };
 
-const getPairCountByLevel = (level: number) => {
-  if (level === 1) return 6;
-  if (level === 2) return 8;
-  if (level === 3) return 10;
+const getPairCountByDifficulty = (difficulty: string) => {
+  if (difficulty === "Easy") return 6;
+  if (difficulty === "Medium") return 8;
+  if (difficulty === "Hard") return 10;
   return 12;
+};
+
+const getPairCountByLevel = (
+  difficulty: string,
+  level: number
+) => {
+  const base = getPairCountByDifficulty(difficulty);
+
+  return Math.min(base + (level - 1) * 2, 20);
 };
 
 
@@ -95,7 +102,7 @@ export default function MemoryFlip() {
   const [masteryIndex, setMasteryIndex] = useState(0);
   const [masteryCorrect, setMasteryCorrect] = useState(0);
   const [level, setLevel] = useState(1);
-  const pairCount = getPairCountByLevel(level);
+  const pairCount = getPairCountByDifficulty(difficulty);
 
   const [secondsLeft, setSecondsLeft] = useState(
     getTimeLimit(pairCount, difficulty)
@@ -267,7 +274,7 @@ export default function MemoryFlip() {
       selectedLanguagePair: languagePair,
       selectedGrade: grade,
       selectedDifficulty: difficulty,
-      selectedPairCount: getPairCountByLevel(1),
+      selectedPairCount: getPairCountByDifficulty(difficulty),
     });
   };
 
@@ -275,7 +282,7 @@ export default function MemoryFlip() {
     selectedLanguagePair = languagePair,
     selectedGrade = grade,
     selectedDifficulty = difficulty,
-    selectedPairCount = pairCount,
+    selectedPairCount = getPairCountByDifficulty(selectedDifficulty),
   } = {}) => {
     setLoading(true);
     setErrorMsg("");
@@ -315,7 +322,7 @@ export default function MemoryFlip() {
       setActiveGrade(selectedGrade);
       setPlayedPairs([]);
       setErrorMsg(
-        "No new Memory Flip questions available. Please ask admin to generate more game questions."
+        `Hapiko noticed that you have completed all available ${grade} ${difficulty} vocabulary for now. You can try the next difficulty, or come back next week for review.`
       );
       setLoading(false);
       return;
@@ -434,17 +441,16 @@ export default function MemoryFlip() {
       .eq("grade", grade)
       .maybeSingle();
 
-    let nextDifficulty = difficulty;
+    let nextDifficulty = existingProgress?.unlocked_difficulty || unlockedDifficulty;
     let isGradeCleared = existingProgress?.grade_cleared || false;
     let clearedAtValue = existingProgress?.cleared_at || null;
     let nextReviewAtValue = existingProgress?.next_review_at || null;
 
     if (passed) {
-      if (difficulty === "Easy") {
-        nextDifficulty = "Medium";
-      } else if (difficulty === "Medium") {
-        nextDifficulty = "Hard";
-      } else if (difficulty === "Hard") {
+      if (difficulty === "Easy") nextDifficulty = "Medium";
+      else if (difficulty === "Medium") nextDifficulty = "Hard";
+      else if (difficulty === "Hard") nextDifficulty = "Advanced";
+      else if (difficulty === "Advanced") {
         isGradeCleared = true;
         clearedAtValue = new Date().toISOString();
 
@@ -474,19 +480,87 @@ export default function MemoryFlip() {
         onConflict: "student_id,language_pair,grade",
       }
     );
+
+    setUnlockedDifficulty(nextDifficulty);
+    setGradeCleared(isGradeCleared);
+    setNextReviewAt(nextReviewAtValue);
+  };
+
+
+  const submitMasteryAnswer = async (answer: string) => {
+    const current = masteryQuestions[masteryIndex];
+    const isCorrect = answer === current.correctAnswer;
+
+    const nextCorrect = isCorrect ? masteryCorrect + 1 : masteryCorrect;
+    const isLastQuestion = masteryIndex >= masteryQuestions.length - 1;
+
+    if (!isLastQuestion) {
+      setMasteryCorrect(nextCorrect);
+      setMasteryIndex((prev) => prev + 1);
+      return;
+    }
+
+    setShowMasteryTest(false);
+    setShowResultModal(false);
+
+    if (nextCorrect >= 4) {
+      await saveProgress({
+        passed: true,
+        levelReached: level,
+      });
+
+      if (difficulty === "Easy") {
+        setUnlockedDifficulty("Medium");
+        setDifficulty("Medium");
+        alert("Medium unlocked!");
+      } else if (difficulty === "Medium") {
+        setUnlockedDifficulty("Hard");
+        setDifficulty("Hard");
+        alert("Hard unlocked!");
+      } else if (difficulty === "Hard") {
+        setUnlockedDifficulty("Advanced");
+        setDifficulty("Advanced");
+        alert("Advanced unlocked!");
+      } else {
+        setGradeCleared(true);
+        alert("Grade Cleared!");
+      }
+
+      setLevel(1);
+      setCombo(0);
+      setScore(0);
+      setMoves(0);
+      setMasteryPool([]);
+      setGameStarted(false);
+    } else {
+      alert("Mastery test failed. Try this difficulty again.");
+
+      await saveProgress({
+        passed: false,
+        levelReached: level,
+      });
+
+      setLevel(1);
+      setMasteryPool([]);
+
+      await loadGame({
+        selectedLanguagePair: languagePair,
+        selectedGrade: grade,
+        selectedDifficulty: difficulty,
+        selectedPairCount: getPairCountByDifficulty(difficulty),
+      });
+    }
   };
 
   useEffect(() => {
-    if (isWin) {
+    if (!isWin || showResultModal || showMasteryTest) return;
 
-      saveHistory();
+    saveHistory();
 
-      if (level >= 4) {
-        setShowResultModal(false);
-        generateMasteryTest();
-      } else {
-        setShowResultModal(true);
-      }
+    if (level >= 5) {
+      generateMasteryTest();
+    } else {
+      setShowResultModal(true);
     }
   }, [isWin]);
 
@@ -516,73 +590,19 @@ export default function MemoryFlip() {
     setShowMasteryTest(true);
   };
 
-  const submitMasteryAnswer = async (answer: string) => {
-    const current = masteryQuestions[masteryIndex];
-    const isCorrect = answer === current.correctAnswer;
-
-    const nextCorrect = isCorrect ? masteryCorrect + 1 : masteryCorrect;
-    const isLastQuestion = masteryIndex >= masteryQuestions.length - 1;
-
-    if (!isLastQuestion) {
-      setMasteryCorrect(nextCorrect);
-      setMasteryIndex((prev) => prev + 1);
-      return;
-    }
-
-    setShowMasteryTest(false);
+  const leaveArcade = () => {
     setShowResultModal(false);
-
-    if (nextCorrect >= 4) {
-
-      await saveProgress({
-        passed: true,
-        levelReached: level,
-      });
-      if (difficulty === "Easy") {
-        setUnlockedDifficulty("Medium");
-      }
-
-      else if (difficulty === "Medium") {
-        setUnlockedDifficulty("Hard");
-      }
-
-      else if (difficulty === "Hard") {
-        setGradeCleared(true);
-      }
-
-      if (difficulty === "Hard") {
-        alert("Grade Cleared!");
-      } else {
-        alert("New difficulty unlocked!");
-      }
-
-      setLevel(1);
-      setCombo(0);
-      setScore(0);
-      setMoves(0);
-
-
-      setGameStarted(false);
-    } else {
-      alert("FAIL");
-      setMasteryPool([]);
-      await saveProgress({
-        passed: false,
-        levelReached: level,
-      });
-
-      setLevel(1);
-
-      await loadGame({
-        selectedLanguagePair: languagePair,
-        selectedGrade: grade,
-        selectedDifficulty: difficulty,
-        selectedPairCount: getPairCountByLevel(1),
-      });
-    }
+    setGameStarted(false);
+    setCards([]);
+    setSelectedCards([]);
+    setMoves(0);
+    setCombo(0);
+    setScore(0);
+    setLevel(1);
+    setErrorMsg("");
+    setLoading(false);
+    setTimeUp(false);
   };
-
-
 
   const flipCard = (card: Card) => {
     if (isGameEnded) return;
@@ -659,32 +679,7 @@ export default function MemoryFlip() {
       : languagePair === "zh_ja"
         ? "Chinese ↔ Japanese"
         : "English ↔ Japanese";
-  const levelStages = [
-    {
-      level: 1,
-      title: "Warm Up",
-      pairs: 6,
-      icon: "🌱",
-    },
-    {
-      level: 2,
-      title: "Memory Boost",
-      pairs: 8,
-      icon: "⚡",
-    },
-    {
-      level: 3,
-      title: "Speed Match",
-      pairs: 10,
-      icon: "🔥",
-    },
-    {
-      level: 4,
-      title: "Master Gate",
-      pairs: 12,
-      icon: "👑",
-    },
-  ];
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#071426]">
       {/* BACKGROUND */}
@@ -693,7 +688,7 @@ export default function MemoryFlip() {
         <div className="absolute bottom-[-140px] right-[-100px] h-[380px] w-[380px] rounded-full bg-[#2563EB]/20 blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
       </div>
-  
+
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6">
         {/* HERO */}
         <div className="mb-8 overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 backdrop-blur-xl">
@@ -701,59 +696,59 @@ export default function MemoryFlip() {
             <div>
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/40 bg-[#8B5CF6]/10 px-4 py-2">
                 <Sparkles className="h-4 w-4 text-[#C4B5FD]" />
-  
+
                 <span className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
                   Luna Memory Arcade
                 </span>
               </div>
-  
+
               <h1 className="max-w-2xl text-5xl font-black leading-[1.05] tracking-tight text-white sm:text-6xl">
                 Train Memory.
                 <br />
                 Master Vocabulary.
               </h1>
-  
+
               <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">
                 Match vocabulary cards, clear harder challenges,
                 and unlock advanced memory stages with Hapiko.
               </p>
-  
+
               <div className="mt-8 flex flex-wrap gap-3">
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
                   <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                     Language
                   </p>
-  
+
                   <p className="mt-1 text-sm font-bold text-white">
                     {languageLabel}
                   </p>
                 </div>
-  
+
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
                   <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                     Grade
                   </p>
-  
+
                   <p className="mt-1 text-sm font-bold text-white">
                     {grade}
                   </p>
                 </div>
-  
+
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
                   <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                     Difficulty
                   </p>
-  
+
                   <p className="mt-1 text-sm font-bold text-[#C4B5FD]">
                     {difficulty}
                   </p>
                 </div>
               </div>
             </div>
-  
+
             <div className="relative hidden items-center justify-center lg:flex">
               <div className="absolute h-[300px] w-[300px] rounded-full bg-[#8B5CF6]/30 blur-3xl" />
-  
+
               <motion.img
                 animate={{
                   y: [0, -12, 0],
@@ -769,7 +764,7 @@ export default function MemoryFlip() {
             </div>
           </div>
         </div>
-  
+
         {!gameStarted && (
           <div className="rounded-[2.5rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
             {/* SELECTORS */}
@@ -783,7 +778,7 @@ export default function MemoryFlip() {
                 <option value="zh_ja">Chinese ↔ Japanese</option>
                 <option value="en_ja">English ↔ Japanese</option>
               </select>
-  
+
               <select
                 value={grade}
                 onChange={(e) => setGrade(e.target.value)}
@@ -795,12 +790,12 @@ export default function MemoryFlip() {
                   </option>
                 ))}
               </select>
-  
+
               <div className="flex h-16 items-center justify-center rounded-3xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-5 text-sm font-black text-[#C4B5FD]">
                 Current Difficulty: {difficulty}
               </div>
             </div>
-  
+
             {/* DIFFICULTY */}
             <div className="mt-8 grid gap-4 lg:grid-cols-4">
               {[
@@ -842,7 +837,7 @@ export default function MemoryFlip() {
                 },
               ].map((item) => {
                 const Icon = item.icon;
-  
+
                 const locked =
                   (item.key === "Medium" &&
                     unlockedDifficulty === "Easy") ||
@@ -850,7 +845,7 @@ export default function MemoryFlip() {
                     !["Hard", "Advanced"].includes(unlockedDifficulty)) ||
                   (item.key === "Advanced" &&
                     unlockedDifficulty !== "Advanced");
-  
+
                 return (
                   <button
                     key={item.key}
@@ -865,19 +860,19 @@ export default function MemoryFlip() {
                     <div className="absolute right-4 top-4">
                       <Icon className="h-6 w-6 text-white" />
                     </div>
-  
+
                     <p className="text-sm font-black uppercase tracking-widest text-slate-300">
                       {item.key}
                     </p>
-  
+
                     <h3 className="mt-3 text-3xl font-black text-white">
                       {item.pairs}
                     </h3>
-  
+
                     <p className="mt-1 text-sm text-slate-400">
                       Matching Pairs
                     </p>
-  
+
                     {locked && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                         <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-white">
@@ -889,52 +884,212 @@ export default function MemoryFlip() {
                 );
               })}
             </div>
-  
+
             {/* START */}
             <button
               onClick={startGame}
-              className="mt-8 flex h-16 w-full items-center justify-center rounded-[2rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-lg font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01]"
+              disabled={!!isReviewLocked}
+              className={`mt-8 flex h-16 w-full items-center justify-center rounded-[2rem] text-lg font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition ${isReviewLocked
+                ? "cursor-not-allowed bg-slate-600 opacity-50"
+                : "bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] hover:scale-[1.01]"
+                }`}
             >
-              START MEMORY CHALLENGE
+              {isReviewLocked
+                ? `REVIEW AVAILABLE AFTER ${reviewDateText}`
+                : `START ${difficulty.toUpperCase()} CHALLENGE`}
             </button>
           </div>
         )}
-  
+
+
+        <AnimatePresence>
+          {showResultModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4"
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
+              >
+                <img
+                  src="/mascot/hapiko-step-2.png"
+                  alt="Hapiko"
+                  className="mx-auto h-32 w-32 object-contain"
+                />
+
+                <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                  Challenge Cleared
+                </p>
+
+                <h2 className="mt-3 text-4xl font-black text-white">
+                  Great Job!
+                </h2>
+
+                <p className="mt-4 text-slate-300">
+                  You completed challenge {level} / 5 for {difficulty}.
+                </p>
+
+                <p className="mt-3 text-3xl">
+                  {"⭐".repeat(stars)}
+                </p>
+
+                <div className="mt-8 grid gap-3">
+                  <button
+                    onClick={async () => {
+                      const nextLevel = level + 1;
+
+                      setShowResultModal(false);
+
+                      if (nextLevel > 5) {
+                        generateMasteryTest();
+                        return;
+                      }
+
+                      setLevel(nextLevel);
+
+                      await loadGame({
+                        selectedLanguagePair: languagePair,
+                        selectedGrade: grade,
+                        selectedDifficulty: difficulty,
+                        selectedPairCount: getPairCountByLevel(
+                          difficulty,
+                          nextLevel
+                        ),
+                      });
+                    }}
+                    className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                  >
+                    NEXT CHALLENGE
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowResultModal(false);
+                      setGameStarted(false);
+                    }}
+                    className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                  >
+                    Exit Game
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showMasteryTest && masteryQuestions[masteryIndex] && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 px-4"
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="w-full max-w-xl rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
+              >
+                <img
+                  src="/mascot/hapiko-step-2.png"
+                  alt="Hapiko"
+                  className="mx-auto h-28 w-28 object-contain"
+                />
+
+                <p className="mt-4 text-center text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                  Mastery Test
+                </p>
+
+                <h2 className="mt-3 text-center text-4xl font-black text-white">
+                  Final Check
+                </h2>
+
+                <p className="mt-3 text-center text-slate-300">
+                  Question {masteryIndex + 1} / {masteryQuestions.length}
+                </p>
+
+                <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/5 p-6 text-center">
+                  <p className="text-4xl font-black text-white">
+                    {masteryQuestions[masteryIndex].question}
+                  </p>
+                </div>
+
+                <div className="mt-6 grid gap-3">
+                  {masteryQuestions[masteryIndex].options.map((option: string) => (
+                    <button
+                      key={option}
+                      onClick={() => submitMasteryAnswer(option)}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-4 text-lg font-black text-white transition hover:-translate-y-1 hover:bg-[#8B5CF6]/20"
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* GAME */}
         {gameStarted && (
           <>
+
+            <div className="mb-6 rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
+                  {difficulty} Challenge
+                </p>
+
+                <p className="text-sm font-black text-white">
+                  Round {level} / 5
+                </p>
+              </div>
+
+              <div className="h-3 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] transition-all duration-500"
+                  style={{ width: `${(level / 5) * 100}%` }}
+                />
+              </div>
+            </div>
             {/* HUD */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
               <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                   Score
                 </p>
-  
+
                 <p className="mt-2 text-3xl font-black text-white">
                   {score}
                 </p>
               </div>
-  
+
               <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                   Moves
                 </p>
-  
+
                 <p className="mt-2 text-3xl font-black text-white">
                   {moves}
                 </p>
               </div>
-  
+
               <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                   Combo
                 </p>
-  
+
                 <p className="mt-2 text-3xl font-black text-[#FACC15]">
                   x{combo}
                 </p>
               </div>
-  
+
               <div
                 className={`
                   rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl
@@ -944,7 +1099,7 @@ export default function MemoryFlip() {
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                   Timer
                 </p>
-  
+
                 <p
                   className={`
                     mt-2 text-3xl font-black
@@ -955,75 +1110,132 @@ export default function MemoryFlip() {
                 </p>
               </div>
             </div>
-  
+
+            {loading && (
+              <div className="mb-6 rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center text-lg font-black text-white">
+                Loading Memory Flip...
+              </div>
+            )}
+
+            {errorMsg && !loading && (
+              <div className="mb-6 rounded-[2rem] border border-[#FACC15]/30 bg-[#FACC15]/10 p-8 text-center">
+                <img
+                  src="/mascot/hapiko-step-2.png"
+                  alt="Hapiko"
+                  className="mx-auto h-24 w-24 object-contain"
+                />
+
+                <h2 className="mt-4 text-2xl font-black text-white">
+                  Stage Completed
+                </h2>
+
+                <p className="mt-3 text-slate-300">
+                  {errorMsg}
+                </p>
+
+                <button
+                  onClick={leaveArcade}
+                  className="mt-6 h-12 rounded-2xl bg-white px-6 font-black text-[#071426]"
+                >
+                  Back to Arcade
+                </button>
+              </div>
+            )}
+
+
+            {timeUp && (
+              <div className="mb-6 rounded-[2rem] border border-red-400/30 bg-red-500/10 p-8 text-center">
+                <img
+                  src="/mascot/hapiko-step-2.png"
+                  alt="Hapiko"
+                  className="mx-auto h-24 w-24 object-contain"
+                />
+
+                <h2 className="mt-4 text-3xl font-black text-white">
+                  Time's Up!
+                </h2>
+
+                <p className="mt-3 text-slate-300">
+                  Hapiko believes you can clear this stage next time.
+                </p>
+
+                <button
+                  onClick={leaveArcade}
+                  className="mt-6 h-12 rounded-2xl bg-white px-6 font-black text-[#071426]"
+                >
+                  Return to Arcade
+                </button>
+              </div>
+            )}
+
             {/* CARDS */}
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {cards.map((card) => {
-                const visible = card.flipped || card.matched;
-  
-                return (
-                  <motion.button
-                    whileHover={{
-                      y: -6,
-                    }}
-                    whileTap={{
-                      scale: 0.97,
-                    }}
-                    key={card.id}
-                    onClick={() => flipCard(card)}
-                    className={`
+            {!loading && !errorMsg && (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {cards.map((card) => {
+                  const visible = card.flipped || card.matched;
+
+                  return (
+                    <motion.button
+                      whileHover={{
+                        y: -6,
+                      }}
+                      whileTap={{
+                        scale: 0.97,
+                      }}
+                      key={card.id}
+                      onClick={() => flipCard(card)}
+                      className={`
                       relative overflow-hidden rounded-[2rem] border transition-all duration-300
                       aspect-square
-                      ${
-                        visible
+                      ${visible
                           ? "border-white/10 bg-white/10 backdrop-blur-xl"
                           : "border-[#1E2F4A] bg-gradient-to-br from-[#12243A] to-[#091423]"
-                      }
-                      ${
-                        card.matched
+                        }
+                      ${card.matched
                           ? "border-[#FACC15] shadow-[0_0_40px_rgba(250,204,21,0.35)]"
                           : ""
-                      }
+                        }
                     `}
-                  >
-                    {!visible && (
-                      <>
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_50%)]" />
-  
-                        <div className="flex h-full items-center justify-center">
-                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/5">
-                            <Brain className="h-8 w-8 text-[#C4B5FD]" />
+                    >
+                      {!visible && (
+                        <>
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_50%)]" />
+
+                          <div className="flex h-full items-center justify-center">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                              <Brain className="h-8 w-8 text-[#C4B5FD]" />
+                            </div>
                           </div>
+                        </>
+                      )}
+
+                      {visible && (
+                        <div className="flex h-full flex-col items-center justify-center p-4">
+                          <img
+                            src={card.imageUrl || FALLBACK_IMAGE}
+                            alt={card.text}
+                            className="h-24 w-24 rounded-2xl object-cover shadow-lg"
+                            onError={(e) => {
+                              e.currentTarget.src = FALLBACK_IMAGE;
+                            }}
+                          />
+
+                          <p className="mt-4 text-center text-lg font-black text-white">
+                            {card.text}
+                          </p>
+
+                          {card.matched && (
+                            <div className="mt-3 rounded-full bg-[#FACC15]/20 px-3 py-1 text-xs font-black uppercase tracking-wider text-[#FACC15]">
+                              Matched
+                            </div>
+                          )}
                         </div>
-                      </>
-                    )}
-  
-                    {visible && (
-                      <div className="flex h-full flex-col items-center justify-center p-4">
-                        <img
-                          src={card.imageUrl || FALLBACK_IMAGE}
-                          alt={card.text}
-                          className="h-24 w-24 rounded-2xl object-cover shadow-lg"
-                          onError={(e) => {
-                            e.currentTarget.src = FALLBACK_IMAGE;
-                          }}
-                        />
-  
-                        <p className="mt-4 text-center text-lg font-black text-white">
-                          {card.text}
-                        </p>
-  
-                        {card.matched && (
-                          <div className="mt-3 rounded-full bg-[#FACC15]/20 px-3 py-1 text-xs font-black uppercase tracking-wider text-[#FACC15]">
-                            Matched
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </motion.button>
-                );
-              })}
-            </div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
       </div>

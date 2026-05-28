@@ -18,9 +18,8 @@ const games = [
     title: "Memory Flip",
     description: "Match language pairs across Chinese, English, and Japanese.",
     path: "/memory-flip",
-    icon: Layers,
     status: "Available",
-    color: "bg-[#8d73ff]",
+    cover: "/games/Memory-Flip.png",
   },
   {
     title: "Word Drive",
@@ -68,12 +67,12 @@ export default function GamesArcade() {
   const availableGames = games.filter((game) => game.status === "Available").length;
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-14">
+    <div className="min-h-screen overflow-hidden bg-white px-4 py-8 sm:px-6 sm:py-14">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
 
-      <div className="relative z-10 mx-auto max-w-[1180px] space-y-8">
+      <div className="relative z-10 mx-auto max-w-[1180px] space-y-0">
         {/* HERO */}
-        <section className="relative overflow-hidden rounded-[3rem] border border-[#eee8ff] bg-white p-7 shadow-[0_35px_120px_rgba(66,56,120,0.10)] sm:p-10">
+        <section className="relative overflow-hidden rounded-t-[3rem] border border-[#eee8ff] bg-white p-7 shadow-[0_35px_120px_rgba(66,56,120,0.10)] sm:p-10">
           <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
           <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
 
@@ -97,6 +96,8 @@ export default function GamesArcade() {
               </p>
             </div>
 
+
+
             <motion.div
               whileHover={{ y: -8, rotate: 1.5 }}
               className="relative rounded-[2.2rem] bg-[#fbfaff] p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)]"
@@ -114,32 +115,10 @@ export default function GamesArcade() {
           </div>
         </section>
 
-        {/* STATS */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <StatCard
-            index={0}
-            icon={<Gamepad2 className="h-6 w-6" />}
-            title="Game Modes"
-            value={games.length}
-          />
 
-          <StatCard
-            index={1}
-            icon={<Trophy className="h-6 w-6" />}
-            title="Available Now"
-            value={availableGames}
-          />
-
-          <StatCard
-            index={2}
-            icon={<Sparkles className="h-6 w-6" />}
-            title="Learning Style"
-            value="Fun"
-          />
-        </div>
 
         {/* GAME LIST */}
-        <section className="rounded-[2.5rem] bg-white p-7 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:p-9">
+        <section className="relative -mt-2 rounded-b-[2.8rem] bg-white px-7 pb-9 pt-4 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:px-9">
           <div className="mb-8">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
               Choose a game
@@ -157,6 +136,7 @@ export default function GamesArcade() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {games.map((game, index) => {
               const Icon = game.icon;
+
               const available = game.status === "Available";
 
               const card = (
@@ -165,48 +145,68 @@ export default function GamesArcade() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: false }}
                   transition={{ delay: index * 0.06 }}
-                  whileHover={available ? { y: -8, rotate: index % 2 === 0 ? -1.5 : 1.5 } : {}}
-                  className={`group h-full rounded-[2.2rem] bg-[#fbfaff] p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)] transition ${
-                    available ? "cursor-pointer" : "opacity-60"
-                  }`}
+                  whileHover={
+                    available
+                      ? { y: -8, rotate: index % 2 === 0 ? -1.5 : 1.5 }
+                      : {}
+                  }
+                  className={`group h-full overflow-hidden rounded-[2.2rem] bg-white shadow-[0_18px_55px_rgba(66,56,120,0.08)] transition ${available ? "cursor-pointer" : "opacity-60"
+                    }`}
                 >
-                  <div className="mb-5 flex items-center justify-between">
-                    <div
-                      className={`flex h-14 w-14 items-center justify-center rounded-2xl ${game.color} text-primary shadow-[0_12px_30px_rgba(66,56,120,0.10)]`}
-                    >
-                      <Icon className="h-6 w-6" />
-                    </div>
+                  <div className="relative overflow-hidden">
+                    {game.cover ? (
+                      <>
+                        <img
+                          src={game.cover}
+                          alt={game.title}
+                          className="h-[220px] w-full object-cover transition duration-500 group-hover:scale-105"
+                        />
 
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-black ${
-                        available
-                          ? "bg-green-50 text-green-700"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      {game.status}
-                    </span>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                      </>
+                    ) : (
+                      <div className="flex h-[220px] w-full items-center justify-center bg-[#f6f1ff]">
+                        <div
+                          className={`flex h-24 w-24 items-center justify-center rounded-[2rem] ${game.color}`}
+                        >
+                          {Icon && <Icon className="h-10 w-10 text-primary" />}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="absolute right-4 top-4">
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-black ${available
+                            ? "bg-green-400 text-white"
+                            : "bg-white/80 text-slate-600"
+                          }`}
+                      >
+                        {game.status}
+                      </span>
+                    </div>
                   </div>
 
-                  <h3 className="font-poppins text-2xl font-black text-primary">
-                    {game.title}
-                  </h3>
+                  <div className="p-6">
+                    <h3 className="font-poppins text-2xl font-black text-primary">
+                      {game.title}
+                    </h3>
 
-                  <p className="mt-3 min-h-[72px] text-sm leading-6 text-primary/55">
-                    {game.description}
-                  </p>
+                    <p className="mt-3 min-h-[72px] text-sm leading-6 text-primary/55">
+                      {game.description}
+                    </p>
 
-                  <div
-                    className={`mt-6 flex h-12 items-center justify-center rounded-2xl text-sm font-black transition ${
-                      available
-                        ? "bg-primary text-white group-hover:bg-[#123A70]"
-                        : "bg-white text-primary/45"
-                    }`}
-                  >
-                    {available ? "Play Now" : "Coming Soon"}
-                    {available && (
-                      <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
-                    )}
+                    <div
+                      className={`mt-6 flex h-12 items-center justify-center rounded-2xl text-sm font-black transition ${available
+                          ? "bg-primary text-white group-hover:bg-[#123A70]"
+                          : "bg-[#f5f5f5] text-primary/45"
+                        }`}
+                    >
+                      {available ? "Play Now" : "Coming Soon"}
+
+                      {available && (
+                        <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               );
@@ -234,38 +234,5 @@ const MiniMetric = ({ label, value }: { label: string; value: any }) => {
         {value}
       </span>
     </div>
-  );
-};
-
-const StatCard = ({
-  icon,
-  title,
-  value,
-  index,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  value: any;
-  index: number;
-}) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false }}
-      transition={{ delay: index * 0.06 }}
-      whileHover={{ y: -8, rotate: index % 2 === 0 ? -1.5 : 1.5 }}
-      className="rounded-[2.2rem] bg-white p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)]"
-    >
-      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f6f1ff] text-[#8d73ff]">
-        {icon}
-      </div>
-
-      <p className="mb-1 text-sm font-bold text-primary/50">{title}</p>
-
-      <h3 className="font-poppins text-4xl font-black text-primary">
-        {value}
-      </h3>
-    </motion.div>
   );
 };
