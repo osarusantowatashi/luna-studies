@@ -93,11 +93,19 @@ const Landing = () => {
     damping: 24,
   });
   const tutorCardY = [
+
     useTransform(smoothTutorProgress, [0, 0.18], [0, 0]),
+
     useTransform(smoothTutorProgress, [0.14, 0.42], [680, 0]),
+  
     useTransform(smoothTutorProgress, [0.34, 0.62], [680, 0]),
+  
     useTransform(smoothTutorProgress, [0.54, 0.82], [680, 0]),
+  
     useTransform(smoothTutorProgress, [0.74, 1.0], [680, 0]),
+  
+    useTransform(smoothTutorProgress, [0.76, 1.0], [680, 0]),
+  
   ];
   const pathwayRef = useRef(null);
 
@@ -1081,8 +1089,7 @@ lg:gap-x-2
 
               {/* VERTICAL STACKED CARDS */}
               <div className="relative overflow-hidden rounded-[3rem] bg-transparent">
-                <div className="relative h-[390px] w-full overflow-hidden">
-
+              <div className="relative h-[430px] w-full overflow-hidden xl:h-[470px]">
 
                   {[
                     {
@@ -1132,7 +1139,7 @@ lg:gap-x-2
                       key={tutor.name}
                       style={{
                         y: tutorCardY[i],
-                        rotate: [-4, 3.5, -3, 4, -2.5][i],
+                        rotate: [-4, 3.5, -3, 4, -2.5, 3][i],
                         zIndex: i + 10,
                       }}
                       whileHover={{ y: -8, scale: 1.015 }}
@@ -1141,18 +1148,19 @@ lg:gap-x-2
                       <div className="flex h-full gap-5 xl:gap-7">
 
                         {/* IMAGE */}
-                        <img
-  src={tutor.image}
-  alt={tutor.name}
-  className={`
-    h-full w-full transition duration-500
-    ${
-      tutor.name === "Kana"
-        ? "object-cover object-[center_18%] scale-[0.9]"
-        : "object-cover object-top"
-    }
-  `}
-/>
+                        <div className="h-full w-[210px] shrink-0 overflow-hidden rounded-[2rem] bg-[#f3efff] xl:w-[250px]">
+                          <img
+                            src={tutor.image}
+                            alt={tutor.name}
+                            className={`
+      h-full w-full transition duration-500
+      ${tutor.name === "Kana"
+                                ? "object-cover object-[center_18%]"
+                                : "object-cover object-top"
+                              }
+    `}
+                          />
+                        </div>
 
                         {/* CONTENT */}
                         <div className="flex flex-1 flex-col justify-center">
@@ -1176,7 +1184,7 @@ lg:gap-x-2
                           <p className="mt-4 max-w-[360px] text-sm leading-6 text-primary/65 xl:mt-6 xl:max-w-[420px] xl:text-[17px] xl:leading-8">      {tutor.desc}
                           </p>
 
-                          <div className="mt-4 flex flex-nowrap gap-2 xl:mt-6 xl:gap-3">
+                          <div className="mt-4 flex flex-wrap gap-2 xl:mt-6 xl:gap-3">
                             {tutor.tags.map((tag) => (
                               <span
                                 key={tag}

@@ -223,6 +223,10 @@
       "christine": {
         "role": "Reading · Writing Specialist",
         "desc": "Guides students through comprehension, vocabulary growth, and writing feedback."
+      },
+      "kana": {
+        "role": "Japanese Language Tutor",
+        "desc": "Helps students build strong Japanese foundations through grammar, vocabulary, conversation, and JLPT practice."
       }
     },
     "enquiry": {
@@ -723,7 +727,6 @@
           "Personalised academic planning and learning strategy"
         ]
       },
-      
       {
         "name": "Francis",
         "image": "/tutors/francis_new.png",
@@ -787,24 +790,24 @@
         ]
       },
       {
-  "name": "Kana",
-  "image": "/tutors/kana_new.png",
-  "role": "Japanese Language Tutor",
-  "subjects": [
-    "Japanese Language",
-    "Beginner Japanese",
-    "JLPT Preparation"
-  ],
-  "education": "Keio University, Japan",
-  "languages": "Japanese / English / Mandarin",
-  "bio": "A patient and structured Japanese tutor who helps students build strong foundations in grammar, vocabulary, speaking, and reading. She supports learners in gaining confidence through clear explanations and practical communication practice.",
-  "experience": [
-    "Beginner to intermediate Japanese language tutoring",
-    "JLPT vocabulary and grammar preparation",
-    "Conversation practice for daily and academic situations",
-    "Support for students adapting to Japanese school or daily life"
-  ]
-}
+        "name": "Kana",
+        "image": "/tutors/kana_new.png",
+        "role": "Japanese Language Tutor",
+        "subjects": [
+          "Japanese Language",
+          "Beginner Japanese",
+          "JLPT Preparation"
+        ],
+        "education": "Keio University, Japan",
+        "languages": "Japanese / English / Mandarin",
+        "bio": "A patient and structured Japanese tutor who helps students build strong foundations in grammar, vocabulary, speaking, and reading. She supports learners in gaining confidence through clear explanations and practical communication practice.",
+        "experience": [
+          "Beginner to intermediate Japanese language tutoring",
+          "JLPT vocabulary and grammar preparation",
+          "Conversation practice for daily and academic situations",
+          "Support for students adapting to Japanese school or daily life"
+        ]
+      }
     ]
   },
   "login": {
