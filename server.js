@@ -443,9 +443,9 @@ const STYLE_VERSION = "luna_flashcard_v1";
 
 const GAME_PAIR_COUNT_BY_DIFFICULTY = {
   Easy: 6,
-  Medium: 8,
-  Hard: 10,
-  Advanced: 12,
+  Medium: 6,
+  Hard: 6,
+  Advanced: 6,
 };
 
 const GAME_VOCAB_DIFFICULTY_RULES = {
