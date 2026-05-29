@@ -96,7 +96,7 @@ export default function GamesArcade() {
 
 
         {/* GAME LIST */}
-        <section className="relative mt-6 rounded-[2.8rem] bg-white px-6 pb-8 pt-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:px-8">
+        <section className="relative mt-10 rounded-[2.8rem] bg-white px-6 pb-8 pt-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:px-8">
           <div className="mb-8">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
               Choose a game

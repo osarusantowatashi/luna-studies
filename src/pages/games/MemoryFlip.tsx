@@ -60,6 +60,12 @@ const getPairCountByDifficulty = (difficulty: string) => {
   if (difficulty === "Hard") return 10;
   return 12;
 };
+const getCardGridClass = (cardCount: number) => {
+  if (cardCount <= 12) return "grid-cols-3 sm:grid-cols-4";
+  if (cardCount <= 16) return "grid-cols-4";
+  if (cardCount <= 20) return "grid-cols-4 sm:grid-cols-5";
+  return "grid-cols-4 sm:grid-cols-6";
+};
 
 
 
@@ -1165,15 +1171,11 @@ export default function MemoryFlip() {
               {/* CARDS */}
               {!loading && !errorMsg && !timeUp && (
                 <div
-                  className={`
-                grid gap-3
-                grid-cols-3
-                sm:grid-cols-4
-                ${difficulty === "Hard" ? "lg:grid-cols-5" : ""}
-                ${difficulty === "Advanced" ? "lg:grid-cols-6" : ""}
-                ${difficulty === "Easy" || difficulty === "Medium" ? "lg:grid-cols-4" : ""}
-              `}
-                >
+                className={`
+                  mx-auto grid max-w-5xl justify-center gap-3
+                  ${getCardGridClass(cards.length)}
+                `}
+              >
                   {cards.map((card) => {
                     const visible = card.flipped || card.matched;
 
@@ -1189,7 +1191,7 @@ export default function MemoryFlip() {
                         onClick={() => flipCard(card)}
                         className={`
                       relative overflow-hidden rounded-[2rem] border transition-all duration-300
-                      h-[115px] sm:h-[125px] lg:h-[135px]
+                      h-[105px] w-full max-w-[135px] justify-self-center sm:h-[115px] lg:h-[125px]
                       ${visible
                             ? "border-white/10 bg-white/10 backdrop-blur-xl"
                             : "border-[#1E2F4A] bg-gradient-to-br from-[#12243A] to-[#091423]"
@@ -1217,21 +1219,15 @@ export default function MemoryFlip() {
                             <img
                               src={card.imageUrl || FALLBACK_IMAGE}
                               alt={card.text}
-                              className="h-12 w-12 rounded-xl object-cover shadow-lg sm:h-14 sm:w-14"
+className="h-16 w-16 rounded-2xl object-cover shadow-lg sm:h-20 sm:w-20"
                               onError={(e) => {
                                 e.currentTarget.src = FALLBACK_IMAGE;
                               }}
                             />
 
-                            <p className="mt-2 text-center text-xs font-black text-white sm:text-sm">
+<p className="mt-2 text-center text-sm font-black text-white sm:text-base">
                               {card.text}
                             </p>
-
-                            {card.matched && (
-                              <div className="mt-3 rounded-full bg-[#FACC15]/20 px-3 py-1 text-xs font-black uppercase tracking-wider text-[#FACC15]">
-                                Matched
-                              </div>
-                            )}
                           </div>
                         )}
                       </motion.button>
