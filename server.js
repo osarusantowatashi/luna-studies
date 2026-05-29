@@ -955,6 +955,24 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       }));
     });
 
+    const { data: existingImages } = await supabaseAdmin
+  .from("vocab_images")
+  .select("keyword, vocab_word")
+  .in("status", ["approved", "needs_review"])
+  .limit(500);
+
+    const existingVocabWords = new Set(
+      (existingImages || [])
+        .flatMap((img) => [img.keyword, img.vocab_word])
+        .filter(Boolean)
+        .map(normalizeText)
+    );
+
+    const existingVocabText = Array.from(existingVocabWords)
+      .slice(-150)
+      .map((word) => `- ${word}`)
+      .join("\n");
+
     const existingPairKeys = new Set(existingPairs.map((pair) => pair.key));
 
     const existingPairText = existingPairs
@@ -1015,6 +1033,9 @@ ${GAME_VOCAB_DIFFICULTY_RULES[finalDifficulty]}
 
     Already existing pairs for this setup. DO NOT generate these again:
     ${existingPairText || "- None"}
+
+    Already existing vocabulary/image keywords in our system. DO NOT generate these again:
+${existingVocabText || "- None"}
 
     Rules:
     - Generate NEW matching educational word pairs.
@@ -1115,17 +1136,17 @@ ${GAME_VOCAB_DIFFICULTY_RULES[finalDifficulty]}
       .replace(/```/g, "")
       .trim();
 
-      let parsed;
+    let parsed;
 
-      try {
-        parsed = JSON.parse(text);
-      } catch (err) {
-        console.error("GAME JSON PARSE ERROR:", text);
-      
-        return res.status(500).json({
-          error: "Failed to parse generated game questions.",
-        });
-      }
+    try {
+      parsed = JSON.parse(text);
+    } catch (err) {
+      console.error("GAME JSON PARSE ERROR:", text);
+
+      return res.status(500).json({
+        error: "Failed to parse generated game questions.",
+      });
+    }
 
     if (!parsed.pairs || !Array.isArray(parsed.pairs)) {
       return res.status(500).json({
@@ -1158,6 +1179,13 @@ ${GAME_VOCAB_DIFFICULTY_RULES[finalDifficulty]}
         .toLowerCase();
 
       const vocabWord = String(pair.vocab_word || left).trim();
+      if (
+        existingVocabWords.has(normalizeText(left)) ||
+        existingVocabWords.has(normalizeText(vocabWord)) ||
+        existingVocabWords.has(normalizeText(imageKeyword))
+      ) {
+        continue;
+      }
 
       const imageUrl = await getOrCreateVocabImage(
         vocabWord,
