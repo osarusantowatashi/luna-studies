@@ -310,9 +310,10 @@ export default function MemoryFlip() {
         ...pair,
         image_url: approvedImageMap.get(pair.image_keyword) || null,
       }))
-      .filter((pair: any) => pair.image_url);
+      .filter((pair: any) => pair.image_url)
+      .slice(0, selectedPairCount);
 
-    if (!pairs.length || !usedGrade) {
+    if (pairs.length < selectedPairCount || !usedGrade) {
       setCards([]);
       setActiveGrade(selectedGrade);
       setPlayedPairs([]);
@@ -1171,11 +1172,11 @@ export default function MemoryFlip() {
               {/* CARDS */}
               {!loading && !errorMsg && !timeUp && (
                 <div
-                className={`
+                  className={`
                   mx-auto grid max-w-5xl justify-center gap-3
                   ${getCardGridClass(cards.length)}
                 `}
-              >
+                >
                   {cards.map((card) => {
                     const visible = card.flipped || card.matched;
 
@@ -1191,7 +1192,7 @@ export default function MemoryFlip() {
                         onClick={() => flipCard(card)}
                         className={`
                       relative overflow-hidden rounded-[2rem] border transition-all duration-300
-                      h-[105px] w-full max-w-[135px] justify-self-center sm:h-[115px] lg:h-[125px]
+                      h-[92px] w-[120px] sm:h-[100px] sm:w-[132px] lg:h-[108px] lg:w-[145px] justify-self-center sm:h-[115px] lg:h-[125px]
                       ${visible
                             ? "border-white/10 bg-white/10 backdrop-blur-xl"
                             : "border-[#1E2F4A] bg-gradient-to-br from-[#12243A] to-[#091423]"
@@ -1207,9 +1208,7 @@ export default function MemoryFlip() {
                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_50%)]" />
 
                             <div className="flex h-full items-center justify-center">
-                              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/5">
-                                <Brain className="h-8 w-8 text-[#C4B5FD]" />
-                              </div>
+                              <div className="h-[68px] w-[68px] rounded-[1.2rem] border-[6px] border-white bg-[#F6C65B] shadow-[0_8px_0_rgba(0,0,0,0.18)]" />
                             </div>
                           </>
                         )}
@@ -1219,13 +1218,13 @@ export default function MemoryFlip() {
                             <img
                               src={card.imageUrl || FALLBACK_IMAGE}
                               alt={card.text}
-className="h-16 w-16 rounded-2xl object-cover shadow-lg sm:h-20 sm:w-20"
+                              className="h-16 w-16 rounded-2xl object-cover shadow-lg sm:h-20 sm:w-20"
                               onError={(e) => {
                                 e.currentTarget.src = FALLBACK_IMAGE;
                               }}
                             />
 
-<p className="mt-2 text-center text-sm font-black text-white sm:text-base">
+                            <p className="mt-2 text-center text-sm font-black text-white sm:text-base">
                               {card.text}
                             </p>
                           </div>
