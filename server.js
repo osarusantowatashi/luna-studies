@@ -622,7 +622,10 @@ const saveVocabImageToStorage = async (keyword, b64, nextCount) => {
 const getOrCreateVocabImage = async (
   vocabWord,
   imageKeyword,
-  imageType = "object"
+  imageType = "object",
+  leftText = null,
+  rightText = null,
+  languagePair = null
 ) => {
   const cleanVocabWord = normalizeText(vocabWord);
   const cleanKeyword = normalizeText(imageKeyword);
@@ -690,6 +693,9 @@ const getOrCreateVocabImage = async (
     {
       keyword: cleanKeyword,
       vocab_word: cleanVocabWord,
+      left_text: leftText,
+      right_text: rightText,
+      language_pair: languagePair,
       image_type: imageType,
       image_url: saved.imageUrl,
       storage_path: saved.storagePath,
@@ -1268,7 +1274,10 @@ Return ONLY valid JSON:
         const imageUrl = await getOrCreateVocabImage(
           pair.vocab_word,
           pair.image_keyword,
-          pair.image_type
+          pair.image_type,
+          pair.left,
+          pair.right,
+          languagePair
         );
 
         if (!imageUrl) {

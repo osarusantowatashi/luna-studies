@@ -398,7 +398,9 @@ export default function AdminMemoryFlip() {
 
                       <div className="mt-4 space-y-1">
                         <p className="text-lg font-bold text-primary">
-                          {item.vocab_word || item.keyword}
+                          {item.left_text && item.right_text
+                            ? `${item.left_text} ↔ ${item.right_text}`
+                            : item.vocab_word || item.keyword}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Image keyword: <span className="font-semibold text-primary">{item.keyword}</span>
