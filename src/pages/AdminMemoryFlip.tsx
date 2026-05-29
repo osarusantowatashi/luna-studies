@@ -11,10 +11,15 @@ const statusLabel: Record<string, string> = {
   rejected: "Rejected",
 };
 const pairCountByDifficulty: Record<string, number> = {
+
   Easy: 6,
-  Medium: 6,
-  Hard: 6,
-  Advanced: 6,
+
+  Medium: 8,
+
+  Hard: 10,
+
+  Advanced: 12,
+
 };
 
 export default function AdminMemoryFlip() {

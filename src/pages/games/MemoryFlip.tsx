@@ -172,8 +172,8 @@ export default function MemoryFlip() {
             .eq("game_type", "memory_flip")
             .eq("language_pair", selectedLanguagePair)
             .eq("grade", currentGrade)
-            .eq("difficulty", selectedDifficulty)
-            .gte("last_seen_at", sevenDaysAgo.toISOString());
+            .not("mastered_at", "is", null)
+            .gte("mastered_at", sevenDaysAgo.toISOString());
 
           recentPairKeys = recentHistory?.map((item) => item.pair_key) || [];
         }
@@ -416,6 +416,35 @@ export default function MemoryFlip() {
     setHistorySaved(true);
   };
 
+  const saveMasteredPairs = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || masteryPool.length === 0) return;
+
+    const now = new Date().toISOString();
+
+    const payload = masteryPool.map((pair) => ({
+      student_id: user.id,
+      game_type: "memory_flip",
+      language_pair: languagePair,
+      grade: activeGrade,
+      difficulty,
+      pair_key: pair.pairKey,
+      left_text: pair.left,
+      right_text: pair.right,
+      image_keyword: pair.imageKeyword || null,
+      last_seen_at: now,
+      mastered_at: now,
+    }));
+
+    await supabase.from("student_game_pair_history").upsert(payload, {
+      onConflict:
+        "student_id,game_type,language_pair,grade,difficulty,pair_key",
+    });
+  };
+
   const saveProgress = async ({
     passed,
     levelReached,
@@ -500,6 +529,8 @@ export default function MemoryFlip() {
     setShowResultModal(false);
 
     if (nextCorrect >= 4) {
+      await saveMasteredPairs();
+
       await saveProgress({
         passed: true,
         levelReached: level,

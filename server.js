@@ -443,43 +443,80 @@ const STYLE_VERSION = "luna_flashcard_v1";
 
 const GAME_PAIR_COUNT_BY_DIFFICULTY = {
   Easy: 6,
-  Medium: 6,
-  Hard: 6,
-  Advanced: 6,
+  Medium: 8,
+  Hard: 10,
+  Advanced: 12,
 };
 
 const GAME_VOCAB_DIFFICULTY_RULES = {
   Easy: `
-- Use simple everyday words for young learners.
-- Use concrete words that are easy to visualize.
-- Examples: apple, dog, red, run, chair, school.
-- Avoid abstract or academic vocabulary.
+- Use basic everyday vocabulary.
+- Suitable for the selected grade.
+- Use concrete and easy-to-visualize words.
 `,
 
   Medium: `
-- Use common school and daily-life vocabulary.
-- Words may be slightly more specific than Easy.
-- Examples: library, healthy, weather, compare, describe.
-- Avoid very abstract academic vocabulary.
+- Use slightly more challenging vocabulary.
+- Still suitable for the selected grade.
+- Prefer school, daily life, actions, emotions, nature, and objects.
 `,
 
   Hard: `
-- Use stronger academic and descriptive vocabulary.
-- Words can include school subjects, emotions, actions, and concepts.
-- Examples: confident, solution, environment, responsibility, improve.
-- Avoid words already suitable for Easy level.
+- Use stronger vocabulary, but still age-appropriate.
+- Avoid overly abstract academic words for Grade 1–3.
 `,
 
   Advanced: `
-- Use advanced academic and international school vocabulary.
-- Words may be abstract but still suitable for children.
-- Examples: evidence, perspective, consequence, communicate, analyze.
-- Avoid simple beginner words.
-`,
+- Use the most challenging vocabulary suitable for the selected grade.
+- For Grade 1–3, still use visual and child-friendly words.
+- For Grade 4–6, academic vocabulary is allowed.
+`
 };
 
 const normalizeText = (text = "") =>
   String(text).trim().toLowerCase();
+
+const getGradeVocabRule = (grade = "Grade 1") => {
+  const rules = {
+    "Grade 1": `
+- Use very basic child vocabulary.
+- Use concrete words only.
+- Good categories: animals, food, colors, toys, classroom items, body parts, simple actions, weather.
+- Avoid abstract words.
+`,
+
+    "Grade 2": `
+- Use simple daily-life and school vocabulary.
+- Words can be slightly harder than Grade 1.
+- Good categories: home, school, nature, transport, feelings, simple verbs.
+- Avoid academic abstract words.
+`,
+
+    "Grade 3": `
+- Use lower-primary vocabulary.
+- Can include simple descriptive words, actions, places, and school-related words.
+- Avoid heavy academic words.
+`,
+
+    "Grade 4": `
+- Use upper-primary vocabulary.
+- Can include common academic words if still visual and child-friendly.
+`,
+
+    "Grade 5": `
+- Use stronger upper-primary vocabulary.
+- Academic school vocabulary is allowed.
+- Still keep it useful for children.
+`,
+
+    "Grade 6": `
+- Use advanced primary / early middle-school vocabulary.
+- Academic and reasoning words are allowed.
+`,
+  };
+
+  return rules[grade] || rules["Grade 1"];
+};
 
 const getPairKey = (left = "", right = "") =>
   `${normalizeText(left)}__${normalizeText(right)}`;
@@ -920,89 +957,185 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       languagePair = "zh_en",
     } = req.body;
 
-    const finalDifficulty = GAME_PAIR_COUNT_BY_DIFFICULTY[difficulty]
-      ? difficulty
-      : "Easy";
-
-    const finalPairCount = GAME_PAIR_COUNT_BY_DIFFICULTY[finalDifficulty] || 6;
-
     if (gameType !== "memory_flip") {
       return res.status(400).json({
         error: "Only memory_flip is supported now.",
       });
     }
 
-    const { data: existingRows, error: existingError } = await supabaseAdmin
-      .from("game_questions")
-      .select("question_data")
-      .eq("game_type", gameType)
-      .eq("language_pair", languagePair)
-      .eq("grade", grade);
+    const pairCountByDifficulty = {
+      Easy: 6,
+      Medium: 8,
+      Hard: 10,
+      Advanced: 12,
+    };
 
-    if (existingError) {
-      return res.status(500).json({ error: existingError.message });
-    }
+    const finalDifficulty = pairCountByDifficulty[difficulty]
+      ? difficulty
+      : "Easy";
 
-    const existingPairs = (existingRows || []).flatMap((row) => {
-      const pairs = row.question_data?.pairs || [];
-      return pairs.map((pair) => ({
-        left: pair.left,
-        right: pair.right,
-        key: getPairKey(pair.left, pair.right),
-      }));
-    });
+    const finalPairCount = pairCountByDifficulty[finalDifficulty];
 
-    const { data: existingImages } = await supabaseAdmin
-      .from("vocab_images")
-      .select("keyword, vocab_word")
-      .in("status", ["approved", "needs_review", "rejected"])
-      .limit(500);
+    const gradeWordRules = {
+      "Grade 1": `
+Use Grade 1 vocabulary only.
+Words must be simple, visual, concrete, and child-friendly.
+Good categories: animals, food, toys, classroom objects, home objects, body parts, colors, shapes, weather, simple actions, simple feelings, places, transport, nature.
+Do NOT use abstract academic words.
+Examples: rabbit, turtle, sandwich, pencil, blanket, jacket, triangle, cloudy, playground, garden, bus, jump, laugh, tired.
+`,
+      "Grade 2": `
+Use Grade 2 vocabulary only.
+Words can be slightly richer, but still concrete and visual.
+Examples: borrow, carry, village, ladder, pocket, shadow, whisper, careful, bright, forest, market, weekend.
+`,
+      "Grade 3": `
+Use Grade 3 vocabulary only.
+Words can include daily life, school, nature, simple reasoning, and useful descriptive words.
+Examples: describe, collect, protect, healthy, weather, compare, measure, explain, journey, habit, corner.
+`,
+      "Grade 4": `
+Use Grade 4 vocabulary only.
+Words may include stronger school vocabulary, but should still be understandable and useful.
+Examples: observe, improve, prepare, direction, distance, material, energy, community, recycle, habitat.
+`,
+      "Grade 5": `
+Use Grade 5 vocabulary only.
+Words may include moderate academic vocabulary.
+Examples: evidence, solution, environment, responsible, communicate, investigate, support, effect, cause.
+`,
+      "Grade 6": `
+Use Grade 6 vocabulary only.
+Words may include stronger academic vocabulary.
+Examples: analyze, perspective, consequence, structure, strategy, function, concept, procedure, hypothesis.
+`,
+    };
 
-    const existingVocabWords = new Set(
-      (existingImages || [])
-        .flatMap((img) => [img.keyword, img.vocab_word])
-        .filter(Boolean)
-        .map(normalizeText)
-    );
-
-    const existingPairKeys = new Set(existingPairs.map((pair) => pair.key));
+    const selectedGradeRule = gradeWordRules[grade] || gradeWordRules["Grade 1"];
 
     const languageRules = {
       zh_en: `
 - Left side must be English.
 - Right side must be Simplified Chinese.
-Example: { "left": "apple", "right": "苹果" }
+Example: { "left": "rabbit", "right": "兔子" }
 `,
       zh_ja: `
 - Left side must be Simplified Chinese.
 - Right side must be Japanese.
-Example: { "left": "苹果", "right": "りんご" }
+Example: { "left": "兔子", "right": "うさぎ" }
 `,
       en_ja: `
 - Left side must be English.
 - Right side must be Japanese.
-Example: { "left": "apple", "right": "りんご" }
+Example: { "left": "rabbit", "right": "うさぎ" }
 `,
     };
 
     const selectedLanguageRule =
       languageRules[languagePair] || languageRules.zh_en;
 
+    const bannedVocabWords = new Set();
+    const bannedPairKeys = new Set();
+
+    // 1. existing game vocab
+    const { data: gameRows, error: gameRowsError } = await supabaseAdmin
+      .from("game_questions")
+      .select("question_data")
+      .eq("game_type", gameType)
+      .eq("language_pair", languagePair);
+
+    if (gameRowsError) {
+      return res.status(500).json({ error: gameRowsError.message });
+    }
+
+    for (const row of gameRows || []) {
+      const pairs = row.question_data?.pairs || [];
+
+      for (const pair of pairs) {
+        const left = normalizeText(pair.left);
+        const right = normalizeText(pair.right);
+        const vocabWord = normalizeText(pair.vocab_word);
+        const imageKeyword = normalizeText(pair.image_keyword);
+
+        if (left && right) bannedPairKeys.add(getPairKey(left, right));
+        if (left) bannedVocabWords.add(left);
+        if (right) bannedVocabWords.add(right);
+        if (vocabWord) bannedVocabWords.add(vocabWord);
+        if (imageKeyword) bannedVocabWords.add(imageKeyword);
+      }
+    }
+
+    // 2. existing / rejected image vocab
+    const { data: vocabRows, error: vocabRowsError } = await supabaseAdmin
+      .from("vocab_images")
+      .select("keyword, vocab_word, status")
+      .in("status", ["approved", "needs_review", "rejected"]);
+
+    if (vocabRowsError) {
+      return res.status(500).json({ error: vocabRowsError.message });
+    }
+
+    for (const row of vocabRows || []) {
+      const keyword = normalizeText(row.keyword);
+      const vocabWord = normalizeText(row.vocab_word);
+
+      if (keyword) bannedVocabWords.add(keyword);
+      if (vocabWord) bannedVocabWords.add(vocabWord);
+    }
+
+    // 3. mastered vocab within 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const { data: masteredRows, error: masteredRowsError } = await supabaseAdmin
+      .from("student_game_pair_history")
+      .select("pair_key, left_text, right_text, image_keyword")
+      .eq("game_type", gameType)
+      .eq("language_pair", languagePair)
+      .gte("mastered_at", sevenDaysAgo.toISOString());
+
+    if (masteredRowsError) {
+      return res.status(500).json({ error: masteredRowsError.message });
+    }
+
+    for (const row of masteredRows || []) {
+      const left = normalizeText(row.left_text);
+      const right = normalizeText(row.right_text);
+      const imageKeyword = normalizeText(row.image_keyword);
+
+      if (row.pair_key) bannedPairKeys.add(row.pair_key);
+      if (left) bannedVocabWords.add(left);
+      if (right) bannedVocabWords.add(right);
+      if (imageKeyword) bannedVocabWords.add(imageKeyword);
+    }
+
+    console.log("BANNED VOCAB COUNT:", bannedVocabWords.size);
+    console.log("BANNED PAIR COUNT:", bannedPairKeys.size);
+
     const cleanedPairs = [];
-    const bannedVocabWords = new Set(existingVocabWords);
-    const bannedPairKeys = new Set(existingPairKeys);
 
     const buildGamePrompt = (count) => `
 Generate exactly ${count} NEW educational matching pairs for children.
 
+Game Type:
+Memory Flip Matching Game
+
+Exam Type:
+${examType}
+
 Grade:
 ${grade}
+
+GRADE RULES:
+${selectedGradeRule}
 
 Difficulty:
 ${finalDifficulty}
 
-DIFFICULTY VOCABULARY RULES:
-${GAME_VOCAB_DIFFICULTY_RULES[finalDifficulty]}
+IMPORTANT:
+Difficulty controls pair count only.
+Vocabulary difficulty must mainly follow the selected grade.
+Do not jump to higher-grade academic vocabulary just because difficulty is Advanced.
 
 Language Pair:
 ${languagePair}
@@ -1011,7 +1144,7 @@ LANGUAGE RULES:
 ${selectedLanguageRule}
 
 BANNED WORDS. DO NOT USE THESE:
-${Array.from(bannedVocabWords).slice(-150).map((w) => `- ${w}`).join("\n") || "- None"}
+${Array.from(bannedVocabWords).slice(-200).map((w) => `- ${w}`).join("\n") || "- None"}
 
 Rules:
 - Generate NEW words only.
@@ -1019,8 +1152,9 @@ Rules:
 - Do NOT repeat rejected words.
 - Do NOT repeat the same left word.
 - Do NOT repeat the same right word.
-- Keep words child-friendly.
+- Keep words child-friendly and visual.
 - left and right must be correct translations.
+- vocab_word should be English whenever possible.
 - image_keyword must be English only.
 - image_type must be one of:
 object, animal, person, action, emotion, color, place, nature, food, transport, school_item, abstract_concept
@@ -1030,11 +1164,11 @@ Return ONLY valid JSON:
   "pairs": [
     {
       "pair_id": 1,
-      "left": "Apple",
-      "right": "苹果",
-      "vocab_word": "apple",
-      "image_keyword": "red apple",
-      "image_type": "food"
+      "left": "Rabbit",
+      "right": "兔子",
+      "vocab_word": "rabbit",
+      "image_keyword": "cute rabbit",
+      "image_type": "animal"
     }
   ]
 }
@@ -1051,6 +1185,8 @@ Return ONLY valid JSON:
         .replace(/```/g, "")
         .trim();
 
+      console.log("AI RAW TEXT:", text);
+
       let parsed;
 
       try {
@@ -1059,17 +1195,19 @@ Return ONLY valid JSON:
         console.error("GAME JSON PARSE ERROR:", text);
         return [];
       }
-      console.log("AI RAW TEXT:", text);
-      console.log("AI PAIRS COUNT:", parsed.pairs?.length || 0);
+
       if (!parsed.pairs || !Array.isArray(parsed.pairs)) {
         return [];
       }
+
+      console.log("AI PAIRS COUNT:", parsed.pairs.length);
 
       const validPairs = [];
 
       for (const pair of parsed.pairs) {
         const left = String(pair.left || "").trim();
         const right = String(pair.right || "").trim();
+
         if (!left || !right) continue;
 
         const key = getPairKey(left, right);
@@ -1107,7 +1245,8 @@ Return ONLY valid JSON:
           image_keyword: imageKeyword,
           image_type: imageType,
         });
-      } 
+      }
+
       console.log("VALID PAIRS COUNT:", validPairs.length);
       return validPairs;
     };
@@ -1116,10 +1255,11 @@ Return ONLY valid JSON:
       const missingCount = finalPairCount - cleanedPairs.length;
       if (missingCount <= 0) break;
 
-      const generatedPairs = await generateAndCleanPairs(missingCount * 4);
+      const requestCount = Math.max(18, missingCount * 3);
+      const generatedPairs = await generateAndCleanPairs(requestCount);
 
       console.log(
-        `Attempt ${attempt + 1}: requested ${missingCount * 4}, accepted ${generatedPairs.length}, total ${cleanedPairs.length}`
+        `Attempt ${attempt + 1}: requested ${requestCount}, accepted ${generatedPairs.length}, total ${cleanedPairs.length}`
       );
 
       for (const pair of generatedPairs) {
@@ -1131,6 +1271,10 @@ Return ONLY valid JSON:
           pair.image_type
         );
 
+        if (!imageUrl) {
+          continue;
+        }
+
         cleanedPairs.push({
           pair_id: cleanedPairs.length + 1,
           ...pair,
@@ -1139,9 +1283,9 @@ Return ONLY valid JSON:
       }
     }
 
-    if (cleanedPairs.length === 0) {
+    if (cleanedPairs.length < finalPairCount) {
       return res.status(500).json({
-        error: "No valid pairs generated. Please try again.",
+        error: `Only generated ${cleanedPairs.length}/${finalPairCount} valid pairs. Please try again.`,
       });
     }
 
@@ -1185,7 +1329,6 @@ Return ONLY valid JSON:
     });
   }
 });
-
 
 app.get("/api/admin/vocab-images", requireAdmin, async (req, res) => {
   try {
