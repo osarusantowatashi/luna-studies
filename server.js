@@ -1179,14 +1179,6 @@ ${existingVocabText || "- None"}
         .toLowerCase();
 
       const vocabWord = String(pair.vocab_word || left).trim();
-      if (
-        existingVocabWords.has(normalizeText(left)) ||
-        existingVocabWords.has(normalizeText(vocabWord)) ||
-        existingVocabWords.has(normalizeText(imageKeyword))
-      ) {
-        continue;
-      }
-
       const imageUrl = await getOrCreateVocabImage(
         vocabWord,
         imageKeyword,
@@ -1210,9 +1202,9 @@ ${existingVocabText || "- None"}
       });
     }
 
-    if (cleanedPairs.length < finalPairCount) {
+    if (cleanedPairs.length === 0) {
       return res.status(500).json({
-        error: `Only generated ${cleanedPairs.length}/${finalPairCount} valid pairs. Please try again.`,
+        error: "No valid pairs generated.",
       });
     }
 
