@@ -907,11 +907,9 @@ const difficultyRules = {
 ========================= */
 
 app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
-  console.log("🎮 NEW IMAGE VERSION ACTIVE");
-  try {
-    console.log("🎮 GAME QUESTION ROUTE HIT");
-    console.log("BODY:", req.body);
+  console.log("🎮 GAME QUESTION ROUTE HIT");
 
+  try {
     const {
       gameType,
       examType = "English Foundation",
@@ -925,7 +923,7 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       ? difficulty
       : "Easy";
 
-    const finalPairCount = GAME_PAIR_COUNT_BY_DIFFICULTY[finalDifficulty];
+    const finalPairCount = GAME_PAIR_COUNT_BY_DIFFICULTY[finalDifficulty] || 6;
 
     if (gameType !== "memory_flip") {
       return res.status(400).json({
@@ -941,9 +939,7 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
       .eq("grade", grade);
 
     if (existingError) {
-      return res.status(500).json({
-        error: existingError.message,
-      });
+      return res.status(500).json({ error: existingError.message });
     }
 
     const existingPairs = (existingRows || []).flatMap((row) => {
@@ -956,10 +952,10 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
     });
 
     const { data: existingImages } = await supabaseAdmin
-  .from("vocab_images")
-  .select("keyword, vocab_word")
-  .in("status", ["approved", "needs_review"])
-  .limit(500);
+      .from("vocab_images")
+      .select("keyword, vocab_word")
+      .in("status", ["approved", "needs_review", "rejected"])
+      .limit(500);
 
     const existingVocabWords = new Set(
       (existingImages || [])
@@ -968,243 +964,178 @@ app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
         .map(normalizeText)
     );
 
-    const existingVocabText = Array.from(existingVocabWords)
-      .slice(-150)
-      .map((word) => `- ${word}`)
-      .join("\n");
-
     const existingPairKeys = new Set(existingPairs.map((pair) => pair.key));
-
-    const existingPairText = existingPairs
-      .slice(-80)
-      .map((pair) => `- ${pair.left} ↔ ${pair.right}`)
-      .join("\n");
 
     const languageRules = {
       zh_en: `
-      - Left side must be English.
-      - Right side must be Simplified Chinese.
-      Example:
-      { "left": "apple", "right": "苹果" }
-      `,
+- Left side must be English.
+- Right side must be Simplified Chinese.
+Example: { "left": "apple", "right": "苹果" }
+`,
       zh_ja: `
-      - Left side must be Simplified Chinese.
-      - Right side must be Japanese.
-      Example:
-      { "left": "苹果", "right": "りんご" }
-      `,
+- Left side must be Simplified Chinese.
+- Right side must be Japanese.
+Example: { "left": "苹果", "right": "りんご" }
+`,
       en_ja: `
-      - Left side must be English.
-      - Right side must be Japanese.
-      Example:
-      { "left": "apple", "right": "りんご" }
-      `,
+- Left side must be English.
+- Right side must be Japanese.
+Example: { "left": "apple", "right": "りんご" }
+`,
     };
 
     const selectedLanguageRule =
       languageRules[languagePair] || languageRules.zh_en;
 
-    const prompt = `
-    Generate exactly ${finalPairCount} NEW educational matching pairs for children.
+    const cleanedPairs = [];
+    const bannedVocabWords = new Set(existingVocabWords);
+    const bannedPairKeys = new Set(existingPairKeys);
 
-    Game Type:
-    Memory Flip Matching Game
+    const buildGamePrompt = (count) => `
+Generate exactly ${count} NEW educational matching pairs for children.
 
-    Exam Type:
-    ${examType}
+Grade:
+${grade}
 
-    Grade:
-    ${grade}
-
-    Skill:
-    ${skill}
-
-    Difficulty:
+Difficulty:
 ${finalDifficulty}
 
 DIFFICULTY VOCABULARY RULES:
 ${GAME_VOCAB_DIFFICULTY_RULES[finalDifficulty]}
 
-    Language Pair:
-    ${languagePair}
+Language Pair:
+${languagePair}
 
-    LANGUAGE RULES:
-    ${selectedLanguageRule}
+LANGUAGE RULES:
+${selectedLanguageRule}
 
-    Already existing pairs for this setup. DO NOT generate these again:
-    ${existingPairText || "- None"}
+BANNED WORDS. DO NOT USE THESE:
+${Array.from(bannedVocabWords).slice(-150).map((w) => `- ${w}`).join("\n") || "- None"}
 
-    Already existing vocabulary/image keywords in our system. DO NOT generate these again:
-${existingVocabText || "- None"}
+Rules:
+- Generate NEW words only.
+- Do NOT use banned words.
+- Do NOT repeat rejected words.
+- Do NOT repeat the same left word.
+- Do NOT repeat the same right word.
+- Keep words child-friendly.
+- left and right must be correct translations.
+- image_keyword must be English only.
+- image_type must be one of:
+object, animal, person, action, emotion, color, place, nature, food, transport, school_item, abstract_concept
 
-    Rules:
-    - Generate NEW matching educational word pairs.
-    - Do NOT repeat any existing pair listed above.
-    - Do NOT repeat the same left word.
-    - Do NOT repeat the same right word.
-    - Content must be suitable for children and students.
-    - Keep each word or phrase short and easy to read.
-    - Make all content age-appropriate for the selected grade.
-    - Avoid overly advanced vocabulary for younger grades.
-    - Use realistic educational vocabulary only.
-    - Focus on useful learning topics such as:
-      animals,
-      food,
-      colors,
-      transportation,
-      school items,
-      emotions,
-      actions,
-      daily objects,
-      nature,
-      basic academic vocabulary.
-
-    - "left" and "right" must always be correct translations of each other.
-    - Keep translations natural and commonly used.
-    - Avoid slang or rare vocabulary.
-    - vocab_word must be the main vocabulary word only.
-    - vocab_word should be 1 word for lower grades.
-    - For higher grades, vocab_word can be 1–2 words.
-    - image_keyword can be more descriptive for image accuracy.
-
-    - Every pair MUST include:
-    "image_keyword"
-    "image_type"
-
-    - image_keyword must be English only.
-    - image_keyword must be short and clear.
-    - image_keyword should describe the visual scene, not only the word.
-    - image_keyword must help generate the most accurate educational image.
-
-    - image_type must be one of:
-      object
-      animal
-      person
-      action
-      emotion
-      color
-      place
-      nature
-      food
-      transport
-      school_item
-      abstract_concept
-
-    Examples:
-    - red / 红色:
-      image_keyword = "red color swatch"
-      image_type = "color"
-
-    - eat / 吃:
-      image_keyword = "child eating food"
-      image_type = "action"
-
-    - happy / 开心:
-      image_keyword = "happy child face"
-      image_type = "emotion"
-
-    - school / 学校:
-      image_keyword = "school building"
-      image_type = "place"
-
-    - responsibility / 责任:
-      image_keyword = "student taking care of classroom materials"
-      image_type = "abstract_concept"
-
-    Return this exact JSON shape:
+Return ONLY valid JSON:
+{
+  "pairs": [
     {
-      "pairs": [
-        {
-          "pair_id": 1,
-          "left": "Red",
-          "right": "红色",
-          "vocab_word": "red",
-          "image_keyword": "red color swatch",
-          "image_type": "color"
-        }
-      ]
+      "pair_id": 1,
+      "left": "Apple",
+      "right": "苹果",
+      "vocab_word": "apple",
+      "image_keyword": "red apple",
+      "image_type": "food"
     }
-    `;
+  ]
+}
+`;
 
-    const response = await client.responses.create({
-      model: "gpt-4.1-mini",
-      input: prompt,
-    });
-
-    const text = response.output_text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
-
-    let parsed;
-
-    try {
-      parsed = JSON.parse(text);
-    } catch (err) {
-      console.error("GAME JSON PARSE ERROR:", text);
-
-      return res.status(500).json({
-        error: "Failed to parse generated game questions.",
+    const generateAndCleanPairs = async (count) => {
+      const response = await client.responses.create({
+        model: "gpt-4.1-mini",
+        input: buildGamePrompt(count),
       });
-    }
 
-    if (!parsed.pairs || !Array.isArray(parsed.pairs)) {
-      return res.status(500).json({
-        error: "Invalid generated format. Missing pairs array.",
-      });
-    }
+      const text = response.output_text
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
 
-    const cleanedPairs = [];
+      let parsed;
 
-    for (const pair of parsed.pairs) {
-      const left = String(pair.left || "").trim();
-      const right = String(pair.right || "").trim();
-
-      if (!left || !right) continue;
-
-      const key = getPairKey(left, right);
-
-      if (existingPairKeys.has(key)) continue;
-
-      if (cleanedPairs.some((item) => getPairKey(item.left, item.right) === key)) {
-        continue;
+      try {
+        parsed = JSON.parse(text);
+      } catch (err) {
+        console.error("GAME JSON PARSE ERROR:", text);
+        return [];
       }
 
-      const imageKeyword = String(pair.image_keyword || left)
-        .trim()
-        .toLowerCase();
+      if (!parsed.pairs || !Array.isArray(parsed.pairs)) {
+        return [];
+      }
 
-      const imageType = String(pair.image_type || "object")
-        .trim()
-        .toLowerCase();
+      const validPairs = [];
 
-      const vocabWord = String(pair.vocab_word || left).trim();
-      const imageUrl = await getOrCreateVocabImage(
-        vocabWord,
-        imageKeyword,
-        imageType
-      );
-      cleanedPairs.push({
-        pair_id: cleanedPairs.length + 1,
-        left,
-        right,
-        vocab_word: vocabWord,
-        image_keyword: imageKeyword,
-        image_type: imageType,
-        image_url: imageUrl,
-      });
+      for (const pair of parsed.pairs) {
+        const left = String(pair.left || "").trim();
+        const right = String(pair.right || "").trim();
+        if (!left || !right) continue;
+
+        const key = getPairKey(left, right);
+
+        const vocabWord = String(pair.vocab_word || left).trim();
+        const imageKeyword = String(pair.image_keyword || vocabWord)
+          .trim()
+          .toLowerCase();
+
+        const imageType = String(pair.image_type || "object")
+          .trim()
+          .toLowerCase();
+
+        const normalizedLeft = normalizeText(left);
+        const normalizedRight = normalizeText(right);
+        const normalizedVocab = normalizeText(vocabWord);
+        const normalizedKeyword = normalizeText(imageKeyword);
+
+        if (bannedPairKeys.has(key)) continue;
+        if (bannedVocabWords.has(normalizedLeft)) continue;
+        if (bannedVocabWords.has(normalizedRight)) continue;
+        if (bannedVocabWords.has(normalizedVocab)) continue;
+        if (bannedVocabWords.has(normalizedKeyword)) continue;
+
+        bannedPairKeys.add(key);
+        bannedVocabWords.add(normalizedLeft);
+        bannedVocabWords.add(normalizedRight);
+        bannedVocabWords.add(normalizedVocab);
+        bannedVocabWords.add(normalizedKeyword);
+
+        validPairs.push({
+          left,
+          right,
+          vocab_word: vocabWord,
+          image_keyword: imageKeyword,
+          image_type: imageType,
+        });
+      }
+
+      return validPairs;
+    };
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const missingCount = finalPairCount - cleanedPairs.length;
+      if (missingCount <= 0) break;
+
+      const generatedPairs = await generateAndCleanPairs(missingCount);
+
+      for (const pair of generatedPairs) {
+        if (cleanedPairs.length >= finalPairCount) break;
+
+        const imageUrl = await getOrCreateVocabImage(
+          pair.vocab_word,
+          pair.image_keyword,
+          pair.image_type
+        );
+
+        cleanedPairs.push({
+          pair_id: cleanedPairs.length + 1,
+          ...pair,
+          image_url: imageUrl,
+        });
+      }
     }
 
-    if (cleanedPairs.length === 0) {
+    if (cleanedPairs.length < finalPairCount) {
       return res.status(500).json({
-        error:
-          "OpenAI generated duplicate or invalid pairs only. Please try generating again.",
-      });
-    }
-
-    if (cleanedPairs.length === 0) {
-      return res.status(500).json({
-        error: "No valid pairs generated.",
+        error: `Only generated ${cleanedPairs.length}/${finalPairCount} valid pairs. Please try again.`,
       });
     }
 
@@ -1233,18 +1164,16 @@ ${existingVocabText || "- None"}
 
     if (error) {
       console.error("SUPABASE GAME INSERT ERROR:", error);
-      return res.status(500).json({
-        error: error.message,
-      });
+      return res.status(500).json({ error: error.message });
     }
 
     return res.json({
       success: true,
+      generated_count: cleanedPairs.length,
       gameQuestion: data,
     });
   } catch (err) {
     console.error("GAME QUESTION ERROR:", err);
-
     return res.status(500).json({
       error: err.message || "Failed to generate game questions.",
     });
