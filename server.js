@@ -590,6 +590,26 @@ const getOrCreateVocabImage = async (
   const cleanVocabWord = normalizeText(vocabWord);
   const cleanKeyword = normalizeText(imageKeyword);
 
+  // 1. 先按 vocab_word 找已经 approved 的图片
+  // 只要 happy 已经有 approved 图片，就直接复用，不再生成新的 happy 图片
+  const { data: approvedByWord, error: approvedWordError } = await supabaseAdmin
+    .from("vocab_images")
+    .select("*")
+    .eq("vocab_word", cleanVocabWord)
+    .eq("status", "approved")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (approvedWordError) {
+    console.error("VOCAB IMAGE WORD FETCH ERROR:", approvedWordError);
+  }
+
+  if (approvedByWord?.image_url) {
+    return approvedByWord.image_url;
+  }
+
+  // 2. 如果没有 approved，再按 keyword 找现有记录
   const { data: existing, error } = await supabaseAdmin
     .from("vocab_images")
     .select("*")
@@ -604,6 +624,7 @@ const getOrCreateVocabImage = async (
   if (existing?.status === "approved" && existing.image_url) {
     return existing.image_url;
   }
+
   if (existing?.status === "rejected") {
     return null;
   }
