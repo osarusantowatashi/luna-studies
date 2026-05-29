@@ -908,6 +908,7 @@ const difficultyRules = {
 
 app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
   console.log("🎮 GAME QUESTION ROUTE HIT");
+  console.log("BODY:", req.body);
 
   try {
     const {
@@ -1058,7 +1059,8 @@ Return ONLY valid JSON:
         console.error("GAME JSON PARSE ERROR:", text);
         return [];
       }
-
+      console.log("AI RAW TEXT:", text);
+      console.log("AI PAIRS COUNT:", parsed.pairs?.length || 0);
       if (!parsed.pairs || !Array.isArray(parsed.pairs)) {
         return [];
       }
@@ -1105,8 +1107,8 @@ Return ONLY valid JSON:
           image_keyword: imageKeyword,
           image_type: imageType,
         });
-      }
-
+      } 
+      console.log("VALID PAIRS COUNT:", validPairs.length);
       return validPairs;
     };
 
@@ -1114,7 +1116,11 @@ Return ONLY valid JSON:
       const missingCount = finalPairCount - cleanedPairs.length;
       if (missingCount <= 0) break;
 
-      const generatedPairs = await generateAndCleanPairs(missingCount);
+      const generatedPairs = await generateAndCleanPairs(missingCount * 4);
+
+      console.log(
+        `Attempt ${attempt + 1}: requested ${missingCount * 4}, accepted ${generatedPairs.length}, total ${cleanedPairs.length}`
+      );
 
       for (const pair of generatedPairs) {
         if (cleanedPairs.length >= finalPairCount) break;
@@ -1133,9 +1139,9 @@ Return ONLY valid JSON:
       }
     }
 
-    if (cleanedPairs.length < finalPairCount) {
+    if (cleanedPairs.length === 0) {
       return res.status(500).json({
-        error: `Only generated ${cleanedPairs.length}/${finalPairCount} valid pairs. Please try again.`,
+        error: "No valid pairs generated. Please try again.",
       });
     }
 
