@@ -23,6 +23,7 @@ export default function AdminMemoryFlip() {
   const pairCount = pairCountByDifficulty[difficulty];
   const [languagePair, setLanguagePair] = useState("zh_en");
 
+
   const [images, setImages] = useState<any[]>([]);
   const [status, setStatus] = useState("needs_review");
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,7 @@ export default function AdminMemoryFlip() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const getToken = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -71,6 +73,11 @@ export default function AdminMemoryFlip() {
       const newImages = data.images || [];
 
       setImages((prev) => (append ? [...prev, ...newImages] : newImages));
+
+      if (!append) {
+        setSelectedIds([]);
+      }
+
       setPage(nextPage);
       setHasMore(newImages.length === PAGE_SIZE);
     } catch (err: any) {
@@ -169,6 +176,48 @@ export default function AdminMemoryFlip() {
     }
   };
 
+
+  const bulkAction = async (
+    type: "bulk-approve" | "bulk-reject"
+  ) => {
+    if (selectedIds.length === 0) return;
+
+    setErrorMsg("");
+
+    try {
+      const token = await getToken();
+
+      const res = await fetch(
+        `${API_URL}/api/admin/vocab-images/${type}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ids: selectedIds,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Bulk action failed.");
+      }
+
+      setImages((prev) =>
+        prev.filter((img) => !selectedIds.includes(img.id))
+      );
+
+      setSelectedIds([]);
+
+    } catch (err: any) {
+      setErrorMsg(err.message || "Bulk action failed.");
+    }
+  };
+
   useEffect(() => {
     loadImages({
       nextPage: 0,
@@ -241,6 +290,23 @@ export default function AdminMemoryFlip() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-bold text-primary">Image Review</h2>
+
+              <div className="mt-3 flex gap-2">
+                <Button
+                  onClick={() => bulkAction("bulk-approve")}
+                  disabled={selectedIds.length === 0}
+                >
+                  Approve Selected ({selectedIds.length})
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  onClick={() => bulkAction("bulk-reject")}
+                  disabled={selectedIds.length === 0}
+                >
+                  Reject Selected ({selectedIds.length})
+                </Button>
+              </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 Approve good images. Regenerate weak images. Reject unusable ones.
               </p>
@@ -300,7 +366,25 @@ export default function AdminMemoryFlip() {
                   const canRegenerate = Number(item.generation_count || 0) < 2;
 
                   return (
-                    <div key={item.id} className="rounded-[1.5rem] border bg-white p-4 shadow-sm">
+                    <div
+                      key={item.id}
+                      className="relative rounded-[1.5rem] border bg-white p-4 shadow-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(item.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedIds((prev) => [...prev, item.id]);
+                          } else {
+                            setSelectedIds((prev) =>
+                              prev.filter((x) => x !== item.id)
+                            );
+                          }
+                        }}
+                        className="absolute left-3 top-3 h-5 w-5"
+                      />
+
                       <img
                         src={item.image_url}
                         alt={item.keyword}

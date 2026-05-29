@@ -1297,6 +1297,48 @@ app.get("/api/admin/vocab-images", requireAdmin, async (req, res) => {
   }
 });
 
+app.post("/api/admin/vocab-images/bulk-approve", requireAdmin, async (req, res) => {
+  const { ids } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: "Image ids are required." });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("vocab_images")
+    .update({
+      status: "approved",
+      updated_at: new Date().toISOString(),
+    })
+    .in("id", ids)
+    .select();
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  return res.json({ success: true, images: data });
+});
+
+app.post("/api/admin/vocab-images/bulk-reject", requireAdmin, async (req, res) => {
+  const { ids } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: "Image ids are required." });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("vocab_images")
+    .update({
+      status: "rejected",
+      updated_at: new Date().toISOString(),
+    })
+    .in("id", ids)
+    .select();
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  return res.json({ success: true, images: data });
+});
+
 app.post("/api/admin/vocab-images/:id/approve", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
