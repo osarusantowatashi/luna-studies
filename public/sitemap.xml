@@ -1,93 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <url>
-    <loc>https://lunastudies.com/</loc>
-  </url>
+  <url><loc>https://www.lunastudies.com/</loc></url>
 
-  <url>
-    <loc>https://lunastudies.com/en</loc>
-  </url>
+  <url><loc>https://www.lunastudies.com/en</loc></url>
+  <url><loc>https://www.lunastudies.com/zh</loc></url>
+  <url><loc>https://www.lunastudies.com/jp</loc></url>
 
-  <url>
-    <loc>https://lunastudies.com/zh</loc>
-  </url>
+  <url><loc>https://www.lunastudies.com/en/tutors</loc></url>
+  <url><loc>https://www.lunastudies.com/en/subjects</loc></url>
+  <url><loc>https://www.lunastudies.com/en/whyluna</loc></url>
+  <url><loc>https://www.lunastudies.com/en/enquiry</loc></url>
+  <url><loc>https://www.lunastudies.com/en/privacy</loc></url>
+  <url><loc>https://www.lunastudies.com/en/terms</loc></url>
 
-  <url>
-    <loc>https://lunastudies.com/jp</loc>
-  </url>
+  <url><loc>https://www.lunastudies.com/zh/tutors</loc></url>
+  <url><loc>https://www.lunastudies.com/zh/subjects</loc></url>
+  <url><loc>https://www.lunastudies.com/zh/whyluna</loc></url>
+  <url><loc>https://www.lunastudies.com/zh/enquiry</loc></url>
+  <url><loc>https://www.lunastudies.com/zh/privacy</loc></url>
+  <url><loc>https://www.lunastudies.com/zh/terms</loc></url>
 
-  <url>
-    <loc>https://lunastudies.com/en/tutors</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/en/subjects</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/en/whyluna</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/en/enquiry</loc>
-  </url>
-
-
-  <url>
-    <loc>https://lunastudies.com/zh/tutors</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/zh/subjects</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/zh/whyluna</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/zh/enquiry</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/jp/tutors</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/jp/subjects</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/jp/whyluna</loc>
-  </url>
-
-  <url>
-    <loc>https://lunastudies.com/jp/enquiry</loc>
-  </url>
-
-  <url>
-  <loc>https://lunastudies.com/en/privacy</loc>
-</url>
-
-<url>
-  <loc>https://lunastudies.com/en/terms</loc>
-</url>
-
-<url>
-  <loc>https://lunastudies.com/zh/privacy</loc>
-</url>
-
-<url>
-  <loc>https://lunastudies.com/zh/terms</loc>
-</url>
-
-<url>
-  <loc>https://lunastudies.com/jp/privacy</loc>
-</url>
-
-<url>
-  <loc>https://lunastudies.com/jp/terms</loc>
-</url>
+  <url><loc>https://www.lunastudies.com/jp/tutors</loc></url>
+  <url><loc>https://www.lunastudies.com/jp/subjects</loc></url>
+  <url><loc>https://www.lunastudies.com/jp/whyluna</loc></url>
+  <url><loc>https://www.lunastudies.com/jp/enquiry</loc></url>
+  <url><loc>https://www.lunastudies.com/jp/privacy</loc></url>
+  <url><loc>https://www.lunastudies.com/jp/terms</loc></url>
 
 </urlset>

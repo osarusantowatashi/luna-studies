@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://lunastudies.com/sitemap.xml
+Sitemap: https://www.lunastudies.com/sitemap.xml
