@@ -14,7 +14,7 @@
   </url>
 
   <url>
-    <loc>https://www.lunastudies.com/jp</loc>
+    <loc>https://lunastudies.com/jp</loc>
   </url>
 
   <url>
@@ -32,5 +32,62 @@
   <url>
     <loc>https://lunastudies.com/en/enquiry</loc>
   </url>
+
+
+  <url>
+    <loc>https://lunastudies.com/zh/tutors</loc>
+  </url>
+
+  <url>
+    <loc>https://lunastudies.com/zh/subjects</loc>
+  </url>
+
+  <url>
+    <loc>https://lunastudies.com/zh/whyluna</loc>
+  </url>
+
+  <url>
+    <loc>https://lunastudies.com/zh/enquiry</loc>
+  </url>
+
+  <url>
+    <loc>https://lunastudies.com/jp/tutors</loc>
+  </url>
+
+  <url>
+    <loc>https://lunastudies.com/jp/subjects</loc>
+  </url>
+
+  <url>
+    <loc>https://lunastudies.com/jp/whyluna</loc>
+  </url>
+
+  <url>
+    <loc>https://lunastudies.com/jp/enquiry</loc>
+  </url>
+
+  <url>
+  <loc>https://lunastudies.com/en/privacy</loc>
+</url>
+
+<url>
+  <loc>https://lunastudies.com/en/terms</loc>
+</url>
+
+<url>
+  <loc>https://lunastudies.com/zh/privacy</loc>
+</url>
+
+<url>
+  <loc>https://lunastudies.com/zh/terms</loc>
+</url>
+
+<url>
+  <loc>https://lunastudies.com/jp/privacy</loc>
+</url>
+
+<url>
+  <loc>https://lunastudies.com/jp/terms</loc>
+</url>
 
 </urlset>
