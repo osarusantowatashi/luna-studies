@@ -160,7 +160,6 @@ export default function MemoryFlip() {
         .eq("game_type", "memory_flip")
         .eq("language_pair", selectedLanguagePair)
         .eq("grade", currentGrade)
-        .eq("difficulty", selectedDifficulty)
         .order("created_at", { ascending: false });
 
       if (!error && data && data.length > 0) {
@@ -185,7 +184,7 @@ export default function MemoryFlip() {
 
           return pairs
             .map((pair) => {
-              const pairKey = `${selectedLanguagePair}_${currentGrade}_${selectedDifficulty}_${pair.left}_${pair.right}`;
+              const pairKey = `${selectedLanguagePair}_${currentGrade}_${pair.left}_${pair.right}`;
 
               return {
                 ...pair,
@@ -355,7 +354,7 @@ export default function MemoryFlip() {
 
     const newCards: Card[] = shuffle(
       pairs.flatMap((pair, index) => {
-        const pairKey = `${selectedLanguagePair}_${usedGrade || selectedGrade}_${selectedDifficulty}_${pair.left}_${pair.right}`;
+        const pairKey = `${selectedLanguagePair}_${usedGrade || selectedGrade}_${pair.left}_${pair.right}`;
 
         return [
           {
@@ -638,7 +637,17 @@ export default function MemoryFlip() {
   };
 
   const leaveArcade = () => {
-    navigate("/games");
+    setShowResultModal(false);
+    setGameStarted(false);
+    setCards([]);
+    setSelectedCards([]);
+    setMoves(0);
+    setCombo(0);
+    setScore(0);
+    setLevel(1);
+    setErrorMsg("");
+    setLoading(false);
+    setTimeUp(false);
   };
 
   const flipCard = (card: Card) => {
@@ -767,10 +776,18 @@ export default function MemoryFlip() {
 
       {!showMasteryTest && (
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6">
+
+          {!gameStarted && (
+            <button
+              onClick={() => navigate("/games")}
+              className="mb-5 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-black text-white hover:bg-white/10"
+            >
+              ← Back to Games Arcade
+            </button>
+          )}
           {/* HERO */}
           {!gameStarted && (
             <>
-              {/* HERO */}
               <div className="mb-8 overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 backdrop-blur-xl">
                 <div className="grid gap-8 p-8 lg:grid-cols-[1.2fr_420px] lg:p-10">
                   <div>
@@ -1179,7 +1196,7 @@ export default function MemoryFlip() {
                     onClick={leaveArcade}
                     className="mt-6 h-12 rounded-2xl bg-white px-6 font-black text-[#071426]"
                   >
-                    Back to Arcade
+                    Back to Memory Flip Menu
                   </button>
                 </div>
               )}
@@ -1205,7 +1222,7 @@ export default function MemoryFlip() {
                     onClick={leaveArcade}
                     className="mt-6 h-12 rounded-2xl bg-white px-6 font-black text-[#071426]"
                   >
-                    Return to Arcade
+                    Back to Memory Flip Menu
                   </button>
                 </div>
               )}
