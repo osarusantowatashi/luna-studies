@@ -125,9 +125,7 @@ const App = () => {
           path="/memory-flip"
           element={
             <ProtectedRoute allowedRoles={["admin", "student"]}>
-              <Layout>
-                <MemoryFlip />
-              </Layout>
+              <MemoryFlip />
             </ProtectedRoute>
           }
         />

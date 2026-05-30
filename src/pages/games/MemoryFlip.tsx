@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 
 type Pair = {
@@ -70,6 +71,7 @@ const getCardGridClass = (cardCount: number) => {
 
 
 export default function MemoryFlip() {
+  const navigate = useNavigate();
   const [languagePair, setLanguagePair] = useState("zh_en");
   const [grade, setGrade] = useState("Grade 1");
   const [difficulty, setDifficulty] = useState("Easy");
@@ -293,38 +295,54 @@ export default function MemoryFlip() {
 
     const { data: approvedImages } = await supabase
       .from("vocab_images")
-      .select("keyword, vocab_word, image_url, status")
+      .select("keyword, vocab_word, left_text, right_text, image_url, status")
       .eq("status", "approved");
 
     const approvedImageMap = new Map<string, string>();
 
     (approvedImages || []).forEach((img) => {
-      if (img.keyword) {
-        approvedImageMap.set(String(img.keyword).toLowerCase(), img.image_url);
-      }
-
-      if (img.vocab_word) {
-        approvedImageMap.set(String(img.vocab_word).toLowerCase(), img.image_url);
-      }
+      [
+        img.keyword,
+        img.vocab_word,
+        img.left_text,
+        img.right_text,
+      ].forEach((value) => {
+        if (value) {
+          approvedImageMap.set(String(value).trim().toLowerCase(), img.image_url);
+        }
+      });
     });
 
     const pairs = rawPairs
       .map((pair: any) => {
-        const imageKeyword = String(pair.image_keyword || "").toLowerCase();
-        const vocabWord = String(pair.vocab_word || "").toLowerCase();
-        const left = String(pair.left || "").toLowerCase();
+        const candidates = [
+          pair.image_keyword,
+          pair.vocab_word,
+          pair.left,
+          pair.right,
+        ].map((v) => String(v || "").trim().toLowerCase());
 
         return {
           ...pair,
           image_url:
-            approvedImageMap.get(imageKeyword) ||
-            approvedImageMap.get(vocabWord) ||
-            approvedImageMap.get(left) ||
+            candidates.map((key) => approvedImageMap.get(key)).find(Boolean) ||
+            pair.image_url ||
             null,
         };
       })
       .filter((pair: any) => pair.image_url)
       .slice(0, selectedPairCount);
+
+    if (pairs.length < selectedPairCount || !usedGrade) {
+      setCards([]);
+      setActiveGrade(selectedGrade);
+      setPlayedPairs([]);
+      setErrorMsg(
+        `Hapiko noticed that there are not enough approved ${selectedGrade} ${selectedDifficulty} vocabulary pairs yet. Please ask admin to approve or generate more pairs.`
+      );
+      setLoading(false);
+      return;
+    }
 
 
     const currentPlayedPairs: PlayedPair[] = pairs.map((pair) => ({
@@ -620,17 +638,7 @@ export default function MemoryFlip() {
   };
 
   const leaveArcade = () => {
-    setShowResultModal(false);
-    setGameStarted(false);
-    setCards([]);
-    setSelectedCards([]);
-    setMoves(0);
-    setCombo(0);
-    setScore(0);
-    setLevel(1);
-    setErrorMsg("");
-    setLoading(false);
-    setTimeUp(false);
+    navigate("/games");
   };
 
   const flipCard = (card: Card) => {
