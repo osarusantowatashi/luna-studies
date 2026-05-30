@@ -94,21 +94,7 @@ const NavBar = () => {
     const hasLangPrefix = /^\/(en|zh|jp)(\/|$)/.test(location.pathname);
 
     if (!hasLangPrefix) {
-      const savedLang = localStorage.getItem("luna_language");
-
-      const lang =
-        savedLang && ["en", "zh", "jp"].includes(savedLang)
-          ? savedLang
-          : detectBrowserLang();
-
-      localStorage.setItem("luna_language", lang);
-
-      window.location.replace(
-        location.pathname === "/"
-          ? `/${lang}`
-          : `/${lang}${location.pathname}`
-      );
-
+      i18n.changeLanguage("en");
       return;
     }
 

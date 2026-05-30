@@ -49,7 +49,7 @@ const App = () => {
       <ScrollToTop />
       <Routes>
         {/* Public Pages */}
-        <Route path="/" element={<Navigate to="/en" replace />} />
+        <Route path="/" element={<Layout><Landing /></Layout>} />
 
         <Route path="/:lang" element={<Layout><Landing /></Layout>} />
 

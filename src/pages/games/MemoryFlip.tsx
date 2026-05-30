@@ -291,38 +291,40 @@ export default function MemoryFlip() {
       selectedPairCount
     );
 
-    const imageKeywords = rawPairs
-      .map((pair: any) => pair.image_keyword)
-      .filter(Boolean);
-
     const { data: approvedImages } = await supabase
       .from("vocab_images")
-      .select("keyword, image_url, status")
-      .in("keyword", imageKeywords)
+      .select("keyword, vocab_word, image_url, status")
       .eq("status", "approved");
 
-    const approvedImageMap = new Map(
-      (approvedImages || []).map((img) => [img.keyword, img.image_url])
-    );
+    const approvedImageMap = new Map<string, string>();
+
+    (approvedImages || []).forEach((img) => {
+      if (img.keyword) {
+        approvedImageMap.set(String(img.keyword).toLowerCase(), img.image_url);
+      }
+
+      if (img.vocab_word) {
+        approvedImageMap.set(String(img.vocab_word).toLowerCase(), img.image_url);
+      }
+    });
 
     const pairs = rawPairs
-      .map((pair: any) => ({
-        ...pair,
-        image_url: approvedImageMap.get(pair.image_keyword) || null,
-      }))
+      .map((pair: any) => {
+        const imageKeyword = String(pair.image_keyword || "").toLowerCase();
+        const vocabWord = String(pair.vocab_word || "").toLowerCase();
+        const left = String(pair.left || "").toLowerCase();
+
+        return {
+          ...pair,
+          image_url:
+            approvedImageMap.get(imageKeyword) ||
+            approvedImageMap.get(vocabWord) ||
+            approvedImageMap.get(left) ||
+            null,
+        };
+      })
       .filter((pair: any) => pair.image_url)
       .slice(0, selectedPairCount);
-
-    if (pairs.length < selectedPairCount || !usedGrade) {
-      setCards([]);
-      setActiveGrade(selectedGrade);
-      setPlayedPairs([]);
-      setErrorMsg(
-        `Hapiko noticed that you have completed all available ${grade} ${difficulty} vocabulary for now. You can try the next difficulty, or come back next week for review.`
-      );
-      setLoading(false);
-      return;
-    }
 
 
     const currentPlayedPairs: PlayedPair[] = pairs.map((pair) => ({
