@@ -1,125 +1,163 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import Landing from "./pages/public/Landing";
+import Subjects from "./pages/public/Subjects";
+import WhyLuna from "./pages/public/WhyLuna";
+import Tutors from "./pages/public/Tutors";
+import Enquire from "./pages/public/Enquire";
+import Terms from "./pages/public/Terms";
+import Privacy from "./pages/public/Privacy";
 
-import Landing from "./pages/Landing";
-import Auth from "./pages/Auth";
-import Login from "./pages/Login";
-import Subjects from "./pages/Subjects";
-import WhyLuna from "./pages/WhyLuna";
-import Tutors from "./pages/Tutors";
-import Enquire from "./pages/Enquire";
-import Page from "./pages/Page";
+import Auth from "./pages/auth/Auth";
+import Login from "./pages/auth/Login";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
-import TutorDashboard from "./pages/TutorDashboard";
-import StudentOverview from "./pages/StudentOverview";
-import Practice from "./pages/Practice";
-import Mistakes from "./pages/Mistakes";
-import GenerateQuestions from "./pages/GenerateQuestions";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminAssign from "./pages/admin/AdminAssign";
+import AdminEnquiries from "./pages/admin/AdminEnquiries";
+import AdminLessons from "./pages/admin/AdminLessons";
+import AdminProgress from "./pages/admin/AdminProgress";
 
-import AdminQuestions from "./pages/AdminQuestions";
-import AdminAssign from "./pages/AdminAssign";
-import AdminEnquiries from "./pages/AdminEnquiries";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminProgress from "./pages/AdminProgress";
-import AdminGames from "./pages/AdminGames";
-import AdminMemoryFlip from "./pages/AdminMemoryFlip";
-import AdminLessons from "./pages/AdminLessons";
+import GenerateHome from "./pages/admin/generate/GenerateHome";
+import EnglishGenerator from "./pages/admin/generate/EnglishGenerator";
+import MemoryFlipGenerator from "./pages/admin/generate/MemoryFlipGenerator";
+import JapaneseGenerator from "./pages/admin/generate/JapaneseGenerator";
+import MathGenerator from "./pages/admin/generate/MathGenerator";
 
-import Layout from "./pages/Layout";
-import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./pages/ProtectedRoute";
-import TutorLessons from "./pages/TutorLessons";
+import GameManagement from "./pages/admin/games/GameManagement";
+import MemoryFlipManager from "./pages/admin/games/MemoryFlipManager";
+
+import QuestionBankHome from "./pages/admin/questions/QuestionBankHome";
+import EnglishQuestionBank from "./pages/admin/questions/EnglishQuestionBank";
+import MemoryFlipBank from "./pages/admin/questions/MemoryFlipBank";
+import JapaneseQuestionBank from "./pages/admin/questions/JapaneseQuestionBank";
+import MathQuestionBank from "./pages/admin/questions/MathQuestionBank";
+
+import TutorDashboard from "./pages/tutor/TutorDashboard";
+import TutorLessons from "./pages/tutor/TutorLessons";
+
+import StudentOverview from "./pages/student/StudentOverview";
+import Practice from "./pages/student/Practice";
+import Mistakes from "./pages/student/Mistakes";
+import GamesArcade from "./pages/student/games/GamesArcade";
+import MemoryFlip from "./pages/student/games/MemoryFlip";
+
+import Layout from "./pages/shared/Layout";
+import NotFound from "./pages/shared/NotFound";
+import Page from "./pages/shared/Page";
+import ProtectedRoute from "./pages/shared/ProtectedRoute";
+
 import ScrollToTop from "./components/ScrollToTop";
-
 import LunaMascotChat from "./components/LunaMascotChat";
 import HapikoGuide from "./components/HapikoGuide";
 
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
+const AdminPage = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute allowedRoles={["admin"]}>
+    <Layout>{children}</Layout>
+  </ProtectedRoute>
+);
 
-import MemoryFlip from "@/pages/games/MemoryFlip";
-import GenerateGameQuestions from "@/pages/GenerateGameQuestions";
-import GamesArcade from "@/pages/games/GamesArcade";
+const StudentPage = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute allowedRoles={["admin", "student"]}>
+    <Layout>{children}</Layout>
+  </ProtectedRoute>
+);
+
+const TutorPage = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute allowedRoles={["admin", "tutor"]}>
+    <Layout>{children}</Layout>
+  </ProtectedRoute>
+);
 
 const App = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Routes>
-        {/* Public Pages */}
-        <Route path="/" element={<Layout><Landing /></Layout>} />
 
+      <Routes>
+        {/* Public */}
+        <Route path="/" element={<Layout><Landing /></Layout>} />
         <Route path="/:lang" element={<Layout><Landing /></Layout>} />
 
         <Route path="/:lang/auth" element={<Auth />} />
         <Route path="/:lang/login" element={<Login />} />
+        <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
+        <Route path="/:lang/reset-password" element={<ResetPassword />} />
 
-        <Route path="/en/terms" element={<Terms />} />
-        <Route path="/jp/terms" element={<Terms />} />
-        <Route path="/zh/terms" element={<Terms />} />
         <Route path="/:lang/subjects" element={<Layout><Subjects /></Layout>} />
         <Route path="/:lang/whyluna" element={<Layout><WhyLuna /></Layout>} />
         <Route path="/:lang/tutors" element={<Layout><Tutors /></Layout>} />
         <Route path="/:lang/enquiry" element={<Layout><Enquire /></Layout>} />
-        <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
-        <Route path="/:lang/reset-password" element={<ResetPassword />} />
 
-        {/* Old public links redirect */}
+        <Route path="/en/terms" element={<Terms />} />
+        <Route path="/jp/terms" element={<Terms />} />
+        <Route path="/zh/terms" element={<Terms />} />
+
+        <Route path="/en/privacy" element={<Privacy />} />
+        <Route path="/jp/privacy" element={<Privacy />} />
+        <Route path="/zh/privacy" element={<Privacy />} />
+
+        {/* Public Redirects */}
         <Route path="/login" element={<Navigate to="/en/login" replace />} />
-        {/* Wrong language-prefixed protected links redirect */}
-        <Route path="/:lang/studentoverview" element={<Navigate to="/studentoverview" replace />} />
-        <Route path="/:lang/dashboard" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/:lang/admin/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="/:lang/tutor/lessons" element={<Navigate to="/tutor/lessons" replace />} />
-        <Route path="/:lang/practice" element={<Navigate to="/practice" replace />} />
-        <Route path="/:lang/mistakes" element={<Navigate to="/mistakes" replace />} />
-        <Route path="/:lang/admin/assign" element={<Navigate to="/admin/assign" replace />} />
-        <Route path="/:lang/admin/questions" element={<Navigate to="/admin/questions" replace />} />
-        <Route path="/:lang/admin/lessons" element={<Navigate to="/admin/lessons" replace />} />
-        <Route path="/:lang/admin/enquiries" element={<Navigate to="/admin/enquiries" replace />} />
-        <Route path="/:lang/admin/progress" element={<Navigate to="/admin/progress" replace />} />
-        <Route path="/admin/games"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Layout>
-                <AdminGames />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/games/memory-flip"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Layout>
-                <AdminMemoryFlip />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/:lang/generate" element={<Navigate to="/generate" replace />} />
-
         <Route path="/subjects" element={<Navigate to="/en/subjects" replace />} />
         <Route path="/whyluna" element={<Navigate to="/en/whyluna" replace />} />
         <Route path="/tutors" element={<Navigate to="/en/tutors" replace />} />
         <Route path="/enquiry" element={<Navigate to="/en/enquiry" replace />} />
 
+        {/* Language-prefixed App Redirects */}
+        <Route path="/:lang/studentoverview" element={<Navigate to="/studentoverview" replace />} />
+        <Route path="/:lang/dashboard" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/:lang/practice" element={<Navigate to="/practice" replace />} />
+        <Route path="/:lang/mistakes" element={<Navigate to="/mistakes" replace />} />
+        <Route path="/:lang/generate" element={<Navigate to="/generate" replace />} />
+        <Route path="/:lang/tutor/lessons" element={<Navigate to="/tutor/lessons" replace />} />
 
+        <Route path="/:lang/admin/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/:lang/admin/assign" element={<Navigate to="/admin/assign" replace />} />
+        <Route path="/:lang/admin/students" element={<Navigate to="/admin/students" replace />} />
+        <Route path="/:lang/admin/questions" element={<Navigate to="/admin/questions" replace />} />
+        <Route path="/:lang/admin/lessons" element={<Navigate to="/admin/lessons" replace />} />
+        <Route path="/:lang/admin/enquiries" element={<Navigate to="/admin/enquiries" replace />} />
+        <Route path="/:lang/admin/progress" element={<Navigate to="/admin/progress" replace />} />
 
-        <Route path="/generate-games" element={<ProtectedRoute allowedRoles={["admin"]}>  <GenerateGameQuestions /> </ProtectedRoute>} />
-        <Route
-          path="/games"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "student"]}>
-              <Layout>
-                <GamesArcade />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
+        {/* Admin */}
+        <Route path="/admin/dashboard" element={<AdminPage><AdminDashboard /></AdminPage>} />
+        <Route path="/admin/assign" element={<AdminPage><AdminAssign /></AdminPage>} />
+        <Route path="/admin/lessons" element={<AdminPage><AdminLessons /></AdminPage>} />
+        <Route path="/admin/enquiries" element={<AdminPage><AdminEnquiries /></AdminPage>} />
+        <Route path="/admin/progress" element={<AdminPage><AdminProgress /></AdminPage>} />
+
+        {/* Admin Generate */}
+        <Route path="/generate" element={<AdminPage><GenerateHome /></AdminPage>} />
+        <Route path="/admin/generate" element={<AdminPage><GenerateHome /></AdminPage>} />
+        <Route path="/admin/generate/english" element={<AdminPage><EnglishGenerator /></AdminPage>} />
+        <Route path="/admin/generate/memory-flip" element={<AdminPage><MemoryFlipGenerator /></AdminPage>} />
+        <Route path="/admin/generate/japanese" element={<AdminPage><JapaneseGenerator /></AdminPage>} />
+        <Route path="/admin/generate/math" element={<AdminPage><MathGenerator /></AdminPage>} />
+
+        <Route path="/generate-games" element={<Navigate to="/admin/generate/memory-flip" replace />} />
+        <Route path="/admin/generate/math" element={<Navigate to="/admin/generate" replace />} />
+
+        {/* Admin Games */}
+        <Route path="/admin/games" element={<AdminPage><GameManagement /></AdminPage>} />
+        <Route path="/admin/games/memory-flip" element={<AdminPage><MemoryFlipManager /></AdminPage>} />
+
+        {/* Admin Question Banks */}
+        <Route path="/admin/questions" element={<AdminPage><QuestionBankHome /></AdminPage>} />
+        <Route path="/admin/questions/english" element={<AdminPage><EnglishQuestionBank /></AdminPage>} />
+        <Route path="/admin/questions/games/memory-flip" element={<AdminPage><MemoryFlipBank /></AdminPage>} />
+        <Route path="/admin/questions/japanese" element={<AdminPage><JapaneseQuestionBank /></AdminPage>} />
+        <Route path="/admin/questions/math" element={<AdminPage><MathQuestionBank /></AdminPage>} />
+
+        {/* Tutor */}
+        <Route path="/dashboard" element={<TutorPage><TutorDashboard /></TutorPage>} />
+        <Route path="/tutor/lessons" element={<TutorPage><TutorLessons /></TutorPage>} />
+
+        {/* Student */}
+        <Route path="/studentoverview" element={<StudentPage><StudentOverview /></StudentPage>} />
+        <Route path="/practice" element={<StudentPage><Practice /></StudentPage>} />
+        <Route path="/games" element={<StudentPage><GamesArcade /></StudentPage>} />
 
         <Route
           path="/memory-flip"
@@ -129,49 +167,14 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/en/privacy" element={<Privacy />} />
-        <Route path="/jp/privacy" element={<Privacy />} />
-        <Route path="/zh/privacy" element={<Privacy />} />
-        {/* Admin */}
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Layout>
-                <AdminDashboard />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
 
+        {/* Shared */}
         <Route
-          path="/admin/assign"
+          path="/mistakes"
           element={
-            <ProtectedRoute allowedRoles={["admin"]}>
+            <ProtectedRoute allowedRoles={["admin", "tutor", "student"]}>
               <Layout>
-                <AdminAssign />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/questions"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Layout>
-                <AdminQuestions />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/lessons"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Layout>
-                <AdminLessons />
+                <Mistakes />
               </Layout>
             </ProtectedRoute>
           }
@@ -188,101 +191,7 @@ const App = () => {
           }
         />
 
-        <Route
-          path="/admin/enquiries"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Layout>
-                <AdminEnquiries />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/progress"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Layout>
-                <AdminProgress />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Admin only: generate questions */}
-        <Route
-          path="/generate"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Layout>
-                <GenerateQuestions />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Tutor */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "tutor"]}>
-              <Layout>
-                <TutorDashboard />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Student */}
-        <Route
-          path="/studentoverview"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "student"]}>
-              <Layout>
-                <StudentOverview />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/tutor/lessons"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "tutor"]}>
-              <Layout>
-                <TutorLessons />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-
-        <Route
-          path="/practice"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "student"]}>
-              <Layout>
-                <Practice />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Shared: admin, tutor, student */}
-        <Route
-          path="/mistakes"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "tutor", "student"]}>
-              <Layout>
-                <Mistakes />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
         <Route path="*" element={<NotFound />} />
-
       </Routes>
 
       <LunaMascotChat />

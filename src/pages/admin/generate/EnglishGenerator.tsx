@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 
-const GenerateQuestions = () => {
+const EnglishGenerator = () => {
   const [examType, setExamType] = useState("MAP");
   const [grade, setGrade] = useState("Grade 5");
   const [skill, setSkill] = useState("Vocabulary");
@@ -425,4 +425,4 @@ const GenerateQuestions = () => {
   );
 };
 
-export default GenerateQuestions;
+export default EnglishGenerator;

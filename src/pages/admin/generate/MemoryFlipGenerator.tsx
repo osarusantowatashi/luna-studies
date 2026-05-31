@@ -22,7 +22,7 @@ const pairCountByDifficulty: Record<string, number> = {
 
 };
 
-export default function AdminMemoryFlip() {
+export default function MemoryFlipGenerator() {
   const [grade, setGrade] = useState("Grade 1");
   const [difficulty, setDifficulty] = useState("Easy");
   const pairCount = pairCountByDifficulty[difficulty];

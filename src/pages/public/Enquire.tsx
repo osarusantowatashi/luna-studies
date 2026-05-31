@@ -1,5 +1,5 @@
 
-import EnquiryForm from "@/pages/EnquiryForm";
+import EnquiryForm from "@/pages/public/EnquiryForm";
 import Footer from "@/components/Footer";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";

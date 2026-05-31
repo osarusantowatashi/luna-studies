@@ -123,7 +123,6 @@ const NavBar = () => {
       ? [
         ["Dashboard", "/admin/dashboard"],
         ["Generate", "/generate"],
-        ["Game Gen", "/admin/games"],
         ["Assign", "/admin/assign"],
         ["Lessons", "/admin/lessons"],
         ["Questions", "/admin/questions"],

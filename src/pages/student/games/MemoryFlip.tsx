@@ -194,6 +194,17 @@ export default function MemoryFlip() {
             })
             .filter((pair) => !recentPairKeys.includes(pair.pairKey));
         });
+        console.log("Memory Flip Debug:", {
+          selectedLanguagePair,
+          selectedGrade,
+          currentGrade,
+          selectedPairCount,
+          totalQuestionSets: data?.length || 0,
+          recentPairKeysCount: recentPairKeys.length,
+          allAvailablePairsCount: allAvailablePairs.length,
+          rawPairsCount: data.flatMap((questionSet) => questionSet.question_data?.pairs || []).length,
+          recentPairKeys,
+        });
 
         if (allAvailablePairs.length >= selectedPairCount) {
           return {
@@ -331,6 +342,13 @@ export default function MemoryFlip() {
       })
       .filter((pair: any) => pair.image_url)
       .slice(0, selectedPairCount);
+
+      console.log("FINAL CHECK", {
+        selectedPairCount,
+        finalPairsLength: pairs.length,
+        usedGrade,
+        activeGrade: selectedGrade,
+      });
 
     if (pairs.length < selectedPairCount || !usedGrade) {
       setCards([]);
@@ -600,15 +618,13 @@ export default function MemoryFlip() {
 
   useEffect(() => {
     if (!isWin || showResultModal || showMasteryTest) return;
-
-    saveHistory();
-
+  
     if (level >= 5) {
       generateMasteryTest();
     } else {
       setShowResultModal(true);
     }
-  }, [isWin]);
+  }, [isWin, showResultModal, showMasteryTest, level]);
 
 
   const generateMasteryTest = async () => {

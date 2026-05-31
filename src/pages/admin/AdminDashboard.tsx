@@ -80,9 +80,9 @@ const AdminDashboard = () => {
 
           <Link to="/generate">
             <Card className="h-full rounded-[1.8rem] p-5 transition md:hover:scale-[1.02] sm:p-6">
-              <h3 className="text-lg font-semibold sm:text-xl">Generate Questions</h3>
+              <h3 className="text-lg font-semibold sm:text-xl">Generate Content</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Generate new questions and save them to Supabase.
+                Generate English questions, Math practice, and learning games.
               </p>
               <Button type="button" className="mt-5 w-full rounded-2xl">
                 Open

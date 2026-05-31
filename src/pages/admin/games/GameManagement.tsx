@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Gamepad2, Images, ArrowRight } from "lucide-react";
 
-export default function AdminGames() {
+export default function GameManagement() {
   return (
     <div className="min-h-screen bg-background px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-5xl space-y-8">
