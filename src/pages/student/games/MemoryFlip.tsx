@@ -105,6 +105,12 @@ export default function MemoryFlip() {
     getTimeLimit(pairCount, difficulty)
   );
 
+  const playSound = (src: string, volume = 0.45) => {
+    const audio = new Audio(src);
+    audio.volume = volume;
+    audio.play().catch(() => { });
+  };
+
 
   const matchedCount = useMemo(
     () => cards.filter((card) => card.matched).length / 2,
@@ -112,7 +118,7 @@ export default function MemoryFlip() {
   );
 
   const totalPairs = cards.length / 2;
-  const isWin = totalPairs > 0 && matchedCount === totalPairs;
+  const isWin = !loading && totalPairs > 0 && matchedCount === totalPairs;
   const isGameEnded = isWin || timeUp;
 
 
@@ -123,6 +129,7 @@ export default function MemoryFlip() {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          playSound("/sounds/time-up.mp3", 0.45);
           setTimeUp(true);
           return 0;
         }
@@ -292,8 +299,11 @@ export default function MemoryFlip() {
     selectedPairCount = getPairCountByDifficulty(selectedDifficulty),
   } = {}) => {
     setLoading(true);
+    setCards([]);
+    setSelectedCards([]);
     setErrorMsg("");
     setTimeUp(false);
+    setShowResultModal(false);
 
 
     const { pairs: rawPairs, usedGrade } = await findGameQuestion(
@@ -343,12 +353,13 @@ export default function MemoryFlip() {
       .filter((pair: any) => pair.image_url)
       .slice(0, selectedPairCount);
 
-      console.log("FINAL CHECK", {
-        selectedPairCount,
-        finalPairsLength: pairs.length,
-        usedGrade,
-        activeGrade: selectedGrade,
-      });
+    console.log("FINAL CHECK", {
+      selectedPairCount,
+      finalPairsLength: pairs.length,
+      usedGrade,
+      activeGrade: selectedGrade,
+    });
+    console.log("AVAILABLE PAIRS", pairs);
 
     if (pairs.length < selectedPairCount || !usedGrade) {
       setCards([]);
@@ -564,8 +575,12 @@ export default function MemoryFlip() {
 
     setShowMasteryTest(false);
     setShowResultModal(false);
+    
 
     if (nextCorrect >= 4) {
+
+      playSound("/sounds/success.mp3", 0.6);
+
       await saveMasteredPairs();
 
       await saveProgress({
@@ -618,10 +633,13 @@ export default function MemoryFlip() {
 
   useEffect(() => {
     if (!isWin || showResultModal || showMasteryTest) return;
-  
+
     if (level >= 5) {
       generateMasteryTest();
     } else {
+
+      playSound("/sounds/success.mp3", 0.45);
+
       setShowResultModal(true);
     }
   }, [isWin, showResultModal, showMasteryTest, level]);
@@ -670,6 +688,7 @@ export default function MemoryFlip() {
     if (isGameEnded) return;
     if (card.flipped || card.matched) return;
     if (selectedCards.length >= 2) return;
+    playSound("/sounds/card-flip.mp3", 0.25);
 
     const flippedCard = { ...card, flipped: true };
 
@@ -686,6 +705,7 @@ export default function MemoryFlip() {
       const [first, second] = newSelected;
 
       if (first.pairId === second.pairId) {
+        playSound("/sounds/mastery-test.mp3", 0.35);
         const newCombo = combo + 1;
         setCombo(newCombo);
         setScore((prev) => prev + 100 + newCombo * 20);
@@ -1059,6 +1079,9 @@ export default function MemoryFlip() {
                         const nextLevel = level + 1;
 
                         setShowResultModal(false);
+                        setCards([]);
+                        setSelectedCards([]);
+                        setLoading(true);
 
                         if (nextLevel > 5) {
                           generateMasteryTest();
@@ -1247,7 +1270,7 @@ export default function MemoryFlip() {
               {!loading && !errorMsg && !timeUp && (
                 <div
                   className={`
-                  mx-auto grid max-w-5xl justify-center gap-3
+                  mx-auto grid max-w-5xl justify-center gap-2 sm:gap-3
                   ${getCardGridClass(cards.length)}
                 `}
                 >
@@ -1266,13 +1289,13 @@ export default function MemoryFlip() {
                         onClick={() => flipCard(card)}
                         className={`
                       relative overflow-hidden rounded-[2rem] border transition-all duration-300
-                      h-[92px] w-[120px] sm:h-[100px] sm:w-[132px] lg:h-[108px] lg:w-[145px] justify-self-center sm:h-[115px] lg:h-[125px]
+                    h-[96px] w-[118px] justify-self-center sm:h-[110px] sm:w-[132px] lg:h-[118px] lg:w-[140px]
                       ${visible
                             ? "border-white/10 bg-white/10 backdrop-blur-xl"
                             : "border-[#1E2F4A] bg-gradient-to-br from-[#12243A] to-[#091423]"
                           }
-                      ${card.matched
-                            ? "border-[#FACC15] shadow-[0_0_40px_rgba(250,204,21,0.35)]"
+                          ${card.matched
+                            ? "border-emerald-400 bg-emerald-500/15 opacity-80"
                             : ""
                           }
                     `}

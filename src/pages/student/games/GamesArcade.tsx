@@ -67,11 +67,11 @@ export default function GamesArcade() {
 
       <div className="relative z-10 mx-auto max-w-[1180px] space-y-0">
         {/* HERO */}
-        <section className="relative overflow-hidden rounded-[3rem] border border-[#eee8ff] bg-white p-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:p-8">
+        <section className="relative mb-10 overflow-hidden rounded-[3rem] border border-[#eee8ff] bg-white p-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:p-8">
           <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
           <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
 
-          <div className="relative z-10">
+          <div className="relative z-10 grid items-center gap-10 lg:grid-cols-[1.15fr_420px]">
             <div>
               <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
                 <Sparkles className="h-5 w-5" />
@@ -90,13 +90,36 @@ export default function GamesArcade() {
                 Build vocabulary, grammar, reasoning, and language confidence through short interactive learning games.
               </p>
             </div>
+
+            <div className="rounded-[2.5rem] bg-[#faf8ff] p-7 shadow-[0_20px_60px_rgba(66,56,120,0.08)]">
+              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
+                Your Progress
+              </p>
+
+              <div className="mt-7 space-y-4">
+                <div className="flex items-center justify-between rounded-2xl bg-white px-5 py-4">
+                  <span className="font-bold text-primary/55">Games Played</span>
+                  <span className="text-xl font-black text-primary">0</span>
+                </div>
+
+                <div className="flex items-center justify-between rounded-2xl bg-white px-5 py-4">
+                  <span className="font-bold text-primary/55">Challenges Cleared</span>
+                  <span className="text-xl font-black text-primary">0</span>
+                </div>
+
+                <div className="flex items-center justify-between rounded-2xl bg-white px-5 py-4">
+                  <span className="font-bold text-primary/55">Current Streak</span>
+                  <span className="text-xl font-black text-primary">0</span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
 
 
         {/* GAME LIST */}
-        <section className="relative mt-10 rounded-[2.8rem] bg-white px-6 pb-8 pt-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:px-8">
+        <section className="relative rounded-[2.8rem] bg-white px-6 pb-8 pt-8 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:px-8">
           <div className="mb-8">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
               Choose a game
