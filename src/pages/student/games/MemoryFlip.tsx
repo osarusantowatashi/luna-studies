@@ -213,9 +213,9 @@ export default function MemoryFlip() {
           recentPairKeys,
         });
 
-        if (allAvailablePairs.length >= selectedPairCount) {
+        if (allAvailablePairs.length > 0) {
           return {
-            pairs: shuffle(allAvailablePairs).slice(0, selectedPairCount),
+            pairs: shuffle(allAvailablePairs),
             usedGrade: currentGrade,
           };
         }
