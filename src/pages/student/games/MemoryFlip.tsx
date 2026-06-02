@@ -84,6 +84,7 @@ export default function MemoryFlip() {
   const [playedPairs, setPlayedPairs] = useState<PlayedPair[]>([]);
   const [masteryPool, setMasteryPool] = useState<PlayedPair[]>([]);
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
+  const [flipLocked, setFlipLocked] = useState(false);
   const [moves, setMoves] = useState(0);
   const [combo, setCombo] = useState(0);
   const [score, setScore] = useState(0);
@@ -105,9 +106,22 @@ export default function MemoryFlip() {
     getTimeLimit(pairCount, difficulty)
   );
 
-  const playSound = (src: string, volume = 0.45) => {
-    const audio = new Audio(src);
+  const soundMap = useMemo(() => {
+    return {
+      flip: new Audio("/sounds/card-flip.mp3"),
+      match: new Audio("/sounds/success.mp3"),
+      stage: new Audio("/sounds/mastery-test.mp3"),
+      timeUp: new Audio("/sounds/time-up.mp3"),
+    };
+  }, []);
+
+  const playGameSound = (sound: keyof typeof soundMap, volume = 0.45) => {
+    const audio = soundMap[sound];
+
+    audio.pause();
+    audio.currentTime = 0;
     audio.volume = volume;
+
     audio.play().catch(() => { });
   };
 
@@ -129,7 +143,7 @@ export default function MemoryFlip() {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          playSound("/sounds/time-up.mp3", 0.45);
+          playGameSound("timeUp", 0.45);
           setTimeUp(true);
           return 0;
         }
@@ -230,13 +244,23 @@ export default function MemoryFlip() {
     };
   };
 
-  const preloadImages = (imageUrls: string[]) => {
-    imageUrls.forEach((url) => {
-      if (!url) return;
+  const preloadImages = async (imageUrls: string[]) => {
+    await Promise.all(
+      imageUrls.map(
+        (url) =>
+          new Promise<void>((resolve) => {
+            if (!url) {
+              resolve();
+              return;
+            }
 
-      const img = new Image();
-      img.src = url;
-    });
+            const img = new Image();
+            img.src = url;
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
+          })
+      )
+    );
   };
 
   const loadProgress = async () => {
@@ -414,7 +438,7 @@ export default function MemoryFlip() {
       .map((pair) => pair.image_url)
       .filter(Boolean) as string[];
 
-    preloadImages(imageUrls);
+    await preloadImages(imageUrls);
 
     setActiveGrade(usedGrade || selectedGrade);
     setPlayedPairs(currentPlayedPairs);
@@ -575,11 +599,11 @@ export default function MemoryFlip() {
 
     setShowMasteryTest(false);
     setShowResultModal(false);
-    
+
 
     if (nextCorrect >= 4) {
 
-      playSound("/sounds/success.mp3", 0.6);
+      playGameSound("stage", 0.6);
 
       await saveMasteredPairs();
 
@@ -638,7 +662,7 @@ export default function MemoryFlip() {
       generateMasteryTest();
     } else {
 
-      playSound("/sounds/success.mp3", 0.45);
+      playGameSound("stage", 0.45);
 
       setShowResultModal(true);
     }
@@ -686,9 +710,13 @@ export default function MemoryFlip() {
 
   const flipCard = (card: Card) => {
     if (isGameEnded) return;
+    if (flipLocked) return;
     if (card.flipped || card.matched) return;
     if (selectedCards.length >= 2) return;
-    playSound("/sounds/card-flip.mp3", 0.25);
+
+    setFlipLocked(true);
+    setTimeout(() => setFlipLocked(false), 140);
+    playGameSound("flip", 0.18);
 
     const flippedCard = { ...card, flipped: true };
 
@@ -705,7 +733,7 @@ export default function MemoryFlip() {
       const [first, second] = newSelected;
 
       if (first.pairId === second.pairId) {
-        playSound("/sounds/mastery-test.mp3", 0.35);
+        playGameSound("match", 0.35);
         const newCombo = combo + 1;
         setCombo(newCombo);
         setScore((prev) => prev + 100 + newCombo * 20);
@@ -1211,7 +1239,7 @@ export default function MemoryFlip() {
 
               {loading && (
                 <div className="mb-6 rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center text-lg font-black text-white">
-                  Loading Memory Flip...
+                  Preparing Memory Flip...
                 </div>
               )}
 
