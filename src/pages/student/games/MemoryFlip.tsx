@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { Zap, Sparkles, Brain, Flame, Crown } from "lucide-react";
+import {
+  Zap,
+  Sparkles,
+  Brain,
+  Flame,
+  Crown,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+
 
 type Pair = {
   pair_id?: number;
@@ -10,7 +17,6 @@ type Pair = {
   right: string;
   image_keyword?: string;
   image_url?: string;
-  vocab_word?: string;
 };
 
 type Card = {
@@ -35,10 +41,13 @@ const shuffle = <T,>(array: T[]) => [...array].sort(() => Math.random() - 0.5);
 
 const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
 
-const difficulties = ["Easy", "Medium", "Hard", "Advanced"];
-
 const FALLBACK_IMAGE =
   "https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg";
+
+const getNextGrade = (currentGrade: string) => {
+  const index = grades.indexOf(currentGrade);
+  return grades[index + 1] || null;
+};
 
 const getTimeLimit = (pairCount: number, difficulty: string) => {
   if (difficulty === "Easy") return pairCount * 18;
@@ -52,7 +61,6 @@ const getPairCountByDifficulty = (difficulty: string) => {
   if (difficulty === "Hard") return 10;
   return 12;
 };
-
 const getCardGridClass = (cardCount: number) => {
   if (cardCount <= 12) return "grid-cols-3 sm:grid-cols-4";
   if (cardCount <= 16) return "grid-cols-4";
@@ -60,38 +68,49 @@ const getCardGridClass = (cardCount: number) => {
   return "grid-cols-4 sm:grid-cols-6";
 };
 
+
+
 export default function MemoryFlip() {
   const navigate = useNavigate();
-
   const [languagePair, setLanguagePair] = useState("zh_en");
   const [grade, setGrade] = useState("Grade 1");
   const [difficulty, setDifficulty] = useState("Easy");
   const [unlockedDifficulty, setUnlockedDifficulty] = useState("Easy");
+  const [gradeCleared, setGradeCleared] = useState(false);
+  const [nextReviewAt, setNextReviewAt] = useState<string | null>(null);
 
   const [activeGrade, setActiveGrade] = useState("Grade 1");
   const [cards, setCards] = useState<Card[]>([]);
   const [playedPairs, setPlayedPairs] = useState<PlayedPair[]>([]);
-  const [testPool, setTestPool] = useState<PlayedPair[]>([]);
+  const [masteryPool, setMasteryPool] = useState<PlayedPair[]>([]);
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
-
   const [moves, setMoves] = useState(0);
   const [combo, setCombo] = useState(0);
   const [score, setScore] = useState(0);
-  const [level, setLevel] = useState(1);
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [timeUp, setTimeUp] = useState(false);
+  const [historySaved, setHistorySaved] = useState(false);
+
   const [gameStarted, setGameStarted] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
-
   const [showMasteryTest, setShowMasteryTest] = useState(false);
   const [masteryQuestions, setMasteryQuestions] = useState<any[]>([]);
   const [masteryIndex, setMasteryIndex] = useState(0);
   const [masteryCorrect, setMasteryCorrect] = useState(0);
-
+  const [level, setLevel] = useState(1);
   const pairCount = getPairCountByDifficulty(difficulty);
-  const [secondsLeft, setSecondsLeft] = useState(getTimeLimit(pairCount, difficulty));
+
+  const [secondsLeft, setSecondsLeft] = useState(
+    getTimeLimit(pairCount, difficulty)
+  );
+
+  const playSound = (src: string, volume = 0.45) => {
+    const audio = new Audio(src);
+    audio.volume = volume;
+    audio.play().catch(() => { });
+  };
+
 
   const matchedCount = useMemo(
     () => cards.filter((card) => card.matched).length / 2,
@@ -102,31 +121,9 @@ export default function MemoryFlip() {
   const isWin = !loading && totalPairs > 0 && matchedCount === totalPairs;
   const isGameEnded = isWin || timeUp;
 
-  const languageLabel =
-    languagePair === "zh_en"
-      ? "Chinese ↔ English"
-      : languagePair === "zh_ja"
-        ? "Chinese ↔ Japanese"
-        : "English ↔ Japanese";
-
-  const playSound = (src: string, volume = 0.45) => {
-    const audio = new Audio(src);
-    audio.volume = volume;
-    audio.play().catch(() => {});
-  };
-
-  const canUseDifficulty = (target: string) => {
-    const unlockedIndex = difficulties.indexOf(unlockedDifficulty);
-    const targetIndex = difficulties.indexOf(target);
-    return targetIndex <= unlockedIndex;
-  };
 
   useEffect(() => {
-    loadProgress();
-  }, [languagePair, grade]);
-
-  useEffect(() => {
-    if (!gameStarted || loading || errorMsg || isGameEnded || showMasteryTest) return;
+    if (loading || errorMsg || isGameEnded) return;
 
     const timer = setInterval(() => {
       setSecondsLeft((prev) => {
@@ -142,20 +139,108 @@ export default function MemoryFlip() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameStarted, loading, errorMsg, isGameEnded, showMasteryTest]);
+  }, [loading, errorMsg, isGameEnded]);
 
   useEffect(() => {
-    if (!isWin || showResultModal || showMasteryTest) return;
+    loadProgress();
 
-    if (level >= 5) {
-      generateMasteryTest();
-    } else {
-      playSound("/sounds/success.mp3", 0.45);
-      setShowResultModal(true);
+  }, [languagePair, grade]);
+
+  const findGameQuestion = async (
+    selectedLanguagePair: string,
+    selectedGrade: string,
+    selectedDifficulty: string,
+    selectedPairCount: number
+  ) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    let currentGrade: string | null = selectedGrade;
+
+    while (currentGrade) {
+      const { data, error } = await supabase
+        .from("game_questions")
+        .select("*")
+        .eq("game_type", "memory_flip")
+        .eq("language_pair", selectedLanguagePair)
+        .eq("grade", currentGrade)
+        .order("created_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        let recentPairKeys: string[] = [];
+
+        if (user) {
+          const { data: recentHistory } = await supabase
+            .from("student_game_pair_history")
+            .select("pair_key")
+            .eq("student_id", user.id)
+            .eq("game_type", "memory_flip")
+            .eq("language_pair", selectedLanguagePair)
+            .eq("grade", currentGrade)
+            .not("mastered_at", "is", null)
+            .gte("mastered_at", sevenDaysAgo.toISOString());
+
+          recentPairKeys = recentHistory?.map((item) => item.pair_key) || [];
+        }
+
+        const allAvailablePairs = data.flatMap((questionSet) => {
+          const pairs: Pair[] = questionSet.question_data?.pairs || [];
+
+          return pairs
+            .map((pair) => {
+              const pairKey = `${selectedLanguagePair}_${currentGrade}_${pair.left}_${pair.right}`;
+
+              return {
+                ...pair,
+                pairKey,
+                questionSet,
+              };
+            })
+            .filter((pair) => !recentPairKeys.includes(pair.pairKey));
+        });
+        console.log("Memory Flip Debug:", {
+          selectedLanguagePair,
+          selectedGrade,
+          currentGrade,
+          selectedPairCount,
+          totalQuestionSets: data?.length || 0,
+          recentPairKeysCount: recentPairKeys.length,
+          allAvailablePairsCount: allAvailablePairs.length,
+          rawPairsCount: data.flatMap((questionSet) => questionSet.question_data?.pairs || []).length,
+          recentPairKeys,
+        });
+
+        if (allAvailablePairs.length > 0) {
+          return {
+            pairs: shuffle(allAvailablePairs),
+            usedGrade: currentGrade,
+          };
+        }
+      }
+
+      currentGrade = getNextGrade(currentGrade);
     }
-  }, [isWin, showResultModal, showMasteryTest, level]);
+
+    return {
+      pairs: [],
+      usedGrade: null,
+    };
+  };
+
+  const preloadImages = (imageUrls: string[]) => {
+    imageUrls.forEach((url) => {
+      if (!url) return;
+
+      const img = new Image();
+      img.src = url;
+    });
+  };
 
   const loadProgress = async () => {
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -173,66 +258,31 @@ export default function MemoryFlip() {
     if (!data) {
       setUnlockedDifficulty("Easy");
       setDifficulty("Easy");
+      setGradeCleared(false);
+      setNextReviewAt(null);
       return;
     }
 
-    const currentUnlocked = data.unlocked_difficulty || "Easy";
-    setUnlockedDifficulty(currentUnlocked);
-    setDifficulty(currentUnlocked);
-  };
+    const currentUnlockedDifficulty = data.unlocked_difficulty || "Easy";
 
-  const findGameQuestion = async (
-    selectedLanguagePair: string,
-    selectedGrade: string,
-    selectedDifficulty: string
-  ) => {
-    const { data, error } = await supabase
-      .from("game_questions")
-      .select("*")
-      .eq("game_type", "memory_flip")
-      .eq("language_pair", selectedLanguagePair)
-      .eq("grade", selectedGrade)
-      .eq("difficulty", selectedDifficulty)
-      .order("created_at", { ascending: false });
+    setUnlockedDifficulty(currentUnlockedDifficulty);
 
-    if (error || !data || data.length === 0) {
-      return {
-        pairs: [],
-        usedGrade: selectedGrade,
-      };
-    }
+    setDifficulty((prev) => prev || "Easy");
 
-    const allPairs = data.flatMap((questionSet) => {
-      const pairs: Pair[] = questionSet.question_data?.pairs || [];
-
-      return pairs.map((pair) => {
-        const pairKey = `${selectedLanguagePair}_${selectedGrade}_${selectedDifficulty}_${pair.left}_${pair.right}`;
-
-        return {
-          ...pair,
-          pairKey,
-        };
-      });
-    });
-
-    return {
-      pairs: shuffle(allPairs),
-      usedGrade: selectedGrade,
-    };
-  };
-
-  const preloadImages = (imageUrls: string[]) => {
-    imageUrls.forEach((url) => {
-      if (!url) return;
-      const img = new Image();
-      img.src = url;
-    });
+    setGradeCleared(data.grade_cleared || false);
+    setNextReviewAt(data.next_review_at || null);
   };
 
   const startGame = async () => {
+
+    if (isReviewLocked) {
+      alert(`You already cleared this grade! Come back after ${reviewDateText} to review again.`);
+      return;
+    }
+
     setGameStarted(true);
+    setMasteryPool([]);
     setLevel(1);
-    setTestPool([]);
 
     await loadGame({
       selectedLanguagePair: languagePair,
@@ -255,41 +305,85 @@ export default function MemoryFlip() {
     setTimeUp(false);
     setShowResultModal(false);
 
+
     const { pairs: rawPairs, usedGrade } = await findGameQuestion(
       selectedLanguagePair,
       selectedGrade,
-      selectedDifficulty
+      selectedDifficulty,
+      selectedPairCount
     );
 
-    if (!rawPairs || rawPairs.length < selectedPairCount) {
+    const { data: approvedImages } = await supabase
+      .from("vocab_images")
+      .select("keyword, vocab_word, left_text, right_text, image_url, status")
+      .eq("status", "approved");
+
+    const approvedImageMap = new Map<string, string>();
+
+    (approvedImages || []).forEach((img) => {
+      [
+        img.keyword,
+        img.vocab_word,
+        img.left_text,
+        img.right_text,
+      ].forEach((value) => {
+        if (value) {
+          approvedImageMap.set(String(value).trim().toLowerCase(), img.image_url);
+        }
+      });
+    });
+
+    const pairs = rawPairs
+      .map((pair: any) => {
+        const candidates = [
+          pair.image_keyword,
+          pair.vocab_word,
+          pair.left,
+          pair.right,
+        ].map((v) => String(v || "").trim().toLowerCase());
+
+        return {
+          ...pair,
+          image_url:
+            candidates.map((key) => approvedImageMap.get(key)).find(Boolean) ||
+            pair.image_url ||
+            null,
+        };
+      })
+      .filter((pair: any) => pair.image_url)
+      .slice(0, selectedPairCount);
+
+    console.log("FINAL CHECK", {
+      selectedPairCount,
+      finalPairsLength: pairs.length,
+      usedGrade,
+      activeGrade: selectedGrade,
+    });
+    console.log("AVAILABLE PAIRS", pairs);
+
+    if (pairs.length < selectedPairCount || !usedGrade) {
       setCards([]);
+      setActiveGrade(selectedGrade);
       setPlayedPairs([]);
       setErrorMsg(
-        `Not enough ${selectedGrade} ${selectedDifficulty} Memory Flip pairs yet. Please ask admin to generate more pairs.`
+        `Hapiko noticed that there are not enough approved ${selectedGrade} ${selectedDifficulty} vocabulary pairs yet. Please ask admin to approve or generate more pairs.`
       );
       setLoading(false);
       return;
     }
 
-    const selectedPairs = rawPairs.slice(0, selectedPairCount);
 
-    const pairs = selectedPairs.map((pair: any) => ({
-      ...pair,
-      image_url: pair.image_url || FALLBACK_IMAGE,
-    }));
-
-    const currentPlayedPairs: PlayedPair[] = pairs.map((pair: any) => ({
+    const currentPlayedPairs: PlayedPair[] = pairs.map((pair) => ({
       pairKey: pair.pairKey,
       left: pair.left,
       right: pair.right,
       imageKeyword: pair.image_keyword,
     }));
 
+
     const newCards: Card[] = shuffle(
-      pairs.flatMap((pair: any, index: number) => {
-        const pairKey =
-          pair.pairKey ||
-          `${selectedLanguagePair}_${usedGrade || selectedGrade}_${selectedDifficulty}_${pair.left}_${pair.right}`;
+      pairs.flatMap((pair, index) => {
+        const pairKey = `${selectedLanguagePair}_${usedGrade || selectedGrade}_${pair.left}_${pair.right}`;
 
         return [
           {
@@ -298,7 +392,7 @@ export default function MemoryFlip() {
             pairKey,
             text: pair.left,
             imageKeyword: pair.image_keyword,
-            imageUrl: pair.image_url || FALLBACK_IMAGE,
+            imageUrl: pair.image_url,
             flipped: false,
             matched: false,
           },
@@ -308,7 +402,7 @@ export default function MemoryFlip() {
             pairKey,
             text: pair.right,
             imageKeyword: pair.image_keyword,
-            imageUrl: pair.image_url || FALLBACK_IMAGE,
+            imageUrl: pair.image_url,
             flipped: false,
             matched: false,
           },
@@ -316,23 +410,87 @@ export default function MemoryFlip() {
       })
     );
 
-    preloadImages(pairs.map((pair: any) => pair.image_url || FALLBACK_IMAGE));
+    const imageUrls = pairs
+      .map((pair) => pair.image_url)
+      .filter(Boolean) as string[];
+
+    preloadImages(imageUrls);
 
     setActiveGrade(usedGrade || selectedGrade);
     setPlayedPairs(currentPlayedPairs);
-    setTestPool((prev) => {
+    setMasteryPool((prev) => {
       const map = new Map(prev.map((pair) => [pair.pairKey, pair]));
-      currentPlayedPairs.forEach((pair) => map.set(pair.pairKey, pair));
+
+      currentPlayedPairs.forEach((pair) => {
+        map.set(pair.pairKey, pair);
+      });
+
       return Array.from(map.values());
     });
-
     setCards(newCards);
     setSelectedCards([]);
     setMoves(0);
     setCombo(0);
     setScore(0);
+    setHistorySaved(false);
     setSecondsLeft(getTimeLimit(selectedPairCount, selectedDifficulty));
     setLoading(false);
+  };
+
+  const saveHistory = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || playedPairs.length === 0 || historySaved) return;
+
+    const payload = playedPairs.map((pair) => ({
+      student_id: user.id,
+      game_type: "memory_flip",
+      language_pair: languagePair,
+      grade: activeGrade,
+      difficulty,
+      pair_key: pair.pairKey,
+      left_text: pair.left,
+      right_text: pair.right,
+      image_keyword: pair.imageKeyword || null,
+      last_seen_at: new Date().toISOString(),
+    }));
+
+    await supabase.from("student_game_pair_history").upsert(payload, {
+      onConflict:
+        "student_id,game_type,language_pair,grade,difficulty,pair_key",
+    });
+    setHistorySaved(true);
+  };
+
+  const saveMasteredPairs = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || masteryPool.length === 0) return;
+
+    const now = new Date().toISOString();
+
+    const payload = masteryPool.map((pair) => ({
+      student_id: user.id,
+      game_type: "memory_flip",
+      language_pair: languagePair,
+      grade: activeGrade,
+      difficulty,
+      pair_key: pair.pairKey,
+      left_text: pair.left,
+      right_text: pair.right,
+      image_keyword: pair.imageKeyword || null,
+      last_seen_at: now,
+      mastered_at: now,
+    }));
+
+    await supabase.from("student_game_pair_history").upsert(payload, {
+      onConflict:
+        "student_id,game_type,language_pair,grade,difficulty,pair_key",
+    });
   };
 
   const saveProgress = async ({
@@ -357,12 +515,22 @@ export default function MemoryFlip() {
       .maybeSingle();
 
     let nextDifficulty = existingProgress?.unlocked_difficulty || unlockedDifficulty;
+    let isGradeCleared = existingProgress?.grade_cleared || false;
+    let clearedAtValue = existingProgress?.cleared_at || null;
+    let nextReviewAtValue = existingProgress?.next_review_at || null;
 
     if (passed) {
       if (difficulty === "Easy") nextDifficulty = "Medium";
       else if (difficulty === "Medium") nextDifficulty = "Hard";
       else if (difficulty === "Hard") nextDifficulty = "Advanced";
-      else nextDifficulty = "Advanced";
+      else if (difficulty === "Advanced") {
+        isGradeCleared = true;
+        clearedAtValue = new Date().toISOString();
+
+        const reviewDate = new Date();
+        reviewDate.setDate(reviewDate.getDate() + 7);
+        nextReviewAtValue = reviewDate.toISOString();
+      }
     }
 
     await supabase.from("student_memory_flip_progress").upsert(
@@ -372,6 +540,10 @@ export default function MemoryFlip() {
         grade,
         unlocked_difficulty: nextDifficulty,
         highest_level: Math.max(existingProgress?.highest_level || 1, levelReached),
+        mastery_passed: passed || existingProgress?.mastery_passed || false,
+        grade_cleared: isGradeCleared,
+        cleared_at: clearedAtValue,
+        next_review_at: nextReviewAtValue,
         total_wins: (existingProgress?.total_wins || 0) + (passed ? 1 : 0),
         total_losses: (existingProgress?.total_losses || 0) + (passed ? 0 : 1),
         streak: passed ? (existingProgress?.streak || 0) + 1 : 0,
@@ -383,35 +555,10 @@ export default function MemoryFlip() {
     );
 
     setUnlockedDifficulty(nextDifficulty);
+    setGradeCleared(isGradeCleared);
+    setNextReviewAt(nextReviewAtValue);
   };
 
-  const generateMasteryTest = () => {
-    const pool = testPool.length >= 5 ? testPool : playedPairs;
-    const selected = shuffle(pool).slice(0, 5);
-
-    if (selected.length < 5) {
-      setErrorMsg("Not enough pairs for the final test. Please restart this difficulty.");
-      return;
-    }
-
-    const questions = selected.map((pair) => {
-      const wrongAnswers = shuffle(
-        pool.filter((p) => p.right !== pair.right).map((p) => p.right)
-      ).slice(0, 3);
-
-      return {
-        question: pair.left,
-        imageKeyword: pair.imageKeyword,
-        correctAnswer: pair.right,
-        options: shuffle([pair.right, ...wrongAnswers]),
-      };
-    });
-
-    setMasteryQuestions(questions);
-    setMasteryIndex(0);
-    setMasteryCorrect(0);
-    setShowMasteryTest(true);
-  };
 
   const submitMasteryAnswer = async (answer: string) => {
     const current = masteryQuestions[masteryIndex];
@@ -428,9 +575,13 @@ export default function MemoryFlip() {
 
     setShowMasteryTest(false);
     setShowResultModal(false);
+    
 
     if (nextCorrect >= 4) {
+
       playSound("/sounds/success.mp3", 0.6);
+
+      await saveMasteredPairs();
 
       await saveProgress({
         passed: true,
@@ -438,26 +589,30 @@ export default function MemoryFlip() {
       });
 
       if (difficulty === "Easy") {
+        setUnlockedDifficulty("Medium");
         setDifficulty("Medium");
         alert("Medium unlocked!");
       } else if (difficulty === "Medium") {
+        setUnlockedDifficulty("Hard");
         setDifficulty("Hard");
         alert("Hard unlocked!");
       } else if (difficulty === "Hard") {
+        setUnlockedDifficulty("Advanced");
         setDifficulty("Advanced");
         alert("Advanced unlocked!");
       } else {
-        alert("Advanced cleared! You can replay this level anytime.");
+        setGradeCleared(true);
+        alert("Grade Cleared!");
       }
 
       setLevel(1);
       setCombo(0);
       setScore(0);
       setMoves(0);
-      setTestPool([]);
+      setMasteryPool([]);
       setGameStarted(false);
     } else {
-      alert("Final test failed. Try this difficulty again.");
+      alert("Mastery test failed. Try this difficulty again.");
 
       await saveProgress({
         passed: false,
@@ -465,7 +620,7 @@ export default function MemoryFlip() {
       });
 
       setLevel(1);
-      setTestPool([]);
+      setMasteryPool([]);
 
       await loadGame({
         selectedLanguagePair: languagePair,
@@ -476,9 +631,47 @@ export default function MemoryFlip() {
     }
   };
 
+  useEffect(() => {
+    if (!isWin || showResultModal || showMasteryTest) return;
+
+    if (level >= 5) {
+      generateMasteryTest();
+    } else {
+
+      playSound("/sounds/success.mp3", 0.45);
+
+      setShowResultModal(true);
+    }
+  }, [isWin, showResultModal, showMasteryTest, level]);
+
+
+  const generateMasteryTest = async () => {
+    const shuffled = shuffle(masteryPool);
+    const selected = shuffled.slice(0, 5);
+
+    const questions = selected.map((pair) => {
+      const wrongAnswers = shuffle(
+        masteryPool
+          .filter((p) => p.right !== pair.right)
+          .map((p) => p.right)
+      ).slice(0, 3);
+
+      return {
+        question: pair.left,
+        imageKeyword: pair.imageKeyword,
+        correctAnswer: pair.right,
+        options: shuffle([pair.right, ...wrongAnswers]),
+      };
+    });
+
+    setMasteryQuestions(questions);
+    setMasteryIndex(0);
+    setMasteryCorrect(0);
+    setShowMasteryTest(true);
+  };
+
   const leaveArcade = () => {
     setShowResultModal(false);
-    setShowMasteryTest(false);
     setGameStarted(false);
     setCards([]);
     setSelectedCards([]);
@@ -486,7 +679,6 @@ export default function MemoryFlip() {
     setCombo(0);
     setScore(0);
     setLevel(1);
-    setTestPool([]);
     setErrorMsg("");
     setLoading(false);
     setTimeUp(false);
@@ -496,7 +688,6 @@ export default function MemoryFlip() {
     if (isGameEnded) return;
     if (card.flipped || card.matched) return;
     if (selectedCards.length >= 2) return;
-
     playSound("/sounds/card-flip.mp3", 0.25);
 
     const flippedCard = { ...card, flipped: true };
@@ -515,7 +706,6 @@ export default function MemoryFlip() {
 
       if (first.pairId === second.pairId) {
         playSound("/sounds/mastery-test.mp3", 0.35);
-
         const newCombo = combo + 1;
         setCombo(newCombo);
         setScore((prev) => prev + 100 + newCombo * 20);
@@ -554,20 +744,40 @@ export default function MemoryFlip() {
     return 1;
   }, [isWin, moves, totalPairs, secondsLeft]);
 
+
+  const isReviewLocked =
+    gradeCleared &&
+    nextReviewAt &&
+    new Date(nextReviewAt).getTime() > Date.now();
+
+  const reviewDateText = nextReviewAt
+    ? new Date(nextReviewAt).toLocaleDateString()
+    : "";
+
+
+  const languageLabel =
+    languagePair === "zh_en"
+      ? "Chinese ↔ English"
+      : languagePair === "zh_ja"
+        ? "Chinese ↔ Japanese"
+        : "English ↔ Japanese";
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#071426]">
+      {/* BACKGROUND */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute left-[-120px] top-[-120px] h-[340px] w-[340px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
         <div className="absolute bottom-[-140px] right-[-100px] h-[380px] w-[380px] rounded-full bg-[#2563EB]/20 blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
       </div>
 
+
       {showMasteryTest && masteryQuestions[masteryIndex] && (
         <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
           <div className="w-full max-w-3xl rounded-[2.8rem] border border-white/10 bg-white/5 p-8 shadow-[0_30px_100px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <div className="text-center">
               <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                Final Test
+                Mastery Test
               </p>
 
               <h1 className="mt-3 text-4xl font-black text-white sm:text-5xl">
@@ -602,6 +812,7 @@ export default function MemoryFlip() {
 
       {!showMasteryTest && (
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6">
+
           {!gameStarted && (
             <button
               onClick={() => navigate("/games")}
@@ -610,7 +821,7 @@ export default function MemoryFlip() {
               ← Back to Games Arcade
             </button>
           )}
-
+          {/* HERO */}
           {!gameStarted && (
             <>
               <div className="mb-8 overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 backdrop-blur-xl">
@@ -631,8 +842,8 @@ export default function MemoryFlip() {
                     </h1>
 
                     <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">
-                      Match vocabulary cards, clear 5 stages, pass the final test,
-                      and unlock the next difficulty.
+                      Match vocabulary cards, clear harder challenges,
+                      and unlock advanced memory stages with Hapiko.
                     </p>
 
                     <div className="mt-8 flex flex-wrap gap-3">
@@ -640,6 +851,7 @@ export default function MemoryFlip() {
                         <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                           Language
                         </p>
+
                         <p className="mt-1 text-sm font-bold text-white">
                           {languageLabel}
                         </p>
@@ -649,6 +861,7 @@ export default function MemoryFlip() {
                         <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                           Grade
                         </p>
+
                         <p className="mt-1 text-sm font-bold text-white">
                           {grade}
                         </p>
@@ -658,6 +871,7 @@ export default function MemoryFlip() {
                         <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                           Difficulty
                         </p>
+
                         <p className="mt-1 text-sm font-bold text-[#C4B5FD]">
                           {difficulty}
                         </p>
@@ -669,8 +883,13 @@ export default function MemoryFlip() {
                     <div className="absolute h-[300px] w-[300px] rounded-full bg-[#8B5CF6]/30 blur-3xl" />
 
                     <motion.img
-                      animate={{ y: [0, -12, 0] }}
-                      transition={{ duration: 4, repeat: Infinity }}
+                      animate={{
+                        y: [0, -12, 0],
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                      }}
                       src="/mascot/hapiko-step-2.png"
                       alt="Hapiko"
                       className="relative z-10 h-[320px] object-contain drop-shadow-[0_20px_60px_rgba(139,92,246,0.5)]"
@@ -678,95 +897,145 @@ export default function MemoryFlip() {
                   </div>
                 </div>
               </div>
-
-              <div className="rounded-[2.5rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
-                <div className="grid gap-4 lg:grid-cols-3">
-                  <select
-                    value={languagePair}
-                    onChange={(e) => setLanguagePair(e.target.value)}
-                    className="h-16 rounded-3xl border border-white/10 bg-[#0D1B2E] px-5 text-sm font-black text-white outline-none"
-                  >
-                    <option value="zh_en">Chinese ↔ English</option>
-                    <option value="zh_ja">Chinese ↔ Japanese</option>
-                    <option value="en_ja">English ↔ Japanese</option>
-                  </select>
-
-                  <select
-                    value={grade}
-                    onChange={(e) => setGrade(e.target.value)}
-                    className="h-16 rounded-3xl border border-white/10 bg-[#0D1B2E] px-5 text-sm font-black text-white outline-none"
-                  >
-                    {grades.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-
-                  <div className="flex h-16 items-center justify-center rounded-3xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-5 text-sm font-black text-[#C4B5FD]">
-                    Current Difficulty: {difficulty}
-                  </div>
-                </div>
-
-                <div className="mt-8 grid gap-4 lg:grid-cols-4">
-                  {[
-                    { key: "Easy", icon: Brain, pairs: 6, color: "border-[#52bd7f] bg-[#52bd7f]/20" },
-                    { key: "Medium", icon: Zap, pairs: 8, color: "border-[#3B82F6] bg-[#3B82F6]/20" },
-                    { key: "Hard", icon: Flame, pairs: 10, color: "border-[#F97316] bg-[#F97316]/20" },
-                    { key: "Advanced", icon: Crown, pairs: 12, color: "border-[#EAB308] bg-[#EAB308]/20" },
-                  ].map((item) => {
-                    const Icon = item.icon;
-                    const locked = !canUseDifficulty(item.key);
-                    const active = difficulty === item.key;
-
-                    return (
-                      <button
-                        key={item.key}
-                        disabled={locked}
-                        onClick={() => setDifficulty(item.key)}
-                        className={`
-                          relative overflow-hidden rounded-[2rem] border p-6 text-left transition-all duration-300
-                          ${active ? item.color : "border-white/10 bg-white/5"}
-                          ${locked ? "opacity-40 grayscale" : "hover:-translate-y-1"}
-                        `}
-                      >
-                        <div className="absolute right-4 top-4">
-                          <Icon className="h-6 w-6 text-white" />
-                        </div>
-
-                        <p className="text-sm font-black uppercase tracking-widest text-slate-300">
-                          {item.key}
-                        </p>
-
-                        <h3 className="mt-3 text-3xl font-black text-white">
-                          {item.pairs}
-                        </h3>
-
-                        <p className="mt-1 text-sm text-slate-400">
-                          Matching Pairs
-                        </p>
-
-                        {locked && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                            <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-white">
-                              Locked
-                            </span>
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <button
-                  onClick={startGame}
-                  className="mt-8 flex h-16 w-full items-center justify-center rounded-[2rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-lg font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01]"
-                >
-                  START {difficulty.toUpperCase()} CHALLENGE
-                </button>
-              </div>
             </>
           )}
+
+          {!gameStarted && (
+            <div className="rounded-[2.5rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
+              {/* SELECTORS */}
+              <div className="grid gap-4 lg:grid-cols-3">
+                <select
+                  value={languagePair}
+                  onChange={(e) => setLanguagePair(e.target.value)}
+                  className="h-16 rounded-3xl border border-white/10 bg-[#0D1B2E] px-5 text-sm font-black text-white outline-none"
+                >
+                  <option value="zh_en">Chinese ↔ English</option>
+                  <option value="zh_ja">Chinese ↔ Japanese</option>
+                  <option value="en_ja">English ↔ Japanese</option>
+                </select>
+
+                <select
+                  value={grade}
+                  onChange={(e) => setGrade(e.target.value)}
+                  className="h-16 rounded-3xl border border-white/10 bg-[#0D1B2E] px-5 text-sm font-black text-white outline-none"
+                >
+                  {grades.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="flex h-16 items-center justify-center rounded-3xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-5 text-sm font-black text-[#C4B5FD]">
+                  Current Difficulty: {difficulty}
+                </div>
+              </div>
+
+              {/* DIFFICULTY */}
+              <div className="mt-8 grid gap-4 lg:grid-cols-4">
+                {[
+                  {
+                    key: "Easy",
+                    icon: Brain,
+                    pairs: 6,
+                    color:
+                      difficulty === "Easy"
+                        ? "border-[#52bd7f] bg-[#52bd7f]/20"
+                        : "border-white/10 bg-white/5",
+                  },
+                  {
+                    key: "Medium",
+                    icon: Zap,
+                    pairs: 8,
+                    color:
+                      difficulty === "Medium"
+                        ? "border-[#3B82F6] bg-[#3B82F6]/20"
+                        : "border-white/10 bg-white/5",
+                  },
+                  {
+                    key: "Hard",
+                    icon: Flame,
+                    pairs: 10,
+                    color:
+                      difficulty === "Hard"
+                        ? "border-[#F97316] bg-[#F97316]/20"
+                        : "border-white/10 bg-white/5",
+                  },
+                  {
+                    key: "Advanced",
+                    icon: Crown,
+                    pairs: 12,
+                    color:
+                      difficulty === "Advanced"
+                        ? "border-[#EAB308] bg-[#EAB308]/20"
+                        : "border-white/10 bg-white/5",
+                  },
+                ].map((item) => {
+                  const Icon = item.icon;
+
+                  const locked =
+                    (item.key === "Medium" &&
+                      unlockedDifficulty === "Easy") ||
+                    (item.key === "Hard" &&
+                      !["Hard", "Advanced"].includes(unlockedDifficulty)) ||
+                    (item.key === "Advanced" &&
+                      unlockedDifficulty !== "Advanced");
+
+                  return (
+                    <button
+                      key={item.key}
+                      disabled={locked}
+                      onClick={() => setDifficulty(item.key)}
+                      className={`
+                      relative overflow-hidden rounded-[2rem] border p-6 text-left transition-all duration-300
+                      ${item.color}
+                      ${locked ? "opacity-40 grayscale" : "hover:-translate-y-1"}
+                    `}
+                    >
+                      <div className="absolute right-4 top-4">
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+
+                      <p className="text-sm font-black uppercase tracking-widest text-slate-300">
+                        {item.key}
+                      </p>
+
+                      <h3 className="mt-3 text-3xl font-black text-white">
+                        {item.pairs}
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-400">
+                        Matching Pairs
+                      </p>
+
+                      {locked && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                          <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-white">
+                            Locked
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* START */}
+              <button
+                onClick={startGame}
+                disabled={!!isReviewLocked}
+                className={`mt-8 flex h-16 w-full items-center justify-center rounded-[2rem] text-lg font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition ${isReviewLocked
+                  ? "cursor-not-allowed bg-slate-600 opacity-50"
+                  : "bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] hover:scale-[1.01]"
+                  }`}
+              >
+                {isReviewLocked
+                  ? `REVIEW AVAILABLE AFTER ${reviewDateText}`
+                  : `START ${difficulty.toUpperCase()} CHALLENGE`}
+              </button>
+            </div>
+          )}
+
 
           <AnimatePresence>
             {showResultModal && (
@@ -789,7 +1058,7 @@ export default function MemoryFlip() {
                   />
 
                   <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                    Stage Cleared
+                    Challenge Cleared
                   </p>
 
                   <h2 className="mt-3 text-4xl font-black text-white">
@@ -797,7 +1066,7 @@ export default function MemoryFlip() {
                   </h2>
 
                   <p className="mt-4 text-slate-300">
-                    You completed stage {level} / 5 for {difficulty}.
+                    You completed challenge {level} / 5 for {difficulty}.
                   </p>
 
                   <p className="mt-3 text-3xl">
@@ -830,11 +1099,14 @@ export default function MemoryFlip() {
                       }}
                       className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
                     >
-                      NEXT STAGE
+                      NEXT CHALLENGE
                     </button>
 
                     <button
-                      onClick={leaveArcade}
+                      onClick={() => {
+                        setShowResultModal(false);
+                        setGameStarted(false);
+                      }}
                       className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
                     >
                       Exit Game
@@ -845,6 +1117,7 @@ export default function MemoryFlip() {
             )}
           </AnimatePresence>
 
+          {/* GAME */}
           {gameStarted && (
             <>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-xl">
@@ -852,7 +1125,6 @@ export default function MemoryFlip() {
                   <p className="text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
                     Luna Memory Arcade
                   </p>
-
                   <p className="mt-1 text-sm font-bold text-white">
                     {languageLabel} · {grade} · {difficulty}
                   </p>
@@ -873,7 +1145,7 @@ export default function MemoryFlip() {
                   </p>
 
                   <p className="text-sm font-black text-white">
-                    Stage {level} / 5
+                    Round {level} / 5
                   </p>
                 </div>
 
@@ -884,12 +1156,13 @@ export default function MemoryFlip() {
                   />
                 </div>
               </div>
-
+              {/* HUD */}
               <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
                 <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
                   <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                     Score
                   </p>
+
                   <p className="mt-2 text-3xl font-black text-white">
                     {score}
                   </p>
@@ -899,6 +1172,7 @@ export default function MemoryFlip() {
                   <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                     Moves
                   </p>
+
                   <p className="mt-2 text-3xl font-black text-white">
                     {moves}
                   </p>
@@ -908,24 +1182,27 @@ export default function MemoryFlip() {
                   <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                     Combo
                   </p>
+
                   <p className="mt-2 text-3xl font-black text-[#FACC15]">
                     x{combo}
                   </p>
                 </div>
 
                 <div
-                  className={`rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl ${
-                    secondsLeft <= 10 ? "animate-pulse border-red-400" : ""
-                  }`}
+                  className={`
+                  rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl
+                  ${secondsLeft <= 10 ? "animate-pulse border-red-400" : ""}
+                `}
                 >
                   <p className="text-xs font-black uppercase tracking-widest text-slate-400">
                     Timer
                   </p>
 
                   <p
-                    className={`mt-2 text-3xl font-black ${
-                      secondsLeft <= 10 ? "text-red-400" : "text-white"
-                    }`}
+                    className={`
+                    mt-2 text-3xl font-black
+                    ${secondsLeft <= 10 ? "text-red-400" : "text-white"}
+                  `}
                   >
                     {secondsLeft}s
                   </p>
@@ -947,7 +1224,7 @@ export default function MemoryFlip() {
                   />
 
                   <h2 className="mt-4 text-2xl font-black text-white">
-                    Not Enough Pairs
+                    Stage Completed
                   </h2>
 
                   <p className="mt-3 text-slate-300">
@@ -963,6 +1240,7 @@ export default function MemoryFlip() {
                 </div>
               )}
 
+
               {timeUp && (
                 <div className="mb-6 rounded-[2rem] border border-red-400/30 bg-red-500/10 p-8 text-center">
                   <img
@@ -976,7 +1254,7 @@ export default function MemoryFlip() {
                   </h2>
 
                   <p className="mt-3 text-slate-300">
-                    Try this stage again.
+                    Hapiko believes you can clear this stage next time.
                   </p>
 
                   <button
@@ -988,35 +1266,39 @@ export default function MemoryFlip() {
                 </div>
               )}
 
+              {/* CARDS */}
               {!loading && !errorMsg && !timeUp && (
                 <div
-                  className={`mx-auto grid max-w-5xl justify-center gap-2 sm:gap-3 ${getCardGridClass(
-                    cards.length
-                  )}`}
+                  className={`
+                  mx-auto grid max-w-5xl justify-center gap-2 sm:gap-3
+                  ${getCardGridClass(cards.length)}
+                `}
                 >
                   {cards.map((card) => {
                     const visible = card.flipped || card.matched;
 
                     return (
                       <motion.button
-                        whileHover={{ y: -6 }}
-                        whileTap={{ scale: 0.97 }}
+                        whileHover={{
+                          y: -6,
+                        }}
+                        whileTap={{
+                          scale: 0.97,
+                        }}
                         key={card.id}
                         onClick={() => flipCard(card)}
                         className={`
-                          relative overflow-hidden rounded-[2rem] border transition-all duration-300
-                          h-[96px] w-[118px] justify-self-center sm:h-[110px] sm:w-[132px] lg:h-[118px] lg:w-[140px]
-                          ${
-                            visible
-                              ? "border-white/10 bg-white/10 backdrop-blur-xl"
-                              : "border-[#1E2F4A] bg-gradient-to-br from-[#12243A] to-[#091423]"
+                      relative overflow-hidden rounded-[2rem] border transition-all duration-300
+                    h-[96px] w-[118px] justify-self-center sm:h-[110px] sm:w-[132px] lg:h-[118px] lg:w-[140px]
+                      ${visible
+                            ? "border-white/10 bg-white/10 backdrop-blur-xl"
+                            : "border-[#1E2F4A] bg-gradient-to-br from-[#12243A] to-[#091423]"
                           }
-                          ${
-                            card.matched
-                              ? "border-emerald-400 bg-emerald-500/15 opacity-80"
-                              : ""
+                          ${card.matched
+                            ? "border-emerald-400 bg-emerald-500/15 opacity-80"
+                            : ""
                           }
-                        `}
+                    `}
                       >
                         {!visible && (
                           <>
