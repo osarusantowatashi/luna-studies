@@ -819,8 +819,8 @@ export default function MemoryFlip() {
           type="button"
           onClick={() => setOpen((prev) => !prev)}
           className={`flex h-14 w-full items-center justify-between rounded-[1.4rem] border px-5 text-sm font-black outline-none transition ${isLight
-              ? "border-[#eee8ff] bg-white text-primary shadow-[0_8px_25px_rgba(66,56,120,0.06)]"
-              : "border-white/10 bg-[#0D1B2E] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+            ? "border-[#eee8ff] bg-white text-primary shadow-[0_8px_25px_rgba(66,56,120,0.06)]"
+            : "border-white/10 bg-[#0D1B2E] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
             }`}
         >
           <span>{value}</span>
@@ -834,8 +834,8 @@ export default function MemoryFlip() {
               animate={{ opacity: 1, y: 8, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               className={`absolute left-0 right-0 top-full z-50 max-h-[210px] overflow-y-auto rounded-[1.4rem] border p-2 ${isLight
-                  ? "border-[#eee8ff] bg-white shadow-[0_18px_45px_rgba(66,56,120,0.15)]"
-                  : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
+                ? "border-[#eee8ff] bg-white shadow-[0_18px_45px_rgba(66,56,120,0.15)]"
+                : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                 }`}
             >
               {options.map((option) => (
@@ -847,10 +847,10 @@ export default function MemoryFlip() {
                     setOpen(false);
                   }}
                   className={`flex h-11 w-full items-center rounded-[1rem] px-4 text-left text-sm font-black transition ${value === option
-                      ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
-                      : isLight
-                        ? "text-primary hover:bg-[#faf8ff]"
-                        : "text-white hover:bg-white/10"
+                    ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
+                    : isLight
+                      ? "text-primary hover:bg-[#faf8ff]"
+                      : "text-white hover:bg-white/10"
                     }`}
                 >
                   {option}
@@ -1002,22 +1002,24 @@ export default function MemoryFlip() {
                           and unlock advanced memory stages with Hapiko.
                         </p>
 
-                        <div className="mt-8 flex flex-wrap gap-3">
-                          {[
-                            ["Language", languageLabel],
-                            ["Grade", grade],
-                            ["Difficulty", difficulty],
-                          ].map(([label, value]) => (
-                            <div key={label} className={`rounded-2xl border px-5 py-3 ${themeClass.softPanel}`}>
-                              <p className={`text-xs font-black uppercase tracking-widest ${themeClass.muted}`}>
-                                {label}
+                        <div
+                          className={`mt-8 rounded-[1.5rem] border p-4 ${themeClass.softPanel}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <Brain className="mt-1 h-5 w-5 text-[#C4B5FD]" />
+
+                            <div>
+                              <p className="text-sm font-black text-[#C4B5FD]">
+                                Mastery System
                               </p>
 
-                              <p className={`mt-1 text-sm font-bold ${label === "Difficulty" ? "text-[#C4B5FD]" : themeClass.title}`}>
-                                {value}
+                              <p className={`mt-2 text-sm leading-7 ${themeClass.text}`}>
+                                Complete 5 challenge rounds and pass the Mastery Test to unlock
+                                the next difficulty. Mastered vocabulary will be hidden for
+                                7 days before returning for review.
                               </p>
                             </div>
-                          ))}
+                          </div>
                         </div>
                       </div>
 

@@ -28,6 +28,7 @@ const NavBar = () => {
     "/games",
     "/memory-flip",
     "/tutor/lessons",
+    "/student/lessons",
     "/admin/lessons",
     "/admin",
     "/studentoverview",
@@ -136,6 +137,7 @@ const NavBar = () => {
         : role === "student"
           ? [
             ["Overview", "/studentoverview"],
+            ["Lessons", "/student/lessons"],
             ["Practice", "/practice"],
             ["Games", "/games"],
             ["Mistakes", "/mistakes"],

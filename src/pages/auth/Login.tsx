@@ -254,7 +254,7 @@ const Login = () => {
               </p>
 
 
-              <div className="mt-9 grid max-w-xl gap-4 sm:grid-cols-3">
+              <div className="mt-6 grid grid-cols-3 gap-3 sm:mt-9 sm:max-w-xl sm:gap-4">
                 {[
                   {
                     icon: BookOpen,
@@ -278,15 +278,15 @@ const Login = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 + i * 0.08 }}
                     whileHover={{ y: -8, rotate: i % 2 === 0 ? -2 : 2 }}
-                    className="rounded-[1.6rem] bg-white/90 p-5 shadow-[0_16px_45px_rgba(66,56,120,0.09)] backdrop-blur-xl"
+                    className="rounded-[1.2rem] bg-white/90 p-3 sm:rounded-[1.6rem] sm:p-5"
                   >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#8d73ff] text-white">
+                    <div className="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12">
                       <item.icon className="h-5 w-5" />
                     </div>
-                    <p className="mt-4 font-poppins text-lg font-black text-primary">
+                    <p className="mt-2 text-sm font-black sm:mt-4 sm:text-lg">
                       {item.title}
                     </p>
-                    <p className="mt-1 text-sm text-primary/55">{item.text}</p>
+                    <p className="mt-1 hidden text-sm text-primary/55 sm:block">{item.text}</p>
                   </motion.div>
                 ))}
               </div>

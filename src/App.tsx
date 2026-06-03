@@ -42,6 +42,7 @@ import Practice from "./pages/student/Practice";
 import Mistakes from "./pages/student/Mistakes";
 import GamesArcade from "./pages/student/games/GamesArcade";
 import MemoryFlip from "./pages/student/games/MemoryFlip";
+import StudentLessons from "@/pages/student/StudentLessons";
 
 import Layout from "./pages/shared/Layout";
 import NotFound from "./pages/shared/NotFound";
@@ -156,8 +157,10 @@ const App = () => {
 
         {/* Student */}
         <Route path="/studentoverview" element={<StudentPage><StudentOverview /></StudentPage>} />
+        <Route path="/student/lessons" element={<StudentPage><StudentLessons /></StudentPage>} />
         <Route path="/practice" element={<StudentPage><Practice /></StudentPage>} />
         <Route path="/games" element={<StudentPage><GamesArcade /></StudentPage>} />
+
 
         <Route
           path="/memory-flip"

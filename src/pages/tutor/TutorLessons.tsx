@@ -16,6 +16,7 @@ import {
   RotateCcw,
   AlertCircle,
   ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 
 type LessonStatus =
@@ -29,6 +30,7 @@ type Lesson = {
   tutor_id?: string;
   student_id: string;
   lesson_date: string;
+  lesson_time?: string | null;
   hours: number;
   rescheduled_date?: string | null;
   reschedule_reason?: string | null;
@@ -56,6 +58,10 @@ export default function TutorLessons() {
   const [lessonContents, setLessonContents] = useState("");
   const [additionalRemarks, setAdditionalRemarks] = useState("");
   const [checkoffNote, setCheckoffNote] = useState("");
+
+  const [lessonTime, setLessonTime] = useState("");
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAssignedStudents();
@@ -155,6 +161,7 @@ export default function TutorLessons() {
       tutor_id: tutor.id,
       student_id: selectedStudentId,
       lesson_date: lessonDate,
+      lesson_time: lessonTime || null,
       hours: Number(hours),
       lesson_contents: lessonContents.trim() || null,
       additional_remarks: additionalRemarks.trim() || null,
@@ -169,6 +176,7 @@ export default function TutorLessons() {
 
     setShowAdd(false);
     setLessonDate("");
+    setLessonTime("");
     setHours("");
     setLessonContents("");
     setAdditionalRemarks("");
@@ -195,10 +203,10 @@ export default function TutorLessons() {
       prev.map((lesson) =>
         lesson.id === lessonId
           ? {
-              ...lesson,
-              status: newStatus,
-              checked_off_at: new Date().toISOString(),
-            }
+            ...lesson,
+            status: newStatus,
+            checked_off_at: new Date().toISOString(),
+          }
           : lesson
       )
     );
@@ -232,11 +240,11 @@ export default function TutorLessons() {
       prev.map((lesson) =>
         lesson.id === selectedLesson.id
           ? {
-              ...lesson,
-              status: "reschedule_requested",
-              rescheduled_date: rescheduledDate,
-              reschedule_reason: rescheduleReason,
-            }
+            ...lesson,
+            status: "reschedule_requested",
+            rescheduled_date: rescheduledDate,
+            reschedule_reason: rescheduleReason,
+          }
           : lesson
       )
     );
@@ -252,10 +260,24 @@ export default function TutorLessons() {
     return student?.name || studentId;
   };
 
+  const formatLessonTime = (time?: string | null) => {
+    if (!time) return "No time";
+    return time.slice(0, 5);
+  };
+
   const filteredLessons =
     filterStudentId === "all"
       ? lessons
       : lessons.filter((lesson) => lesson.student_id === filterStudentId);
+
+  const pendingLessonsOnSelectedDate = filteredLessons.filter((lesson) => {
+    const displayDate =
+      lesson.status === "reschedule_requested" && lesson.rescheduled_date
+        ? lesson.rescheduled_date
+        : lesson.lesson_date;
+
+    return displayDate === lessonDate && lesson.status === "pending";
+  });
 
   const totalHours = filteredLessons.reduce(
     (sum, lesson) => sum + Number(lesson.hours || 0),
@@ -271,19 +293,38 @@ export default function TutorLessons() {
       lesson.status === "pending" || lesson.status === "reschedule_requested"
   ).length;
 
-  const sortedLessons = useMemo(() => {
-    return [...filteredLessons].sort((a, b) => {
-      const isDoneA = a.status === "completed" || a.status === "student_absent";
-      const isDoneB = b.status === "completed" || b.status === "student_absent";
+  const monthStart = new Date(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth(),
+    1
+  );
 
-      if (isDoneA !== isDoneB) return isDoneA ? 1 : -1;
+  const monthEnd = new Date(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth() + 1,
+    0
+  );
 
-      const dateA = a.rescheduled_date || a.lesson_date;
-      const dateB = b.rescheduled_date || b.lesson_date;
+  const calendarDays = Array.from({ length: monthEnd.getDate() }, (_, i) => {
+    const day = i + 1;
 
-      return new Date(dateA).getTime() - new Date(dateB).getTime();
-    });
-  }, [filteredLessons]);
+    const yyyy = currentMonth.getFullYear();
+    const mm = String(currentMonth.getMonth() + 1).padStart(2, "0");
+    const dd = String(day).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
+  });
+
+  const selectedDateLessons = selectedDate
+    ? filteredLessons.filter((lesson) => {
+      const displayDate =
+        lesson.status === "reschedule_requested" && lesson.rescheduled_date
+          ? lesson.rescheduled_date
+          : lesson.lesson_date;
+
+      return displayDate === selectedDate;
+    })
+    : [];
 
   return (
     <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-14">
@@ -293,8 +334,8 @@ export default function TutorLessons() {
         {/* HERO */}
         <motion.section
           initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: [0, -4, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
           className="relative overflow-hidden rounded-[3rem] bg-white/95 p-7 shadow-[0_28px_90px_rgba(66,56,120,0.13)] backdrop-blur-xl sm:p-10"
         >
           <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
@@ -406,119 +447,180 @@ export default function TutorLessons() {
           </div>
         </motion.div>
 
-        {/* LESSON TIMELINE */}
-        <div className="space-y-5">
-          {lessons.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-[2.2rem] bg-white/95 p-10 text-center shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl"
-            >
-              <p className="font-poppins text-2xl font-black text-primary">
-                No lessons added yet.
+        {/* CALENDAR */}
+        <div className="rounded-[2.5rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:p-7">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+                Lesson Calendar
               </p>
-              <p className="mt-2 text-sm text-primary/55">
-                Add your first lesson to start monthly tracking.
-              </p>
-            </motion.div>
-          ) : (
-            sortedLessons.map((lesson, index) => {
-              const isDone =
-                lesson.status === "completed" ||
-                lesson.status === "student_absent";
+
+              <h2 className="mt-2 font-poppins text-3xl font-black text-primary">
+                {currentMonth.toLocaleString("default", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </h2>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentMonth(
+                    new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
+                  )
+                }
+                className="h-11 rounded-2xl border border-primary/10 bg-[#fbfaff] px-5 font-black text-primary transition hover:bg-[#f6f1ff]"
+              >
+                Prev
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentMonth(
+                    new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
+                  )
+                }
+                className="h-11 rounded-2xl border border-primary/10 bg-[#fbfaff] px-5 font-black text-primary transition hover:bg-[#f6f1ff]"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-7 gap-2 text-center">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div
+                key={day}
+                className="py-2 text-xs font-black uppercase tracking-widest text-primary/40"
+              >
+                {day}
+              </div>
+            ))}
+
+            {Array.from({ length: monthStart.getDay() }).map((_, index) => (
+              <div key={`empty-${index}`} />
+            ))}
+
+            {calendarDays.map((date) => {
+              const dayLessons = filteredLessons.filter((lesson) => {
+                const displayDate =
+                  lesson.status === "reschedule_requested" && lesson.rescheduled_date
+                    ? lesson.rescheduled_date
+                    : lesson.lesson_date;
+
+                return displayDate === date;
+              });
 
               return (
-                <motion.div
-                  key={lesson.id}
-                  initial={{ opacity: 0, y: 35 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, amount: 0.25 }}
-                  transition={{ duration: 0.45, delay: index * 0.04 }}
-                  whileHover={{
-                    y: -7,
-                    rotate: index % 2 === 0 ? -0.6 : 0.6,
-                  }}
-                  className={`group relative overflow-hidden rounded-[2.4rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl transition-all duration-300 hover:shadow-[0_25px_70px_rgba(141,115,255,0.18)] ${
-                    isDone ? "opacity-75" : ""
-                  }`}
+                <button
+                  key={date}
+                  type="button"
+                  onClick={() => setSelectedDate(date)}
+                  className="min-h-[130px] rounded-[1.5rem] border border-primary/10 bg-[#fbfaff] p-3 text-left transition hover:-translate-y-1 hover:bg-[#f6f1ff]"
                 >
-                  <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#f0eaff]" />
+                  <p className="mb-2 text-sm font-black text-primary">
+                    {Number(date.split("-")[2])}
+                  </p>
 
-                  <div className="relative z-10 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-                    <div>
-                      <div className="mb-4 flex flex-wrap items-center gap-2">
-                        <DatePill
-                          date={
-                            lesson.status === "reschedule_requested" &&
-                            lesson.rescheduled_date
-                              ? lesson.rescheduled_date
-                              : lesson.lesson_date
-                          }
-                        />
+                  <div className="space-y-1">
+                    {dayLessons.slice(0, 3).map((lesson) => (
+                      <div
+                        key={lesson.id}
+                        className={`rounded-xl border px-2 py-1 shadow-sm ${getStatusPreviewClass(
+                          lesson.status
+                        )}`}
+                      >
+                        <p className="truncate text-xs font-black text-primary">
+                          {getStudentName(lesson.student_id)}
+                        </p>
 
-                        <span className="rounded-full bg-[#fff6da] px-4 py-2 text-sm font-black text-[#d4a100]">
-                          {lesson.hours} hour(s)
-                        </span>
-
-                        <StatusBadge status={lesson.status} />
+                        <p className="truncate text-[11px] font-bold text-primary/45">
+                          {formatLessonTime(lesson.lesson_time)} · {lesson.status}
+                        </p>
                       </div>
+                    ))}
 
-                      <h3 className="font-poppins text-2xl font-black text-primary sm:text-3xl">
-                        {getStudentName(lesson.student_id)}
-                      </h3>
-
-                      <div className="mt-4 flex flex-wrap gap-3">
-                        {lesson.lesson_contents && (
-                          <InfoChip icon={<NotebookText size={15} />}>
-                            {lesson.lesson_contents}
-                          </InfoChip>
-                        )}
-
-                        {lesson.additional_remarks && (
-                          <InfoChip icon={<AlertCircle size={15} />}>
-                            {lesson.additional_remarks}
-                          </InfoChip>
-                        )}
-
-                        {lesson.status === "reschedule_requested" &&
-                          lesson.rescheduled_date && (
-                            <InfoChip icon={<RotateCcw size={15} />}>
-                              Rescheduled: {lesson.lesson_date} →{" "}
-                              {lesson.rescheduled_date}
-                            </InfoChip>
-                          )}
-                      </div>
-                    </div>
-
-                    <div className="flex lg:justify-end">
-                      {lesson.status === "pending" ? (
-                        <button
-                          type="button"
-                          onClick={() => setSelectedLesson(lesson)}
-                          className="group/btn flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-[#8d73ff] px-7 font-black text-white shadow-[0_16px_40px_rgba(141,115,255,0.28)] transition hover:-translate-y-1 sm:w-auto"
-                        >
-                          Check Off
-                          <ChevronRight className="h-4 w-4 transition group-hover/btn:translate-x-1" />
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setSelectedLesson(lesson)}
-                          className="flex h-13 w-full items-center justify-center rounded-2xl border border-primary/10 bg-white px-7 font-black text-primary transition hover:-translate-y-1 hover:bg-[#f6f1ff] sm:w-auto"
-                        >
-                          View / Update
-                        </button>
-                      )}
-                    </div>
+                    {dayLessons.length > 3 && (
+                      <p className="text-[11px] font-black text-[#8d73ff]">
+                        +{dayLessons.length - 3} more
+                      </p>
+                    )}
                   </div>
-                </motion.div>
+                </button>
               );
-            })
-          )}
+            })}
+          </div>
         </div>
       </div>
 
       <AnimatePresence>
+
+        {selectedDate && (
+          <Modal onClose={() => setSelectedDate(null)}>
+            <ModalHeader
+              label="Daily Schedule"
+              title={selectedDate}
+              description={`${selectedDateLessons.length} lesson(s) scheduled`}
+            />
+
+            <div className="mt-7 space-y-4">
+              {selectedDateLessons.length === 0 ? (
+                <div className="rounded-2xl bg-[#fbfaff] p-6 text-center">
+                  <p className="font-black text-primary">No lessons on this date.</p>
+                </div>
+              ) : (
+                selectedDateLessons.map((lesson) => (
+                  <div
+                    key={lesson.id}
+                    className="rounded-[1.5rem] border border-primary/10 bg-[#fbfaff] p-4"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <p className="font-poppins text-xl font-black text-primary">
+                          {getStudentName(lesson.student_id)}
+                        </p>
+
+                        <p className="mt-1 text-sm font-bold text-primary/50">
+                          {formatLessonTime(lesson.lesson_time)} · {lesson.hours} hour(s)
+                        </p>
+                      </div>
+
+                      <StatusBadge status={lesson.status} />
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {lesson.lesson_contents && (
+                        <InfoChip icon={<NotebookText size={15} />}>
+                          {lesson.lesson_contents}
+                        </InfoChip>
+                      )}
+
+                      {lesson.additional_remarks && (
+                        <InfoChip icon={<AlertCircle size={15} />}>
+                          {lesson.additional_remarks}
+                        </InfoChip>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedDate(null);
+                        setSelectedLesson(lesson);
+                      }}
+                      className="mt-5 h-12 w-full rounded-2xl bg-[#8d73ff] font-black text-white shadow-[0_14px_35px_rgba(141,115,255,0.25)] transition hover:-translate-y-1"
+                    >
+                      {lesson.status === "pending" ? "Check Off" : "View / Update"}
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </Modal>
+        )}
         {showAdd && (
           <Modal onClose={() => setShowAdd(false)}>
             <ModalHeader
@@ -545,12 +647,55 @@ export default function TutorLessons() {
                 ))}
               </SelectInput>
 
-              <DateInput
-                label="Lesson Date"
-                value={lessonDate}
-                onChange={setLessonDate}
-              />
+              <div>
+                <DateInput
+                  label="Lesson Date"
+                  value={lessonDate}
+                  onChange={setLessonDate}
+                />
 
+                {lessonDate && (
+                  <div className="mt-3 rounded-2xl border border-[#8d73ff]/15 bg-[#f6f1ff] p-4">
+                    <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-[#8d73ff]">
+                      Pending lessons on this date
+                    </p>
+
+                    {pendingLessonsOnSelectedDate.length === 0 ? (
+                      <p className="text-sm font-bold text-primary/45">
+                        No pending lessons on this date.
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {pendingLessonsOnSelectedDate.map((lesson) => (
+                          <div
+                            key={lesson.id}
+                            className="flex items-center justify-between rounded-xl bg-white px-4 py-3 shadow-sm"
+                          >
+                            <p className="font-black text-primary">
+                              {getStudentName(lesson.student_id)}
+                            </p>
+
+                            <p className="text-sm font-bold text-primary/45">
+                              {formatLessonTime(lesson.lesson_time)} · Pending
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <p className="mb-2 text-sm font-black text-primary">Lesson Time</p>
+
+                <input
+                  type="time"
+                  value={lessonTime}
+                  onChange={(e) => setLessonTime(e.target.value)}
+                  className="h-13 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 text-base text-primary outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+                />
+              </div>
               <NumberInput
                 label="Number of Hours"
                 placeholder="1.5"
@@ -590,9 +735,8 @@ export default function TutorLessons() {
             <ModalHeader
               label="Lesson Check-off"
               title="Check Off Lesson"
-              description={`${getStudentName(selectedLesson.student_id)} · ${
-                selectedLesson.lesson_date
-              } · ${selectedLesson.hours} hour(s)`}
+              description={`${getStudentName(selectedLesson.student_id)} · ${selectedLesson.lesson_date
+                } · ${selectedLesson.hours} hour(s)`}
             />
 
             <div className="mt-7 space-y-3">
@@ -643,7 +787,7 @@ export default function TutorLessons() {
             />
 
             <div className="mt-7">
-              <DateInput
+              <InlineDatePicker
                 label="New Lesson Date"
                 value={rescheduledDate}
                 onChange={setRescheduledDate}
@@ -716,6 +860,17 @@ function StatCard({
       </h3>
     </motion.div>
   );
+}
+
+function getStatusPreviewClass(status: LessonStatus) {
+  const styles: Record<LessonStatus, string> = {
+    pending: "bg-[#f6f1ff] text-[#8d73ff] border-[#e7dcff]",
+    completed: "bg-green-50 text-green-700 border-green-200",
+    student_absent: "bg-orange-50 text-orange-700 border-orange-200",
+    reschedule_requested: "bg-blue-50 text-blue-700 border-blue-200",
+  };
+
+  return styles[status];
 }
 
 function StatusBadge({ status }: { status: LessonStatus }) {
@@ -835,16 +990,209 @@ function SelectInput({ label, value, onChange, children }: any) {
 }
 
 function DateInput({ label, value, onChange }: any) {
+  const [open, setOpen] = useState(false);
+  const [viewMonth, setViewMonth] = useState(
+    value ? new Date(value) : new Date()
+  );
+
+  const monthStart = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
+  const monthEnd = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 0);
+
+  const calendarDays = Array.from({ length: monthEnd.getDate() }, (_, index) => {
+    const day = index + 1;
+    const yyyy = viewMonth.getFullYear();
+    const mm = String(viewMonth.getMonth() + 1).padStart(2, "0");
+    const dd = String(day).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  });
+
+  const displayText = value
+  ? value.split("-").reverse().join("/")
+  : "Select date";
+
   return (
-    <div>
+    <div className="relative">
       <p className="mb-2 text-sm font-black text-primary">{label}</p>
 
-      <input
-        type="date"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-13 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 text-base text-primary outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
-      />
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex h-13 w-full items-center justify-between rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 text-base font-bold text-primary outline-none transition hover:bg-[#f6f1ff] focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+      >
+        <span>{displayText}</span>
+        <Calendar className="h-5 w-5 text-[#8d73ff]" />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 8, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            className="absolute left-0 right-0 top-full z-[10000] rounded-[1.7rem] border border-primary/10 bg-white p-4 shadow-[0_24px_70px_rgba(66,56,120,0.18)]"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() =>
+                  setViewMonth(
+                    new Date(viewMonth.getFullYear(), viewMonth.getMonth() - 1, 1)
+                  )
+                }
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f6f1ff] text-primary"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+
+              <p className="font-poppins text-lg font-black text-primary">
+                {viewMonth.toLocaleString("default", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setViewMonth(
+                    new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1)
+                  )
+                }
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f6f1ff] text-primary"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 text-center">
+              {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+                <div
+                  key={`${day}-${index}`}
+                  className="py-2 text-xs font-black text-primary/35"
+                >
+                  {day}
+                </div>
+              ))}
+
+              {Array.from({ length: monthStart.getDay() }).map((_, index) => (
+                <div key={`empty-${index}`} />
+              ))}
+
+              {calendarDays.map((date) => {
+                const selected = date === value;
+
+                return (
+                  <button
+                    key={date}
+                    type="button"
+                    onClick={() => {
+                      onChange(date);
+                      setOpen(false);
+                    }}
+                    className={`h-10 rounded-xl text-sm font-black transition ${selected
+                      ? "bg-[#8d73ff] text-white shadow-[0_10px_25px_rgba(141,115,255,0.35)]"
+                      : "text-primary hover:bg-[#f6f1ff]"
+                      }`}
+                  >
+                    {Number(date.split("-")[2])}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function InlineDatePicker({ label, value, onChange }: any) {
+  const [viewMonth, setViewMonth] = useState(
+    value ? new Date(value) : new Date()
+  );
+
+  const monthStart = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
+  const monthEnd = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 0);
+
+  const calendarDays = Array.from({ length: monthEnd.getDate() }, (_, index) => {
+    const day = index + 1;
+    const yyyy = viewMonth.getFullYear();
+    const mm = String(viewMonth.getMonth() + 1).padStart(2, "0");
+    const dd = String(day).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  });
+
+  return (
+    <div>
+      <p className="mb-3 text-sm font-black text-primary">{label}</p>
+
+      <div className="rounded-[2rem] border border-primary/10 bg-[#fbfaff] p-4">
+        <div className="mb-4 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() =>
+              setViewMonth(
+                new Date(viewMonth.getFullYear(), viewMonth.getMonth() - 1, 1)
+              )
+            }
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f6f1ff] text-primary"
+          >
+            ‹
+          </button>
+
+          <p className="font-poppins text-lg font-black text-primary">
+            {viewMonth.toLocaleString("default", {
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+
+          <button
+            type="button"
+            onClick={() =>
+              setViewMonth(
+                new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1)
+              )
+            }
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f6f1ff] text-primary"
+          >
+            ›
+          </button>
+        </div>
+
+        <div className="grid grid-cols-7 gap-1 text-center">
+          {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+            <div
+              key={`${day}-${index}`}
+              className="py-2 text-xs font-black text-primary/35"
+            >
+              {day}
+            </div>
+          ))}
+
+          {Array.from({ length: monthStart.getDay() }).map((_, index) => (
+            <div key={`empty-${index}`} />
+          ))}
+
+          {calendarDays.map((date) => {
+            const selected = date === value;
+
+            return (
+              <button
+                key={date}
+                type="button"
+                onClick={() => onChange(date)}
+                className={`h-10 rounded-xl text-sm font-black transition ${selected
+                  ? "bg-[#8d73ff] text-white shadow-[0_10px_25px_rgba(141,115,255,0.35)]"
+                  : "text-primary hover:bg-[#f6f1ff]"
+                  }`}
+              >
+                {Number(date.split("-")[2])}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
