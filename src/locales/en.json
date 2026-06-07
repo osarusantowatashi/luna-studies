@@ -2,7 +2,7 @@
   "nav": {
     "home": "Home",
     "whyLuna": "Why Luna",
-    "subjects": "Subjects",
+    "subjects": "Programs",
     "tutors": "Tutors",
     "enquire": "Enquire",
     "login": "Login",
@@ -260,84 +260,577 @@
   },
   "subjects": {
     "seo": {
-      "title": "MAP, WIDA, AEIS & Other Educational Programs | LUNA Studies",
-      "description": "Explore LUNA Studies (Luna Education) programs including MAP preparation, WIDA support, AEIS English, TOEFL, academic writing, interview preparation and bilingual education."
+      "title": "LUNA Programs | Assessment Preparation & Academic Support",
+      "description": "Explore LUNA Studies programs including MAP, WIDA, CAT4, AEIS, TOEFL, IELTS, JLPT, HSK, English, Math, Japanese and Mandarin support."
     },
     "hero": {
       "label": "Luna Programs",
       "titleLine1": "Choose the support",
       "titleLine2": "that fits your child.",
-      "description": "From MAP and TOEFL to speaking, writing, math, Japanese, and school transition support — each program is designed with clear goals and measurable growth."
+      "description": "From assessment preparation to long-term academic support, each Luna program is designed with clear goals, personalised guidance and measurable progress."
     },
     "learnMore": "Learn more",
     "suitableFor": "Suitable for:",
     "close": "Close",
-    "modal": {
-      "programLabel": "Luna Program",
-      "suitableFor": "Suitable For",
-      "includedTitle": "What’s Included",
-      "included": {
-        "items": {
-          "lessons": "1–1 Personalised Lessons",
-          "homework": "Homework & Feedback",
-          "tracking": "Progress Tracking",
-          "support": "Question Support"
-        }
+    "sections": {
+      "assessment": {
+        "label": "Exam & Assessment Preparation",
+        "title": "Assessment Preparation",
+        "description": "Targeted support for international school assessments, entrance exams, and language proficiency tests."
       },
-      "enquiryTitle": "Interested in this program?",
-      "enquiryDescription": "Send us an enquiry and we’ll recommend the right tutor and learning plan.",
-      "enquiryButton": "Enquire about {{subject}}"
+      "academic": {
+        "label": "Academic & Language Support",
+        "title": "Academic Support",
+        "description": "Long-term subject support for English, math, Japanese, Mandarin, speaking, writing, and school learning."
+      }
     },
     "items": {
-      "assessments": {
-        "title": "MAP / WIDA / CAT4 Preparation",
-        "body": "Targeted preparation for international school assessments.",
-        "details": "MAP, WIDA, and CAT4 are commonly used by international schools to understand students’ academic level, language ability, and reasoning skills.",
-        "suitableFor": "Students applying to or currently studying in international schools."
+      "map": {
+        "title": "MAP Preparation",
+        "body": "Preparation for MAP Reading, Language Usage and Mathematics.",
+        "details": "MAP is commonly used by international schools to understand a student's academic growth in reading, language usage and mathematics. Luna helps students become familiar with MAP-style questions, academic vocabulary and adaptive test formats.",
+        "suitableFor": "Students applying to or currently studying in international schools that use MAP testing.",
+        "detailPage": {
+          "badge": "International School Assessment",
+          "heroLine": "Luna helps students build confidence with MAP-style reading, language usage and math questions through targeted practice and progress tracking.",
+          "cover": [
+            "MAP Reading comprehension and vocabulary",
+            "MAP Language Usage grammar and sentence structure",
+            "MAP Mathematics concepts and word problems",
+            "Adaptive test strategies and timing habits"
+          ],
+          "lunaHelps": [
+            "Identify the student’s weaker skill areas before lessons begin",
+            "Build a personalised learning plan instead of random worksheet practice",
+            "Use targeted question practice to strengthen accuracy and confidence",
+            "Track progress so parents can clearly see what is improving"
+          ],
+          "outcomes": [
+            "Stronger reading and math confidence",
+            "Better understanding of MAP-style questions",
+            "Clearer academic vocabulary",
+            "More consistent performance under timed conditions"
+          ],
+          "faq": [
+            {
+              "q": "Can Luna help with MAP Reading and Math?",
+              "a": "Yes. We support MAP Reading, Language Usage and Mathematics depending on the student’s needs."
+            },
+            {
+              "q": "Is this suitable for international school students?",
+              "a": "Yes. This program is designed especially for students applying to or currently studying in international schools."
+            }
+          ]
+        }
+      },
+      "wida": {
+        "title": "WIDA Preparation",
+        "body": "English language development support for WIDA assessments.",
+        "details": "WIDA assessments evaluate students' English language development across listening, speaking, reading and writing. Luna supports students with structured language practice, academic vocabulary and confidence-building activities.",
+        "suitableFor": "International school students who need support with English language development or WIDA-style assessment tasks.",
+        "detailPage": {
+          "badge": "English Language Development",
+          "heroLine": "Luna supports students with WIDA-style listening, speaking, reading and writing so they can communicate more confidently in school.",
+          "cover": [
+            "Academic vocabulary building",
+            "Listening and speaking practice",
+            "Reading comprehension support",
+            "Writing structure and sentence development"
+          ],
+          "lunaHelps": [
+            "Help students express ideas more clearly in English",
+            "Build confidence in speaking tasks and classroom communication",
+            "Improve academic vocabulary used in international schools",
+            "Support writing accuracy and organisation"
+          ],
+          "outcomes": [
+            "More confident English speaking",
+            "Stronger academic vocabulary",
+            "Better writing structure",
+            "Improved classroom communication"
+          ],
+          "faq": [
+            {
+              "q": "Does Luna help with WIDA speaking?",
+              "a": "Yes. We help students practise structured speaking, pronunciation, vocabulary and confidence."
+            },
+            {
+              "q": "Is WIDA only about grammar?",
+              "a": "No. WIDA focuses on English language development across listening, speaking, reading and writing."
+            }
+          ]
+        }
+      },
+      "cat4": {
+        "title": "CAT4 Preparation",
+        "body": "Verbal, non-verbal, quantitative and spatial reasoning preparation.",
+        "details": "CAT4 measures reasoning ability across verbal, non-verbal, quantitative and spatial areas. Luna helps students understand question types, improve reasoning habits and approach unfamiliar problems with confidence.",
+        "suitableFor": "Students preparing for CAT4 assessments, international school placement, or academic ability testing.",
+        "detailPage": {
+          "badge": "Reasoning & Ability Test",
+          "heroLine": "Luna helps students understand CAT4 question types and develop stronger reasoning habits across verbal, non-verbal, quantitative and spatial tasks.",
+          "cover": [
+            "Verbal reasoning",
+            "Non-verbal reasoning",
+            "Quantitative reasoning",
+            "Spatial reasoning"
+          ],
+          "lunaHelps": [
+            "Introduce unfamiliar CAT4 question formats step by step",
+            "Teach students how to recognise patterns and eliminate wrong answers",
+            "Build confidence with reasoning questions",
+            "Reduce panic when facing abstract or unfamiliar tasks"
+          ],
+          "outcomes": [
+            "Better reasoning confidence",
+            "Stronger pattern recognition",
+            "Improved problem-solving habits",
+            "More familiarity with CAT4-style tasks"
+          ],
+          "faq": [
+            {
+              "q": "Can CAT4 be prepared for?",
+              "a": "Students cannot memorise CAT4, but they can become familiar with question styles and improve reasoning strategies."
+            },
+            {
+              "q": "Is CAT4 similar to normal school exams?",
+              "a": "No. CAT4 focuses more on reasoning ability than memorised school knowledge."
+            }
+          ]
+        }
       },
       "aeis": {
         "title": "AEIS Preparation",
-        "body": "English and Math preparation for Singapore AEIS.",
-        "details": "AEIS is an entrance exam for international students who wish to apply to Singapore government schools.",
-        "suitableFor": "Students planning to apply to Singapore government schools."
+        "body": "English and Math preparation for Singapore government school entry.",
+        "details": "AEIS is an entrance exam for international students who wish to apply to Singapore government schools. Luna supports students with English, mathematics, exam strategies and structured practice.",
+        "suitableFor": "Students planning to apply to Singapore government schools through AEIS.",
+        "detailPage": {
+          "badge": "Singapore School Entry",
+          "heroLine": "Luna supports AEIS preparation through structured English and Mathematics lessons for students aiming to enter Singapore government schools.",
+          "cover": [
+            "AEIS English reading and writing",
+            "Grammar and vocabulary foundation",
+            "Mathematics concepts and word problems",
+            "Exam-style practice and feedback"
+          ],
+          "lunaHelps": [
+            "Build the English foundation needed for AEIS",
+            "Strengthen math problem-solving and accuracy",
+            "Provide structured homework and feedback",
+            "Help students prepare steadily instead of cramming"
+          ],
+          "outcomes": [
+            "Stronger English writing",
+            "Improved math accuracy",
+            "Better exam readiness",
+            "Clearer learning direction"
+          ],
+          "faq": [
+            {
+              "q": "Does Luna teach both AEIS English and Math?",
+              "a": "Yes. We can support both subjects depending on the student’s level."
+            },
+            {
+              "q": "Is AEIS difficult?",
+              "a": "AEIS can be challenging because students need both subject knowledge and strong English comprehension."
+            }
+          ]
+        }
       },
       "toefl": {
-        "title": "TOEFL / IELTS",
-        "body": "Structured exam preparation for English proficiency tests.",
-        "details": "TOEFL and IELTS are internationally recognised exams used for school admission, university application, and language assessment.",
-        "suitableFor": "Students preparing for international school entry, university admission, or English proficiency requirements."
+        "title": "TOEFL Preparation",
+        "body": "Structured preparation for TOEFL English proficiency examinations.",
+        "details": "TOEFL is an internationally recognised English proficiency test used for school and university applications. Luna helps students improve reading, listening, speaking and writing through structured exam practice.",
+        "suitableFor": "Students preparing for international school entry, university admission, or English proficiency requirements.",
+        "detailPage": {
+          "badge": "English Proficiency Test",
+          "heroLine": "Luna helps students prepare for TOEFL with structured support across reading, listening, speaking and writing.",
+          "cover": [
+            "TOEFL Reading strategies",
+            "TOEFL Listening practice",
+            "Speaking response structure",
+            "Academic writing and essay organisation"
+          ],
+          "lunaHelps": [
+            "Diagnose which TOEFL sections need the most work",
+            "Teach clear structures for speaking and writing responses",
+            "Build academic vocabulary and reading speed",
+            "Review mistakes and improve test-taking habits"
+          ],
+          "outcomes": [
+            "Clearer speaking responses",
+            "Stronger academic writing",
+            "Better reading speed",
+            "More confidence with TOEFL format"
+          ],
+          "faq": [
+            {
+              "q": "Can Luna help with TOEFL speaking?",
+              "a": "Yes. We help students practise structured responses, fluency and confidence."
+            },
+            {
+              "q": "Do you provide TOEFL writing feedback?",
+              "a": "Yes. Students can receive feedback on structure, grammar, vocabulary and clarity."
+            }
+          ]
+        }
       },
-      "speaking": {
-        "title": "Speaking & Writing",
-        "body": "Build clear expression and academic communication.",
-        "details": "This program builds strong communication skills through structured speaking, writing, presentation, and essay practice.",
-        "suitableFor": "Students who need to improve expression, writing structure, and speaking confidence."
+      "ielts": {
+        "title": "IELTS Preparation",
+        "body": "Academic and General IELTS preparation with personalised guidance.",
+        "details": "IELTS is widely used for academic, immigration and professional English requirements. Luna provides targeted support for reading, writing, listening, speaking and band-score improvement.",
+        "suitableFor": "Students or learners preparing for IELTS Academic or General Training.",
+        "detailPage": {
+          "badge": "IELTS Academic & General",
+          "heroLine": "Luna helps IELTS learners improve band-score readiness through personalised reading, writing, listening and speaking practice.",
+          "cover": [
+            "IELTS Speaking fluency and answer structure",
+            "IELTS Writing Task 1 and Task 2",
+            "Reading techniques and time management",
+            "Listening practice and mistake review"
+          ],
+          "lunaHelps": [
+            "Identify the student’s current IELTS weaknesses",
+            "Teach practical writing structures for Task 1 and Task 2",
+            "Improve speaking confidence with guided practice",
+            "Give feedback that helps students understand how to improve"
+          ],
+          "outcomes": [
+            "More organised essays",
+            "Clearer speaking answers",
+            "Better reading timing",
+            "Improved IELTS exam confidence"
+          ],
+          "faq": [
+            {
+              "q": "Can Luna help with IELTS Writing?",
+              "a": "Yes. We focus on essay structure, task response, grammar, vocabulary and coherence."
+            },
+            {
+              "q": "Do you support IELTS Speaking?",
+              "a": "Yes. Lessons can include mock speaking practice, answer development and pronunciation support."
+            }
+          ]
+        }
       },
-      "math": {
-        "title": "Math Support",
-        "body": "Grade-level math practice and concept building.",
-        "details": "Our math support focuses on building strong conceptual understanding, problem-solving ability, and exam confidence.",
-        "suitableFor": "Students who need support in math or want to strengthen grade-level foundations."
+      "jlpt": {
+        "title": "JLPT Preparation",
+        "body": "Targeted preparation for JLPT N5 to N1 examinations.",
+        "details": "JLPT assesses Japanese language ability across vocabulary, grammar, reading and listening. Luna supports learners from beginner to advanced levels with structured JLPT-focused preparation.",
+        "suitableFor": "Students preparing for JLPT N5, N4, N3, N2 or N1, or learners building Japanese for school and daily communication.",
+        "detailPage": {
+          "badge": "Japanese Language Test",
+          "heroLine": "Luna supports JLPT learners from N5 to N1 with structured vocabulary, grammar, reading and listening preparation.",
+          "cover": [
+            "JLPT vocabulary and kanji",
+            "Grammar patterns by level",
+            "Reading comprehension practice",
+            "Listening practice and mock review"
+          ],
+          "lunaHelps": [
+            "Create a clear study plan based on the target JLPT level",
+            "Break grammar points into simple explanations",
+            "Build vocabulary and kanji steadily",
+            "Use mock questions to check readiness before the exam"
+          ],
+          "outcomes": [
+            "Stronger grammar understanding",
+            "Better vocabulary retention",
+            "Improved reading speed",
+            "More confidence for JLPT exam day"
+          ],
+          "faq": [
+            {
+              "q": "Which JLPT levels can Luna support?",
+              "a": "We can support learners preparing for JLPT N5, N4, N3, N2 and N1 depending on tutor availability."
+            },
+            {
+              "q": "Can beginners start with Luna?",
+              "a": "Yes. Students can begin with basic Japanese lessons before moving into JLPT preparation."
+            }
+          ]
+        }
       },
-      "japanese": {
-        "title": "Japanese Lessons",
-        "body": "Beginner to intermediate Japanese lessons.",
-        "details": "We offer beginner to intermediate Japanese lessons covering grammar, vocabulary, conversation, and JLPT-style preparation.",
-        "suitableFor": "Students learning Japanese for school, exams, communication, or personal development."
+      "hsk": {
+        "title": "HSK Preparation",
+        "body": "Chinese proficiency preparation for HSK examinations.",
+        "details": "HSK is a Chinese proficiency exam for non-native learners. Luna helps students build vocabulary, grammar, reading, listening and writing skills for HSK preparation.",
+        "suitableFor": "Students preparing for HSK exams or learners who want structured Mandarin proficiency development.",
+        "detailPage": {
+          "badge": "Chinese Proficiency Test",
+          "heroLine": "Luna helps learners prepare for HSK through Mandarin vocabulary, grammar, reading, listening and writing support.",
+          "cover": [
+            "HSK vocabulary and sentence patterns",
+            "Listening comprehension",
+            "Reading practice",
+            "Writing and grammar accuracy"
+          ],
+          "lunaHelps": [
+            "Build Mandarin foundations according to the target HSK level",
+            "Improve recognition of common words and sentence structures",
+            "Practise exam-style reading and listening questions",
+            "Support students with homework and revision planning"
+          ],
+          "outcomes": [
+            "Stronger Mandarin vocabulary",
+            "Better listening comprehension",
+            "Improved sentence accuracy",
+            "More confidence with HSK-style questions"
+          ],
+          "faq": [
+            {
+              "q": "Can Luna help beginners prepare for HSK?",
+              "a": "Yes. Beginners can start with basic Mandarin before moving into HSK-focused practice."
+            },
+            {
+              "q": "Does HSK include speaking?",
+              "a": "Standard HSK mainly focuses on listening, reading and writing, while speaking can be supported separately."
+            }
+          ]
+        }
       },
       "foundation": {
         "title": "English Foundation",
-        "body": "Grammar, vocabulary, and reading support.",
-        "details": "This program strengthens core English skills including grammar, vocabulary, sentence structure, and reading comprehension.",
-        "suitableFor": "Students with weaker English foundations who need step-by-step support."
+        "body": "Grammar, vocabulary, reading and writing support.",
+        "details": "This program strengthens core English skills including grammar, vocabulary, sentence structure, reading comprehension and writing accuracy.",
+        "suitableFor": "Students with weaker English foundations who need step-by-step support.",
+        "detailPage": {
+          "badge": "Core English Support",
+          "heroLine": "Luna helps students build a stronger English foundation through grammar, vocabulary, reading and writing support.",
+          "cover": [
+            "Grammar and sentence structure",
+            "Vocabulary building",
+            "Reading comprehension",
+            "Basic writing and paragraph development"
+          ],
+          "lunaHelps": [
+            "Find the gaps in the student’s English foundation",
+            "Teach grammar clearly and step by step",
+            "Build reading confidence through guided practice",
+            "Support students with homework and regular feedback"
+          ],
+          "outcomes": [
+            "Stronger grammar foundation",
+            "Better reading comprehension",
+            "Improved sentence writing",
+            "More confidence in English class"
+          ],
+          "faq": [
+            {
+              "q": "Is this suitable for weaker English students?",
+              "a": "Yes. This program is designed for students who need patient, step-by-step support."
+            },
+            {
+              "q": "Can Luna help with school English?",
+              "a": "Yes. Lessons can be adjusted to support the student’s school curriculum and homework."
+            }
+          ]
+        }
+      },
+      "speaking": {
+        "title": "Speaking & Writing",
+        "body": "Build confidence in communication, presentations and academic writing.",
+        "details": "This program builds strong communication skills through structured speaking, writing, presentation, discussion and essay practice.",
+        "suitableFor": "Students who need to improve expression, writing structure, speaking confidence and academic communication.",
+        "detailPage": {
+          "badge": "Communication & Writing",
+          "heroLine": "Luna helps students express themselves more clearly through speaking, presentation, discussion and writing practice.",
+          "cover": [
+            "Presentation and public speaking",
+            "Discussion and critical thinking",
+            "Essay and paragraph writing",
+            "Academic communication skills"
+          ],
+          "lunaHelps": [
+            "Build confidence when expressing ideas",
+            "Teach students how to organise answers logically",
+            "Develop presentation and discussion skills",
+            "Improve writing structure and clarity"
+          ],
+          "outcomes": [
+            "Stronger communication skills",
+            "Better presentation confidence",
+            "Clearer writing structure",
+            "Improved academic expression"
+          ],
+          "faq": [
+            {
+              "q": "Is this only for students with weak English?",
+              "a": "No. Many students join to improve communication, presentation and academic writing beyond school requirements."
+            },
+            {
+              "q": "Can Luna help with speech presentations?",
+              "a": "Yes. Lessons can include presentation planning, speaking practice and confidence building."
+            }
+          ]
+        }
+      },
+      "math": {
+        "title": "Math Support",
+        "body": "Grade-level mathematics support and problem-solving development.",
+        "details": "Our math support focuses on building conceptual understanding, calculation accuracy, word-problem skills and exam confidence.",
+        "suitableFor": "Students who need support in math or want to strengthen grade-level foundations.",
+        "detailPage": {
+          "badge": "Academic Mathematics",
+          "heroLine": "Luna supports students through structured mathematics lessons that strengthen understanding, accuracy and problem-solving confidence.",
+          "cover": [
+            "School mathematics support",
+            "Problem-solving strategies",
+            "Word problems and reasoning",
+            "Exam preparation and revision"
+          ],
+          "lunaHelps": [
+            "Identify weak mathematical concepts",
+            "Strengthen understanding instead of memorisation",
+            "Develop problem-solving habits",
+            "Provide targeted practice and feedback"
+          ],
+          "outcomes": [
+            "Improved conceptual understanding",
+            "Better calculation accuracy",
+            "Stronger problem-solving confidence",
+            "More consistent school performance"
+          ],
+          "faq": [
+            {
+              "q": "Can Luna support international school math?",
+              "a": "Yes. We support students across different international school curricula and grade levels."
+            },
+            {
+              "q": "Do lessons focus on homework?",
+              "a": "Homework can be incorporated, but lessons are designed around the student's overall learning needs."
+            }
+          ]
+        }
+      },
+      "japanese": {
+        "title": "Japanese Lessons",
+        "body": "Beginner to advanced Japanese language learning and school support.",
+        "details": "We offer Japanese lessons covering grammar, vocabulary, conversation, reading, writing and school-based Japanese support.",
+        "suitableFor": "Students learning Japanese for school, exams, communication or personal development.",
+        "detailPage": {
+          "badge": "Japanese Language Learning",
+          "heroLine": "Luna provides personalised Japanese lessons for beginners, school support, conversation practice and long-term language development.",
+          "cover": [
+            "Grammar and sentence patterns",
+            "Vocabulary and kanji",
+            "Conversation practice",
+            "School and curriculum support"
+          ],
+          "lunaHelps": [
+            "Build a structured Japanese foundation",
+            "Support school assignments and examinations",
+            "Develop practical communication skills",
+            "Prepare students for future JLPT pathways"
+          ],
+          "outcomes": [
+            "Improved Japanese communication",
+            "Stronger grammar understanding",
+            "Expanded vocabulary and kanji knowledge",
+            "Greater confidence using Japanese"
+          ],
+          "faq": [
+            {
+              "q": "Do I need JLPT goals to join?",
+              "a": "No. Students can learn Japanese for school, daily life, communication or personal interest."
+            },
+            {
+              "q": "Can complete beginners join?",
+              "a": "Yes. We support learners from beginner to advanced levels."
+            }
+          ]
+        }
       },
       "mandarin": {
         "title": "Mandarin Lessons",
-        "body": "Speaking, reading, writing, and bilingual Mandarin support.",
-        "details": "Structured Mandarin lessons for international school students, beginners, heritage learners, and students building bilingual confidence.",
-        "suitableFor": "Students learning Mandarin for school, communication, reading, writing, or bilingual development."
+        "body": "Speaking, reading, writing and bilingual Mandarin support.",
+        "details": "Structured Mandarin lessons for international school students, beginners, heritage learners and students building bilingual confidence.",
+        "suitableFor": "Students learning Mandarin for school, communication, reading, writing or bilingual development.",
+        "detailPage": {
+          "badge": "Mandarin Language Learning",
+          "heroLine": "Luna helps students develop Mandarin speaking, reading and writing skills through personalised lessons and structured progression.",
+          "cover": [
+            "Speaking and conversation",
+            "Reading comprehension",
+            "Writing and composition",
+            "School Chinese support"
+          ],
+          "lunaHelps": [
+            "Build Mandarin confidence step by step",
+            "Support bilingual and international school students",
+            "Strengthen reading and writing foundations",
+            "Prepare students for future HSK pathways if needed"
+          ],
+          "outcomes": [
+            "Improved Mandarin communication",
+            "Better reading fluency",
+            "Stronger writing skills",
+            "Greater confidence using Mandarin"
+          ],
+          "faq": [
+            {
+              "q": "Is this suitable for heritage Chinese learners?",
+              "a": "Yes. Lessons can be adapted for heritage learners, bilingual students and complete beginners."
+            },
+            {
+              "q": "Can Luna help with school Chinese?",
+              "a": "Yes. Lessons can support school curriculum, homework and examination preparation."
+            }
+          ]
+        }
       }
     }
+  },
+  "subjectDetail": {
+    "backToPrograms": "Programs",
+    "enquireNow": "Enquire Now",
+    "howLunaHelps": "How Luna Helps",
+    "programFocus": "Program Focus",
+    "overview": "Overview",
+    "overviewTitle": "A personalised plan, not random practice.",
+    "suitableFor": "Suitable For",
+    "cover": "What We Cover",
+    "coverTitle": "Lessons focused on what your child actually needs.",
+    "approach": "Luna Approach",
+    "approachTitle": "How Luna helps students improve.",
+    "approachDescription": "We do not just assign worksheets. Luna combines diagnosis, planning, personalised tutoring, homework feedback and progress tracking.",
+    "journey": {
+      "diagnostic": {
+        "title": "Diagnostic Review",
+        "text": "We first understand the student’s level and learning gaps."
+      },
+      "plan": {
+        "title": "Learning Plan",
+        "text": "Lessons are adjusted around the student’s goals and timeline."
+      },
+      "matching": {
+        "title": "Tutor Matching",
+        "text": "We match students with suitable tutors for the subject."
+      },
+      "tracking": {
+        "title": "Progress Tracking",
+        "text": "Parents receive clearer visibility on learning progress."
+      }
+    },
+    "outcomes": "Student Outcomes",
+    "outcomesTitle": "What students can build through this program.",
+    "tutor": "Tutor Matching",
+    "tutorTitle": "Matched with the right Luna tutor.",
+    "tutorDescription": "Luna matches each student with a tutor based on the program, school background, learning style, current level and long-term goals. This helps lessons feel more personal, focused and effective.",
+    "tutorPoints": [
+      "Subject and exam experience",
+      "Student level and learning style",
+      "Clear feedback after lessons",
+      "Long-term learning consistency"
+    ],
+    "faq": "FAQ",
+    "faqTitle": "Common questions.",
+    "cta": "Start with Luna",
+    "ctaTitle": "Interested in {{title}}?",
+    "ctaDescription": "Send us an enquiry and we’ll recommend the right tutor and learning plan for your child.",
+    "enquireAbout": "Enquire about {{title}}",
+    "notFoundTitle": "Program not found.",
+    "backToProgramsButton": "Back to Programs"
   },
   "enquire": {
     "seo": {
@@ -656,7 +1149,12 @@
       "noReply": "Sorry, Chokina could not generate a reply.",
       "general": "Sorry, Chokina is taking a short break. Please try again."
     },
-    "bubbleText": "Chokina is here for you"
+    "bubbleMessages": [
+      "Chokina can help you ✨",
+      "Need help choosing a course?",
+      "Explore the best learning path for your child.",
+      "I can help you get started."
+    ]
   },
   "tutorsPage": {
     "seo": {

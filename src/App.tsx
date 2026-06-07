@@ -53,6 +53,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import LunaMascotChat from "./components/LunaMascotChat";
 import HapikoGuide from "./components/HapikoGuide";
 
+import SubjectDetail from "./pages/public/SubjectDetail";
+
 const AdminPage = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute allowedRoles={["admin"]}>
     <Layout>{children}</Layout>
@@ -87,6 +89,7 @@ const App = () => {
         <Route path="/:lang/reset-password" element={<ResetPassword />} />
 
         <Route path="/:lang/subjects" element={<Layout><Subjects /></Layout>} />
+        <Route path="/:lang/subjects/:slug" element={<Layout><SubjectDetail /></Layout>} />
         <Route path="/:lang/whyluna" element={<Layout><WhyLuna /></Layout>} />
         <Route path="/:lang/tutors" element={<Layout><Tutors /></Layout>} />
         <Route path="/:lang/enquiry" element={<Layout><Enquire /></Layout>} />

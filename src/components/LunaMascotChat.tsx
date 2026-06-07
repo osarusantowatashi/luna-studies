@@ -31,7 +31,16 @@ const LunaMascotChat = () => {
   );
 
   const [open, setOpen] = useState(false);
-  const [isBlinking, setIsBlinking] = useState(false);
+
+
+  const [showBubble, setShowBubble] = useState(true);
+  const [peekOut, setPeekOut] = useState(false);
+
+  const [bubbleIndex, setBubbleIndex] = useState(0);
+
+  const bubbleMessages = t("chat.bubbleMessages", {
+    returnObjects: true,
+  }) as string[];
 
   const [messages, setMessages] = useState<
     { role: string; text: string }[]
@@ -78,21 +87,36 @@ const LunaMascotChat = () => {
 
 
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
+    let hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    const interval = setInterval(() => {
-      setIsBlinking(true);
+    if (open) {
+      setShowBubble(false);
+      setPeekOut(true);
+      return;
+    }
 
-      timeout = setTimeout(() => {
-        setIsBlinking(false);
-      }, 260);
-    }, 3200);
+    const runCycle = () => {
+      setPeekOut(true);
+      setShowBubble(true);
+
+      if (hideTimeout) clearTimeout(hideTimeout);
+
+      hideTimeout = setTimeout(() => {
+        setShowBubble(false);
+        setPeekOut(false);
+        setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
+      }, 4200);
+    };
+
+    const firstTimeout = setTimeout(runCycle, 1200);
+    const interval = setInterval(runCycle, 8500);
 
     return () => {
+      clearTimeout(firstTimeout);
       clearInterval(interval);
-      clearTimeout(timeout);
+      if (hideTimeout) clearTimeout(hideTimeout);
     };
-  }, []);
+  }, [open]);
 
 
   const shouldShowCTA = (text: string) => {
@@ -255,293 +279,273 @@ const LunaMascotChat = () => {
     }
   };
 
-
   if (shouldHide) return null;
 
-  return (
-    <div className="fixed bottom-5 right-4 z-[999] w-[92vw] max-w-[360px] md:bottom-8 md:right-6 md:w-[360px]">
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="mb-4 w-full max-w-full overflow-hidden rounded-[28px] border border-[#E8D8B5] bg-white shadow-[0_25px_80px_rgba(8,42,85,0.25)]"
-            initial={{ opacity: 0, y: 20, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.92 }}
-          >
-            <div className="flex items-center justify-between bg-[#082A55] px-5 py-4 text-white">
-              <div>
-                <div className="flex items-center gap-2 font-semibold">
-                  <Sparkles className="h-4 w-4 text-[#F6C65B]" />
-                  {t("chat.header.title")}
-                </div>
-
-                <p className="text-xs text-white/70">
-                  {t("chat.header.subtitle")}
-                </p>
+  return (<div className="fixed bottom-0 right-[-16px] z-[999] w-[92vw] max-w-[360px] md:w-[360px]">
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="absolute bottom-[135px] right-[24px] flex w-[330px] max-h-[calc(100vh-155px)] flex-col overflow-hidden rounded-[28px] border border-[#E8D8B5] bg-white shadow-[0_25px_80px_rgba(8,42,85,0.25)] sm:bottom-[175px] sm:right-[32px] sm:w-[340px] sm:max-h-[calc(100vh-195px)]"
+          initial={{ opacity: 0, y: 20, scale: 0.92 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.92 }}
+        >
+          <div className="flex items-center justify-between bg-[#082A55] px-5 py-4 text-white">
+            <div>
+              <div className="flex items-center gap-2 font-semibold">
+                <Sparkles className="h-4 w-4 text-[#F6C65B]" />
+                {t("chat.header.title")}
               </div>
 
-              <button onClick={() => setOpen(false)}>
-                <X className="h-5 w-5" />
-              </button>
+              <p className="text-xs text-white/70">
+                {t("chat.header.subtitle")}
+              </p>
             </div>
 
-            <div className="flex h-[55vh] max-h-[390px] min-h-[320px] flex-col bg-[#FAF8F3] md:h-[390px]">
-              <div className="flex-1 space-y-3 overflow-y-auto p-4">
-                {messages.map((msg, index) => (
+            <button onClick={() => setOpen(false)}>
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="flex min-h-0 flex-1 flex-col bg-[#FAF8F3]">
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                    }`}
+                >
                   <div
-                    key={index}
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                    className={`max-w-[82%] overflow-hidden break-words [overflow-wrap:anywhere] rounded-2xl px-4 py-2 text-sm leading-relaxed ${msg.role === "user"
+                      ? "bg-[#082A55] text-white"
+                      : "bg-white text-slate-700 shadow-sm"
                       }`}
                   >
-                    <div
-                      className={`max-w-[82%] overflow-hidden break-words [overflow-wrap:anywhere] rounded-2xl px-4 py-2 text-sm leading-relaxed ${msg.role === "user"
-                        ? "bg-[#082A55] text-white"
-                        : "bg-white text-slate-700 shadow-sm"
-                        }`}
-                    >
-                      {msg.text}
+                    {msg.text}
 
-                      {msg.role === "assistant" && shouldShowCTA(msg.text) && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <button
-                            onClick={() => setShowLeadForm(true)}
-                            className="rounded-full bg-[#082A55] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#123A70]"
-                          >
-                            {t("chat.buttons.submitEnquiry")}
-                          </button>
+                    {msg.role === "assistant" && shouldShowCTA(msg.text) && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          onClick={() => setShowLeadForm(true)}
+                          className="rounded-full bg-[#082A55] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#123A70]"
+                        >
+                          {t("chat.buttons.submitEnquiry")}
+                        </button>
 
-                          <a
-                            href="https://api.whatsapp.com/send?phone=6594235165&text=Hello%20Luna%20Education%2C%20I%20would%20like%20to%20enquire%20about%20lessons."
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-full border border-[#082A55] bg-white px-4 py-2 text-xs font-medium text-[#082A55] transition hover:bg-[#F8FAFF]"
-                          >
-                            {t("chat.buttons.whatsapp")}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="rounded-2xl bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-1">
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55]" />
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55] [animation-delay:0.15s]" />
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55] [animation-delay:0.3s]" />
-                        </div>
-
-                        <span>{t("chat.loading")}</span>
+                        <a
+                          href="https://api.whatsapp.com/send?phone=6594235165&text=Hello%20Luna%20Education%2C%20I%20would%20like%20to%20enquire%20about%20lessons."
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-full border border-[#082A55] bg-white px-4 py-2 text-xs font-medium text-[#082A55] transition hover:bg-[#F8FAFF]"
+                        >
+                          {t("chat.buttons.whatsapp")}
+                        </a>
                       </div>
-                    </div>
+                    )}
                   </div>
-                )}
+                </div>
+              ))}
 
-                {showLeadForm && (
-                  <div className="rounded-2xl border border-[#E8D8B5] bg-white p-4 shadow-sm">
-                    <p className="mb-3 text-sm font-semibold text-[#082A55]">
-                      {t("chat.lead.title")}
-                    </p>
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="rounded-2xl bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1">
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55]" />
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55] [animation-delay:0.15s]" />
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-[#082A55] [animation-delay:0.3s]" />
+                      </div>
 
-                    <div className="space-y-2">
-                      <input
-                        value={leadName}
-                        onChange={(e) => setLeadName(e.target.value)}
-                        placeholder={t("chat.lead.name")}
-                        className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
-                      />
-
-                      <input
-                        value={leadContact}
-                        onChange={(e) => setLeadContact(e.target.value)}
-                        placeholder={t("chat.lead.contact")}
-                        className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
-                      />
-
-                      <input
-                        value={leadGrade}
-                        onChange={(e) => setLeadGrade(e.target.value)}
-                        placeholder={t("chat.lead.grade")}
-                        className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
-                      />
-
-                      <textarea
-                        value={leadGoal}
-                        onChange={(e) => setLeadGoal(e.target.value)}
-                        placeholder={t("chat.lead.goal")}
-                        className="min-h-[80px] w-full resize-none rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
-                      />
+                      <span>{t("chat.loading")}</span>
                     </div>
-
-                    <div className="mt-3 flex gap-2">
-                      <button
-                        onClick={submitLeadForm}
-                        disabled={leadSubmitting}
-                        className="flex-1 rounded-full bg-[#082A55] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#123A70] disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {leadSubmitting ? t("chat.lead.submitting") : t("chat.lead.submit")}
-                      </button>
-
-                      <button
-                        onClick={() => setShowLeadForm(false)}
-                        className="rounded-full border border-[#E8D8B5] px-4 py-2 text-xs text-slate-500 transition hover:bg-[#FAF8F3]"
-                      >
-                        {t("chat.lead.cancel")}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                <div ref={messagesEndRef} />
-              </div>
-
-              {messages.length <= 1 && !isLoading && !showLeadForm && (
-                <div className="border-t border-[#E8D8B5] bg-[#FAF8F3] px-4 py-3">
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      t("chat.quick.english"),
-                      t("chat.quick.map"),
-                      t("chat.quick.cat4"),
-                      t("chat.quick.admissions"),
-                      t("chat.quick.toefl"),
-                    ].map((item) => (
-                      <button
-                        key={item}
-                        onClick={() => sendQuickReply(item)}
-                        className="rounded-full border border-[#E8D8B5] bg-white px-3 py-1.5 text-xs text-[#082A55] shadow-sm transition hover:bg-[#FFF7E6]"
-                      >
-                        {item}
-                      </button>
-                    ))}
                   </div>
                 </div>
               )}
+
+              {showLeadForm && (
+                <div className="rounded-2xl border border-[#E8D8B5] bg-white p-4 shadow-sm">
+                  <p className="mb-3 text-sm font-semibold text-[#082A55]">
+                    {t("chat.lead.title")}
+                  </p>
+
+                  <div className="space-y-2">
+                    <input
+                      value={leadName}
+                      onChange={(e) => setLeadName(e.target.value)}
+                      placeholder={t("chat.lead.name")}
+                      className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
+                    />
+
+                    <input
+                      value={leadContact}
+                      onChange={(e) => setLeadContact(e.target.value)}
+                      placeholder={t("chat.lead.contact")}
+                      className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
+                    />
+
+                    <input
+                      value={leadGrade}
+                      onChange={(e) => setLeadGrade(e.target.value)}
+                      placeholder={t("chat.lead.grade")}
+                      className="w-full rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
+                    />
+
+                    <textarea
+                      value={leadGoal}
+                      onChange={(e) => setLeadGoal(e.target.value)}
+                      placeholder={t("chat.lead.goal")}
+                      className="min-h-[80px] w-full resize-none rounded-xl bg-slate-100 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
+                    />
+                  </div>
+
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={submitLeadForm}
+                      disabled={leadSubmitting}
+                      className="flex-1 rounded-full bg-[#082A55] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#123A70] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {leadSubmitting ? t("chat.lead.submitting") : t("chat.lead.submit")}
+                    </button>
+
+                    <button
+                      onClick={() => setShowLeadForm(false)}
+                      className="rounded-full border border-[#E8D8B5] px-4 py-2 text-xs text-slate-500 transition hover:bg-[#FAF8F3]"
+                    >
+                      {t("chat.lead.cancel")}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
             </div>
 
-            <div className="flex items-center gap-2 border-t border-[#E8D8B5] bg-white p-3">
-              <input
-                className="min-w-0 flex-1 rounded-full bg-slate-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B] disabled:cursor-not-allowed disabled:opacity-60"
-                placeholder={
-                  isLoading ? t("chat.input.loading") : t("chat.input.placeholder")
+            {messages.length <= 1 && !isLoading && !showLeadForm && (
+              <div className="border-t border-[#E8D8B5] bg-[#FAF8F3] px-4 py-3">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    t("chat.quick.english"),
+                    t("chat.quick.map"),
+                    t("chat.quick.cat4"),
+                    t("chat.quick.admissions"),
+                    t("chat.quick.toefl"),
+                  ].map((item) => (
+                    <button
+                      key={item}
+                      onClick={() => sendQuickReply(item)}
+                      className="rounded-full border border-[#E8D8B5] bg-white px-3 py-1.5 text-xs text-[#082A55] shadow-sm transition hover:bg-[#FFF7E6]"
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 border-t border-[#E8D8B5] bg-white p-3">
+            <input
+              className="min-w-0 flex-1 rounded-full bg-slate-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B] disabled:cursor-not-allowed disabled:opacity-60"
+              placeholder={
+                isLoading ? t("chat.input.loading") : t("chat.input.placeholder")
+              }
+              value={input}
+              disabled={isLoading || leadSubmitting}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
                 }
-                value={input}
-                disabled={isLoading || leadSubmitting}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    sendMessage();
-                  }
-                }}
-              />
+              }}
+            />
 
-              <button
-                onClick={sendMessage}
-                disabled={isLoading || leadSubmitting}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#082A55] text-white transition hover:bg-[#123A70] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <Send className="h-4 w-4" />
-              </button>
-            </div>
+            <button
+              onClick={sendMessage}
+              disabled={isLoading || leadSubmitting}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#082A55] text-white transition hover:bg-[#123A70] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Send className="h-4 w-4" />
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    <div className="relative ml-auto w-fit">
+      <AnimatePresence>
+        {!open && showBubble && (
+          <motion.div
+            key={bubbleIndex}
+            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            className="absolute bottom-[86px] right-[54px] z-30 w-[210px] rounded-[24px] border border-white/70 bg-white/95 px-4 py-3 shadow-[0_18px_45px_rgba(8,42,85,0.16)] backdrop-blur-md sm:bottom-[108px] sm:right-[74px] sm:w-[250px]"
+          >
+            <div className="absolute -bottom-2 right-7 h-5 w-5 rotate-45 border-b border-r border-white/70 bg-white/95" />
+
+            <p className="text-[13px] font-semibold leading-snug text-[#082A55] sm:text-[15px]">
+              {bubbleMessages[bubbleIndex]}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
 
+      <motion.button
+        type="button"
+        onClick={() => setOpen(true)}
+        onMouseEnter={() => setPeekOut(true)}
+        onMouseLeave={() => {
+          if (!open && !showBubble) setPeekOut(false);
+        }}
+        className="relative ml-auto flex h-[118px] w-[138px] items-end justify-end overflow-visible bg-transparent sm:h-[170px] sm:w-[200px]"
+        aria-label="Open Chokina AI Assistant"
+      >
+        <motion.div
+          className="absolute bottom-[-6px] right-[-8px] z-10 h-[145px] w-[170px] sm:bottom-[-10px] sm:right-[-12px] sm:h-[215px] sm:w-[250px]"
+          animate={{
 
+            x: peekOut || open ? 0 : 14,
 
-      <div className="relative ml-auto w-fit">
+            y: peekOut || open ? 0 : 12,
 
-        {!open && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className="absolute bottom-[98px] right-[72px] z-30 isolate sm:bottom-[150px] sm:right-[105px]"
-          >
-            <div className="relative w-[185px] rounded-[26px] border border-white/60 bg-white/95 px-4 py-3 shadow-[0_20px_55px_rgba(8,42,85,0.12)] backdrop-blur-md sm:w-[280px] sm:rounded-[36px] sm:px-6 sm:py-5">
-
-              {/* sparkle */}
-              <div className="absolute left-5 top-4 text-[#F6C65B] opacity-90 text-[14px]">
-                ✦
-              </div>
-
-              <div className="absolute left-10 top-2 text-[#E8D8B5] opacity-80 text-[18px]">
-                ✦
-              </div>
-
-              {/* bubble tail */}
-              <svg
-                className="absolute -bottom-[18px] right-[58px] h-[28px] w-[46px] drop-shadow-[0_10px_14px_rgba(8,42,85,0.06)]"
-                viewBox="0 0 46 28"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M8 0C14 11 22 20 36 24C25 29 10 25 0 8C-2 4 2 0 8 0Z"
-                  fill="rgba(255,255,255,0.95)"
-                />
-              </svg>
-
-              <div className="pl-6">
-                <p className="text-[14px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#082A55] sm:text-[18px]">
-                  {t("chat.bubbleText")}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        <motion.button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="relative ml-auto flex h-[96px] w-[96px] items-center justify-center bg-transparent sm:h-[140px] sm:w-[140px] lg:h-[180px] lg:w-[180px]"
-          whileHover={{ scale: 1.06, rotate: -2 }}
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 150,
+            damping: 22,
+          }}
         >
-          <motion.div
-            className="relative z-10 h-[96px] w-[96px] max-w-none opacity-100 sm:h-[140px] sm:w-[140px] lg:h-[180px] lg:w-[180px]"
-            animate={{
-              y: [0, -9, 0],
-              rotate: [-2.8, 2.8, -2.8],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 4.6,
-              ease: "easeInOut",
-            }}
-          >
-            <img
-              src={isBlinking ? "/mascot/chokina_blink.png" : "/mascot/chokina.png"}
-              alt="Chokina AI Assistant"
-              className="h-full w-full object-contain"
-            />
-          </motion.div>
-
-          <motion.span
-            className="absolute right-3 top-3 z-20 h-3 w-3 rounded-full bg-[#F6C65B] shadow-[0_0_18px_rgba(246,198,91,0.9)]"
-            animate={{ scale: [1, 1.4, 1], opacity: [0.7, 1, 0.7] }}
-            transition={{
-              repeat: Infinity,
-              duration: 1.6,
-              ease: "easeInOut",
-            }}
+          <img
+            src="/mascot/chokina.png"
+            alt="Chokina AI Assistant"
+            className="h-full w-full object-contain object-bottom-right drop-shadow-[0_18px_30px_rgba(8,42,85,0.18)]"
           />
+        </motion.div>
 
-          <motion.span
-            className="absolute bottom-4 left-4 z-20 text-lg"
-            animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
-            transition={{
-              repeat: Infinity,
-              duration: 2,
-              ease: "easeInOut",
-            }}
-          >
-            ✦
-          </motion.span>
-        </motion.button>
-      </div>
+        <motion.span
+          className="absolute right-5 top-6 z-20 h-3 w-3 rounded-full bg-[#F6C65B] shadow-[0_0_18px_rgba(246,198,91,0.9)]"
+          animate={{ scale: [1, 1.35, 1], opacity: [0.65, 1, 0.65] }}
+          transition={{
+            repeat: Infinity,
+            duration: 1.8,
+            ease: "easeInOut",
+          }}
+        />
+
+        <motion.span
+          className="absolute bottom-4 left-4 z-20 text-lg text-[#F6C65B]"
+          animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
+          transition={{
+            repeat: Infinity,
+            duration: 2.2,
+            ease: "easeInOut",
+          }}
+        >
+          ✦
+        </motion.span>
+      </motion.button>
     </div>
+  </div>
 
   );
 };

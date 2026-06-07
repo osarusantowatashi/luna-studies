@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { LogOut, Sparkles, Menu, X } from "lucide-react";
+import { LogOut, Sparkles, Menu, X, Globe2, ChevronDown } from "lucide-react";
 
 const NavBar = () => {
   const location = useLocation();
@@ -17,6 +18,8 @@ const NavBar = () => {
     localStorage.getItem("userName") || ""
   );
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement | null>(null);
 
   const appRoutes = [
     "/dashboard",
@@ -76,6 +79,34 @@ const NavBar = () => {
     : location.pathname.startsWith("/jp")
       ? "jp"
       : "en";
+
+  const languageOptions = [
+    { value: "en", label: "English", short: "EN" },
+    { value: "zh", label: "中文", short: "中" },
+    { value: "jp", label: "日本語", short: "日" },
+  ] as const;
+
+  const activeLanguage =
+    languageOptions.find((item) => item.value === currentLang) ||
+    languageOptions[0];
+
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        langRef.current &&
+        !langRef.current.contains(event.target as Node)
+      ) {
+        setLangOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (isApp) {
@@ -210,17 +241,66 @@ const NavBar = () => {
         {/* DESKTOP RIGHT */}
         <div className="hidden items-center gap-3 md:flex">
           {!isApp && (
-            <select
-              value={currentLang}
-              onChange={(e) =>
-                changeLanguage(e.target.value as "en" | "zh" | "jp")
-              }
-              className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-primary shadow-soft transition hover:bg-secondary"
-            >
-              <option value="en">English</option>
-              <option value="zh">中文</option>
-              <option value="jp">日本語</option>
-            </select>
+            <div ref={langRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setLangOpen((prev) => !prev)}
+                className="flex h-11 items-center gap-2 rounded-full border border-[#E8D8B5] bg-white/90 px-4 text-sm font-semibold text-[#082A55] shadow-[0_10px_30px_rgba(8,42,85,0.08)] transition hover:-translate-y-0.5 hover:border-[#F6C65B] hover:bg-[#FFF8E7]"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF2C7] text-[#082A55]">
+                  <Globe2 className="h-4 w-4" />
+                </span>
+
+                <span>{activeLanguage.label}</span>
+
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${langOpen ? "rotate-180" : ""
+                    }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {langOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute right-0 top-[52px] z-50 w-44 overflow-hidden rounded-3xl border border-[#E8D8B5] bg-white/95 p-2 shadow-[0_20px_60px_rgba(8,42,85,0.18)] backdrop-blur-xl"
+                  >
+                    {languageOptions.map((item) => {
+                      const active = item.value === currentLang;
+
+                      return (
+                        <button
+                          key={item.value}
+                          type="button"
+                          onClick={() => {
+                            setLangOpen(false);
+                            changeLanguage(item.value);
+                          }}
+                          className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm font-semibold transition ${active
+                            ? "bg-[#082A55] text-white"
+                            : "text-[#082A55] hover:bg-[#FFF8E7]"
+                            }`}
+                        >
+                          <span
+                            className={`flex h-7 w-7 items-center justify-center rounded-full text-xs ${active
+                              ? "bg-[#F6C65B] text-[#082A55]"
+                              : "bg-[#F7F1E5] text-[#082A55]"
+                              }`}
+                          >
+                            {item.short}
+                          </span>
+
+                          <span>{item.label}</span>
+                        </button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           )}
 
 

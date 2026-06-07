@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { FaWhatsapp, FaWeixin } from "react-icons/fa";
+import { FaWhatsapp, FaWeixin, FaLinkedin } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 
 export default function Footer() {
@@ -120,7 +120,12 @@ export default function Footer() {
               </div>
 
               {/* WhatsApp */}
-              <div className="flex items-center gap-4">
+              <a
+                href="https://wa.me/6581381999?text=Hello%20LUNA%20Education%2C%20I%20would%20like%20to%20enquire%20about%20lessons."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 group"
+              >
                 <FaWhatsapp className="shrink-0 text-[22px] text-[#25D366]" />
 
                 <div>
@@ -128,19 +133,17 @@ export default function Footer() {
                     WhatsApp
                   </p>
 
-                  <a
-                    href="https://wa.me/6581381999?text=Hello%20LUNA%20Education%2C%20I%20would%20like%20to%20enquire%20about%20lessons."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-base text-[#0b234a] transition hover:text-[#25D366]"
-                  >
+                  <p className="text-base text-[#0b234a] transition group-hover:text-[#25D366]">
                     +65 81381999
-                  </a>
+                  </p>
                 </div>
-              </div>
+              </a>
 
               {/* Email */}
-              <div className="flex items-center gap-4">
+              <a
+                href="mailto:enquiries@lunastudies.com"
+                className="flex items-center gap-4 group"
+              >
                 <MdEmail className="shrink-0 text-[20px] text-slate-500" />
 
                 <div className="min-w-0">
@@ -148,14 +151,31 @@ export default function Footer() {
                     Email
                   </p>
 
-                  <a
-                    href="mailto:enquiries@lunastudies.com"
-                    className="break-all text-base text-[#0b234a] transition hover:text-[#F6C65B]"
-                  >
+                  <p className="break-all text-base text-[#0b234a] transition group-hover:text-[#F6C65B]">
                     enquiries@lunastudies.com
-                  </a>
+                  </p>
                 </div>
-              </div>
+              </a>
+
+              {/* LinkedIn */}
+              <a
+                href="https://www.linkedin.com/company/luna-international-education/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 group"
+              >
+                <FaLinkedin className="shrink-0 text-[22px] text-[#0A66C2]" />
+
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                    LinkedIn
+                  </p>
+
+                  <p className="text-base text-[#0b234a] transition group-hover:text-[#0A66C2]">
+                    Luna Education
+                  </p>
+                </div>
+              </a>
 
             </div>
           </div>
