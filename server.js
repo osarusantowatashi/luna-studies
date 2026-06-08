@@ -476,6 +476,13 @@ const GAME_VOCAB_DIFFICULTY_RULES = {
 const normalizeText = (text = "") =>
   String(text).trim().toLowerCase();
 
+
+const getCoreVocab = (text = "") =>
+  normalizeText(text)
+    .replace(/^(cute|red|blue|yellow|green|happy|small|big|simple|colorful|wooden|fresh|bright|orange)\s+/i, "")
+    .replace(/\s+(color|weather)$/i, "")
+    .trim();
+
 const getGradeVocabRule = (grade = "Grade 1") => {
   const rules = {
     "Grade 1": `
@@ -1067,7 +1074,9 @@ Example: { "left": "rabbit", "right": "うさぎ" }
         if (left) bannedVocabWords.add(left);
         if (right) bannedVocabWords.add(right);
         if (vocabWord) bannedVocabWords.add(vocabWord);
-        if (imageKeyword) bannedVocabWords.add(imageKeyword);
+
+        // Do not ban image_keyword directly.
+        // It may include adjectives like "cute cat" or "red apple".
       }
     }
 
@@ -1107,16 +1116,28 @@ Example: { "left": "rabbit", "right": "うさぎ" }
     for (const row of masteredRows || []) {
       const left = normalizeText(row.left_text);
       const right = normalizeText(row.right_text);
-      const imageKeyword = normalizeText(row.image_keyword);
 
       if (row.pair_key) bannedPairKeys.add(row.pair_key);
       if (left) bannedVocabWords.add(left);
       if (right) bannedVocabWords.add(right);
-      if (imageKeyword) bannedVocabWords.add(imageKeyword);
+
+      // Do not ban image_keyword directly.
+      // It may include adjectives like "cute cat" or "red apple".
     }
 
     console.log("BANNED VOCAB COUNT:", bannedVocabWords.size);
     console.log("BANNED PAIR COUNT:", bannedPairKeys.size);
+
+    const bannedVocabListForPrompt = Array.from(bannedVocabWords)
+      .map(getCoreVocab)
+      .filter(Boolean)
+      .filter((v, i, arr) => arr.indexOf(v) === i)
+      .sort();
+
+    const bannedPromptText =
+      bannedVocabListForPrompt.length > 0
+        ? bannedVocabListForPrompt.map((w) => `- ${w}`).join("\n")
+        : "- None";
 
     const cleanedPairs = [];
 
@@ -1149,9 +1170,15 @@ ${languagePair}
 LANGUAGE RULES:
 ${selectedLanguageRule}
 
-BANNED WORDS. DO NOT USE THESE:
-${Array.from(bannedVocabWords).slice(-200).map((w) => `- ${w}`).join("\n") || "- None"}
+BANNED WORDS. DO NOT USE ANY OF THESE WORDS:
+${bannedPromptText}
 
+VERY IMPORTANT:
+- Do not generate words from the banned list above.
+- Do not generate common beginner words that are already listed.
+- Do not generate variants of banned words.
+- Example: if "cat" is banned, do not generate "kitty" or "kitten".
+- Example: if "apple" is banned, do not generate "red apple".
 Rules:
 - Generate NEW words only.
 - Do NOT use banned words.
@@ -1231,18 +1258,26 @@ Return ONLY valid JSON:
         const normalizedRight = normalizeText(right);
         const normalizedVocab = normalizeText(vocabWord);
         const normalizedKeyword = normalizeText(imageKeyword);
+        const coreLeft = getCoreVocab(left);
+        const coreVocab = getCoreVocab(vocabWord);
+        const coreKeyword = getCoreVocab(imageKeyword);
 
         if (bannedPairKeys.has(key)) continue;
         if (bannedVocabWords.has(normalizedLeft)) continue;
         if (bannedVocabWords.has(normalizedRight)) continue;
         if (bannedVocabWords.has(normalizedVocab)) continue;
-        if (bannedVocabWords.has(normalizedKeyword)) continue;
 
+        if (bannedVocabWords.has(coreLeft)) continue;
+        if (bannedVocabWords.has(coreVocab)) continue;
+        if (bannedVocabWords.has(coreKeyword)) continue;
         bannedPairKeys.add(key);
         bannedVocabWords.add(normalizedLeft);
         bannedVocabWords.add(normalizedRight);
         bannedVocabWords.add(normalizedVocab);
-        bannedVocabWords.add(normalizedKeyword);
+
+        if (coreLeft) bannedVocabWords.add(coreLeft);
+        if (coreVocab) bannedVocabWords.add(coreVocab);
+        if (coreKeyword) bannedVocabWords.add(coreKeyword);
 
         validPairs.push({
           left,
@@ -2704,6 +2739,124 @@ app.post("/api/send-package-low-balance-reminders", async (req, res) => {
     return res.status(500).json({
       success: false,
       error: err.message,
+    });
+  }
+});
+
+app.post("/api/send-career-application-email", async (req, res) => {
+  try {
+    console.log("📩 CAREER APPLICATION EMAIL API HIT");
+    console.log("BODY:", req.body);
+
+    const { applicationId } = req.body;
+
+    if (!applicationId) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing applicationId",
+      });
+    }
+
+    const { data: appData, error } = await supabaseAdmin
+      .from("career_applications")
+      .select("*")
+      .eq("id", applicationId)
+      .single();
+
+    if (error) throw error;
+
+    const getSignedFileLink = async (filePath) => {
+      if (!filePath) return "-";
+
+      const { data, error } = await supabaseAdmin.storage
+        .from("career-files")
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7);
+
+      if (error) {
+        console.error("Signed URL error:", error);
+        return filePath;
+      }
+
+      return data.signedUrl;
+    };
+
+    const resumeLink = await getSignedFileLink(appData.resume_url);
+    const coverLetterLink = await getSignedFileLink(appData.cover_letter_url);
+
+    const emailResult = await sendEmailWithRetry({
+      from: "Luna Education <admin@lunastudies.com>",
+      to: process.env.CAREER_TO_EMAIL || "admin@lunastudies.com",
+      reply_to: appData.email,
+      subject: `New Career Application - ${appData.position}`,
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.7;color:#111827;">
+          <h2>New Career Application</h2>
+
+          <h3>Position</h3>
+          <p>${appData.position || "-"}</p>
+
+          <h3>Personal Information</h3>
+          <p><strong>Full Name:</strong> ${appData.full_name || "-"}</p>
+          <p><strong>Email:</strong> ${appData.email || "-"}</p>
+          <p><strong>Phone / WhatsApp:</strong> ${appData.phone || "-"}</p>
+          <p><strong>Country:</strong> ${appData.country || "-"}</p>
+          <p><strong>City:</strong> ${appData.city || "-"}</p>
+
+          <h3>Education</h3>
+          <p><strong>Universities:</strong> ${appData.universities || "-"}</p>
+          <p><strong>Degree/s:</strong> ${appData.degrees || "-"}</p>
+          <p><strong>Graduation Year:</strong> ${appData.graduation_year || "-"}</p>
+
+          <h3>Teaching Background</h3>
+          <p><strong>Teaching Experience:</strong> ${appData.teaching_experience || "-"}</p>
+          <p><strong>Student Age Groups:</strong> ${(appData.student_age_groups || []).join(", ") || "-"}</p>
+          <p><strong>Subjects Taught:</strong> ${(appData.subjects_taught || []).join(", ") || "-"}</p>
+
+          <h3>Working Arrangement</h3>
+          <p><strong>Online:</strong> ${appData.available_online ? "Yes" : "No"}</p>
+          <p><strong>Offline Japan:</strong> ${appData.available_offline_japan ? "Yes" : "No"}</p>
+          <p><strong>Offline Singapore:</strong> ${appData.available_offline_singapore ? "Yes" : "No"}</p>
+          <p><strong>Hours per week:</strong> ${appData.hours_per_week || "-"}</p>
+
+          <h3>Language Proficiency</h3>
+          <p><strong>English:</strong> ${appData.english_proficiency || "-"}</p>
+          <p><strong>Chinese:</strong> ${appData.chinese_proficiency || "-"}</p>
+          <p><strong>Japanese:</strong> ${appData.japanese_proficiency || "-"}</p>
+
+          <h3>Application Questions</h3>
+          <p><strong>Why would you like to join Luna Education?</strong></p>
+          <p>${appData.why_join || "-"}</p>
+
+          <p><strong>How did you hear about us?</strong></p>
+          <p>${appData.hear_about_us || "-"}</p>
+
+          <p><strong>Additional details:</strong></p>
+          <p>${appData.hear_about_us_detail || "-"}</p>
+
+          <h3>Documents</h3>
+          <p><strong>Resume:</strong> <a href="${resumeLink}">Open Resume</a></p>
+          <p><strong>Cover Letter:</strong> <a href="${coverLetterLink}">Open Cover Letter</a></p>
+        </div>
+      `,
+    });
+
+    if (emailResult.error) {
+      return res.status(500).json({
+        success: false,
+        error: emailResult.error,
+      });
+    }
+
+    return res.json({
+      success: true,
+      emailResult,
+    });
+  } catch (error) {
+    console.error("Career application email error:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to send career application email",
     });
   }
 });

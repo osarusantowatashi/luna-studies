@@ -7,6 +7,9 @@ import Tutors from "./pages/public/Tutors";
 import Enquire from "./pages/public/Enquire";
 import Terms from "./pages/public/Terms";
 import Privacy from "./pages/public/Privacy";
+import Careers from "@/pages/public/Careers";
+import CareerDetail from "@/pages/public/CareerDetail";
+
 
 import Auth from "./pages/auth/Auth";
 import Login from "./pages/auth/Login";
@@ -91,8 +94,11 @@ const App = () => {
         <Route path="/:lang/subjects" element={<Layout><Subjects /></Layout>} />
         <Route path="/:lang/subjects/:slug" element={<Layout><SubjectDetail /></Layout>} />
         <Route path="/:lang/whyluna" element={<Layout><WhyLuna /></Layout>} />
+        <Route path="/:lang/careers" element={<Careers />} />
+        <Route path="/:lang/careers/:slug" element={<CareerDetail />} />
         <Route path="/:lang/tutors" element={<Layout><Tutors /></Layout>} />
         <Route path="/:lang/enquiry" element={<Layout><Enquire /></Layout>} />
+
 
         <Route path="/en/terms" element={<Terms />} />
         <Route path="/jp/terms" element={<Terms />} />
@@ -108,6 +114,8 @@ const App = () => {
         <Route path="/whyluna" element={<Navigate to="/en/whyluna" replace />} />
         <Route path="/tutors" element={<Navigate to="/en/tutors" replace />} />
         <Route path="/enquiry" element={<Navigate to="/en/enquiry" replace />} />
+
+
 
         {/* Language-prefixed App Redirects */}
         <Route path="/:lang/studentoverview" element={<Navigate to="/studentoverview" replace />} />

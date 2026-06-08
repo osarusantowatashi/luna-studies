@@ -24,6 +24,10 @@ const LunaMascotChat = () => {
     "/games",
     "/memory-flip",
     "/generate-games",
+  
+    "/en/careers",
+    "/zh/careers",
+    "/jp/careers",
   ];
 
   const shouldHide = hiddenRoutes.some((route) =>

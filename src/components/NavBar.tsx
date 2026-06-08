@@ -19,6 +19,7 @@ const NavBar = () => {
   );
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const langRef = useRef<HTMLDivElement | null>(null);
 
   const appRoutes = [
@@ -174,8 +175,6 @@ const NavBar = () => {
             ["Mistakes", "/mistakes"],
           ]
           : [
-            [t("nav.home"), withLang("/")],
-            [t("nav.whyLuna"), withLang("/whyluna")],
             [t("nav.subjects"), withLang("/subjects")],
             [t("nav.tutors"), withLang("/tutors")],
             [t("nav.enquire"), withLang("/enquiry")],
@@ -220,6 +219,50 @@ const NavBar = () => {
 
         {/* DESKTOP NAV */}
         <nav className="hidden rounded-full border bg-card/80 p-1 shadow-soft md:flex">
+          {!isApp && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setAboutOpen((prev) => !prev)}
+                className="flex items-center gap-2 rounded-full px-5 py-2 text-[13px] font-medium uppercase tracking-wider text-muted-foreground transition-all duration-200 hover:scale-105 hover:bg-secondary hover:text-primary"
+              >
+                {t("nav.aboutUs")}
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${aboutOpen ? "rotate-180" : ""
+                    }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {aboutOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute left-0 top-[48px] z-50 w-48 overflow-hidden rounded-3xl border border-[#E8D8B5] bg-white/95 p-2 shadow-[0_20px_60px_rgba(8,42,85,0.18)] backdrop-blur-xl"
+                  >
+                    <Link
+                      to={withLang("/whyluna")}
+                      onClick={() => setAboutOpen(false)}
+                      className="block rounded-2xl px-4 py-3 text-sm font-bold text-[#082A55] transition hover:bg-[#FFF8E7]"
+                    >
+                      {t("nav.whyLuna")}
+                    </Link>
+
+                    <Link
+                      to={withLang("/careers")}
+                      onClick={() => setAboutOpen(false)}
+                      className="block rounded-2xl px-4 py-3 text-sm font-bold text-[#082A55] transition hover:bg-[#FFF8E7]"
+                    >
+                      {t("nav.careers")}
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
           {links.map(([label, path]) => {
             const active = isActive(path);
 
@@ -359,6 +402,30 @@ const NavBar = () => {
       {mobileOpen && (
         <div className="border-t border-border/50 bg-background/95 px-4 py-4 shadow-lg backdrop-blur-xl md:hidden">
           <div className="space-y-2">
+            {!isApp && (
+              <div className="rounded-2xl bg-card p-2">
+                <p className="px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-primary/45">
+                  {t("nav.aboutUs")}
+                </p>
+
+                <Link
+                  to={withLang("/whyluna")}
+                  onClick={() => setMobileOpen(false)}
+                  className="block rounded-xl px-3 py-3 text-sm font-semibold text-primary hover:bg-secondary"
+                >
+                  {t("nav.whyLuna")}
+                </Link>
+
+                <Link
+                  to={withLang("/careers")}
+                  onClick={() => setMobileOpen(false)}
+                  className="block rounded-xl px-3 py-3 text-sm font-semibold text-primary hover:bg-secondary"
+                >
+                  {t("nav.careers")}
+                </Link>
+              </div>
+            )}
+
             {links.map(([label, path]) => {
               const active = isActive(path);
 

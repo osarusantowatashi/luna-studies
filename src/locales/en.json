@@ -1,7 +1,9 @@
 {
   "nav": {
+    "aboutUs": "About Us",
     "home": "Home",
     "whyLuna": "Why Luna",
+    "careers": "Careers",
     "subjects": "Programs",
     "tutors": "Tutors",
     "enquire": "Enquire",
@@ -1488,5 +1490,300 @@
         "text": "For questions about these terms, please contact us at enquiries@lunastudies.com."
       }
     ]
+  },
+  "careers": {
+    "seo": {
+      "title": "Careers | Luna Education",
+      "description": "Join Luna Education as a tutor, academic coordinator, or education team member. Help international students grow with personalised learning support."
+    },
+    "hero": {
+      "label": "Careers at Luna",
+      "title": "Teach. Inspire. Grow.",
+      "description": "Join Luna Education and help students across Singapore, Japan and beyond build confidence, improve academically, and find the right learning path.",
+      "viewRoles": "View Open Roles",
+      "applyNow": "Apply Now",
+      "cardTitle": "Build the future of education with Luna.",
+      "cardText": "We are looking for thoughtful tutors and education team members who care about long-term student growth.",
+      "badges": [
+        "Online",
+        "Flexible",
+        "Supportive",
+        "Growing"
+      ]
+    },
+    "why": {
+      "label": "Why Luna",
+      "title": "Why work with us?",
+      "items": [
+        {
+          "title": "Meaningful Teaching",
+          "text": "Work with students who need long-term academic support, not just one-off lessons."
+        },
+        {
+          "title": "Professional Growth",
+          "text": "Grow with structured teaching resources, feedback and learning systems."
+        },
+        {
+          "title": "International Students",
+          "text": "Support students from international schools across Singapore, Japan and beyond."
+        },
+        {
+          "title": "Flexible Scheduling",
+          "text": "Online and flexible teaching opportunities for part-time educators."
+        }
+      ]
+    },
+    "openings": {
+      "label": "Our Openings",
+      "title": "Open roles at Luna",
+      "description": "We are always looking for educators who are reliable, thoughtful and passionate about helping students grow.",
+      "applyEmail": "Apply by Email",
+      "apply": "Apply",
+      "items": [
+        {
+          "title": "English Tutor",
+          "slug": "english-tutor",
+          "type": "Part-time",
+          "location": "Online / Tokyo"
+        },
+        {
+          "title": "Mathematics Tutor",
+          "slug": "math-tutor",
+          "type": "Part-time",
+          "location": "Online / Tokyo"
+        },
+        {
+          "title": "Chinese Tutor",
+          "slug": "chinese-tutor",
+          "type": "Part-time",
+          "location": "Online"
+        },
+        {
+          "title": "Academic Coordinator",
+          "slug": "academic-coordinator",
+          "type": "Flexible Arrangement",
+          "location": "Online + Tokyo"
+        }
+      ]
+    },
+    "process": {
+      "label": "Hiring Process",
+      "title": "Simple, supportive and clear.",
+      "items": [
+        "Application",
+        "Interview",
+        "Demo Lesson",
+        "Training",
+        "Start Teaching"
+      ]
+    },
+    "cta": {
+      "title": "Ready to make a difference?",
+      "description": "Send us your CV, teaching experience and the role you are interested in.",
+      "button": "Apply Now"
+    },
+    "detail": {
+      "responsibilitiesTitle": "Responsibilities",
+      "requirementsTitle": "Requirements",
+      "workingArrangementTitle": "Working Arrangement",
+      "notFound": "Role not found.",
+      "backToCareers": "Back to Careers",
+      "applicationForm": "Application Form",
+      "applyFor": "Apply for {{title}}",
+      "jobs": {
+        "english-tutor": {
+          "title": "English Tutor",
+          "type": "Part-time",
+          "mode": "Online / Tokyo",
+          "about": "Luna Education is looking for reliable and patient English tutors to support international school students through personalised lessons and structured learning guidance.",
+          "responsibilities": [
+            "Deliver 1-to-1 English lessons for international school students.",
+            "Support students in reading, writing, speaking, school-based English, and exam preparation.",
+            "Prepare lessons based on each student’s level, goals, and learning needs.",
+            "Provide short lesson feedback after each class.",
+            "Follow Luna’s learning plans and support students’ long-term progress."
+          ],
+          "requirements": [
+            "Strong English communication skills.",
+            "Teaching or tutoring experience preferred.",
+            "Patient, responsible, and clear explanation style.",
+            "Comfortable working with children or teenagers.",
+            "International school or exam preparation experience is a plus."
+          ],
+          "workingArrangement": [
+            "Part-time cooperation.",
+            "Online teaching available.",
+            "In-person teaching may be available in Tokyo.",
+            "Long-term cooperation is preferred."
+          ]
+        },
+        "math-tutor": {
+          "title": "Mathematics Tutor",
+          "type": "Part-time",
+          "mode": "Online / Tokyo",
+          "about": "Luna Education is looking for mathematics tutors who can help students strengthen concepts, problem-solving skills, and school-based learning.",
+          "responsibilities": [
+            "Deliver 1-to-1 mathematics lessons.",
+            "Support students with school math, problem solving, MAP Math, AEIS Math, and curriculum-based learning.",
+            "Prepare lessons according to each student’s level and weak areas.",
+            "Explain mistakes clearly and help students build confidence.",
+            "Provide short lesson feedback after each class."
+          ],
+          "requirements": [
+            "Strong mathematics foundation.",
+            "Teaching or tutoring experience preferred.",
+            "Clear and logical explanation style.",
+            "Comfortable working with children or teenagers.",
+            "International school, AEIS, MAP, IGCSE, or similar experience is a plus."
+          ],
+          "workingArrangement": [
+            "Part-time cooperation.",
+            "Online teaching available.",
+            "In-person teaching may be available in Tokyo.",
+            "Long-term cooperation is preferred."
+          ]
+        },
+        "chinese-tutor": {
+          "title": "Chinese Tutor",
+          "type": "Part-time",
+          "mode": "Online",
+          "about": "Luna Education is looking for Chinese tutors who can support international school and bilingual students in Mandarin learning.",
+          "responsibilities": [
+            "Deliver 1-to-1 Chinese lessons.",
+            "Support students with speaking, reading, writing, school Chinese, HSK, and bilingual learning.",
+            "Adjust lessons based on each student’s language background.",
+            "Provide short lesson feedback after each class.",
+            "Help students build confidence using Mandarin."
+          ],
+          "requirements": [
+            "Strong Mandarin communication skills.",
+            "Teaching or tutoring experience preferred.",
+            "Patient and responsible teaching style.",
+            "Comfortable working with children or teenagers.",
+            "International school or bilingual teaching experience is a plus."
+          ],
+          "workingArrangement": [
+            "Part-time cooperation.",
+            "Online teaching.",
+            "Flexible lesson scheduling.",
+            "Long-term cooperation is preferred."
+          ]
+        },
+        "academic-coordinator": {
+          "title": "Academic Coordinator",
+          "type": "Flexible Arrangement",
+          "mode": "Online + On-site",
+          "about": "Luna Education is looking for an Academic Coordinator to support families, schools, tutors, and students through structured learning follow-up and academic service coordination.",
+          "responsibilities": [
+            "Serve as the main point of contact between families, schools, and tutors.",
+            "Support student learning planning and academic progress follow-up.",
+            "Coordinate communication with schools, parents, and tutors.",
+            "Manage lesson feedback, student records, and learning reports.",
+            "Assist with tutor matching and educational planning.",
+            "Support Luna’s student success and academic support services."
+          ],
+          "requirements": [
+            "Strong communication and organisation skills.",
+            "Responsible, detail-oriented, and professional.",
+            "Comfortable communicating with parents, schools, and tutors.",
+            "Education, tutoring, or student support background preferred.",
+            "Able to work independently and follow up consistently."
+          ],
+          "workingArrangement": [
+            "Flexible cooperation arrangement.",
+            "Online work with possible on-site support.",
+            "School and parent communication may be required.",
+            "Long-term cooperation is preferred."
+          ]
+        }
+      },
+      "form": {
+        "personalInformation": "Personal Information",
+        "fullName": "Full Name",
+        "emailAddress": "Email Address",
+        "phoneNumber": "Phone Number / WhatsApp",
+        "currentCountry": "Current Country",
+        "currentCity": "Current City",
+        "education": "Education",
+        "universities": "Universities Attended or Currently Attending",
+        "degrees": "Degree/s Obtained or Currently Pursuing",
+        "graduationYear": "Graduation Year",
+        "teachingBackground": "Teaching Background",
+        "teachingExperience": "How many years of teaching experience?",
+        "studentAgeGroups": "Student Age Groups",
+        "subjectsTaught": "What have you taught?",
+        "availabilityLanguages": "Availability & Languages",
+        "online": "Online",
+        "offlineJapan": "Offline - Japan",
+        "offlineSingapore": "Offline - Singapore",
+        "englishProficiency": "English Proficiency",
+        "chineseProficiency": "Chinese Proficiency",
+        "japaneseProficiency": "Japanese Proficiency",
+        "hoursPerWeek": "How many hours per week can you work?",
+        "applicationQuestions": "Application Questions",
+        "whyJoin": "Why would you like to join Luna Education?",
+        "hearAboutUs": "How did you hear about us?",
+        "hearAboutUsDetail": "If others / referral, please explain",
+        "documents": "Documents",
+        "resumePdf": "Resume PDF",
+        "coverLetterPdf": "Cover Letter PDF optional",
+        "fileNote": "Please upload PDF only. File name should include your full name.",
+        "submitApplication": "Submit Application",
+        "submitting": "Submitting...",
+        "select": "Select",
+        "options": {
+          "teachingExperience": [
+            "Less than 1 year",
+            "1-2 years",
+            "3-5 years",
+            "5+ years"
+          ],
+          "studentAgeGroups": [
+            "Primary",
+            "Secondary",
+            "High School",
+            "University",
+            "Adult Learners"
+          ],
+          "subjectsTaught": [
+            "English",
+            "Math",
+            "Chinese",
+            "Japanese",
+            "Science",
+            "Exam Preparation",
+            "School Support"
+          ],
+          "languageProficiencyBasic": [
+            "Native",
+            "Fluent",
+            "Professional",
+            "Basic"
+          ],
+          "languageProficiencyWithNone": [
+            "Native",
+            "Fluent",
+            "Professional",
+            "Basic",
+            "None"
+          ],
+          "hoursPerWeek": [
+            "1-3 hours",
+            "4-6 hours",
+            "7-10 hours",
+            "10+ hours"
+          ],
+          "hearAboutUs": [
+            "LinkedIn",
+            "Indeed",
+            "Referral",
+            "Instagram / Xiaohongshu",
+            "Internet Search",
+            "Friend / Network",
+            "Others"
+          ]
+        }
+      }
+    }
   }
 }

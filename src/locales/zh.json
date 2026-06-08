@@ -1,13 +1,15 @@
 {
   "nav": {
+    "aboutUs": "关于我们",
     "home": "首页",
-    "whyLuna": "关于LUNA",
-    "subjects": "课程",
-    "tutors": "导师",
-    "enquire": "咨询",
+    "whyLuna": "为什么选择 Luna",
+    "careers": "加入我们",
+    "subjects": "课程项目",
+    "tutors": "导师团队",
+    "enquire": "联系我们",
     "login": "登录",
     "language": "English",
-    "getStarted": "注册"
+    "getStarted": "立即开始"
   },
   "landing": {
     "seo": {
@@ -1488,5 +1490,300 @@
         "text": "如对本条款有任何疑问，请通过 enquiries@lunastudies.com 联系我们。"
       }
     ]
+  },
+  "careers": {
+    "seo": {
+      "title": "加入我们 | Luna Education",
+      "description": "加入 Luna Education，成为导师、学术协调员或教育团队成员，帮助国际学生获得更系统的个性化学习支持。"
+    },
+    "hero": {
+      "label": "Luna 招聘",
+      "title": "教学、启发、成长。",
+      "description": "加入 Luna Education，帮助来自新加坡、日本及更多地区的学生建立信心、提升成绩，并找到适合自己的学习路径。",
+      "viewRoles": "查看开放职位",
+      "applyNow": "立即申请",
+      "cardTitle": "和 Luna 一起打造更好的教育体验。",
+      "cardText": "我们正在寻找认真、有责任心，并真正关注学生长期成长的导师与教育团队成员。",
+      "badges": [
+        "线上",
+        "灵活",
+        "支持性团队",
+        "持续成长"
+      ]
+    },
+    "why": {
+      "label": "为什么选择 Luna",
+      "title": "为什么加入我们？",
+      "items": [
+        {
+          "title": "有意义的教学",
+          "text": "陪伴真正需要长期学术支持的学生，而不是只完成一次性的课程。"
+        },
+        {
+          "title": "专业成长",
+          "text": "通过结构化教学资源、反馈机制和学习系统，不断提升教学能力。"
+        },
+        {
+          "title": "国际学生群体",
+          "text": "支持来自新加坡、日本及其他地区国际学校的学生。"
+        },
+        {
+          "title": "灵活排课",
+          "text": "提供线上及灵活的兼职教学机会，适合希望长期合作的教育者。"
+        }
+      ]
+    },
+    "openings": {
+      "label": "开放职位",
+      "title": "Luna 正在招聘",
+      "description": "我们长期寻找可靠、有责任心，并热爱帮助学生成长的教育者。",
+      "applyEmail": "通过邮件申请",
+      "apply": "申请",
+      "items": [
+        {
+          "title": "英文导师",
+          "slug": "english-tutor",
+          "type": "兼职",
+          "location": "线上 / 东京"
+        },
+        {
+          "title": "数学导师",
+          "slug": "math-tutor",
+          "type": "兼职",
+          "location": "线上 / 东京"
+        },
+        {
+          "title": "中文导师",
+          "slug": "chinese-tutor",
+          "type": "兼职",
+          "location": "线上"
+        },
+        {
+          "title": "学术协调员",
+          "slug": "academic-coordinator",
+          "type": "灵活合作",
+          "location": "线上 + 东京"
+        }
+      ]
+    },
+    "process": {
+      "label": "招聘流程",
+      "title": "清晰、友好、有支持。",
+      "items": [
+        "提交申请",
+        "面试沟通",
+        "试讲",
+        "培训",
+        "开始教学"
+      ]
+    },
+    "cta": {
+      "title": "准备好一起影响学生了吗？",
+      "description": "请将您的简历、教学经验和感兴趣的职位发送给我们。",
+      "button": "立即申请"
+    },
+    "detail": {
+      "responsibilitiesTitle": "工作内容",
+      "requirementsTitle": "岗位要求",
+      "workingArrangementTitle": "工作安排",
+      "notFound": "未找到该职位。",
+      "backToCareers": "返回招聘页面",
+      "applicationForm": "申请表",
+      "applyFor": "申请 {{title}}",
+      "jobs": {
+        "english-tutor": {
+          "title": "英文导师",
+          "type": "兼职",
+          "mode": "线上 / 东京",
+          "about": "Luna Education 正在招聘有责任心、耐心且热爱教学的英文导师，为国际学校学生提供个性化学习支持。",
+          "responsibilities": [
+            "为国际学校学生提供一对一英文课程。",
+            "辅导阅读、写作、口语、学校英语及考试准备。",
+            "根据学生水平与目标规划课程内容。",
+            "课后提供简短学习反馈。",
+            "按照 Luna 学习计划持续跟进学生成长。"
+          ],
+          "requirements": [
+            "具备良好的英语沟通能力。",
+            "有教学或辅导经验者优先。",
+            "有耐心、责任心，讲解清晰。",
+            "能够与儿童或青少年学生合作。",
+            "有国际学校或考试培训经验者优先。"
+          ],
+          "workingArrangement": [
+            "兼职合作。",
+            "可线上授课。",
+            "东京地区可能提供线下授课机会。",
+            "优先考虑长期合作。"
+          ]
+        },
+        "math-tutor": {
+          "title": "数学导师",
+          "type": "兼职",
+          "mode": "线上 / 东京",
+          "about": "Luna Education 正在招聘数学导师，帮助学生提升数学概念理解、解题能力及校内学习表现。",
+          "responsibilities": [
+            "提供一对一数学课程。",
+            "辅导校内数学、MAP数学、AEIS数学及相关课程内容。",
+            "根据学生水平与薄弱点调整课程。",
+            "帮助学生分析错误并建立信心。",
+            "课后提供简短学习反馈。"
+          ],
+          "requirements": [
+            "具备扎实数学基础。",
+            "有教学或辅导经验者优先。",
+            "逻辑清晰，善于讲解。",
+            "能够与儿童或青少年学生合作。",
+            "有国际课程、AEIS、MAP、IGCSE经验者优先。"
+          ],
+          "workingArrangement": [
+            "兼职合作。",
+            "可线上授课。",
+            "东京地区可能提供线下授课机会。",
+            "优先考虑长期合作。"
+          ]
+        },
+        "chinese-tutor": {
+          "title": "中文导师",
+          "type": "兼职",
+          "mode": "线上",
+          "about": "Luna Education 正在招聘中文导师，为国际学校及双语背景学生提供中文学习支持。",
+          "responsibilities": [
+            "提供一对一中文课程。",
+            "辅导口语、阅读、写作、学校中文及HSK课程。",
+            "根据学生语言背景调整教学方式。",
+            "课后提供简短学习反馈。",
+            "帮助学生建立中文表达自信。"
+          ],
+          "requirements": [
+            "普通话标准，沟通能力良好。",
+            "有教学或辅导经验者优先。",
+            "有耐心并具责任感。",
+            "能够与儿童或青少年学生合作。",
+            "有国际学校或双语教学经验者优先。"
+          ],
+          "workingArrangement": [
+            "兼职合作。",
+            "线上授课。",
+            "时间安排灵活。",
+            "优先考虑长期合作。"
+          ]
+        },
+        "academic-coordinator": {
+          "title": "学术协调员",
+          "type": "灵活合作",
+          "mode": "线上 + 线下",
+          "about": "Luna Education 正在寻找学术协调员，协助家长、学校、导师及学生之间的沟通与学习跟进。",
+          "responsibilities": [
+            "作为家长、学校与导师之间的主要联络人。",
+            "协助学生学习规划与学习进度跟进。",
+            "协调学校、家长及导师之间的沟通。",
+            "管理课程反馈、学生档案及学习报告。",
+            "协助导师配对及教育规划。",
+            "支持 Luna 学生成长与学术服务体系。"
+          ],
+          "requirements": [
+            "具备良好的沟通与组织能力。",
+            "细心、负责且专业。",
+            "能够与家长、学校及导师保持良好沟通。",
+            "有教育、辅导或学生服务经验者优先。",
+            "具备独立工作及持续跟进能力。"
+          ],
+          "workingArrangement": [
+            "灵活合作模式。",
+            "线上工作为主，部分情况需线下协助。",
+            "可能涉及学校及家长沟通。",
+            "优先考虑长期合作。"
+          ]
+        }
+      },
+      "form": {
+        "personalInformation": "个人信息",
+        "fullName": "姓名",
+        "emailAddress": "电子邮箱",
+        "phoneNumber": "电话 / WhatsApp",
+        "currentCountry": "当前所在国家",
+        "currentCity": "当前所在城市",
+        "education": "教育背景",
+        "universities": "就读或毕业院校",
+        "degrees": "学历 / 学位",
+        "graduationYear": "毕业年份",
+        "teachingBackground": "教学经验",
+        "teachingExperience": "您有多少年教学经验？",
+        "studentAgeGroups": "授课年龄层",
+        "subjectsTaught": "曾教授科目",
+        "availabilityLanguages": "时间安排与语言能力",
+        "online": "线上",
+        "offlineJapan": "线下 - 日本",
+        "offlineSingapore": "线下 - 新加坡",
+        "englishProficiency": "英语水平",
+        "chineseProficiency": "中文水平",
+        "japaneseProficiency": "日语水平",
+        "hoursPerWeek": "每周可工作时数",
+        "applicationQuestions": "申请问题",
+        "whyJoin": "为什么想加入 Luna Education？",
+        "hearAboutUs": "您是如何得知我们的？",
+        "hearAboutUsDetail": "若为推荐或其他，请说明",
+        "documents": "申请文件",
+        "resumePdf": "简历 PDF",
+        "coverLetterPdf": "求职信 PDF（可选）",
+        "fileNote": "请上传 PDF 文件，文件名请包含您的姓名。",
+        "submitApplication": "提交申请",
+        "submitting": "提交中...",
+        "select": "请选择",
+        "options": {
+          "teachingExperience": [
+            "少于1年",
+            "1-2年",
+            "3-5年",
+            "5年以上"
+          ],
+          "studentAgeGroups": [
+            "小学",
+            "初中",
+            "高中",
+            "大学",
+            "成人"
+          ],
+          "subjectsTaught": [
+            "英语",
+            "数学",
+            "中文",
+            "日语",
+            "科学",
+            "考试培训",
+            "学校辅导"
+          ],
+          "languageProficiencyBasic": [
+            "母语",
+            "流利",
+            "专业水平",
+            "基础"
+          ],
+          "languageProficiencyWithNone": [
+            "母语",
+            "流利",
+            "专业水平",
+            "基础",
+            "不会"
+          ],
+          "hoursPerWeek": [
+            "1-3小时",
+            "4-6小时",
+            "7-10小时",
+            "10小时以上"
+          ],
+          "hearAboutUs": [
+            "LinkedIn",
+            "Indeed",
+            "朋友推荐",
+            "Instagram / 小红书",
+            "搜索引擎",
+            "朋友 / 人脉介绍",
+            "其他"
+          ]
+        }
+      }
+    }
   }
 }

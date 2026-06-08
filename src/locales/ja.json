@@ -1,13 +1,15 @@
 {
   "nav": {
+    "aboutUs": "Lunaについて",
     "home": "ホーム",
-    "whyLuna": "LUNAについて",
+    "whyLuna": "Lunaが選ばれる理由",
+    "careers": "採用情報",
     "subjects": "プログラム",
     "tutors": "講師紹介",
     "enquire": "お問い合わせ",
     "login": "ログイン",
     "language": "English",
-    "getStarted": "登録する"
+    "getStarted": "始める"
   },
   "landing": {
     "seo": {
@@ -1488,5 +1490,300 @@
         "text": "本規約に関するご質問は enquiries@lunastudies.com までご連絡ください。"
       }
     ]
+  },
+  "careers": {
+    "seo": {
+      "title": "採用情報 | Luna Education",
+      "description": "Luna Educationで講師、学習コーディネーター、教育チームメンバーとして、国際学生の成長を支えませんか。"
+    },
+    "hero": {
+      "label": "Luna 採用情報",
+      "title": "教える。導く。共に成長する。",
+      "description": "Luna Educationに参加し、シンガポール、日本、そして世界中の学生が自信を持ち、学力を伸ばし、自分に合った学習の道を見つけられるようサポートしませんか。",
+      "viewRoles": "募集職種を見る",
+      "applyNow": "今すぐ応募",
+      "cardTitle": "Lunaと一緒に、より良い教育体験をつくる。",
+      "cardText": "私たちは、学生の長期的な成長を大切にできる、誠実で責任感のある講師・教育チームメンバーを募集しています。",
+      "badges": [
+        "オンライン",
+        "柔軟",
+        "サポート体制",
+        "成長環境"
+      ]
+    },
+    "why": {
+      "label": "Lunaで働く理由",
+      "title": "なぜLunaで働くのか？",
+      "items": [
+        {
+          "title": "意味のある教育",
+          "text": "単発の授業ではなく、長期的な学習サポートを必要とする学生に寄り添います。"
+        },
+        {
+          "title": "専門的な成長",
+          "text": "体系的な教材、フィードバック、学習システムを通じて、指導力を高められます。"
+        },
+        {
+          "title": "国際的な学生",
+          "text": "シンガポール、日本、その他の地域のインターナショナルスクール生をサポートします。"
+        },
+        {
+          "title": "柔軟なスケジュール",
+          "text": "オンライン・柔軟な勤務形態で、長期的に協力できる教育者に適しています。"
+        }
+      ]
+    },
+    "openings": {
+      "label": "募集職種",
+      "title": "Lunaの募集ポジション",
+      "description": "私たちは、信頼でき、責任感があり、学生の成長を心から支えたい教育者を常に探しています。",
+      "applyEmail": "メールで応募",
+      "apply": "応募する",
+      "items": [
+        {
+          "title": "英語講師",
+          "slug": "english-tutor",
+          "type": "パートタイム",
+          "location": "オンライン / 東京"
+        },
+        {
+          "title": "数学講師",
+          "slug": "math-tutor",
+          "type": "パートタイム",
+          "location": "オンライン / 東京"
+        },
+        {
+          "title": "中国語講師",
+          "slug": "chinese-tutor",
+          "type": "パートタイム",
+          "location": "オンライン"
+        },
+        {
+          "title": "学習コーディネーター",
+          "slug": "academic-coordinator",
+          "type": "柔軟な勤務形態",
+          "location": "オンライン + 東京"
+        }
+      ]
+    },
+    "process": {
+      "label": "採用プロセス",
+      "title": "シンプルで、分かりやすく、サポートのある流れ。",
+      "items": [
+        "応募",
+        "面接",
+        "デモ授業",
+        "研修",
+        "指導開始"
+      ]
+    },
+    "cta": {
+      "title": "学生の成長を一緒に支えませんか？",
+      "description": "履歴書、指導経験、希望する職種をメールでお送りください。",
+      "button": "今すぐ応募"
+    },
+    "detail": {
+      "responsibilitiesTitle": "業務内容",
+      "requirementsTitle": "応募条件",
+      "workingArrangementTitle": "勤務形態",
+      "notFound": "募集職種が見つかりません。",
+      "backToCareers": "採用ページへ戻る",
+      "applicationForm": "応募フォーム",
+      "applyFor": "{{title}}に応募する",
+      "jobs": {
+        "english-tutor": {
+          "title": "英語講師",
+          "type": "パートタイム",
+          "mode": "オンライン / 東京",
+          "about": "Luna Educationでは、インターナショナルスクールの生徒をサポートする英語講師を募集しています。",
+          "responsibilities": [
+            "インターナショナルスクール生向けの1対1英語指導。",
+            "リーディング、ライティング、スピーキング、学校英語および試験対策のサポート。",
+            "生徒のレベルや目標に応じた授業準備。",
+            "授業後の簡単なフィードバック作成。",
+            "Lunaの学習プランに沿った継続的な学習支援。"
+          ],
+          "requirements": [
+            "高い英語コミュニケーション能力。",
+            "指導経験または家庭教師経験があれば尚可。",
+            "責任感があり、分かりやすく説明できる方。",
+            "子どもやティーンエイジャーとの指導経験歓迎。",
+            "インターナショナルスクールや試験対策経験があれば尚可。"
+          ],
+          "workingArrangement": [
+            "パートタイム契約。",
+            "オンライン指導可能。",
+            "東京での対面指導機会あり。",
+            "長期的な協力を歓迎します。"
+          ]
+        },
+        "math-tutor": {
+          "title": "数学講師",
+          "type": "パートタイム",
+          "mode": "オンライン / 東京",
+          "about": "Luna Educationでは、生徒の数学力や問題解決能力を向上させる数学講師を募集しています。",
+          "responsibilities": [
+            "1対1の数学指導。",
+            "学校数学、MAP数学、AEIS数学などのサポート。",
+            "生徒の苦手分野に合わせた授業準備。",
+            "間違いを丁寧に説明し、自信を育てる。",
+            "授業後の簡単なフィードバック作成。"
+          ],
+          "requirements": [
+            "数学に関する十分な知識。",
+            "指導経験または家庭教師経験があれば尚可。",
+            "論理的で分かりやすい説明ができる方。",
+            "子どもやティーンエイジャーとの指導経験歓迎。",
+            "MAP、AEIS、IGCSEなどの経験があれば尚可。"
+          ],
+          "workingArrangement": [
+            "パートタイム契約。",
+            "オンライン指導可能。",
+            "東京での対面指導機会あり。",
+            "長期的な協力を歓迎します。"
+          ]
+        },
+        "chinese-tutor": {
+          "title": "中国語講師",
+          "type": "パートタイム",
+          "mode": "オンライン",
+          "about": "Luna Educationでは、インターナショナルスクール生やバイリンガル生徒向けの中国語講師を募集しています。",
+          "responsibilities": [
+            "1対1の中国語指導。",
+            "会話、読解、作文、学校中国語、HSK対策のサポート。",
+            "生徒の言語背景に応じた授業調整。",
+            "授業後の簡単なフィードバック作成。",
+            "中国語を使う自信を育てる。"
+          ],
+          "requirements": [
+            "高い中国語コミュニケーション能力。",
+            "指導経験または家庭教師経験があれば尚可。",
+            "責任感があり、丁寧な指導ができる方。",
+            "子どもやティーンエイジャーとの指導経験歓迎。",
+            "インターナショナルスクールやバイリンガル教育経験があれば尚可。"
+          ],
+          "workingArrangement": [
+            "パートタイム契約。",
+            "オンライン指導。",
+            "柔軟なスケジュール。",
+            "長期的な協力を歓迎します。"
+          ]
+        },
+        "academic-coordinator": {
+          "title": "学習コーディネーター",
+          "type": "柔軟な勤務形態",
+          "mode": "オンライン + 対面",
+          "about": "Luna Educationでは、保護者・学校・講師・生徒をつなぐ学習コーディネーターを募集しています。",
+          "responsibilities": [
+            "保護者、学校、講師との主要窓口として対応する。",
+            "学習計画および学習進捗のフォローアップ。",
+            "学校、保護者、講師との連絡調整。",
+            "授業フィードバック、学習記録、レポート管理。",
+            "講師マッチングおよび教育プランニング支援。",
+            "Lunaの学習サポートサービス運営支援。"
+          ],
+          "requirements": [
+            "高いコミュニケーション能力と調整力。",
+            "責任感があり、細部まで注意できる方。",
+            "保護者、学校、講師との円滑なコミュニケーションができる方。",
+            "教育業界または学習支援経験があれば尚可。",
+            "自主的に業務を進められる方。"
+          ],
+          "workingArrangement": [
+            "柔軟な契約形態。",
+            "オンライン中心、一部対面対応あり。",
+            "学校や保護者との連絡業務を含む場合があります。",
+            "長期的な協力を歓迎します。"
+          ]
+        }
+      },
+      "form": {
+        "personalInformation": "個人情報",
+        "fullName": "氏名",
+        "emailAddress": "メールアドレス",
+        "phoneNumber": "電話番号 / WhatsApp",
+        "currentCountry": "現在の居住国",
+        "currentCity": "現在の居住都市",
+        "education": "学歴",
+        "universities": "在籍または卒業した大学",
+        "degrees": "学位・専攻",
+        "graduationYear": "卒業年度",
+        "teachingBackground": "指導経験",
+        "teachingExperience": "指導経験年数",
+        "studentAgeGroups": "指導対象年齢",
+        "subjectsTaught": "指導科目",
+        "availabilityLanguages": "勤務可能時間・語学力",
+        "online": "オンライン",
+        "offlineJapan": "対面 - 日本",
+        "offlineSingapore": "対面 - シンガポール",
+        "englishProficiency": "英語レベル",
+        "chineseProficiency": "中国語レベル",
+        "japaneseProficiency": "日本語レベル",
+        "hoursPerWeek": "週あたりの勤務可能時間",
+        "applicationQuestions": "応募に関する質問",
+        "whyJoin": "Luna Educationに応募した理由",
+        "hearAboutUs": "どこでLunaを知りましたか？",
+        "hearAboutUsDetail": "紹介・その他の場合は詳細をご記入ください",
+        "documents": "応募書類",
+        "resumePdf": "履歴書 PDF",
+        "coverLetterPdf": "カバーレター PDF（任意）",
+        "fileNote": "PDFファイルのみアップロードしてください。ファイル名には氏名を含めてください。",
+        "submitApplication": "応募を送信",
+        "submitting": "送信中...",
+        "select": "選択してください",
+        "options": {
+          "teachingExperience": [
+            "1年未満",
+            "1〜2年",
+            "3〜5年",
+            "5年以上"
+          ],
+          "studentAgeGroups": [
+            "小学生",
+            "中学生",
+            "高校生",
+            "大学生",
+            "社会人"
+          ],
+          "subjectsTaught": [
+            "英語",
+            "数学",
+            "中国語",
+            "日本語",
+            "理科",
+            "試験対策",
+            "学校サポート"
+          ],
+          "languageProficiencyBasic": [
+            "ネイティブ",
+            "流暢",
+            "業務レベル",
+            "基礎"
+          ],
+          "languageProficiencyWithNone": [
+            "ネイティブ",
+            "流暢",
+            "業務レベル",
+            "基礎",
+            "なし"
+          ],
+          "hoursPerWeek": [
+            "1〜3時間",
+            "4〜6時間",
+            "7〜10時間",
+            "10時間以上"
+          ],
+          "hearAboutUs": [
+            "LinkedIn",
+            "Indeed",
+            "紹介",
+            "Instagram / Xiaohongshu",
+            "検索エンジン",
+            "友人・知人",
+            "その他"
+          ]
+        }
+      }
+    }
   }
 }
