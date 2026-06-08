@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import NavBar from "@/components/NavBar";
@@ -38,6 +38,11 @@ const Login = () => {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [inviteCode, setInviteCode] = useState("");
+  const loginPasswordRef = useRef<HTMLInputElement | null>(null);
+
+  const signupEmailRef = useRef<HTMLInputElement | null>(null);
+  const signupPasswordRef = useRef<HTMLInputElement | null>(null);
+  const inviteCodeRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -370,9 +375,16 @@ const Login = () => {
                               type="email"
                               inputMode="email"
                               autoComplete="email"
+                              enterKeyHint="next"
                               placeholder={t("login.placeholders.email")}
                               value={loginEmail}
                               onChange={(e) => setLoginEmail(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  loginPasswordRef.current?.focus();
+                                }
+                              }}
                               className="w-full bg-transparent outline-none placeholder:text-primary/35"
                             />
                           </Field>
@@ -382,11 +394,19 @@ const Login = () => {
                             icon={<Lock className="h-5 w-5" />}
                           >
                             <input
+                              ref={loginPasswordRef}
                               type="password"
                               autoComplete="current-password"
+                              enterKeyHint="done"
                               placeholder={t("login.placeholders.password")}
                               value={loginPassword}
                               onChange={(e) => setLoginPassword(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  handleLogin();
+                                }
+                              }}
                               className="w-full bg-transparent outline-none placeholder:text-primary/35"
                             />
                           </Field>
@@ -431,9 +451,16 @@ const Login = () => {
                           >
                             <input
                               autoComplete="name"
+                              enterKeyHint="next"
                               placeholder={t("login.placeholders.name")}
                               value={name}
                               onChange={(e) => setName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  signupEmailRef.current?.focus();
+                                }
+                              }}
                               className="w-full bg-transparent outline-none placeholder:text-primary/35"
                             />
                           </Field>
@@ -443,12 +470,20 @@ const Login = () => {
                             icon={<Mail className="h-5 w-5" />}
                           >
                             <input
+                              ref={signupEmailRef}
                               type="email"
                               inputMode="email"
                               autoComplete="email"
+                              enterKeyHint="next"
                               placeholder={t("login.placeholders.email")}
                               value={signupEmail}
                               onChange={(e) => setSignupEmail(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  signupPasswordRef.current?.focus();
+                                }
+                              }}
                               className="w-full bg-transparent outline-none placeholder:text-primary/35"
                             />
                           </Field>
@@ -458,11 +493,19 @@ const Login = () => {
                             icon={<Lock className="h-5 w-5" />}
                           >
                             <input
+                              ref={signupPasswordRef}
                               type="password"
                               autoComplete="new-password"
+                              enterKeyHint="next"
                               placeholder={t("login.placeholders.createPassword")}
                               value={signupPassword}
                               onChange={(e) => setSignupPassword(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  inviteCodeRef.current?.focus();
+                                }
+                              }}
                               className="w-full bg-transparent outline-none placeholder:text-primary/35"
                             />
                           </Field>
@@ -472,10 +515,18 @@ const Login = () => {
                             icon={<KeyRound className="h-5 w-5" />}
                           >
                             <input
+                              ref={inviteCodeRef}
                               autoComplete="off"
+                              enterKeyHint="done"
                               placeholder={t("login.placeholders.accessCode")}
                               value={inviteCode}
                               onChange={(e) => setInviteCode(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  handleSignup();
+                                }
+                              }}
                               className="w-full bg-transparent outline-none placeholder:text-primary/35"
                             />
                           </Field>
