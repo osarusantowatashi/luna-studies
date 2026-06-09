@@ -750,7 +750,10 @@ export default function MemoryFlip() {
 
     setFlipLocked(true);
     setTimeout(() => setFlipLocked(false), 140);
-    playGameSound("flip", 0.18);
+
+    if (selectedCards.length === 0) {
+      playGameSound("flip", 0.18);
+    }
 
     const flippedCard = { ...card, flipped: true };
 
@@ -1357,8 +1360,8 @@ export default function MemoryFlip() {
                             whileTap={!card.matched ? { scale: 0.97 } : {}}
                             key={card.id}
                             onClick={() => flipCard(card)}
-                            className={`relative h-[96px] w-[118px] justify-self-center overflow-hidden rounded-[2rem] border transition-all duration-300 active:scale-95 sm:h-[110px] sm:w-[132px] lg:h-[118px] lg:w-[140px] ${visible ? themeClass.cardFront : themeClass.cardBack
-                              } ${card.matched ? "border-emerald-400 bg-emerald-500/15 opacity-80" : ""}`}
+                            className={`relative h-[128px] w-[128px] justify-self-center overflow-hidden rounded-[1.6rem] border transition-all duration-300 active:scale-95 sm:h-[148px] sm:w-[148px] lg:h-[158px] lg:w-[158px] ${visible ? themeClass.cardFront : themeClass.cardBack
+                              } ${card.matched ? "border-emerald-400 bg-emerald-500/15 opacity-90" : ""}`}
                           >
                             {!visible && (
                               <>
@@ -1371,19 +1374,21 @@ export default function MemoryFlip() {
                             )}
 
                             {visible && (
-                              <div className="flex h-full flex-col items-center justify-center p-4">
+                              <div className="flex h-full flex-col items-center justify-between p-3">
                                 <img
                                   src={card.imageUrl || FALLBACK_IMAGE}
                                   alt={card.text}
-                                  className="h-16 w-16 rounded-2xl object-cover shadow-lg sm:h-20 sm:w-20"
+                                  className="h-[78px] w-[78px] rounded-[1.2rem] object-cover shadow-lg sm:h-[92px] sm:w-[92px]"
                                   onError={(e) => {
                                     e.currentTarget.src = FALLBACK_IMAGE;
                                   }}
                                 />
 
-                                <p className={`mt-2 text-center text-sm font-black sm:text-base ${themeClass.title}`}>
-                                  {card.text}
-                                </p>
+                                <div className="mt-2 flex min-h-[38px] w-full items-center justify-center rounded-xl bg-white/85 px-2">
+                                  <p className="line-clamp-2 text-center text-[13px] font-black leading-tight text-[#0f172a] sm:text-[15px]">
+                                    {card.text}
+                                  </p>
+                                </div>
                               </div>
                             )}
                           </motion.button>
