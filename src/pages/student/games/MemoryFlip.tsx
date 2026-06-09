@@ -245,7 +245,7 @@ export default function MemoryFlip() {
     if (level >= 5) {
       generateMasteryTest();
     } else {
-      playGameSound("stage", 0.45);
+      playGameSound("stage", 0.25);
       setShowResultModal(true);
     }
   }, [isWin, showResultModal, showMasteryTest, level]);
@@ -757,7 +757,7 @@ export default function MemoryFlip() {
       willBeSecondCard && firstSelectedCard?.pairId === card.pairId;
 
     if (!willMatch) {
-      playGameSound("flip", 0.16);
+      playGameSound("flip", 0.28);
     }
 
     const flippedCard = { ...card, flipped: true };
