@@ -1590,6 +1590,18 @@
       "backToCareers": "返回招聘页面",
       "applicationForm": "申请表",
       "applyFor": "申请 {{title}}",
+      "alerts": {
+        "completeRequired": "请填写所有必填项目。",
+        "invalidEmail": "请输入有效的电子邮箱地址。",
+        "explainSource": "请说明您是如何得知我们的。",
+        "selectArrangement": "请选择至少一种工作方式。",
+        "uploadResume": "请上传 PDF 格式的简历。",
+        "success": "申请提交成功，谢谢！",
+        "pdfOnly": "仅接受 PDF 文件。",
+        "missingJob": "职位信息缺失。",
+        "emailFailed": "申请已保存，但邮件通知发送失败。",
+        "somethingWrong": "发生错误，请稍后再试。"
+      },
       "jobs": {
         "english-tutor": {
           "title": "英文导师",

@@ -1590,6 +1590,18 @@
       "backToCareers": "Back to Careers",
       "applicationForm": "Application Form",
       "applyFor": "Apply for {{title}}",
+      "alerts": {
+        "completeRequired": "Please complete all required fields.",
+        "invalidEmail": "Please enter a valid email address.",
+        "explainSource": "Please explain how you heard about us.",
+        "selectArrangement": "Please select at least one working arrangement.",
+        "uploadResume": "Please upload your resume in PDF format.",
+        "success": "Application submitted successfully. Thank you!",
+        "pdfOnly": "Only PDF files are accepted.",
+        "missingJob": "Missing job information.",
+        "emailFailed": "Application saved, but email notification failed.",
+        "somethingWrong": "Something went wrong. Please try again."
+      },
       "jobs": {
         "english-tutor": {
           "title": "English Tutor",
@@ -1785,5 +1797,6 @@
         }
       }
     }
+    
   }
 }

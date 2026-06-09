@@ -1590,6 +1590,18 @@
       "backToCareers": "採用ページへ戻る",
       "applicationForm": "応募フォーム",
       "applyFor": "{{title}}に応募する",
+      "alerts": {
+        "completeRequired": "必須項目をすべて入力してください。",
+        "invalidEmail": "有効なメールアドレスを入力してください。",
+        "explainSource": "当社を知ったきっかけをご記入ください。",
+        "selectArrangement": "少なくとも1つの勤務形態を選択してください。",
+        "uploadResume": "PDF形式の履歴書をアップロードしてください。",
+        "success": "応募が正常に送信されました。ありがとうございます。",
+        "pdfOnly": "PDFファイルのみアップロード可能です。",
+        "missingJob": "求人情報が見つかりません。",
+        "emailFailed": "応募は保存されましたが、通知メールの送信に失敗しました。",
+        "somethingWrong": "エラーが発生しました。しばらくしてから再度お試しください。"
+      },
       "jobs": {
         "english-tutor": {
           "title": "英語講師",

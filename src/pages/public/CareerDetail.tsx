@@ -21,6 +21,10 @@ import {
 const CareerDetail = () => {
     const { t } = useTranslation();
 
+    const alerts = t("careers.detail.alerts", {
+        returnObjects: true,
+    }) as Record<string, string>;
+
 
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -98,10 +102,10 @@ const CareerDetail = () => {
     };
 
     const uploadFile = async (file: File, type: "resume" | "cover") => {
-        if (!slug) throw new Error("Missing job slug.");
+        if (!slug) throw new Error(alerts.missingJob);
 
         if (file.type !== "application/pdf") {
-            throw new Error("Only PDF files are accepted.");
+            throw new Error(alerts.pdfOnly);
         }
 
         const cleanName = form.fullName.trim().replace(/\s+/g, "-").toLowerCase();
@@ -119,16 +123,73 @@ const CareerDetail = () => {
         return filePath;
     };
 
+    const isValidEmail = (email: string) =>
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+
+
+    const showHearAboutUsDetail =
+
+        form.hearAboutUs === "Others" ||
+
+        form.hearAboutUs === "Referral" ||
+
+        form.hearAboutUs === "其他" ||
+
+        form.hearAboutUs === "推荐" ||
+
+        form.hearAboutUs === "紹介" ||
+
+        form.hearAboutUs === "その他";
     const handleSubmit = async () => {
         if (!job || !slug) return;
+        const requiredFields = [
+            form.fullName,
+            form.email,
+            form.phone,
+            form.country,
+            form.city,
+            form.universities,
+            form.degrees,
+            form.graduationYear,
+            form.teachingExperience,
+            form.englishProficiency,
+            form.chineseProficiency,
+            form.japaneseProficiency,
+            form.hoursPerWeek,
+            form.whyJoin,
+            form.hearAboutUs,
+        ];
 
-        if (!form.fullName.trim() || !form.email.trim()) {
-            alert("Please enter your full name and email address.");
+        if (requiredFields.some((field) => !field.trim())) {
+            alert(alerts.completeRequired);
+            return;
+        }
+
+        if (!isValidEmail(form.email.trim())) {
+
+            alert(alerts.invalidEmail);
+
+            return;
+        }
+
+        if (showHearAboutUsDetail && !form.hearAboutUsDetail.trim()) {
+            alert(alerts.explainSource);
+            return;
+        }
+
+        if (studentAgeGroups.length === 0 || subjectsTaught.length === 0) {
+            alert(alerts.completeRequired);
+            return;
+        }
+
+        if (!availableOnline && !offlineJapan && !offlineSingapore) {
+            alert(alerts.selectArrangement);
             return;
         }
 
         if (!resumeFile) {
-            alert("Please upload your resume in PDF format.");
+            alert(alerts.uploadResume);
             return;
         }
 
@@ -193,13 +254,16 @@ const CareerDetail = () => {
             const emailData = await emailRes.json();
 
             if (!emailRes.ok || !emailData.success) {
-                throw new Error(emailData.error || "Application saved, but email notification failed.");
+                throw new Error(
+                    emailData.error || alerts.emailFailed
+                );
             }
-
-            alert("Application submitted successfully. Thank you!");
+            alert(alerts.success);
             window.location.href = `/${currentLang}/careers`;
         } catch (error: any) {
-            alert(error.message || "Something went wrong. Please try again.");
+            alert(
+                error.message || alerts.somethingWrong
+            );
         } finally {
             setSubmitting(false);
         }
@@ -297,7 +361,12 @@ const CareerDetail = () => {
 
                             <FormBlock title={t("careers.detail.form.personalInformation")}>
                                 <Input label={t("careers.detail.form.fullName")} value={form.fullName} onChange={(v) => updateForm("fullName", v)} />
-                                <Input label={t("careers.detail.form.emailAddress")} value={form.email} onChange={(v) => updateForm("email", v)} />
+                                <Input
+                                    type="email"
+                                    label={t("careers.detail.form.emailAddress")}
+                                    value={form.email}
+                                    onChange={(v) => updateForm("email", v)}
+                                />
                                 <Input label={t("careers.detail.form.phoneNumber")} value={form.phone} onChange={(v) => updateForm("phone", v)} />
                                 <Input label={t("careers.detail.form.currentCountry")} value={form.country} onChange={(v) => updateForm("country", v)} />
                                 <Input label={t("careers.detail.form.currentCity")} value={form.city} onChange={(v) => updateForm("city", v)} />
@@ -377,12 +446,34 @@ const CareerDetail = () => {
                                 <Select
                                     label={t("careers.detail.form.hearAboutUs")}
                                     value={form.hearAboutUs}
-                                    onChange={(v) => updateForm("hearAboutUs", v)}
-                                    options={t("careers.detail.form.options.hearAboutUs", { returnObjects: true }) as string[]}
+                                    onChange={(v) => {
+                                        updateForm("hearAboutUs", v);
+
+                                        if (
+                                            ![
+                                                "Others",
+                                                "Referral",
+                                                "其他",
+                                                "推荐",
+                                                "紹介",
+                                                "その他",
+                                            ].includes(v)
+                                        ) {
+                                            updateForm("hearAboutUsDetail", "");
+                                        }
+                                    }}
+                                    options={t("careers.detail.form.options.hearAboutUs", {
+                                        returnObjects: true,
+                                    }) as string[]}
                                     placeholder={t("careers.detail.form.select")}
                                 />
-
-                                <Input label={t("careers.detail.form.hearAboutUsDetail")} value={form.hearAboutUsDetail} onChange={(v) => updateForm("hearAboutUsDetail", v)} />
+                                {showHearAboutUsDetail && (
+                                    <Input
+                                        label={t("careers.detail.form.hearAboutUsDetail")}
+                                        value={form.hearAboutUsDetail}
+                                        onChange={(v) => updateForm("hearAboutUsDetail", v)}
+                                    />
+                                )}
                             </FormBlock>
 
                             <FormBlock title={t("careers.detail.form.documents")}>
@@ -445,10 +536,19 @@ const FormBlock = ({ title, children }: any) => (
     </div>
 );
 
-const Input = ({ label, value, onChange }: any) => (
+const Input = ({
+    label,
+    value,
+    onChange,
+    type = "text",
+}: any) => (
     <label className="block">
-        <span className="text-sm font-bold text-primary/60">{label}</span>
+        <span className="text-sm font-bold text-primary/60">
+            {label}
+        </span>
+
         <input
+            type={type}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             className="mt-2 h-12 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 outline-none focus:border-[#8d73ff]"
