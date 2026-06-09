@@ -1,21 +1,21 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-const Landing = lazy(() => import("./pages/public/Landing"));
-const Subjects = lazy(() => import("./pages/public/Subjects"));
-const SubjectDetail = lazy(() => import("./pages/public/SubjectDetail"));
-const WhyLuna = lazy(() => import("./pages/public/WhyLuna"));
-const Tutors = lazy(() => import("./pages/public/Tutors"));
-const Enquire = lazy(() => import("./pages/public/Enquire"));
-const Terms = lazy(() => import("./pages/public/Terms"));
-const Privacy = lazy(() => import("./pages/public/Privacy"));
-const Careers = lazy(() => import("./pages/public/Careers"));
-const CareerDetail = lazy(() => import("./pages/public/CareerDetail"));
+import Landing from "./pages/public/Landing";
+import Subjects from "./pages/public/Subjects";
+import SubjectDetail from "./pages/public/SubjectDetail";
+import WhyLuna from "./pages/public/WhyLuna";
+import Tutors from "./pages/public/Tutors";
+import Enquire from "./pages/public/Enquire";
+import Terms from "./pages/public/Terms";
+import Privacy from "./pages/public/Privacy";
+import Careers from "./pages/public/Careers";
+import CareerDetail from "./pages/public/CareerDetail";
 
-const Auth = lazy(() => import("./pages/auth/Auth"));
-const Login = lazy(() => import("./pages/auth/Login"));
-const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
-const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
+import Auth from "./pages/auth/Auth";
+import Login from "./pages/auth/Login";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminAssign = lazy(() => import("./pages/admin/AdminAssign"));

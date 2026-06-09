@@ -245,7 +245,9 @@ const Tutors = () => {
                       onClick={() => setSelectedTutor(tutor)}
                       className="h-12 w-full rounded-2xl bg-primary px-4 text-sm font-bold"
                     >
-                      <span className="truncate">View Profile</span>
+                      <span className="truncate">
+                        {t("tutorsPage.buttons.viewProfile")}
+                      </span>
                       <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
                     </Button>
 
@@ -255,7 +257,9 @@ const Tutors = () => {
                       className="h-12 w-full rounded-2xl border-primary/10 bg-white px-4 text-sm font-bold text-primary"
                     >
                       <Link to={withLang("/enquiry")}>
-                        <span className="truncate">Book Consultation</span>
+                        <span className="truncate">
+                          {t("tutorsPage.buttons.book")}
+                        </span>
                       </Link>
                     </Button>
                   </div>
