@@ -757,7 +757,7 @@ export default function MemoryFlip() {
       willBeSecondCard && firstSelectedCard?.pairId === card.pairId;
 
     if (!willMatch) {
-      playGameSound("flip", 0.28);
+      playGameSound("flip", 0.40);
     }
 
     const flippedCard = { ...card, flipped: true };
@@ -1365,37 +1365,42 @@ export default function MemoryFlip() {
                             whileTap={!card.matched ? { scale: 0.97 } : {}}
                             key={card.id}
                             onClick={() => flipCard(card)}
-                            className={`relative h-[128px] w-[128px] justify-self-center overflow-hidden rounded-[1.6rem] border transition-all duration-300 active:scale-95 sm:h-[148px] sm:w-[148px] lg:h-[158px] lg:w-[158px] ${visible ? themeClass.cardFront : themeClass.cardBack
-                              } ${card.matched ? "border-emerald-400 bg-emerald-500/15 opacity-90" : ""}`}
+                            className="relative h-[128px] w-[128px] justify-self-center overflow-visible rounded-[1.6rem] border-none bg-transparent active:scale-95 sm:h-[148px] sm:w-[148px] lg:h-[158px] lg:w-[158px] [perspective:900px]"
                           >
-                            {!visible && (
-                              <>
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_50%)]" />
+                            <motion.div
+                              animate={{ rotateY: visible ? 180 : 0 }}
+                              transition={{ duration: 0.45, ease: "easeInOut" }}
+                              className="relative h-full w-full [transform-style:preserve-3d]"
+                            >
+                              <div
+                                className={`absolute inset-0 flex items-center justify-center rounded-[1.6rem] border [backface-visibility:hidden] ${themeClass.cardBack}`}
+                              >
+                                <div className="absolute inset-0 rounded-[1.6rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_50%)]" />
 
-                                <div className="flex h-full items-center justify-center">
-                                  <div className="h-[68px] w-[68px] rounded-[1.2rem] border-[6px] border-white bg-[#F6C65B] shadow-[0_8px_0_rgba(0,0,0,0.18)]" />
-                                </div>
-                              </>
-                            )}
+                                <div className="relative h-[68px] w-[68px] rounded-[1.2rem] border-[6px] border-white bg-[#F6C65B] shadow-[0_8px_0_rgba(0,0,0,0.18)]" />
+                              </div>
 
-                            {visible && (
-                              <div className="flex h-full flex-col items-center justify-between p-3">
-                                <img
-                                  src={card.imageUrl || FALLBACK_IMAGE}
-                                  alt={card.text}
-                                  className="h-[78px] w-[78px] rounded-[1.2rem] object-cover shadow-lg sm:h-[92px] sm:w-[92px]"
-                                  onError={(e) => {
-                                    e.currentTarget.src = FALLBACK_IMAGE;
-                                  }}
-                                />
+                              <div
+                                className={`absolute inset-0 rounded-[1.6rem] border [backface-visibility:hidden] [transform:rotateY(180deg)] ${themeClass.cardFront} ${card.matched ? "border-emerald-400 bg-emerald-500/15 opacity-90" : ""}`}
+                              >
+                                <div className="flex h-full flex-col items-center justify-between p-3">
+                                  <img
+                                    src={card.imageUrl || FALLBACK_IMAGE}
+                                    alt={card.text}
+                                    className="h-[78px] w-[78px] rounded-[1.2rem] object-cover shadow-lg sm:h-[92px] sm:w-[92px]"
+                                    onError={(e) => {
+                                      e.currentTarget.src = FALLBACK_IMAGE;
+                                    }}
+                                  />
 
-                                <div className="mt-2 flex min-h-[38px] w-full items-center justify-center rounded-xl bg-white/85 px-2">
-                                  <p className="line-clamp-2 text-center text-[13px] font-black leading-tight text-[#0f172a] sm:text-[15px]">
-                                    {card.text}
-                                  </p>
+                                  <div className="mt-2 flex min-h-[38px] w-full items-center justify-center rounded-xl bg-white/90 px-2">
+                                    <p className="line-clamp-2 text-center text-[13px] font-black leading-tight text-[#0f172a] sm:text-[15px]">
+                                      {card.text}
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
-                            )}
+                            </motion.div>
                           </motion.button>
                         );
                       })}
