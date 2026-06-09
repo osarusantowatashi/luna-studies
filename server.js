@@ -2904,6 +2904,56 @@ app.post("/api/send-career-application-email", async (req, res) => {
   }
 });
 
+app.post("/api/submit-career-application", async (req, res) => {
+  try {
+    const applicationData = req.body;
+
+    const { data: application, error } = await supabaseAdmin
+      .from("career_applications")
+      .insert(applicationData)
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("Career application insert error:", error);
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+
+    const emailRes = await fetch(`${process.env.API_BASE_URL || ""}/api/send-career-application-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        applicationId: application.id,
+      }),
+    });
+
+    const emailData = await emailRes.json();
+
+    if (!emailRes.ok || !emailData.success) {
+      return res.status(500).json({
+        success: false,
+        error: emailData.error || "Application saved, but email notification failed.",
+      });
+    }
+
+    return res.json({
+      success: true,
+      id: application.id,
+    });
+  } catch (error) {
+    console.error("Submit career application error:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Something went wrong.",
+    });
+  }
+});
+
 /* =========================
    START SERVER
 ========================= */

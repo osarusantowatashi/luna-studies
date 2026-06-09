@@ -198,10 +198,12 @@ const CareerDetail = () => {
         try {
             const resumePath = await uploadFile(resumeFile, "resume");
             const coverPath = coverFile ? await uploadFile(coverFile, "cover") : null;
-
-            const { data: application, error } = await supabase
-                .from("career_applications")
-                .insert({
+            const emailRes = await fetch(`${API_URL}/api/submit-career-application`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
                     position: job.title,
                     slug,
 
@@ -235,21 +237,9 @@ const CareerDetail = () => {
 
                     resume_url: resumePath,
                     cover_letter_url: coverPath,
-                })
-                .select("id")
-                .single();
-
-            if (error) throw error;
-
-            const emailRes = await fetch(`${API_URL}/api/send-career-application-email`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    applicationId: application.id,
                 }),
             });
+
 
             const emailData = await emailRes.json();
 
