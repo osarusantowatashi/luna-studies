@@ -751,8 +751,13 @@ export default function MemoryFlip() {
     setFlipLocked(true);
     setTimeout(() => setFlipLocked(false), 140);
 
-    if (selectedCards.length === 0) {
-      playGameSound("flip", 0.18);
+    const willBeSecondCard = selectedCards.length === 1;
+    const firstSelectedCard = selectedCards[0];
+    const willMatch =
+      willBeSecondCard && firstSelectedCard?.pairId === card.pairId;
+
+    if (!willMatch) {
+      playGameSound("flip", 0.16);
     }
 
     const flippedCard = { ...card, flipped: true };
@@ -770,7 +775,7 @@ export default function MemoryFlip() {
       const [first, second] = newSelected;
 
       if (first.pairId === second.pairId) {
-        playGameSound("match", 0.35);
+        playGameSound("match", 0.25);
         const newCombo = combo + 1;
 
         setCombo(newCombo);
