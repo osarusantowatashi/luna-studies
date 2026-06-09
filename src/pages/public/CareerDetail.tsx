@@ -26,8 +26,8 @@ const CareerDetail = () => {
     }) as Record<string, string>;
 
 
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
+    const API_URL =
+        import.meta.env.VITE_API_URL || "https://luna-studies-api.onrender.com";
 
     const { slug } = useParams();
 

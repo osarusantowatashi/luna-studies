@@ -2921,8 +2921,9 @@ app.post("/api/submit-career-application", async (req, res) => {
         error: error.message,
       });
     }
+    const baseUrl = process.env.API_BASE_URL || `http://localhost:${PORT || 3001}`;
 
-    const emailRes = await fetch(`${process.env.API_BASE_URL || ""}/api/send-career-application-email`, {
+    const emailRes = await fetch(`${baseUrl}/api/send-career-application-email`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
