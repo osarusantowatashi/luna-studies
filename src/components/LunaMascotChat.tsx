@@ -27,7 +27,7 @@ const LunaMascotChat = () => {
   
     "/en/careers",
     "/zh/careers",
-    "/jp/careers",
+    "/ja/careers",
   ];
 
   const shouldHide = hiddenRoutes.some((route) =>

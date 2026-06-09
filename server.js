@@ -483,6 +483,22 @@ const getCoreVocab = (text = "") =>
     .replace(/\s+(color|weather)$/i, "")
     .trim();
 
+
+
+const mapWithConcurrency = async (items, limit, asyncMapper) => {
+  const results = [];
+  let index = 0;
+
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (index < items.length) {
+      const currentIndex = index++;
+      results[currentIndex] = await asyncMapper(items[currentIndex], currentIndex);
+    }
+  });
+
+  await Promise.all(workers);
+  return results;
+};
 const getGradeVocabRule = (grade = "Grade 1") => {
   const rules = {
     "Grade 1": `
@@ -634,72 +650,106 @@ const getOrCreateVocabImage = async (
   rightText = null,
   languagePair = null
 ) => {
-  const cleanVocabWord = normalizeText(vocabWord);
-  const cleanKeyword = normalizeText(imageKeyword);
+  const cleanVocabWord = getCoreVocab(vocabWord);
+  const cleanKeyword = getCoreVocab(imageKeyword || vocabWord);
 
-  // 1. 先按 vocab_word 找已经 approved 的图片
-  // 只要 happy 已经有 approved 图片，就直接复用，不再生成新的 happy 图片
-  const { data: approvedByWord, error: approvedWordError } = await supabaseAdmin
+  if (!cleanVocabWord && !cleanKeyword) return null;
+
+  const finalVocabWord = cleanVocabWord || cleanKeyword;
+  const finalKeyword = cleanKeyword || cleanVocabWord;
+
+  // 1. Reuse existing approved OR needs_review image by vocab_word.
+  // This saves image tokens while images are waiting for review.
+  const { data: existingByWord, error: wordError } = await supabaseAdmin
     .from("vocab_images")
     .select("*")
-    .eq("vocab_word", cleanVocabWord)
-    .eq("status", "approved")
+    .eq("vocab_word", finalVocabWord)
+    .in("status", ["approved", "needs_review"])
     .order("updated_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
-  if (approvedWordError) {
-    console.error("VOCAB IMAGE WORD FETCH ERROR:", approvedWordError);
+  if (wordError) {
+    console.error("VOCAB IMAGE WORD FETCH ERROR:", wordError);
   }
 
-  if (approvedByWord?.image_url) {
-    return approvedByWord.image_url;
+  if (existingByWord?.image_url) {
+    return existingByWord.image_url;
   }
 
-  // 2. 如果没有 approved，再按 keyword 找现有记录
-  const { data: existing, error } = await supabaseAdmin
+  // 2. Reuse existing approved OR needs_review image by keyword.
+  const { data: existingByKeyword, error: keywordError } = await supabaseAdmin
     .from("vocab_images")
     .select("*")
-    .eq("keyword", cleanKeyword)
+    .eq("keyword", finalKeyword)
+    .in("status", ["approved", "needs_review"])
+    .order("updated_at", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
-  if (error) {
-    console.error("VOCAB IMAGE FETCH ERROR:", error);
+  if (keywordError) {
+    console.error("VOCAB IMAGE KEYWORD FETCH ERROR:", keywordError);
+  }
+
+  if (existingByKeyword?.image_url) {
+    return existingByKeyword.image_url;
+  }
+
+  // 3. If keyword was rejected, do not generate again.
+  const { data: rejected, error: rejectedError } = await supabaseAdmin
+    .from("vocab_images")
+    .select("*")
+    .eq("keyword", finalKeyword)
+    .eq("status", "rejected")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (rejectedError) {
+    console.error("VOCAB IMAGE REJECTED FETCH ERROR:", rejectedError);
+  }
+
+  if (rejected) {
     return null;
   }
 
-  if (existing?.status === "approved" && existing.image_url) {
-    return existing.image_url;
+  // 4. Check any old record for generation_count protection.
+  const { data: existingAny, error: existingAnyError } = await supabaseAdmin
+    .from("vocab_images")
+    .select("*")
+    .eq("keyword", finalKeyword)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (existingAnyError) {
+    console.error("VOCAB IMAGE EXISTING FETCH ERROR:", existingAnyError);
   }
 
-  if (existing?.status === "rejected") {
-    return null;
-  }
-
-  if (existing?.generation_count >= 2) {
-    return existing.image_url || null;
+  if (existingAny?.generation_count >= 2) {
+    return existingAny.image_url || null;
   }
 
   let b64 = null;
 
   try {
-    b64 = await generateLunaVocabImage(cleanKeyword, imageType);
+    b64 = await generateLunaVocabImage(finalKeyword, imageType);
   } catch (err) {
     console.error("OPENAI IMAGE ERROR:", err.message);
-    return existing?.image_url || null;
+    return existingAny?.image_url || null;
   }
 
-  if (!b64) return existing?.image_url || null;
+  if (!b64) return existingAny?.image_url || null;
 
-  const nextCount = (existing?.generation_count || 0) + 1;
-  const saved = await saveVocabImageToStorage(cleanKeyword, b64, nextCount);
+  const nextCount = (existingAny?.generation_count || 0) + 1;
+  const saved = await saveVocabImageToStorage(finalKeyword, b64, nextCount);
 
-  if (!saved?.imageUrl) return existing?.image_url || null;
+  if (!saved?.imageUrl) return existingAny?.image_url || null;
 
   await supabaseAdmin.from("vocab_images").upsert(
     {
-      keyword: cleanKeyword,
-      vocab_word: cleanVocabWord,
+      keyword: finalKeyword,
+      vocab_word: finalVocabWord,
       left_text: leftText,
       right_text: rightText,
       language_pair: languagePair,
@@ -1081,22 +1131,7 @@ Example: { "left": "rabbit", "right": "うさぎ" }
     }
 
     // 2. existing / rejected image vocab
-    const { data: vocabRows, error: vocabRowsError } = await supabaseAdmin
-      .from("vocab_images")
-      .select("keyword, vocab_word, status")
-      .in("status", ["approved", "needs_review", "rejected"]);
 
-    if (vocabRowsError) {
-      return res.status(500).json({ error: vocabRowsError.message });
-    }
-
-    for (const row of vocabRows || []) {
-      const keyword = normalizeText(row.keyword);
-      const vocabWord = normalizeText(row.vocab_word);
-
-      if (keyword) bannedVocabWords.add(keyword);
-      if (vocabWord) bannedVocabWords.add(vocabWord);
-    }
 
     // 3. mastered vocab within 7 days
     const sevenDaysAgo = new Date();
@@ -1303,26 +1338,34 @@ Return ONLY valid JSON:
         `Attempt ${attempt + 1}: requested ${requestCount}, accepted ${generatedPairs.length}, total ${cleanedPairs.length}`
       );
 
-      for (const pair of generatedPairs) {
-        if (cleanedPairs.length >= finalPairCount) break;
+      const pairsWithImages = await mapWithConcurrency(
+        generatedPairs,
+        3,
+        async (pair) => {
+          const imageUrl = await getOrCreateVocabImage(
+            pair.vocab_word,
+            pair.image_keyword,
+            pair.image_type,
+            pair.left,
+            pair.right,
+            languagePair
+          );
 
-        const imageUrl = await getOrCreateVocabImage(
-          pair.vocab_word,
-          pair.image_keyword,
-          pair.image_type,
-          pair.left,
-          pair.right,
-          languagePair
-        );
+          if (!imageUrl) return null;
 
-        if (!imageUrl) {
-          continue;
+          return {
+            ...pair,
+            image_url: imageUrl,
+          };
         }
+      );
+
+      for (const pair of pairsWithImages.filter(Boolean)) {
+        if (cleanedPairs.length >= finalPairCount) break;
 
         cleanedPairs.push({
           pair_id: cleanedPairs.length + 1,
           ...pair,
-          image_url: imageUrl,
         });
       }
     }

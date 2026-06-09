@@ -1,10 +1,11 @@
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import SeoHelmet from "@/components/SeoHelmet";
+
 
 const Privacy = () => {
   const location = useLocation();
@@ -18,15 +19,24 @@ const Privacy = () => {
 
   const currentLang = location.pathname.startsWith("/zh")
     ? "zh"
-    : location.pathname.startsWith("/jp")
-      ? "jp"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
       : "en";
+
+  const baseUrl = "https://www.lunastudies.com";
+  const canonicalUrl = `${baseUrl}/${currentLang}/privacy`;
+
+  const seoTitle = t("privacy.seo.title");
+  const seoDescription = t("privacy.seo.description");
 
   return (
     <>
-      <Helmet>
-        <title>{t("privacy.seoTitle")}</title>
-      </Helmet>
+      <SeoHelmet
+        title={seoTitle}
+        description={seoDescription}
+        canonicalUrl={canonicalUrl}
+        currentLang={currentLang}
+      />
 
       <div className="min-h-screen bg-[#fbfaff]">
         <NavBar />

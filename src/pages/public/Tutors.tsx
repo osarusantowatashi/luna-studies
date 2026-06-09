@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import TutorProfileModal from "@/components/TutorProfileModal";
 import { motion } from "framer-motion";
-import { Helmet } from "react-helmet-async";
+import SeoHelmet from "@/components/SeoHelmet";
 
 
 
@@ -99,12 +99,21 @@ const Tutors = () => {
         experience: [],
       },
     ];
+
+
+  const baseUrl = "https://www.lunastudies.com";
+  const canonicalUrl = `${baseUrl}/${currentLang}/tutors`;
+
+  const seoTitle = t("tutorsPage.seo.title");
+  const seoDescription = t("tutorsPage.seo.description");
   return (
     <>
-      <Helmet>
-        <title>{t("tutorsPage.seo.title")}</title>
-        <meta name="description" content={t("tutorsPage.seo.description")} />
-      </Helmet>
+      <SeoHelmet
+        title={seoTitle}
+        description={seoDescription}
+        canonicalUrl={canonicalUrl}
+        currentLang={currentLang}
+      />
       <div className="min-h-screen bg-background">
 
         {/* HERO */}
@@ -139,10 +148,9 @@ const Tutors = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className={`mx-auto mt-7 text-primary/60
-                ${
-                  isZh
-                    ? "max-w-4xl text-[1.05rem] leading-[2.2] tracking-[0.01em]"
-                    : isJa
+                ${isZh
+                  ? "max-w-4xl text-[1.05rem] leading-[2.2] tracking-[0.01em]"
+                  : isJa
                     ? "max-w-3xl text-[1.02rem] leading-8"
                     : "max-w-2xl text-base leading-8 sm:text-lg"
                 }`}
@@ -233,24 +241,24 @@ const Tutors = () => {
                   </div>
 
                   <div className="mt-auto grid gap-3 pt-6 sm:grid-cols-1 lg:grid-cols-2">
-  <Button
-    onClick={() => setSelectedTutor(tutor)}
-    className="h-12 w-full rounded-2xl bg-primary px-4 text-sm font-bold"
-  >
-    <span className="truncate">View Profile</span>
-    <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
-  </Button>
+                    <Button
+                      onClick={() => setSelectedTutor(tutor)}
+                      className="h-12 w-full rounded-2xl bg-primary px-4 text-sm font-bold"
+                    >
+                      <span className="truncate">View Profile</span>
+                      <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
+                    </Button>
 
-  <Button
-    asChild
-    variant="outline"
-    className="h-12 w-full rounded-2xl border-primary/10 bg-white px-4 text-sm font-bold text-primary"
-  >
-    <Link to="/enquiry">
-      <span className="truncate">Book Consultation</span>
-    </Link>
-  </Button>
-</div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="h-12 w-full rounded-2xl border-primary/10 bg-white px-4 text-sm font-bold text-primary"
+                    >
+                      <Link to={withLang("/enquiry")}>
+                        <span className="truncate">Book Consultation</span>
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             ))}

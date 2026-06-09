@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet-async";
+import SeoHelmet from "@/components/SeoHelmet";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import NavBar from "@/components/NavBar";
@@ -15,6 +15,7 @@ import {
     Upload,
     Sparkles,
 } from "lucide-react";
+
 
 
 const CareerDetail = () => {
@@ -46,8 +47,8 @@ const CareerDetail = () => {
 
     const currentLang = window.location.pathname.startsWith("/zh")
         ? "zh"
-        : window.location.pathname.startsWith("/jp")
-            ? "jp"
+        : window.location.pathname.startsWith("/ja")
+            ? "ja"
             : "en";
 
     const [submitting, setSubmitting] = useState(false);
@@ -227,11 +228,21 @@ const CareerDetail = () => {
         );
     }
 
+
+    const baseUrl = "https://www.lunastudies.com";
+    const canonicalUrl = `${baseUrl}/${currentLang}/careers/${slug}`;
+
+    const seoTitle = `${job.title} | Luna Studies Careers`;
+    const seoDescription = `${job.title} opportunity at Luna Studies. Join our international education team and support students through personalised learning.`;
+
     return (
         <>
-            <Helmet>
-                <title>{job.title} | Luna Careers</title>
-            </Helmet>
+            <SeoHelmet
+                title={seoTitle}
+                description={seoDescription}
+                canonicalUrl={canonicalUrl}
+                currentLang={currentLang}
+            />
 
             <div className="min-h-screen bg-[#fbfaff]">
                 <NavBar />

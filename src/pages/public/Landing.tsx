@@ -24,7 +24,7 @@ import {
 import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
 import { useState, useRef } from "react";
-import { Helmet } from "react-helmet-async";
+import SeoHelmet from "@/components/SeoHelmet";
 
 
 
@@ -51,8 +51,8 @@ const Landing = () => {
 
   const currentLang = location.pathname.startsWith("/zh")
     ? "zh"
-    : location.pathname.startsWith("/jp")
-      ? "jp"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
       : "en";
 
   const withLang = (path: string) =>
@@ -97,15 +97,15 @@ const Landing = () => {
     useTransform(smoothTutorProgress, [0, 0.18], [0, 0]),
 
     useTransform(smoothTutorProgress, [0.14, 0.42], [680, 0]),
-  
+
     useTransform(smoothTutorProgress, [0.34, 0.62], [680, 0]),
-  
+
     useTransform(smoothTutorProgress, [0.54, 0.82], [680, 0]),
-  
+
     useTransform(smoothTutorProgress, [0.74, 1.0], [680, 0]),
-  
+
     useTransform(smoothTutorProgress, [0.76, 1.0], [680, 0]),
-  
+
   ];
   const pathwayRef = useRef(null);
 
@@ -155,12 +155,26 @@ const Landing = () => {
     },
   ];
 
+  const baseUrl = "https://www.lunastudies.com";
+
+  const canonicalUrl =
+    currentLang === "en"
+      ? `${baseUrl}/en`
+      : currentLang === "zh"
+        ? `${baseUrl}/zh`
+        : `${baseUrl}/ja`;
+  
+  const seoTitle = t("landing.seo.title");
+  const seoDescription = t("landing.seo.description");
+
   return (
     <>
-      <Helmet>
-        <title>{t("landing.seo.title")}</title>
-        <meta name="description" content={t("landing.seo.description")} />
-      </Helmet>
+      <SeoHelmet
+  title={t("landing.seo.title")}
+  description={t("landing.seo.description")}
+  canonicalUrl={canonicalUrl}
+  currentLang={currentLang}
+/>
 
       <div className="min-h-screen bg-background">
 
@@ -1089,7 +1103,7 @@ lg:gap-x-2
 
               {/* VERTICAL STACKED CARDS */}
               <div className="relative overflow-hidden rounded-[3rem] bg-transparent">
-              <div className="relative h-[430px] w-full overflow-hidden xl:h-[470px]">
+                <div className="relative h-[430px] w-full overflow-hidden xl:h-[470px]">
 
                   {[
                     {

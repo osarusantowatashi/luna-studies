@@ -23,8 +23,8 @@ import {
 const Login = () => {
   const currentLang = window.location.pathname.startsWith("/zh")
     ? "zh"
-    : window.location.pathname.startsWith("/jp")
-      ? "jp"
+    : window.location.pathname.startsWith("/ja")
+      ? "ja"
       : "en";
 
   const langPath = (path: string) => `/${currentLang}${path}`;

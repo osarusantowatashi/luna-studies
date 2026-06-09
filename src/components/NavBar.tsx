@@ -40,8 +40,11 @@ const NavBar = () => {
     "/admin/games/memory-flip",
   ];
 
+  const pathWithoutLang =
+    location.pathname.replace(/^\/(en|zh|jp)(\/|$)/, "/");
+
   const isApp = appRoutes.some((route) =>
-    location.pathname.startsWith(route)
+    pathWithoutLang.startsWith(route)
   );
 
   const brandName = isApp ? "Luna Studies" : "Luna Education";
@@ -77,14 +80,14 @@ const NavBar = () => {
   }, [location.pathname]);
   const currentLang = location.pathname.startsWith("/zh")
     ? "zh"
-    : location.pathname.startsWith("/jp")
-      ? "jp"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
       : "en";
 
   const languageOptions = [
     { value: "en", label: "English", short: "EN" },
     { value: "zh", label: "中文", short: "中" },
-    { value: "jp", label: "日本語", short: "日" },
+    { value: "ja", label: "日本語", short: "日" },
   ] as const;
 
   const activeLanguage =
@@ -118,30 +121,30 @@ const NavBar = () => {
     const detectBrowserLang = () => {
       const lang = navigator.language.toLowerCase();
 
-      if (lang.startsWith("ja")) return "jp";
+      if (lang.startsWith("ja")) return "ja";
       if (lang.startsWith("zh")) return "zh";
 
       return "en";
     };
 
-    const hasLangPrefix = /^\/(en|zh|jp)(\/|$)/.test(location.pathname);
+    const hasLangPrefix = /^\/(en|zh|ja)(\/|$)/.test(location.pathname);
 
     if (!hasLangPrefix) {
       i18n.changeLanguage("en");
       return;
     }
 
-    const i18nLang = currentLang === "jp" ? "ja" : currentLang;
-    i18n.changeLanguage(i18nLang);
+    const i18nLang = currentLang === currentLang;
+    i18n.changeLanguage(currentLang);
   }, [location.pathname, currentLang, i18n, isApp]);
 
-  const changeLanguage = (nextLang: "en" | "zh" | "jp") => {
+  const changeLanguage = (nextLang: "en" | "zh" | "ja") => {
     if (isApp) return;
 
     setMobileOpen(false);
 
     localStorage.setItem("luna_language", nextLang);
-    i18n.changeLanguage(nextLang === "jp" ? "ja" : nextLang);
+    i18n.changeLanguage(nextLang);
 
     const pathWithoutLang =
       location.pathname.replace(/^\/(en|zh|jp)/, "") || "/";
@@ -450,13 +453,13 @@ const NavBar = () => {
               <select
                 value={currentLang}
                 onChange={(e) =>
-                  changeLanguage(e.target.value as "en" | "zh" | "jp")
+                  changeLanguage(e.target.value as "en" | "zh" | "ja")
                 }
                 className="w-full rounded-2xl border bg-card px-4 py-3 text-sm font-semibold text-primary"
               >
                 <option value="en">English</option>
                 <option value="zh">中文</option>
-                <option value="jp">日本語</option>
+                <option value="ja">日本語</option>
               </select>
             )}
 

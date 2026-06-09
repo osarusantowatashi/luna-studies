@@ -13,7 +13,7 @@ import {
   FileText,
 } from "lucide-react";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
+import SeoHelmet from "@/components/SeoHelmet";
 import { Link, useLocation } from "react-router-dom";
 
 type ProgramItem = {
@@ -29,8 +29,8 @@ const Subjects = () => {
 
   const currentLang = location.pathname.startsWith("/zh")
     ? "zh"
-    : location.pathname.startsWith("/jp")
-      ? "jp"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
       : "en";
 
   const withLang = (path: string) =>
@@ -216,12 +216,22 @@ const Subjects = () => {
     </div>
   );
 
+
+  const baseUrl = "https://www.lunastudies.com";
+const pathWithoutLang = "/subjects";
+
+const canonicalUrl = `${baseUrl}/${currentLang}${pathWithoutLang}`;
+
+const seoTitle = t("subjects.seo.title");
+const seoDescription = t("subjects.seo.description");
   return (
     <>
-      <Helmet>
-        <title>{t("subjects.seo.title")}</title>
-        <meta name="description" content={t("subjects.seo.description")} />
-      </Helmet>
+      <SeoHelmet
+  title={seoTitle}
+  description={seoDescription}
+  canonicalUrl={canonicalUrl}
+  currentLang={currentLang}
+/>
 
       <div className="min-h-screen bg-background">
         {/* HERO */}

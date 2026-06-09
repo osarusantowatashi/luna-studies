@@ -2,7 +2,6 @@
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
@@ -16,6 +15,7 @@ import {
     BarChart3,
     BookOpen,
 } from "lucide-react";
+import SeoHelmet from "@/components/SeoHelmet";
 
 const programMap: Record<string, string> = {
     "map-preparation": "map",
@@ -49,8 +49,8 @@ export default function SubjectDetail() {
 
     const currentLang = location.pathname.startsWith("/zh")
         ? "zh"
-        : location.pathname.startsWith("/jp")
-            ? "jp"
+        : location.pathname.startsWith("/ja")
+            ? "ja"
             : "en";
 
     const withLang = (path: string) =>
@@ -86,16 +86,23 @@ export default function SubjectDetail() {
     const details = t(`subjects.items.${key}.details`);
     const suitableFor = t(`subjects.items.${key}.suitableFor`);
 
+    const baseUrl = "https://www.lunastudies.com";
+    const canonicalUrl = `${baseUrl}/${currentLang}/subjects/${slug}`;
+
+    const seoTitle = `${title} | Luna Studies`;
+
+    const seoDescription =
+        typeof details === "string"
+            ? details.slice(0, 155)
+            : `${title} tutoring and preparation support with Luna Studies.`;
     return (
         <>
-            <Helmet>
-                <title>{title} | LUNA Education</title>
-                <meta name="description" content={details} />
-                <link
-                    rel="canonical"
-                    href={`https://www.lunastudies.com/${currentLang}/subjects/${slug}`}
-                />
-            </Helmet>
+            <SeoHelmet
+                title={seoTitle}
+                description={seoDescription}
+                canonicalUrl={canonicalUrl}
+                currentLang={currentLang}
+            />
 
             <div className="min-h-screen bg-background">
                 {/* HERO */}

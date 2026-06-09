@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
-import { Helmet } from "react-helmet-async";
+import SeoHelmet from "@/components/SeoHelmet";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -18,14 +18,23 @@ const Terms = () => {
 
   const currentLang = location.pathname.startsWith("/zh")
     ? "zh"
-    : location.pathname.startsWith("/jp")
-      ? "jp"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
       : "en";
+
+  const baseUrl = "https://www.lunastudies.com";
+  const canonicalUrl = `${baseUrl}/${currentLang}/terms`;
+
+  const seoTitle = t("terms.seo.title");
+  const seoDescription = t("terms.seo.description");
   return (
     <>
-      <Helmet>
-        <title>{t("terms.seoTitle")}</title>
-      </Helmet>
+      <SeoHelmet
+        title={seoTitle}
+        description={seoDescription}
+        canonicalUrl={canonicalUrl}
+        currentLang={currentLang}
+      />
 
       <div className="min-h-screen bg-[#fbfaff]">
         <NavBar />

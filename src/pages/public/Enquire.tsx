@@ -13,31 +13,45 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
-import { Helmet } from "react-helmet-async";
+import SeoHelmet from "@/components/SeoHelmet";
 
 
 const Enquire = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const currentLang = location.pathname.startsWith("/zh")
+    ? "zh"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
+      : "en";
 
-useEffect(() => {
-  if (!location.hash) return;
+  useEffect(() => {
+    if (!location.hash) return;
 
-  const id = location.hash.replace("#", "");
+    const id = location.hash.replace("#", "");
 
-  setTimeout(() => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, 300);
-}, [location]);
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 300);
+  }, [location]);
+
+
+  const baseUrl = "https://www.lunastudies.com";
+  const canonicalUrl = `${baseUrl}/${currentLang}/enquiry`;
+
+  const seoTitle = t("enquire.seo.title");
+  const seoDescription = t("enquire.seo.description");
   return (
     <>
-      <Helmet>
-        <title>{t("enquire.seo.title")}</title>
-        <meta name="description" content={t("enquire.seo.description")} />
-      </Helmet>
+      <SeoHelmet
+        title={seoTitle}
+        description={seoDescription}
+        canonicalUrl={canonicalUrl}
+        currentLang={currentLang}
+      />
       <div className="min-h-screen bg-background">
 
         {/* ENQUIRY HERO - CONCIERGE STYLE */}
@@ -168,76 +182,76 @@ useEffect(() => {
 
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
                 {[
-  {
-    step: "01",
-    title: t("enquire.steps.step1.title"),
-    text: t("enquire.steps.step1.text"),
-    icon: ClipboardCheck,
-  },
-  {
-    step: "02",
-    title: t("enquire.steps.step2.title"),
-    text: t("enquire.steps.step2.text"),
-    icon: BarChart3,
-  },
-  {
-    step: "03",
-    title: t("enquire.steps.step3.title"),
-    text: t("enquire.steps.step3.text"),
-    icon: Target,
-  },
-  {
-    step: "04",
-    title: t("enquire.steps.step4.title"),
-    text: t("enquire.steps.step4.text"),
-    icon: TrendingUp,
-  },
-  {
-    step: "05",
-    title: t("enquire.steps.step5.title"),
-    text: t("enquire.steps.step5.text"),
-    icon: Sparkles,
-  },
-].map((item, i) => {
-  const Icon = item.icon;
+                  {
+                    step: "01",
+                    title: t("enquire.steps.step1.title"),
+                    text: t("enquire.steps.step1.text"),
+                    icon: ClipboardCheck,
+                  },
+                  {
+                    step: "02",
+                    title: t("enquire.steps.step2.title"),
+                    text: t("enquire.steps.step2.text"),
+                    icon: BarChart3,
+                  },
+                  {
+                    step: "03",
+                    title: t("enquire.steps.step3.title"),
+                    text: t("enquire.steps.step3.text"),
+                    icon: Target,
+                  },
+                  {
+                    step: "04",
+                    title: t("enquire.steps.step4.title"),
+                    text: t("enquire.steps.step4.text"),
+                    icon: TrendingUp,
+                  },
+                  {
+                    step: "05",
+                    title: t("enquire.steps.step5.title"),
+                    text: t("enquire.steps.step5.text"),
+                    icon: Sparkles,
+                  },
+                ].map((item, i) => {
+                  const Icon = item.icon;
 
-  return (
-    <motion.div
-      key={item.step}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
-      transition={{ delay: i * 0.08 }}
-      whileHover={{
-        y: -10,
-        rotate: i % 2 === 0 ? -2 : 2,
-      }}
-      className="group relative rounded-[2.2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl"
-    >
-      <div className="relative z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex h-14 w-14 items-center justify-center rounded-[1.4rem] bg-[#8d73ff] shadow-[0_14px_35px_rgba(141,115,255,0.28)]">
-            <Icon className="h-6 w-6 text-white" strokeWidth={2.4} />
-          </div>
+                  return (
+                    <motion.div
+                      key={item.step}
+                      initial={{ opacity: 0, y: 40 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: false, amount: 0.2 }}
+                      transition={{ delay: i * 0.08 }}
+                      whileHover={{
+                        y: -10,
+                        rotate: i % 2 === 0 ? -2 : 2,
+                      }}
+                      className="group relative rounded-[2.2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl"
+                    >
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-[1.4rem] bg-[#8d73ff] shadow-[0_14px_35px_rgba(141,115,255,0.28)]">
+                            <Icon className="h-6 w-6 text-white" strokeWidth={2.4} />
+                          </div>
 
-          <span className="text-sm font-black text-[#8d73ff]">
-            {item.step}
-          </span>
-        </div>
+                          <span className="text-sm font-black text-[#8d73ff]">
+                            {item.step}
+                          </span>
+                        </div>
 
-        <h3 className="mt-6 font-poppins text-xl font-black leading-tight text-primary">
-          {item.title}
-        </h3>
+                        <h3 className="mt-6 font-poppins text-xl font-black leading-tight text-primary">
+                          {item.title}
+                        </h3>
 
-        <p className="mt-3 text-sm leading-7 text-primary/60">
-          {item.text}
-        </p>
-      </div>
+                        <p className="mt-3 text-sm leading-7 text-primary/60">
+                          {item.text}
+                        </p>
+                      </div>
 
-      <div className="absolute inset-x-0 bottom-0 h-1 rounded-b-[2.2rem] bg-gradient-to-r from-[#8d73ff] to-[#ffd84d] opacity-0 transition group-hover:opacity-100" />
-    </motion.div>
-  );
-})}
+                      <div className="absolute inset-x-0 bottom-0 h-1 rounded-b-[2.2rem] bg-gradient-to-r from-[#8d73ff] to-[#ffd84d] opacity-0 transition group-hover:opacity-100" />
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -17,7 +17,7 @@ import {
 import Footer from "@/components/Footer";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { Helmet } from "react-helmet-async";
+import SeoHelmet from "@/components/SeoHelmet";
 
 const WhyLuna = () => {
   const { t } = useTranslation();
@@ -67,12 +67,20 @@ const WhyLuna = () => {
     },
   ];
 
+  const baseUrl = "https://www.lunastudies.com";
+  const canonicalUrl = `${baseUrl}/${currentLang}/whyluna`;
+
+  const seoTitle = t("whyLuna.seo.title");
+  const seoDescription = t("whyLuna.seo.description");
+
   return (
     <>
-      <Helmet>
-        <title>{t("whyLuna.seo.title")}</title>
-        <meta name="description" content={t("whyLuna.seo.description")} />
-      </Helmet>
+      <SeoHelmet
+        title={seoTitle}
+        description={seoDescription}
+        canonicalUrl={canonicalUrl}
+        currentLang={currentLang}
+      />
 
       <div className="min-h-screen bg-background">
         {/* HERO */}
