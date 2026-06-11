@@ -41,7 +41,7 @@ const NavBar = () => {
   ];
 
   const pathWithoutLang =
-    location.pathname.replace(/^\/(en|zh|jp)(\/|$)/, "/");
+    location.pathname.replace(/^\/(en|zh|ja)/, "") || "/";
 
   const isApp = appRoutes.some((route) =>
     pathWithoutLang.startsWith(route)
@@ -147,7 +147,7 @@ const NavBar = () => {
     i18n.changeLanguage(nextLang);
 
     const pathWithoutLang =
-      location.pathname.replace(/^\/(en|zh|jp)/, "") || "/";
+      location.pathname.replace(/^\/(en|zh|ja)/, "") || "/";
 
     window.location.href = `/${nextLang}${pathWithoutLang}`;
   };
