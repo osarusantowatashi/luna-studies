@@ -15,6 +15,9 @@ import {
   Search,
   Headphones,
   Blocks,
+  XCircle,
+  Trophy,
+  CheckCircle2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -113,9 +116,23 @@ export default function MemoryFlip() {
   const [masteryCorrect, setMasteryCorrect] = useState(0);
   const [level, setLevel] = useState(1);
 
+  const [answerFeedback, setAnswerFeedback] = useState<{
+    type: "correct" | "wrong";
+    correctAnswer?: string;
+  } | null>(null);
+
+  const [masteryAnswerLocked, setMasteryAnswerLocked] = useState(false);
+
+  const [unlockModal, setUnlockModal] = useState<
+    "Medium" | "Hard" | "Advanced" | "GradeCleared" | null
+  >(null);
+
+
+
   const [soundOn, setSoundOn] = useState(true);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobileFullscreen, setIsMobileFullscreen] = useState(false);
 
   const gameWindowRef = useRef<HTMLDivElement | null>(null);
 
@@ -126,6 +143,8 @@ export default function MemoryFlip() {
   );
 
   const isLight = theme === "light";
+
+  const fullscreenActive = isFullscreen || isMobileFullscreen;
 
   const themeClass = {
     page: isLight ? "bg-white" : "bg-[#071426]",
@@ -176,6 +195,8 @@ export default function MemoryFlip() {
     return {
       flip: new Audio("/sounds/card-flip.mp3"),
       match: new Audio("/sounds/success.mp3"),
+      correct: new Audio("/sounds/success.mp3"),
+      wrong: new Audio("/sounds/time-up.mp3"),
       stage: new Audio("/sounds/mastery-test.mp3"),
       timeUp: new Audio("/sounds/time-up.mp3"),
     };
@@ -264,7 +285,16 @@ export default function MemoryFlip() {
 
   const toggleFullscreen = async () => {
     if (!gameWindowRef.current) return;
-
+  
+    const isMobile =
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+      window.innerWidth < 768;
+  
+    if (isMobile) {
+      setIsMobileFullscreen((prev) => !prev);
+      return;
+    }
+  
     if (!document.fullscreenElement) {
       await gameWindowRef.current.requestFullscreen();
     } else {
@@ -635,77 +665,100 @@ export default function MemoryFlip() {
   };
 
   const submitMasteryAnswer = async (answer: string) => {
+    if (masteryAnswerLocked) return;
+
     const current = masteryQuestions[masteryIndex];
     const isCorrect = answer === current.correctAnswer;
 
     const nextCorrect = isCorrect ? masteryCorrect + 1 : masteryCorrect;
     const isLastQuestion = masteryIndex >= masteryQuestions.length - 1;
 
-    if (!isLastQuestion) {
-      setMasteryCorrect(nextCorrect);
-      setMasteryIndex((prev) => prev + 1);
-      return;
+    setMasteryAnswerLocked(true);
+
+    if (isCorrect) {
+      playGameSound("correct", 0.25);
+      setAnswerFeedback({ type: "correct" });
+    } else {
+      playGameSound("wrong", 0.22);
+      setAnswerFeedback({
+        type: "wrong",
+        correctAnswer: current.correctAnswer,
+      });
     }
 
-    setShowMasteryTest(false);
-    setShowResultModal(false);
+    setTimeout(async () => {
+      setAnswerFeedback(null);
+      setMasteryAnswerLocked(false);
 
-    if (nextCorrect >= 4) {
-      playGameSound("stage", 0.6);
-
-      await saveMasteredPairs();
-
-      await saveProgress({
-        passed: true,
-        levelReached: level,
-      });
-
-      if (difficulty === "Easy") {
-        setUnlockedDifficulty("Medium");
-        setDifficulty("Medium");
-        alert("Medium unlocked!");
-      } else if (difficulty === "Medium") {
-        setUnlockedDifficulty("Hard");
-        setDifficulty("Hard");
-        alert("Hard unlocked!");
-      } else if (difficulty === "Hard") {
-        setUnlockedDifficulty("Advanced");
-        setDifficulty("Advanced");
-        alert("Advanced unlocked!");
-      } else {
-        setGradeCleared(true);
-        alert("Grade Cleared!");
+      if (!isLastQuestion) {
+        setMasteryCorrect(nextCorrect);
+        setMasteryIndex((prev) => prev + 1);
+        return;
       }
 
-      setLevel(1);
-      setCombo(0);
-      setScore(0);
-      setMoves(0);
-      setMasteryPool([]);
-      setGameStarted(false);
-    } else {
-      alert("Mastery test failed. Try this difficulty again.");
+      setShowMasteryTest(false);
+      setShowResultModal(false);
 
-      await saveProgress({
-        passed: false,
-        levelReached: level,
-      });
+      if (nextCorrect >= 8) {
+        playGameSound("stage", 0.25);
 
-      setLevel(1);
-      setMasteryPool([]);
+        await saveMasteredPairs();
 
-      await loadGame({
-        selectedLanguagePair: languagePair,
-        selectedGrade: grade,
-        selectedDifficulty: difficulty,
-        selectedPairCount: getPairCountByDifficulty(difficulty),
-      });
-    }
+        await saveProgress({
+          passed: true,
+          levelReached: level,
+        });
+
+        let unlocked: "Medium" | "Hard" | "Advanced" | "GradeCleared" = "Medium";
+
+        if (difficulty === "Easy") {
+          unlocked = "Medium";
+          setUnlockedDifficulty("Medium");
+          setDifficulty("Medium");
+        } else if (difficulty === "Medium") {
+          unlocked = "Hard";
+          setUnlockedDifficulty("Hard");
+          setDifficulty("Hard");
+        } else if (difficulty === "Hard") {
+          unlocked = "Advanced";
+          setUnlockedDifficulty("Advanced");
+          setDifficulty("Advanced");
+        } else {
+          unlocked = "GradeCleared";
+          setGradeCleared(true);
+        }
+
+        setLevel(1);
+        setCombo(0);
+        setScore(0);
+        setMoves(0);
+        setMasteryPool([]);
+        setGameStarted(false);
+        setUnlockModal(unlocked);
+      } else {
+        playGameSound("wrong", 0.25);
+
+        await saveProgress({
+          passed: false,
+          levelReached: level,
+        });
+
+        setLevel(1);
+        setMasteryPool([]);
+
+        await loadGame({
+          selectedLanguagePair: languagePair,
+          selectedGrade: grade,
+          selectedDifficulty: difficulty,
+          selectedPairCount: getPairCountByDifficulty(difficulty),
+        });
+      }
+    }, isCorrect ? 850 : 1200);
   };
 
   const generateMasteryTest = async () => {
     const shuffled = shuffle(masteryPool);
-    const selected = shuffled.slice(0, 5);
+    const selected = shuffled.slice(0, 10);
 
     const questions = selected.map((pair) => {
       const wrongAnswers = shuffle(
@@ -740,6 +793,7 @@ export default function MemoryFlip() {
     setErrorMsg("");
     setLoading(false);
     setTimeUp(false);
+    setIsMobileFullscreen(false);
   };
 
   const flipCard = (card: Card) => {
@@ -887,6 +941,131 @@ export default function MemoryFlip() {
         )}
       </div>
 
+      <AnimatePresence>
+        {unlockModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] flex items-center justify-center bg-black/75 px-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 24 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-lg rounded-[2.8rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
+            >
+              <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
+
+              <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                {unlockModal === "GradeCleared"
+                  ? "Grade Mastered"
+                  : "Difficulty Unlocked"}
+              </p>
+
+              <h2 className="mt-3 text-4xl font-black text-white">
+                {unlockModal === "GradeCleared"
+                  ? `${grade} Cleared!`
+                  : `${unlockModal} Unlocked!`}
+              </h2>
+
+              <p className="mt-4 text-slate-300">
+                {unlockModal === "GradeCleared"
+                  ? "Amazing work. You mastered this grade."
+                  : `You can now challenge ${unlockModal} difficulty.`}
+              </p>
+
+              <div className="mt-8 grid gap-3">
+                {unlockModal !== "GradeCleared" && (
+                  <button
+                    onClick={async () => {
+                      const nextDifficulty = unlockModal;
+
+                      setUnlockModal(null);
+                      setUnlockedDifficulty(nextDifficulty);
+                      setDifficulty(nextDifficulty);
+                      setGameStarted(true);
+
+                      await loadGame({
+                        selectedLanguagePair: languagePair,
+                        selectedGrade: grade,
+                        selectedDifficulty: nextDifficulty,
+                        selectedPairCount: getPairCountByDifficulty(nextDifficulty),
+                      });
+                    }}
+                    className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                  >
+                    PLAY {unlockModal.toUpperCase()} NOW
+                  </button>
+                )}
+
+                {unlockModal === "GradeCleared" && getNextGrade(grade) && (
+                  <button
+                    onClick={() => {
+                      const nextGrade = getNextGrade(grade);
+                      if (!nextGrade) return;
+
+                      setUnlockModal(null);
+                      setGrade(nextGrade);
+                      setDifficulty("Easy");
+                      setGameStarted(false);
+                    }}
+                    className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                  >
+                    NEXT GRADE
+                  </button>
+                )}
+
+                <button
+                  onClick={async () => {
+                    setUnlockModal(null);
+                    setGameStarted(false);
+                    setShowMasteryTest(false);
+                    await loadProgress();
+                  }}
+                  className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                >
+                  BACK TO MENU
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
+      <AnimatePresence>
+        {answerFeedback && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.08 }}
+            className={`fixed inset-0 z-[200] flex items-center justify-center px-4 ${answerFeedback.type === "correct"
+              ? "bg-emerald-500/85"
+              : "bg-red-500/85"
+              }`}
+          >
+            <div className="text-center text-white">
+              {answerFeedback.type === "correct" ? (
+                <CheckCircle2 className="mx-auto h-24 w-24" />
+              ) : (
+                <XCircle className="mx-auto h-24 w-24" />
+              )}
+
+              <h2 className="mt-6 text-5xl font-black">
+                {answerFeedback.type === "correct" ? "Correct!" : "Incorrect"}
+              </h2>
+
+              {answerFeedback.type === "wrong" && (
+                <p className="mt-4 text-2xl font-black">
+                  Correct answer: {answerFeedback.correctAnswer}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {showMasteryTest && masteryQuestions[masteryIndex] && (
         <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
           <div className={`w-full max-w-3xl rounded-[2.8rem] border p-8 ${themeClass.panel}`}>
@@ -929,8 +1108,8 @@ export default function MemoryFlip() {
       )}
 
       {!showMasteryTest && (
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6">
-          <div className={`mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] border px-5 py-4 ${themeClass.topBar}`}>
+        <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+          <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:gap-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${themeClass.topBar}`}>
             <button
               onClick={() => navigate("/games")}
               className={`rounded-xl border px-4 py-2 text-sm font-black ${themeClass.button}`}
@@ -971,15 +1150,19 @@ export default function MemoryFlip() {
 
           <div
             ref={gameWindowRef}
-            className={`relative mb-8 overflow-hidden rounded-[2.5rem] border p-4 ${themeClass.gameWindow}`}
+            className={`relative overflow-hidden border ${themeClass.gameWindow} ${
+              isMobileFullscreen
+                ? "fixed inset-0 z-[250] mb-0 h-[100dvh] overflow-y-auto rounded-none p-3"
+                : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
+            }`}
           >
-            <div className="min-h-[640px]">
+            <div className={isMobileFullscreen ? "min-h-screen" : "min-h-[520px] sm:min-h-[640px]"}>
               <button
                 onClick={toggleFullscreen}
                 className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
-                title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                title={fullscreenActive ? "Exit Fullscreen" : "Fullscreen"}
               >
-                {isFullscreen ? (
+                {fullscreenActive ? (
                   <Minimize2 className="h-5 w-5" />
                 ) : (
                   <Maximize2 className="h-5 w-5" />
@@ -999,19 +1182,19 @@ export default function MemoryFlip() {
                           </span>
                         </div>
 
-                        <h1 className={`max-w-2xl text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl ${themeClass.title}`}>
+                        <h1 className={`max-w-2xl text-3xl font-black leading-[1.08] tracking-tight sm:text-5xl ${themeClass.title}`}>
                           Train Memory.
                           <br />
                           Master Vocabulary.
                         </h1>
 
-                        <p className={`mt-5 max-w-xl text-lg leading-8 ${themeClass.text}`}>
+                        <p className={`mt-4 max-w-xl text-base leading-7 sm:text-lg sm:leading-8 ${themeClass.text}`}>
                           Match vocabulary cards, clear harder challenges,
                           and unlock advanced memory stages with Hapiko.
                         </p>
 
                         <div
-                          className={`mt-8 rounded-[1.5rem] border p-4 ${themeClass.softPanel}`}
+className={`mt-5 rounded-[1.3rem] border p-4 sm:mt-8 sm:rounded-[1.5rem] ${themeClass.softPanel}`}
                         >
                           <div className="flex items-start gap-3">
                             <Brain className="mt-1 h-5 w-5 text-[#C4B5FD]" />
@@ -1077,10 +1260,11 @@ export default function MemoryFlip() {
                       ].map((item) => {
                         const Icon = item.icon;
 
+                        const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
+
                         const locked =
-                          (item.key === "Medium" && unlockedDifficulty === "Easy") ||
-                          (item.key === "Hard" && !["Hard", "Advanced"].includes(unlockedDifficulty)) ||
-                          (item.key === "Advanced" && unlockedDifficulty !== "Advanced");
+                          difficultyOrder.indexOf(item.key) >
+                          difficultyOrder.indexOf(unlockedDifficulty);
 
                         return (
                           <button
@@ -1416,7 +1600,7 @@ export default function MemoryFlip() {
               More Games
             </p>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-6">
               {moreGames.map((game) => {
                 const Icon = game.icon;
 
@@ -1424,7 +1608,7 @@ export default function MemoryFlip() {
                   <button
                     key={game.title}
                     disabled={!game.active}
-                    className={`rounded-[1.5rem] border p-4 text-left transition ${game.active
+                    className={`rounded-[1.3rem] border p-3 text-left transition sm:rounded-[1.5rem] sm:p-4 ${game.active
                       ? "border-[#8B5CF6]/50 bg-[#8B5CF6]/20 hover:-translate-y-1"
                       : isLight
                         ? "border-[#eee8ff] bg-[#faf8ff] opacity-60"
