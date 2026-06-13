@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
+  Blocks,
+  Brain,
+  Car,
   Check,
   CheckCircle2,
+  Flame,
+  Headphones,
   Moon,
   Search,
   Sun,
@@ -336,9 +341,18 @@ export default function WordSearch() {
       ? "border-[#eee8ff] bg-white text-primary shadow-[0_8px_25px_rgba(66,56,120,0.08)] hover:bg-[#faf8ff]"
       : "border-white/10 bg-white/5 text-white hover:bg-white/10",
     boardCell: isLight
-      ? "border-[#eee8ff] bg-white text-primary"
-      : "border-white/10 bg-white/10 text-white",
+      ? "border-[#eee8ff] bg-gradient-to-br from-white to-[#f6f1ff] text-primary shadow-[0_8px_22px_rgba(66,56,120,0.08)]"
+      : "border-white/10 bg-gradient-to-br from-white/[0.14] to-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]",
   };
+
+  const moreGames = [
+    { title: "Memory Flip", icon: Brain, available: true, current: false, status: "Available", path: "/memory-flip" },
+    { title: "Word Search", icon: Search, available: true, current: true, status: "Available", path: "/word-search" },
+    { title: "Word Drive", icon: Car, available: false, current: false, status: "Coming Soon", path: "#" },
+    { title: "Grammar Runner", icon: Flame, available: false, current: false, status: "Coming Soon", path: "#" },
+    { title: "Listening Challenge", icon: Headphones, available: false, current: false, status: "Coming Soon", path: "#" },
+    { title: "CAT4 Patterns", icon: Blocks, available: false, current: false, status: "Coming Soon", path: "#" },
+  ];
 
   const scopeKey = `english:${grade}`;
 
@@ -1224,7 +1238,7 @@ export default function WordSearch() {
               <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
                 <div className={`rounded-[1.5rem] border p-3 sm:p-4 ${palette.soft}`}>
                   <div
-                    className="mx-auto grid touch-none select-none gap-1"
+                    className="mx-auto grid touch-none select-none gap-1 rounded-[1.2rem]"
                     style={{
                       gridTemplateColumns: `repeat(${config.size}, minmax(0, 1fr))`,
                       maxWidth: "min(92vw, 640px)",
@@ -1254,10 +1268,10 @@ export default function WordSearch() {
                           onPointerEnter={() => {
                             if (dragging) updateSelection(cell.id);
                           }}
-                          className={`aspect-square rounded-lg border text-[11px] font-black sm:text-base ${found
-                            ? "border-emerald-400 bg-emerald-500 text-white"
+                          className={`aspect-square rounded-lg border text-[11px] font-black transition sm:text-base ${found
+                            ? "border-emerald-400 bg-emerald-500 text-white shadow-[0_0_18px_rgba(16,185,129,0.45)]"
                             : selected
-                              ? "border-[#FACC15] bg-[#FACC15] text-[#0f172a]"
+                              ? "border-[#FACC15] bg-[#FACC15] text-[#0f172a] shadow-[0_0_18px_rgba(250,204,21,0.45)]"
                               : palette.boardCell
                             }`}
                         >
@@ -1317,6 +1331,54 @@ export default function WordSearch() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {!isMobileFullscreen && (
+          <div className={`mt-8 rounded-[2rem] border p-5 ${palette.panel}`}>
+            <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
+              More Games
+            </p>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-6">
+              {moreGames.map((game) => {
+                const Icon = game.icon;
+
+                return (
+                  <button
+                    key={game.title}
+                    disabled={!game.available}
+                    onClick={() => {
+                      if (game.available && !game.current) {
+                        navigate(game.path);
+                      }
+                    }}
+                    className={`rounded-[1.3rem] border p-3 text-left transition sm:rounded-[1.5rem] sm:p-4 ${game.current
+                      ? "border-[#8B5CF6]/50 bg-[#8B5CF6]/20 hover:-translate-y-1"
+                      : game.available
+                        ? isLight
+                          ? "border-[#eee8ff] bg-white hover:-translate-y-1 hover:bg-[#faf8ff]"
+                          : "border-white/10 bg-white/[0.07] hover:-translate-y-1 hover:bg-white/10"
+                      : isLight
+                        ? "border-[#eee8ff] bg-[#faf8ff] opacity-60"
+                        : "border-white/10 bg-white/5 opacity-50"
+                      }`}
+                  >
+                    <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-2xl ${isLight ? "bg-[#f6f1ff]" : "bg-white/10"}`}>
+                      <Icon className={`h-6 w-6 ${isLight ? "text-primary" : "text-white"}`} />
+                    </div>
+
+                    <p className={`text-sm font-black ${palette.title}`}>
+                      {game.title}
+                    </p>
+
+                    <p className={`mt-1 text-xs font-bold ${palette.muted}`}>
+                      {game.status}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

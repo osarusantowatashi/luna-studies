@@ -264,12 +264,12 @@ export default function MemoryFlip() {
         : "English ↔ Japanese";
 
   const moreGames = [
-    { title: "Memory Flip", icon: Brain, active: true, status: "Available" },
-    { title: "Word Drive", icon: Car, active: false, status: "Coming Soon" },
-    { title: "Grammar Runner", icon: Flame, active: false, status: "Coming Soon" },
-    { title: "Word Search", icon: Search, active: false, status: "Coming Soon" },
-    { title: "Listening Challenge", icon: Headphones, active: false, status: "Coming Soon" },
-    { title: "CAT4 Patterns", icon: Blocks, active: false, status: "Coming Soon" },
+    { title: "Memory Flip", icon: Brain, available: true, current: true, status: "Available", path: "/memory-flip" },
+    { title: "Word Search", icon: Search, available: true, current: false, status: "Available", path: "/word-search" },
+    { title: "Word Drive", icon: Car, available: false, current: false, status: "Coming Soon", path: "#" },
+    { title: "Grammar Runner", icon: Flame, available: false, current: false, status: "Coming Soon", path: "#" },
+    { title: "Listening Challenge", icon: Headphones, available: false, current: false, status: "Coming Soon", path: "#" },
+    { title: "CAT4 Patterns", icon: Blocks, available: false, current: false, status: "Coming Soon", path: "#" },
   ];
 
   const soundMap = useMemo(() => {
@@ -1786,9 +1786,18 @@ export default function MemoryFlip() {
                 return (
                   <button
                     key={game.title}
-                    disabled={!game.active}
-                    className={`rounded-[1.3rem] border p-3 text-left transition sm:rounded-[1.5rem] sm:p-4 ${game.active
+                    disabled={!game.available}
+                    onClick={() => {
+                      if (game.available && !game.current) {
+                        navigate(game.path);
+                      }
+                    }}
+                    className={`rounded-[1.3rem] border p-3 text-left transition sm:rounded-[1.5rem] sm:p-4 ${game.current
                       ? "border-[#8B5CF6]/50 bg-[#8B5CF6]/20 hover:-translate-y-1"
+                      : game.available
+                        ? isLight
+                          ? "border-[#eee8ff] bg-white hover:-translate-y-1 hover:bg-[#faf8ff]"
+                          : "border-white/10 bg-white/[0.07] hover:-translate-y-1 hover:bg-white/10"
                       : isLight
                         ? "border-[#eee8ff] bg-[#faf8ff] opacity-60"
                         : "border-white/10 bg-white/5 opacity-50"
