@@ -536,7 +536,7 @@ export default function MemoryFlip() {
     setSavedSession(session);
   };
 
-  const resumeSavedSession = () => {
+  const resumeSavedSession = async () => {
     if (!savedSession) return;
 
     setLanguagePair(savedSession.languagePair || "zh_en");
@@ -562,6 +562,21 @@ export default function MemoryFlip() {
     setLoading(false);
     setShowResultModal(false);
     setShowMasteryTest(false);
+
+    const isMobile =
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+      window.innerWidth < 768;
+
+    if (isMobile) {
+      setIsMobileFullscreen(true);
+    } else {
+      try {
+        await gameWindowRef.current?.requestFullscreen();
+      } catch {
+        // Browsers can block fullscreen unless the gesture is accepted.
+      }
+    }
+
     setGameStarted(true);
     clearSavedSession();
   };
@@ -821,6 +836,11 @@ export default function MemoryFlip() {
         type: "wrong",
         correctAnswer: current.correctAnswer,
       });
+    }
+
+    if (isLastQuestion) {
+      setShowMasteryTest(false);
+      setShowResultModal(false);
     }
 
     setTimeout(async () => {
@@ -1570,9 +1590,8 @@ export default function MemoryFlip() {
                         </button>
 
                         <button
-                          onClick={() => {
-                            setShowResultModal(false);
-                            setGameStarted(false);
+                          onClick={async () => {
+                            await leaveArcade();
                           }}
                           className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
                         >

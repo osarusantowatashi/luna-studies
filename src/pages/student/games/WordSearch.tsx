@@ -8,6 +8,8 @@ import {
   CheckCircle2,
   Flame,
   Headphones,
+  Maximize2,
+  Minimize2,
   Moon,
   Search,
   Sun,
@@ -42,7 +44,9 @@ type Cell = {
 };
 
 type FinalQuestion = {
-  clue: string;
+  clueDisplay: string;
+  sentenceHint: string;
+  correctChunk: string;
   correctAnswer: string;
   options: string[];
 };
@@ -153,11 +157,99 @@ const getNextDifficulty = (difficulty: string) => {
   return null;
 };
 
-const makeWordClue = (word: string) => {
-  if (word.length <= 4) return `${word[0]} ${"_ ".repeat(word.length - 2)}${word[word.length - 1]}`;
+const getGridMaxWidth = (size: number) => {
+  if (size <= 6) return "min(84vw, 360px)";
+  if (size <= 8) return "min(88vw, 430px)";
+  if (size <= 10) return "min(90vw, 520px)";
+  return "min(92vw, 590px)";
+};
 
-  const middle = "_ ".repeat(word.length - 4);
-  return `${word.slice(0, 2)} ${middle}${word.slice(-2)}`;
+const getGridLetterClass = (size: number) => {
+  if (size <= 6) return "text-lg sm:text-2xl";
+  if (size <= 8) return "text-base sm:text-xl";
+  if (size <= 10) return "text-sm sm:text-lg";
+  return "text-xs sm:text-base";
+};
+
+const getMissingChunkWindow = (word: string) => {
+  const chunkLength = word.length <= 5 ? 1 : 2;
+  const start = Math.max(1, Math.floor((word.length - chunkLength) / 2));
+
+  return { start, chunkLength };
+};
+
+const makeChunkOption = (word: string, chunkLength: number) => {
+  if (word.length <= chunkLength + 2) return "";
+
+  const start = Math.max(1, Math.floor((word.length - chunkLength) / 2));
+  return word.slice(start, start + chunkLength);
+};
+
+const sentenceHintTemplates: Record<string, (maskedWord: string) => string> = {
+  APPLE: (word) => `She eats an ${word} every day.`,
+  BALL: (word) => `The child kicks the ${word}.`,
+  BIRD: (word) => `The ${word} is flying in the sky.`,
+  BOOK: (word) => `Please read the ${word}.`,
+  BREAD: (word) => `He eats ${word} for breakfast.`,
+  CAT: (word) => `The ${word} sleeps on the sofa.`,
+  CHAIR: (word) => `Please sit on the ${word}.`,
+  DOG: (word) => `The ${word} runs in the park.`,
+  DOOR: (word) => `Please open the ${word}.`,
+  FISH: (word) => `The ${word} swims in the water.`,
+  FLOWER: (word) => `The ${word} grows in the garden.`,
+  HOUSE: (word) => `They live in a small ${word}.`,
+  MILK: (word) => `She drinks ${word} in the morning.`,
+  PENCIL: (word) => `Please use a ${word} to write.`,
+  PIANO: (word) => `John is playing the ${word}.`,
+  RABBIT: (word) => `The ${word} is running in the garden.`,
+  SCHOOL: (word) => `We go to ${word} to learn.`,
+  TABLE: (word) => `The plate is on the ${word}.`,
+  TEACHER: (word) => `The ${word} writes on the board.`,
+  TREE: (word) => `The ${word} has green leaves.`,
+  WATER: (word) => `Please drink some ${word}.`,
+  WINDOW: (word) => `Look out the ${word}.`,
+};
+
+const makeSentenceHint = (word: string, maskedWord: string) => {
+  const lowerMaskedWord = maskedWord.toLowerCase();
+  const template = sentenceHintTemplates[word];
+
+  if (template) return template(lowerMaskedWord);
+  if (word.endsWith("ING")) return `He is ${lowerMaskedWord} after school.`;
+  if (word.endsWith("ED")) return `She ${lowerMaskedWord} it yesterday.`;
+
+  return `The teacher points to the ${lowerMaskedWord} in class.`;
+};
+
+const makeFinalQuestion = (word: string, sourceWords: string[]): FinalQuestion => {
+  const { start, chunkLength } = getMissingChunkWindow(word);
+  const correctChunk = word.slice(start, start + chunkLength);
+  const maskedWord = `${word.slice(0, start)}${"_".repeat(chunkLength)}${word.slice(
+    start + chunkLength
+  )}`;
+  const chunkFallbacks =
+    chunkLength === 1
+      ? ["A", "E", "I", "O", "U", "N", "R", "S", "T", "L"]
+      : ["AN", "ON", "EN", "UN", "ER", "AR", "IN", "OR", "ST", "CH", "TH"];
+  const wrongChunks = shuffle(
+    Array.from(
+      new Set(
+        sourceWords
+          .filter((item) => item !== word)
+          .map((item) => makeChunkOption(item, chunkLength))
+          .concat(chunkFallbacks)
+          .filter((item) => item && item !== correctChunk && item.length === chunkLength)
+      )
+    )
+  ).slice(0, 3);
+
+  return {
+    clueDisplay: maskedWord.split("").join(" "),
+    sentenceHint: makeSentenceHint(word, maskedWord),
+    correctChunk,
+    correctAnswer: word,
+    options: shuffle([correctChunk, ...wrongChunks]).slice(0, 4),
+  };
 };
 
 const buildSelectionLine = (startId: string, endId: string) => {
@@ -310,6 +402,7 @@ export default function WordSearch() {
 
   const config = getDifficultyConfig(difficulty);
   const isLight = theme === "light";
+  const fullscreenActive = isFullscreen || isMobileFullscreen;
   const foundSet = useMemo(() => new Set(foundWords), [foundWords]);
   const selectedSet = useMemo(() => new Set(selectedCells), [selectedCells]);
   const foundCellSet = useMemo(
@@ -591,6 +684,27 @@ export default function WordSearch() {
     }
   };
 
+  const toggleFullscreen = async () => {
+    const isMobile =
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+      window.innerWidth < 768;
+
+    if (isMobile) {
+      setIsMobileFullscreen((current) => !current);
+      return;
+    }
+
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await arcadeRef.current?.requestFullscreen();
+      }
+    } catch {
+      // Browsers can refuse fullscreen requests; the toggle should fail softly.
+    }
+  };
+
   const exitGameMode = async () => {
     setIsMobileFullscreen(false);
 
@@ -643,6 +757,15 @@ export default function WordSearch() {
   };
 
   const startGame = async () => {
+    if (savedSession) {
+      await resumeSavedSession();
+      return;
+    }
+
+    await startNewGame();
+  };
+
+  const startNewGame = async () => {
     clearSavedSession();
     setScore(0);
     setFinalResult(null);
@@ -716,15 +839,7 @@ export default function WordSearch() {
       (_, index) => sourceWords[index % sourceWords.length]
     );
 
-    const questions = selectedWords.map((word) => {
-      const wrongAnswers = shuffle(sourceWords.filter((item) => item !== word)).slice(0, 3);
-
-      return {
-        clue: makeWordClue(word),
-        correctAnswer: word,
-        options: shuffle([word, ...wrongAnswers]),
-      };
-    });
+    const questions = selectedWords.map((word) => makeFinalQuestion(word, sourceWords));
 
     setFinalQuestions(questions);
     setFinalIndex(0);
@@ -742,15 +857,19 @@ export default function WordSearch() {
     if (finalAnswerLocked || !finalQuestions[finalIndex]) return;
 
     const current = finalQuestions[finalIndex];
-    const correct = answer === current.correctAnswer;
+    const correct = answer === current.correctChunk;
     const nextCorrect = correct ? finalCorrect + 1 : finalCorrect;
     const isLastQuestion = finalIndex >= finalQuestions.length - 1;
 
     setFinalAnswerLocked(true);
     setFinalFeedback({
       type: correct ? "correct" : "wrong",
-      correctAnswer: correct ? undefined : current.correctAnswer,
+      correctAnswer: correct ? undefined : current.correctChunk,
     });
+
+    if (isLastQuestion) {
+      setShowFinalTest(false);
+    }
 
     setTimeout(async () => {
       setFinalFeedback(null);
@@ -903,9 +1022,24 @@ export default function WordSearch() {
           : "mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"
           }`}
       >
+        {(gameStarted || showFinalTest || finalResult) && (
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className={`fixed right-3 top-3 z-[140] flex h-11 w-11 items-center justify-center rounded-2xl border ${palette.button}`}
+            title={fullscreenActive ? "Exit Fullscreen" : "Enter Fullscreen"}
+          >
+            {fullscreenActive ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+          </button>
+        )}
+
         <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
           <button
-            onClick={() => navigate("/games")}
+            onClick={async () => {
+              if (gameStarted) saveCurrentSession();
+              await exitGameMode();
+              navigate("/games");
+            }}
             className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-black ${palette.button}`}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -1036,8 +1170,11 @@ export default function WordSearch() {
             </div>
 
             <div className={`mt-8 rounded-[2rem] border p-8 text-center ${palette.soft}`}>
-              <p className={`text-4xl font-black tracking-widest ${palette.title}`}>
-                {finalQuestions[finalIndex].clue}
+              <p className={`text-4xl font-black tracking-widest sm:text-5xl ${palette.title}`}>
+                {finalQuestions[finalIndex].clueDisplay}
+              </p>
+              <p className={`mt-4 text-sm font-bold sm:text-base ${palette.text}`}>
+                {finalQuestions[finalIndex].sentenceHint}
               </p>
             </div>
 
@@ -1241,7 +1378,7 @@ export default function WordSearch() {
                     className="mx-auto grid touch-none select-none gap-1 rounded-[1.2rem]"
                     style={{
                       gridTemplateColumns: `repeat(${config.size}, minmax(0, 1fr))`,
-                      maxWidth: "min(92vw, 640px)",
+                      maxWidth: getGridMaxWidth(config.size),
                     }}
                     onPointerMove={handleBoardMove}
                     onPointerUp={finishSelection}
@@ -1268,7 +1405,7 @@ export default function WordSearch() {
                           onPointerEnter={() => {
                             if (dragging) updateSelection(cell.id);
                           }}
-                          className={`aspect-square rounded-lg border text-[11px] font-black transition sm:text-base ${found
+                          className={`aspect-square rounded-lg border font-black leading-none transition ${getGridLetterClass(config.size)} ${found
                             ? "border-emerald-400 bg-emerald-500 text-white shadow-[0_0_18px_rgba(16,185,129,0.45)]"
                             : selected
                               ? "border-[#FACC15] bg-[#FACC15] text-[#0f172a] shadow-[0_0_18px_rgba(250,204,21,0.45)]"
