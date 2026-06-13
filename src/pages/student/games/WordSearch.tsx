@@ -1098,6 +1098,7 @@ export default function WordSearch() {
       <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
         {label}
       </span>
+
       <button
         type="button"
         onClick={() => setOpenDropdown((current) => (current === id ? null : id))}
@@ -1107,33 +1108,66 @@ export default function WordSearch() {
           }`}
       >
         <span>{value}</span>
-        <span className="text-xs opacity-60">v</span>
+        <span className="text-xs opacity-60">▾</span>
       </button>
 
       {openDropdown === id && (
-        <div className={`absolute left-0 right-0 top-full z-50 mt-2 max-h-[210px] overflow-y-auto rounded-[1.4rem] border p-2 ${isLight
-          ? "border-[#eee8ff] bg-white shadow-[0_18px_45px_rgba(66,56,120,0.15)]"
-          : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
-          }`}
+        <div
+          className={`absolute left-0 right-0 top-full z-50 mt-2 max-h-[240px] overflow-y-auto rounded-[1.4rem] border p-2 ${isLight
+            ? "border-[#eee8ff] bg-white shadow-[0_18px_45px_rgba(66,56,120,0.15)]"
+            : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
+            }`}
         >
-          {options.map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => {
-                onChange(option);
-                setOpenDropdown(null);
-              }}
-              className={`flex h-11 w-full items-center rounded-[1rem] px-4 text-left text-sm font-black transition ${value === option
-                ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
-                : isLight
-                  ? "text-primary hover:bg-[#faf8ff]"
-                  : "text-white hover:bg-white/10"
-                }`}
-            >
-              {option}
-            </button>
-          ))}
+          {options.map((option) => {
+            const diffName = option.split(" · ")[0];
+
+            const locked =
+              id === "difficulty" &&
+              difficultyOrder.indexOf(diffName) >
+              difficultyOrder.indexOf(unlockedDifficulty);
+
+            const active =
+              value === option || option.startsWith(`${value} ·`);
+
+            return (
+              <button
+                key={option}
+                type="button"
+                disabled={locked}
+                onClick={() => {
+                  if (locked) return;
+                  onChange(option);
+                  setOpenDropdown(null);
+                }}
+                className={`flex min-h-11 w-full items-center rounded-[1rem] px-4 py-3 text-left text-sm font-black transition ${locked
+                  ? "cursor-not-allowed opacity-45"
+                  : active
+                    ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
+                    : isLight
+                      ? "text-primary hover:bg-[#faf8ff]"
+                      : "text-white hover:bg-white/10"
+                  }`}
+              >
+                <div className="flex w-full items-center justify-between gap-3">
+                  <span><div className="flex w-full items-center justify-between gap-3">
+                    <span>{option}</span>
+
+                    {locked && (
+                      <span className="text-[10px] font-black uppercase opacity-70">
+                        Locked
+                      </span>
+                    )}
+                  </div></span>
+
+                  {locked && (
+                    <span className="text-[10px] font-black uppercase opacity-70">
+                      Locked
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -1482,15 +1516,16 @@ export default function WordSearch() {
                       "Difficulty",
                       "difficulty",
                       difficulty,
-                      difficulties
-                        .filter(
-                          (item) =>
-                            difficultyOrder.indexOf(item.key) <=
-                            difficultyOrder.indexOf(unlockedDifficulty)
-                        )
-                        .map((item) => `${item.key} · ${item.words} words`),
+                      difficulties.map((item) => `${item.key} · ${item.words} words`),
                       (value) => {
                         const nextDifficulty = value.split(" · ")[0];
+
+                        const locked =
+                          difficultyOrder.indexOf(nextDifficulty) >
+                          difficultyOrder.indexOf(unlockedDifficulty);
+
+                        if (locked) return;
+
                         setDifficulty(nextDifficulty);
                       }
                     )}

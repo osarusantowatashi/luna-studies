@@ -1102,26 +1102,60 @@ export default function MemoryFlip() {
                 : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                 }`}
             >
-              {options.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onPointerDown={(event) => event.stopPropagation()}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    onChange(option);
-                    setOpen(false);
-                  }}
-                  className={`flex h-11 w-full items-center rounded-[1rem] px-4 text-left text-sm font-black transition ${value === option
-                    ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
-                    : isLight
-                      ? "text-primary hover:bg-[#faf8ff]"
-                      : "text-white hover:bg-white/10"
-                    }`}
-                >
-                  {option}
-                </button>
-              ))}
+              {options.map((option) => {
+                const diffName = option.split(" · ")[0];
+                const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
+
+                const locked =
+                  difficultyOrder.includes(diffName) &&
+                  difficultyOrder.indexOf(diffName) >
+                  difficultyOrder.indexOf(unlockedDifficulty);
+
+                const active = value === option || option.startsWith(`${value} ·`);
+
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    disabled={locked}
+                    onPointerDown={(event) => event.stopPropagation()}
+                    onClick={(event) => {
+                      event.preventDefault();
+
+                      if (locked) return;
+
+                      onChange(option);
+                      setOpen(false);
+                    }}
+                    className={`flex min-h-11 w-full items-center rounded-[1rem] px-4 py-3 text-left text-sm font-black transition ${locked
+                      ? "cursor-not-allowed opacity-45"
+                      : active
+                        ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
+                        : isLight
+                          ? "text-primary hover:bg-[#faf8ff]"
+                          : "text-white hover:bg-white/10"
+                      }`}
+                  >
+                    <div className="flex w-full items-center justify-between gap-3">
+                      <span><div className="flex w-full items-center justify-between gap-3">
+                        <span>{option}</span>
+
+                        {locked && (
+                          <span className="text-[10px] font-black uppercase opacity-70">
+                            Locked
+                          </span>
+                        )}
+                      </div></span>
+
+                      {locked && (
+                        <span className="text-[10px] font-black uppercase opacity-70">
+                          Locked
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
@@ -1489,27 +1523,25 @@ export default function MemoryFlip() {
                       <p className={`mb-2 text-xs font-black uppercase tracking-[0.18em] ${themeClass.muted}`}>
                         Difficulty
                       </p>
-                      <select
+
+                      <ArcadeDropdown
                         value={difficulty}
-                        onChange={(event) => setDifficulty(event.target.value)}
-                        className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
-                          ? "border-[#eee8ff] bg-white text-primary"
-                          : "border-white/10 bg-[#0D1B2E] text-white"
-                          }`}
-                      >
-                        {["Easy", "Medium", "Hard", "Advanced"].map((item) => {
+                        options={["Easy", "Medium", "Hard", "Advanced"].map(
+                          (item) => `${item} · ${getPairCountByDifficulty(item)} pairs`
+                        )}
+                        onChange={(value) => {
+                          const nextDifficulty = value.split(" · ")[0];
                           const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
+
                           const locked =
-                            difficultyOrder.indexOf(item) >
+                            difficultyOrder.indexOf(nextDifficulty) >
                             difficultyOrder.indexOf(unlockedDifficulty);
 
-                          return (
-                            <option key={item} value={item} disabled={locked}>
-                              {item} · {getPairCountByDifficulty(item)} pairs{locked ? " · Locked" : ""}
-                            </option>
-                          );
-                        })}
-                      </select>
+                          if (locked) return;
+
+                          setDifficulty(nextDifficulty);
+                        }}
+                      />
                     </div>
 
                     <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
