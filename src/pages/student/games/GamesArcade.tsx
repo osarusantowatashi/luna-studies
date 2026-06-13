@@ -19,6 +19,14 @@ const games = [
     cover: "/games/Memory-Flip.png",
   },
   {
+    title: "Word Search",
+    description: "Find hidden vocabulary words in a timed puzzle.",
+    path: "/word-search",
+    icon: Search,
+    status: "Available",
+    color: "bg-[#ff8bd2]",
+  },
+  {
     title: "Word Drive",
     description: "Drive into the correct word before time runs out.",
     path: "#",
@@ -33,14 +41,6 @@ const games = [
     icon: Brain,
     status: "Coming Soon",
     color: "bg-[#b8f36c]",
-  },
-  {
-    title: "Word Search",
-    description: "Find hidden vocabulary words in a timed puzzle.",
-    path: "/word-search",
-    icon: Search,
-    status: "Available",
-    color: "bg-[#ff8bd2]",
   },
   {
     title: "Listening Challenge",

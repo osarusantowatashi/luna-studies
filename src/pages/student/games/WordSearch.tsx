@@ -1,5 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Check, Moon, Search, Sun, Timer, Trophy } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  Moon,
+  Search,
+  Sun,
+  Timer,
+  Trophy,
+  XCircle,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 
@@ -20,7 +30,32 @@ type Cell = {
   letter: string;
 };
 
+type FinalQuestion = {
+  clue: string;
+  correctAnswer: string;
+  options: string[];
+};
+
+type FinalResult = {
+  passed: boolean;
+  correct: number;
+  nextDifficulty: "Medium" | "Hard" | "Advanced" | null;
+};
+
+type SavedWordSearchSession = {
+  grade: string;
+  difficulty: string;
+  unlockedDifficulty: string;
+  cells: Cell[];
+  puzzleWords: PuzzleWord[];
+  foundWords: string[];
+  score: number;
+  secondsLeft: number;
+  level: number;
+};
+
 const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
+const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
 const difficulties = [
   { key: "Easy", words: 6, size: 10, seconds: 180 },
   { key: "Medium", words: 8, size: 12, seconds: 240 },
@@ -38,6 +73,7 @@ const directions = [
   [-1, -1],
   [1, -1],
 ];
+const WORD_SEARCH_SESSION_KEY = "luna_word_search_session_v1";
 
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 
@@ -57,6 +93,20 @@ const parseCellId = (id: string) => {
 
 const getDifficultyConfig = (difficulty: string) =>
   difficulties.find((item) => item.key === difficulty) || difficulties[0];
+
+const getNextDifficulty = (difficulty: string) => {
+  if (difficulty === "Easy") return "Medium";
+  if (difficulty === "Medium") return "Hard";
+  if (difficulty === "Hard") return "Advanced";
+  return null;
+};
+
+const makeWordClue = (word: string) => {
+  if (word.length <= 4) return `${word[0]} ${"_ ".repeat(word.length - 2)}${word[word.length - 1]}`;
+
+  const middle = "_ ".repeat(word.length - 4);
+  return `${word.slice(0, 2)} ${middle}${word.slice(-2)}`;
+};
 
 const buildSelectionLine = (startId: string, endId: string) => {
   const start = parseCellId(startId);
@@ -170,6 +220,7 @@ export default function WordSearch() {
   const navigate = useNavigate();
   const [grade, setGrade] = useState("Grade 1");
   const [difficulty, setDifficulty] = useState("Easy");
+  const [unlockedDifficulty, setUnlockedDifficulty] = useState("Easy");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [availableWords, setAvailableWords] = useState<string[]>([]);
   const [cells, setCells] = useState<Cell[]>([]);
@@ -183,6 +234,20 @@ export default function WordSearch() {
   const [errorMsg, setErrorMsg] = useState("");
   const [score, setScore] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(getDifficultyConfig(difficulty).seconds);
+  const [level, setLevel] = useState(1);
+  const [showRoundResult, setShowRoundResult] = useState(false);
+  const [showFinalTest, setShowFinalTest] = useState(false);
+  const [finalQuestions, setFinalQuestions] = useState<FinalQuestion[]>([]);
+  const [finalIndex, setFinalIndex] = useState(0);
+  const [finalCorrect, setFinalCorrect] = useState(0);
+  const [finalFeedback, setFinalFeedback] = useState<{
+    type: "correct" | "wrong";
+    correctAnswer?: string;
+  } | null>(null);
+  const [finalAnswerLocked, setFinalAnswerLocked] = useState(false);
+  const [finalResult, setFinalResult] = useState<FinalResult | null>(null);
+  const [savedSession, setSavedSession] = useState<SavedWordSearchSession | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<"grade" | "difficulty" | null>(null);
 
   const config = getDifficultyConfig(difficulty);
   const isLight = theme === "light";
@@ -221,6 +286,119 @@ export default function WordSearch() {
       : "border-white/10 bg-white/10 text-white",
   };
 
+  const scopeKey = `english:${grade}`;
+
+  const loadProgress = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("student_game_progress")
+      .select("unlocked_difficulty")
+      .eq("student_id", user.id)
+      .eq("game_key", "word_search")
+      .eq("scope_key", scopeKey)
+      .maybeSingle();
+
+    if (error) {
+      setUnlockedDifficulty("Easy");
+      setDifficulty("Easy");
+      return;
+    }
+
+    const currentUnlockedDifficulty = data?.unlocked_difficulty || "Easy";
+    const unlockedIndex = difficultyOrder.indexOf(currentUnlockedDifficulty);
+
+    setUnlockedDifficulty(currentUnlockedDifficulty);
+    setDifficulty((current) => {
+      if (difficultyOrder.indexOf(current) > unlockedIndex) {
+        return currentUnlockedDifficulty;
+      }
+
+      return current || "Easy";
+    });
+  };
+
+  const saveProgress = async ({
+    passed,
+    levelReached,
+  }: {
+    passed: boolean;
+    levelReached: number;
+  }) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data: existingProgress, error } = await supabase
+      .from("student_game_progress")
+      .select("unlocked_difficulty, highest_level, total_plays, total_wins, total_losses, total_score, best_score, current_streak, best_streak, last_won_at, last_lost_at")
+      .eq("student_id", user.id)
+      .eq("game_key", "word_search")
+      .eq("scope_key", scopeKey)
+      .maybeSingle();
+
+    if (error) return;
+
+    const nextDifficulty = passed
+      ? getNextDifficulty(difficulty) || existingProgress?.unlocked_difficulty || unlockedDifficulty
+      : existingProgress?.unlocked_difficulty || unlockedDifficulty;
+    const nextStreak = passed ? (existingProgress?.current_streak || 0) + 1 : 0;
+
+    await supabase.from("student_game_progress").upsert(
+      {
+        student_id: user.id,
+        game_key: "word_search",
+        scope_key: scopeKey,
+        scope: { language: "English", grade },
+        unlocked_difficulty: nextDifficulty,
+        current_difficulty: difficulty,
+        highest_level: Math.max(existingProgress?.highest_level || 1, levelReached),
+        total_plays: (existingProgress?.total_plays || 0) + 1,
+        total_wins: (existingProgress?.total_wins || 0) + (passed ? 1 : 0),
+        total_losses: (existingProgress?.total_losses || 0) + (passed ? 0 : 1),
+        total_score: (existingProgress?.total_score || 0) + score,
+        best_score: Math.max(existingProgress?.best_score || 0, score),
+        current_streak: nextStreak,
+        best_streak: Math.max(existingProgress?.best_streak || 0, nextStreak),
+        last_played_at: new Date().toISOString(),
+        last_won_at: passed ? new Date().toISOString() : existingProgress?.last_won_at,
+        last_lost_at: passed ? existingProgress?.last_lost_at : new Date().toISOString(),
+        stats: {
+          last_correct: finalCorrect,
+          last_level_reached: levelReached,
+          last_words_found: foundWords.length,
+        },
+      },
+      {
+        onConflict: "student_id,game_key,scope_key",
+      }
+    );
+
+    setUnlockedDifficulty(nextDifficulty);
+  };
+
+  useEffect(() => {
+    loadProgress();
+  }, [grade]);
+
+  useEffect(() => {
+    const rawSession = sessionStorage.getItem(WORD_SEARCH_SESSION_KEY);
+
+    if (!rawSession) return;
+
+    try {
+      setSavedSession(JSON.parse(rawSession));
+    } catch {
+      sessionStorage.removeItem(WORD_SEARCH_SESSION_KEY);
+    }
+  }, []);
+
   useEffect(() => {
     const loadWords = async () => {
       const { data, error } = await supabase
@@ -231,6 +409,9 @@ export default function WordSearch() {
         .in("language_pair", ["zh_en", "en_ja"]);
 
       if (error) {
+        console.log("WordSearch records returned", 0);
+        console.log("WordSearch extracted words count", 0);
+        console.log("WordSearch first few extracted words", []);
         setAvailableWords([]);
         return;
       }
@@ -254,6 +435,9 @@ export default function WordSearch() {
         )
       );
 
+      console.log("WordSearch records returned", data?.length || 0);
+      console.log("WordSearch extracted words count", words.length);
+      console.log("WordSearch first few extracted words", words.slice(0, 10));
       setAvailableWords(words);
     };
 
@@ -270,13 +454,48 @@ export default function WordSearch() {
     return () => window.clearInterval(timer);
   }, [complete, expired, gameStarted]);
 
-  const startGame = () => {
+  useEffect(() => {
+    if (!complete || showRoundResult || showFinalTest || finalResult) return;
+
+    if (level >= 5) {
+      generateFinalTest();
+    } else {
+      setShowRoundResult(true);
+    }
+  }, [complete, showRoundResult, showFinalTest, finalResult, level]);
+
+  const clearSavedSession = () => {
+    sessionStorage.removeItem(WORD_SEARCH_SESSION_KEY);
+    setSavedSession(null);
+  };
+
+  const saveCurrentSession = () => {
+    if (!gameStarted || puzzleWords.length === 0 || complete || expired || showFinalTest) return;
+
+    const session: SavedWordSearchSession = {
+      grade,
+      difficulty,
+      unlockedDifficulty,
+      cells,
+      puzzleWords,
+      foundWords,
+      score,
+      secondsLeft,
+      level,
+    };
+
+    sessionStorage.setItem(WORD_SEARCH_SESSION_KEY, JSON.stringify(session));
+    setSavedSession(session);
+  };
+
+  const buildRound = (roundLevel: number) => {
     setLoading(true);
     setErrorMsg("");
-    setScore(0);
     setFoundWords([]);
     setSelectedCells([]);
     setSelectionStart(null);
+    setDragging(false);
+    setShowRoundResult(false);
     setSecondsLeft(config.seconds);
 
     if (availableWords.length < config.words) {
@@ -299,11 +518,52 @@ export default function WordSearch() {
 
     setCells(puzzle.cells);
     setPuzzleWords(puzzle.placedWords);
+    setLevel(roundLevel);
     setGameStarted(true);
     setLoading(false);
   };
 
+  const startGame = () => {
+    clearSavedSession();
+    setScore(0);
+    setFinalResult(null);
+    setShowFinalTest(false);
+    setFinalQuestions([]);
+    setFinalIndex(0);
+    setFinalCorrect(0);
+    buildRound(1);
+  };
+
+  const startNextChallenge = () => {
+    buildRound(level + 1);
+  };
+
+  const resumeSavedSession = () => {
+    if (!savedSession) return;
+
+    setGrade(savedSession.grade);
+    setDifficulty(savedSession.difficulty);
+    setUnlockedDifficulty(savedSession.unlockedDifficulty);
+    setCells(savedSession.cells);
+    setPuzzleWords(savedSession.puzzleWords);
+    setFoundWords(savedSession.foundWords);
+    setSelectedCells([]);
+    setSelectionStart(null);
+    setDragging(false);
+    setScore(savedSession.score);
+    setSecondsLeft(savedSession.secondsLeft);
+    setLevel(savedSession.level);
+    setErrorMsg("");
+    setLoading(false);
+    setShowRoundResult(false);
+    setShowFinalTest(false);
+    setFinalResult(null);
+    setGameStarted(true);
+    clearSavedSession();
+  };
+
   const resetToMenu = () => {
+    saveCurrentSession();
     setGameStarted(false);
     setCells([]);
     setPuzzleWords([]);
@@ -314,7 +574,97 @@ export default function WordSearch() {
     setErrorMsg("");
     setLoading(false);
     setScore(0);
+    setLevel(1);
+    setShowRoundResult(false);
+    setShowFinalTest(false);
+    setFinalQuestions([]);
+    setFinalIndex(0);
+    setFinalCorrect(0);
+    setFinalResult(null);
     setSecondsLeft(config.seconds);
+  };
+
+  const generateFinalTest = () => {
+    const sourceWords = availableWords.length > 0 ? shuffle(availableWords) : puzzleWords.map((item) => item.word);
+
+    if (sourceWords.length === 0) return;
+
+    const selectedWords = Array.from(
+      { length: 10 },
+      (_, index) => sourceWords[index % sourceWords.length]
+    );
+
+    const questions = selectedWords.map((word) => {
+      const wrongAnswers = shuffle(sourceWords.filter((item) => item !== word)).slice(0, 3);
+
+      return {
+        clue: makeWordClue(word),
+        correctAnswer: word,
+        options: shuffle([word, ...wrongAnswers]),
+      };
+    });
+
+    setFinalQuestions(questions);
+    setFinalIndex(0);
+    setFinalCorrect(0);
+    setShowRoundResult(false);
+    setShowFinalTest(true);
+    setGameStarted(false);
+    setCells([]);
+    setPuzzleWords([]);
+    setFoundWords([]);
+    setSelectedCells([]);
+  };
+
+  const submitFinalAnswer = (answer: string) => {
+    if (finalAnswerLocked || !finalQuestions[finalIndex]) return;
+
+    const current = finalQuestions[finalIndex];
+    const correct = answer === current.correctAnswer;
+    const nextCorrect = correct ? finalCorrect + 1 : finalCorrect;
+    const isLastQuestion = finalIndex >= finalQuestions.length - 1;
+
+    setFinalAnswerLocked(true);
+    setFinalFeedback({
+      type: correct ? "correct" : "wrong",
+      correctAnswer: correct ? undefined : current.correctAnswer,
+    });
+
+    setTimeout(async () => {
+      setFinalFeedback(null);
+      setFinalAnswerLocked(false);
+
+      if (!isLastQuestion) {
+        setFinalCorrect(nextCorrect);
+        setFinalIndex((currentIndex) => currentIndex + 1);
+        return;
+      }
+
+      const passed = nextCorrect >= 6;
+      const nextDifficulty = getNextDifficulty(difficulty);
+
+      clearSavedSession();
+
+      if (passed && nextDifficulty) {
+        setUnlockedDifficulty(nextDifficulty);
+      }
+
+      await saveProgress({
+        passed,
+        levelReached: level,
+      });
+
+      setShowFinalTest(false);
+      setFinalQuestions([]);
+      setFinalIndex(0);
+      setFinalCorrect(0);
+      setLevel(1);
+      setFinalResult({
+        passed,
+        correct: nextCorrect,
+        nextDifficulty,
+      });
+    }, 450);
   };
 
   const updateSelection = (endId: string) => {
@@ -358,36 +708,56 @@ export default function WordSearch() {
     if (id) updateSelection(id);
   };
 
-  const renderSelect = (
+  const renderArcadeDropdown = (
     label: string,
+    id: "grade" | "difficulty",
     value: string,
-    options: { label: string; value: string }[] | string[],
+    options: string[],
     onChange: (value: string) => void
   ) => (
-    <label className="block">
+    <div className="relative">
       <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
         {label}
       </span>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
+      <button
+        type="button"
+        onClick={() => setOpenDropdown((current) => (current === id ? null : id))}
+        className={`flex h-12 w-full items-center justify-between rounded-2xl border px-4 text-sm font-black outline-none transition ${isLight
           ? "border-[#eee8ff] bg-white text-primary"
           : "border-white/10 bg-[#0D1B2E] text-white"
           }`}
       >
-        {options.map((option) => {
-          const normalized =
-            typeof option === "string" ? { label: option, value: option } : option;
+        <span>{value}</span>
+        <span className="text-xs opacity-60">v</span>
+      </button>
 
-          return (
-            <option key={normalized.value} value={normalized.value}>
-              {normalized.label}
-            </option>
-          );
-        })}
-      </select>
-    </label>
+      {openDropdown === id && (
+        <div className={`absolute left-0 right-0 top-full z-50 mt-2 max-h-[210px] overflow-y-auto rounded-[1.4rem] border p-2 ${isLight
+          ? "border-[#eee8ff] bg-white shadow-[0_18px_45px_rgba(66,56,120,0.15)]"
+          : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
+          }`}
+        >
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => {
+                onChange(option);
+                setOpenDropdown(null);
+              }}
+              className={`flex h-11 w-full items-center rounded-[1rem] px-4 text-left text-sm font-black transition ${value === option
+                ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
+                : isLight
+                  ? "text-primary hover:bg-[#faf8ff]"
+                  : "text-white hover:bg-white/10"
+                }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 
   return (
@@ -423,7 +793,143 @@ export default function WordSearch() {
           </button>
         </div>
 
-        {!gameStarted ? (
+        {finalFeedback && (
+          <div className={`fixed inset-0 z-[200] flex items-center justify-center px-4 ${finalFeedback.type === "correct" ? "bg-emerald-500/85" : "bg-red-500/85"}`}>
+            <div className="text-center text-white">
+              {finalFeedback.type === "correct" ? (
+                <CheckCircle2 className="mx-auto h-24 w-24" />
+              ) : (
+                <XCircle className="mx-auto h-24 w-24" />
+              )}
+              <h2 className="mt-6 text-5xl font-black">
+                {finalFeedback.type === "correct" ? "Correct!" : "Incorrect"}
+              </h2>
+              {finalFeedback.correctAnswer && (
+                <p className="mt-4 text-2xl font-black">
+                  Correct answer: {finalFeedback.correctAnswer}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {finalResult && (
+          <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/75 px-4">
+            <div className="w-full max-w-lg rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
+              <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
+              <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                Final Test
+              </p>
+              <h2 className="mt-3 text-4xl font-black text-white">
+                {finalResult.passed ? "You Passed!" : "Try Again!"}
+              </h2>
+              <p className="mt-4 text-slate-300">{finalResult.correct} / 10 Correct</p>
+
+              <div className="mt-8 grid gap-3">
+                <button
+                  onClick={() => {
+                    if (finalResult.passed) {
+                      const nextDifficulty = finalResult.nextDifficulty;
+
+                      setFinalResult(null);
+                      setGameStarted(false);
+
+                      if (nextDifficulty) {
+                        setDifficulty(nextDifficulty);
+                        setUnlockedDifficulty(nextDifficulty);
+                      }
+
+                      return;
+                    }
+
+                    setFinalResult(null);
+                    setScore(0);
+                    buildRound(1);
+                  }}
+                  className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                >
+                  {finalResult.passed
+                    ? finalResult.nextDifficulty
+                      ? `GO TO ${finalResult.nextDifficulty.toUpperCase()}`
+                      : "BACK TO MENU"
+                    : "RETRY"}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setFinalResult(null);
+                    clearSavedSession();
+                    resetToMenu();
+                  }}
+                  className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                >
+                  BACK TO MENU
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showRoundResult && (
+          <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 px-4">
+            <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
+              <Trophy className="mx-auto h-16 w-16 text-[#FACC15]" />
+              <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                Puzzle Cleared
+              </p>
+              <h2 className="mt-3 text-4xl font-black text-white">Great Job!</h2>
+              <p className="mt-4 text-slate-300">
+                You completed round {level} / 5 for {difficulty}.
+              </p>
+              <p className="mt-2 text-sm font-bold text-slate-300">Score: {score}</p>
+              <button
+                onClick={startNextChallenge}
+                className="mt-8 h-14 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+              >
+                NEXT CHALLENGE
+              </button>
+            </div>
+          </div>
+        )}
+
+        {showFinalTest && finalQuestions[finalIndex] && (
+          <div className={`rounded-[2rem] border p-5 sm:p-8 ${palette.panel}`}>
+            <div className="text-center">
+              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                Final Test
+              </p>
+              <h1 className={`mt-3 text-4xl font-black sm:text-5xl ${palette.title}`}>
+                Spell Check
+              </h1>
+              <p className={`mt-3 ${palette.text}`}>
+                Question {finalIndex + 1} / {finalQuestions.length}
+              </p>
+            </div>
+
+            <div className={`mt-8 rounded-[2rem] border p-8 text-center ${palette.soft}`}>
+              <p className={`text-4xl font-black tracking-widest ${palette.title}`}>
+                {finalQuestions[finalIndex].clue}
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {finalQuestions[finalIndex].options.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => submitFinalAnswer(option)}
+                  className={`min-h-[72px] rounded-[1.5rem] border px-5 text-lg font-black transition hover:-translate-y-1 ${isLight
+                    ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
+                    : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
+                    }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!showFinalTest && !gameStarted ? (
           <div className={`rounded-[2rem] border p-5 sm:p-6 ${palette.panel}`}>
             <div className="grid gap-6 lg:grid-cols-[1.1fr_320px]">
               <div>
@@ -469,28 +975,82 @@ export default function WordSearch() {
                   English
                 </div>
               </div>
-              {renderSelect("Grade", grade, grades, setGrade)}
-              {renderSelect("Difficulty", difficulty, difficulties.map((item) => item.key), setDifficulty)}
+              {renderArcadeDropdown("Grade", "grade", grade, grades, setGrade)}
+              {renderArcadeDropdown(
+                "Difficulty",
+                "difficulty",
+                difficulty,
+                difficulties.map((item) => item.key),
+                (value) => {
+                  if (
+                    difficultyOrder.indexOf(value) <=
+                    difficultyOrder.indexOf(unlockedDifficulty)
+                  ) {
+                    setDifficulty(value);
+                  }
+                }
+              )}
             </div>
+
+            {savedSession && (
+              <div className={`mt-5 rounded-[1.5rem] border p-4 ${palette.soft}`}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className={`text-sm font-black ${palette.title}`}>
+                      Resume unfinished Word Search?
+                    </p>
+                    <p className={`mt-1 text-xs font-bold ${palette.text}`}>
+                      {savedSession.grade} · {savedSession.difficulty} · Round {savedSession.level}/5
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={resumeSavedSession}
+                      className="h-11 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] px-4 text-sm font-black text-white"
+                    >
+                      RESUME
+                    </button>
+                    <button
+                      onClick={clearSavedSession}
+                      className={`h-11 rounded-xl border px-4 text-sm font-black ${palette.button}`}
+                    >
+                      START OVER
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {difficulties.map((item) => {
                 const active = item.key === difficulty;
+                const locked =
+                  difficultyOrder.indexOf(item.key) >
+                  difficultyOrder.indexOf(unlockedDifficulty);
 
                 return (
                   <button
                     key={item.key}
+                    disabled={locked}
                     onClick={() => setDifficulty(item.key)}
-                    className={`rounded-[1.4rem] border p-4 text-left transition hover:-translate-y-1 ${active
+                    className={`relative overflow-hidden rounded-[1.4rem] border p-4 text-left transition ${active
                       ? "border-[#8B5CF6] bg-[#8B5CF6]/20"
                       : palette.soft
-                      }`}
+                      } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
                   >
                     <p className={`text-xs font-black uppercase tracking-widest ${palette.muted}`}>
                       {item.key}
                     </p>
                     <p className={`mt-2 text-3xl font-black ${palette.title}`}>{item.words}</p>
                     <p className={`text-sm font-bold ${palette.text}`}>Hidden words</p>
+                    {locked && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
+                        <span className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white">
+                          Locked
+                        </span>
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -527,7 +1087,7 @@ export default function WordSearch() {
               {[
                 ["Score", score],
                 ["Found", `${foundWords.length}/${puzzleWords.length}`],
-                ["Words", puzzleWords.length],
+                ["Round", `${level}/5`],
                 ["Time", `${secondsLeft}s`],
               ].map(([label, value]) => (
                 <div key={label} className={`rounded-xl px-2 py-2 text-center ${palette.soft}`}>
@@ -638,11 +1198,11 @@ export default function WordSearch() {
                     })}
                   </div>
 
-                  {(complete || expired) && (
+                  {expired && (
                     <div className={`mt-5 rounded-2xl border p-4 text-center ${palette.soft}`}>
                       <Trophy className="mx-auto h-10 w-10 text-[#FACC15]" />
                       <h2 className={`mt-3 text-2xl font-black ${palette.title}`}>
-                        {complete ? "Puzzle Cleared!" : "Time's Up!"}
+                        Time's Up!
                       </h2>
                       <p className={`mt-2 text-sm font-bold ${palette.text}`}>Score: {score}</p>
                       <button

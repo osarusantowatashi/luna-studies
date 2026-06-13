@@ -55,6 +55,7 @@ const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"
 
 const FALLBACK_IMAGE =
   "https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg";
+const MEMORY_FLIP_SESSION_KEY = "luna_memory_flip_session_v1";
 
 const getTimeLimit = (pairCount: number, difficulty: string) => {
   if (difficulty === "Easy") return pairCount * 18;
@@ -125,6 +126,7 @@ export default function MemoryFlip() {
   const [timeUp, setTimeUp] = useState(false);
 
   const [gameStarted, setGameStarted] = useState(false);
+  const [savedSession, setSavedSession] = useState<any | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [showMasteryTest, setShowMasteryTest] = useState(false);
   const [masteryQuestions, setMasteryQuestions] = useState<any[]>([]);
@@ -266,6 +268,18 @@ export default function MemoryFlip() {
     loadProgress();
     loadVocabularyPool();
   }, [languagePair, grade]);
+
+  useEffect(() => {
+    const rawSession = sessionStorage.getItem(MEMORY_FLIP_SESSION_KEY);
+
+    if (!rawSession) return;
+
+    try {
+      setSavedSession(JSON.parse(rawSession));
+    } catch {
+      sessionStorage.removeItem(MEMORY_FLIP_SESSION_KEY);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isWin || showResultModal || showMasteryTest) return;
@@ -432,7 +446,67 @@ export default function MemoryFlip() {
     });
   };
 
+  const clearSavedSession = () => {
+    sessionStorage.removeItem(MEMORY_FLIP_SESSION_KEY);
+    setSavedSession(null);
+  };
+
+  const saveCurrentSession = () => {
+    if (
+      !gameStarted ||
+      cards.length === 0 ||
+      isGameEnded ||
+      showMasteryTest ||
+      showResultModal
+    ) {
+      return;
+    }
+
+    const session = {
+      languagePair,
+      grade,
+      difficulty,
+      unlockedDifficulty,
+      cards,
+      masteryPool,
+      moves,
+      combo,
+      score,
+      secondsLeft,
+      level,
+    };
+
+    sessionStorage.setItem(MEMORY_FLIP_SESSION_KEY, JSON.stringify(session));
+    setSavedSession(session);
+  };
+
+  const resumeSavedSession = () => {
+    if (!savedSession) return;
+
+    setLanguagePair(savedSession.languagePair || "zh_en");
+    setGrade(savedSession.grade || "Grade 1");
+    setDifficulty(savedSession.difficulty || "Easy");
+    setUnlockedDifficulty(savedSession.unlockedDifficulty || "Easy");
+    setCards(savedSession.cards || []);
+    setMasteryPool(savedSession.masteryPool || []);
+    setSelectedCards([]);
+    setMoves(savedSession.moves || 0);
+    setCombo(savedSession.combo || 0);
+    setScore(savedSession.score || 0);
+    setSecondsLeft(savedSession.secondsLeft || getTimeLimit(pairCount, difficulty));
+    setLevel(savedSession.level || 1);
+    setErrorMsg("");
+    setTimeUp(false);
+    setLoading(false);
+    setShowResultModal(false);
+    setShowMasteryTest(false);
+    setGameStarted(true);
+    clearSavedSession();
+  };
+
   const startGame = async () => {
+    clearSavedSession();
+
     const isMobile =
       /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
       window.innerWidth < 768;
@@ -730,6 +804,7 @@ export default function MemoryFlip() {
       setMasteryCorrect(0);
       setTimeUp(false);
       setLoading(false);
+      clearSavedSession();
       setMasteryResult({
         passed,
         correct: nextCorrect,
@@ -769,6 +844,7 @@ export default function MemoryFlip() {
   };
 
   const leaveArcade = async () => {
+    saveCurrentSession();
     setShowResultModal(false);
     setGameStarted(false);
     setCards([]);
@@ -1238,6 +1314,36 @@ export default function MemoryFlip() {
                       </div>
                     </div>
                   </div>
+
+                  {savedSession && (
+                    <div className={`mb-4 rounded-[1.6rem] border p-4 ${themeClass.softPanel}`}>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className={`text-sm font-black ${themeClass.title}`}>
+                            Resume unfinished Memory Flip?
+                          </p>
+                          <p className={`mt-1 text-xs font-bold ${themeClass.text}`}>
+                            {savedSession.grade} · {savedSession.difficulty} · Round {savedSession.level}/5
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={resumeSavedSession}
+                            className="h-11 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] px-4 text-sm font-black text-white"
+                          >
+                            RESUME
+                          </button>
+                          <button
+                            onClick={clearSavedSession}
+                            className={`h-11 rounded-xl border px-4 text-sm font-black ${themeClass.button}`}
+                          >
+                            START OVER
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className={`rounded-[1.6rem] border p-4 sm:p-5 ${themeClass.panel}`}>
                     <div className="grid gap-4 lg:grid-cols-3">
