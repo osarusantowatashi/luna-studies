@@ -20,6 +20,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ArcadeLoadingScreen from "@/components/games/ArcadeLoadingScreen";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import {
@@ -185,7 +186,7 @@ export default function MemoryFlip() {
   const [moves, setMoves] = useState(0);
   const [combo, setCombo] = useState(0);
   const [score, setScore] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [timeUp, setTimeUp] = useState(false);
 
@@ -216,6 +217,7 @@ export default function MemoryFlip() {
   const [isMobileFullscreen, setIsMobileFullscreen] = useState(false);
 
   const gameWindowRef = useRef<HTMLDivElement | null>(null);
+  const loadRequestRef = useRef(0);
 
   const pairCount = getPairCountByDifficulty(difficulty);
 
@@ -226,6 +228,7 @@ export default function MemoryFlip() {
   const isLight = theme === "light";
 
   const fullscreenActive = isFullscreen || isMobileFullscreen;
+  const showPageChrome = !fullscreenActive;
 
   const themeClass = {
     page: isLight ? "bg-white" : "bg-[#071426]",
@@ -539,11 +542,15 @@ export default function MemoryFlip() {
   const resumeSavedSession = async () => {
     if (!savedSession) return;
 
+    const resumeRequestId = loadRequestRef.current + 1;
+    loadRequestRef.current = resumeRequestId;
+    const restoredCards = savedSession.cards || [];
+
     setLanguagePair(savedSession.languagePair || "zh_en");
     setGrade(savedSession.grade || "Grade 1");
     setDifficulty(savedSession.difficulty || "Easy");
     setUnlockedDifficulty(savedSession.unlockedDifficulty || "Easy");
-    setCards(savedSession.cards || []);
+    setCards(restoredCards);
     setMasteryPool(savedSession.masteryPool || []);
     setSelectedCards([]);
     setMoves(savedSession.moves || 0);
@@ -559,9 +566,10 @@ export default function MemoryFlip() {
     setLevel(savedSession.level || 1);
     setErrorMsg("");
     setTimeUp(false);
-    setLoading(false);
+    setLoading(true);
     setShowResultModal(false);
     setShowMasteryTest(false);
+    setGameStarted(true);
 
     const isMobile =
       /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
@@ -577,11 +585,19 @@ export default function MemoryFlip() {
       }
     }
 
-    setGameStarted(true);
+    await preloadImages(
+      restoredCards.map((card: Card) => card.imageUrl).filter(Boolean) as string[]
+    );
+
+    if (loadRequestRef.current !== resumeRequestId) return;
+
+    setLoading(false);
     clearSavedSession();
   };
 
   const startGame = async () => {
+    if (vocabularyLoading || loading) return;
+
     clearSavedSession();
 
     const isMobile =
@@ -616,6 +632,10 @@ export default function MemoryFlip() {
     selectedDifficulty = difficulty,
     selectedPairCount = getPairCountByDifficulty(selectedDifficulty),
   } = {}) => {
+    const loadRequestId = loadRequestRef.current + 1;
+    loadRequestRef.current = loadRequestId;
+    const isCurrentLoad = () => loadRequestRef.current === loadRequestId;
+
     setLoading(true);
     setCards([]);
     setSelectedCards([]);
@@ -628,6 +648,8 @@ export default function MemoryFlip() {
       selectedLanguagePair,
       selectedGrade
     );
+
+    if (!isCurrentLoad()) return;
 
     const approvedImageMap = new Map<string, string>();
     const reserveCount = selectedPairCount + 2;
@@ -664,6 +686,8 @@ export default function MemoryFlip() {
             .in(column, missingImageLookupValues)
         )
       );
+
+      if (!isCurrentLoad()) return;
 
       imageResults.forEach(({ data }) => {
         (data || []).forEach((img) => {
@@ -747,7 +771,9 @@ export default function MemoryFlip() {
 
     const imageUrls = pairs.map((pair: any) => pair.image_url).filter(Boolean) as string[];
 
-    void preloadImages(imageUrls);
+    await preloadImages(imageUrls);
+
+    if (!isCurrentLoad()) return;
 
     setMasteryPool((prev) => {
       const map = new Map(prev.map((pair) => [pair.pairKey, pair]));
@@ -926,6 +952,7 @@ export default function MemoryFlip() {
   };
 
   const leaveArcade = async () => {
+    loadRequestRef.current += 1;
     saveCurrentSession();
     setShowResultModal(false);
     setGameStarted(false);
@@ -1290,6 +1317,7 @@ export default function MemoryFlip() {
 
       {!showMasteryTest && (
         <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+          {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:gap-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${themeClass.topBar}`}>
             <button
               onClick={() => navigate("/games")}
@@ -1328,6 +1356,7 @@ export default function MemoryFlip() {
               </div>
             </div>
           </div>
+          )}
 
           <div
             ref={gameWindowRef}
@@ -1336,7 +1365,7 @@ export default function MemoryFlip() {
                 : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
               }`}
           >
-            <div className={isMobileFullscreen ? "min-h-screen" : "min-h-[520px] sm:min-h-[640px]"}>
+            <div className={fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[640px]"}>
               <button
                 onClick={toggleFullscreen}
                 className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
@@ -1516,9 +1545,14 @@ export default function MemoryFlip() {
 
                     <button
                       onClick={startGame}
-                      className="mt-6 flex h-14 w-full items-center justify-center rounded-[1.6rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-base font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01]"
+                      disabled={vocabularyLoading || loading}
+                      className="mt-6 flex h-14 w-full items-center justify-center rounded-[1.6rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-base font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
                     >
-                      START {difficulty.toUpperCase()} CHALLENGE
+                      {vocabularyLoading
+                        ? "CHECKING VOCABULARY..."
+                        : loading
+                          ? "PREPARING MEMORY FLIP..."
+                          : `START ${difficulty.toUpperCase()} CHALLENGE`}
                     </button>
                   </div>
                 </>
@@ -1663,9 +1697,13 @@ export default function MemoryFlip() {
                   </div>
 
                   {loading && (
-                    <div className={`mb-6 rounded-[2rem] border p-8 text-center text-lg font-black ${themeClass.panel} ${themeClass.title}`}>
-                      Preparing Memory Flip...
-                    </div>
+                    <ArcadeLoadingScreen
+                      title="Preparing Memory Flip..."
+                      subtitle="Fetching pairs, resolving images, and shuffling the cards."
+                      icon={Brain}
+                      isLight={isLight}
+                      className="mb-6"
+                    />
                   )}
 
                   {errorMsg && !loading && (
@@ -1793,6 +1831,7 @@ export default function MemoryFlip() {
             </div>
           </div>
 
+          {showPageChrome && (
           <div className={`rounded-[2rem] border p-5 ${themeClass.panel}`}>
             <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
               More Games
@@ -1838,6 +1877,7 @@ export default function MemoryFlip() {
               })}
             </div>
           </div>
+          )}
         </div>
       )}
     </div>
