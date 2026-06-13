@@ -22,6 +22,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import {
+  clearGameSession,
+  loadGameSession,
+  saveGameSession,
+} from "@/lib/arcadeResume";
 
 type Pair = {
   pair_id?: number;
@@ -55,8 +60,7 @@ const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"
 
 const FALLBACK_IMAGE =
   "https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg";
-const MEMORY_FLIP_SESSION_KEY = "luna_memory_flip_session_v1";
-const MEMORY_FLIP_SESSION_TTL_MS = 30 * 60 * 1000;
+const MEMORY_FLIP_GAME_KEY = "memory_flip";
 
 const getTimeLimit = (pairCount: number, difficulty: string) => {
   if (difficulty === "Easy") return pairCount * 18;
@@ -330,24 +334,7 @@ export default function MemoryFlip() {
   }, [languagePair, grade]);
 
   useEffect(() => {
-    const rawSession = sessionStorage.getItem(MEMORY_FLIP_SESSION_KEY);
-
-    if (!rawSession) return;
-
-    try {
-      const parsedSession = JSON.parse(rawSession);
-      const savedAt = Number(parsedSession?.savedAt || 0);
-      const expired = !savedAt || Date.now() - savedAt > MEMORY_FLIP_SESSION_TTL_MS;
-
-      if (expired) {
-        sessionStorage.removeItem(MEMORY_FLIP_SESSION_KEY);
-        return;
-      }
-
-      setSavedSession(parsedSession);
-    } catch {
-      sessionStorage.removeItem(MEMORY_FLIP_SESSION_KEY);
-    }
+    setSavedSession(loadGameSession(MEMORY_FLIP_GAME_KEY));
   }, []);
 
   useEffect(() => {
@@ -516,7 +503,7 @@ export default function MemoryFlip() {
   };
 
   const clearSavedSession = () => {
-    sessionStorage.removeItem(MEMORY_FLIP_SESSION_KEY);
+    clearGameSession(MEMORY_FLIP_GAME_KEY);
     setSavedSession(null);
   };
 
@@ -543,10 +530,9 @@ export default function MemoryFlip() {
       score,
       secondsLeft,
       level,
-      savedAt: Date.now(),
     };
 
-    sessionStorage.setItem(MEMORY_FLIP_SESSION_KEY, JSON.stringify(session));
+    saveGameSession(MEMORY_FLIP_GAME_KEY, session);
     setSavedSession(session);
   };
 

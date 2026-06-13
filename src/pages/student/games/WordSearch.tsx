@@ -12,10 +12,16 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import {
+  clearGameSession,
+  loadGameSession,
+  saveGameSession,
+} from "@/lib/arcadeResume";
 
 type Pair = {
   left?: string;
   right?: string;
+  vocab_word?: string;
 };
 
 type PuzzleWord = {
@@ -73,7 +79,7 @@ const directions = [
   [-1, -1],
   [1, -1],
 ];
-const WORD_SEARCH_SESSION_KEY = "luna_word_search_session_v1";
+const WORD_SEARCH_GAME_KEY = "word_search";
 
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 
@@ -388,15 +394,7 @@ export default function WordSearch() {
   }, [grade]);
 
   useEffect(() => {
-    const rawSession = sessionStorage.getItem(WORD_SEARCH_SESSION_KEY);
-
-    if (!rawSession) return;
-
-    try {
-      setSavedSession(JSON.parse(rawSession));
-    } catch {
-      sessionStorage.removeItem(WORD_SEARCH_SESSION_KEY);
-    }
+    setSavedSession(loadGameSession<SavedWordSearchSession>(WORD_SEARCH_GAME_KEY));
   }, []);
 
   useEffect(() => {
@@ -421,11 +419,11 @@ export default function WordSearch() {
         const pairs: Pair[] = set.question_data?.pairs || [];
 
         if (set.language_pair === "zh_en") {
-          return pairs.map((pair) => pair.right || "");
+          return pairs.map((pair) => pair.left || pair.vocab_word || "");
         }
 
         if (set.language_pair === "en_ja") {
-          return pairs.map((pair) => pair.left || "");
+          return pairs.map((pair) => pair.left || pair.vocab_word || "");
         }
 
         return [];
@@ -475,7 +473,7 @@ export default function WordSearch() {
   }, [complete, showRoundResult, showFinalTest, finalResult, level]);
 
   const clearSavedSession = () => {
-    sessionStorage.removeItem(WORD_SEARCH_SESSION_KEY);
+    clearGameSession(WORD_SEARCH_GAME_KEY);
     setSavedSession(null);
   };
 
@@ -494,7 +492,7 @@ export default function WordSearch() {
       level,
     };
 
-    sessionStorage.setItem(WORD_SEARCH_SESSION_KEY, JSON.stringify(session));
+    saveGameSession(WORD_SEARCH_GAME_KEY, session);
     setSavedSession(session);
   };
 
