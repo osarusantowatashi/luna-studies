@@ -19,9 +19,8 @@ export default function ArcadeLoadingScreen({
   className = "",
 }: ArcadeLoadingScreenProps) {
   const hasProgress = typeof progress === "number";
-  const progressWidth = hasProgress
-    ? `${Math.min(100, Math.max(0, progress))}%`
-    : undefined;
+  const progressValue = hasProgress ? Math.min(100, Math.max(0, progress)) : 100;
+  const progressWidth = `${progressValue}%`;
 
   return (
     <div
@@ -52,14 +51,26 @@ export default function ArcadeLoadingScreen({
           </p>
         )}
 
-        <div className={`mt-6 h-2 overflow-hidden rounded-full ${isLight ? "bg-[#f0eaff]" : "bg-white/10"}`}>
+        <div className="mt-6 flex items-center gap-3">
+          <div className={`h-3 flex-1 overflow-hidden rounded-full border ${isLight ? "border-[#eee8ff] bg-[#f0eaff]" : "border-white/10 bg-black/25"}`}>
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#3B82F6] to-[#22D3EE] transition-all duration-500"
+              style={{ width: progressWidth }}
+            />
+          </div>
+
+          <span className={`w-11 text-right text-xs font-black tabular-nums ${isLight ? "text-primary/60" : "text-slate-300"}`}>
+            {Math.round(progressValue)}%
+          </span>
+        </div>
+
+        {!hasProgress && (
+          <div className={`mt-2 h-1 overflow-hidden rounded-full ${isLight ? "bg-[#f0eaff]" : "bg-white/10"}`}>
           <div
-            className={`h-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] ${
-              hasProgress ? "transition-all duration-500" : "w-2/3 animate-pulse"
-            }`}
-            style={hasProgress ? { width: progressWidth } : undefined}
+            className="h-full w-2/3 animate-pulse rounded-full bg-white/40"
           />
         </div>
+        )}
       </div>
     </div>
   );

@@ -30,6 +30,8 @@ type Pair = {
   left?: string;
   right?: string;
   vocab_word?: string;
+  image_keyword?: string;
+  image_url?: string;
 };
 
 type PuzzleWord = {
@@ -47,6 +49,7 @@ type Cell = {
 type FinalQuestion = {
   clueDisplay: string;
   sentenceHint: string;
+  hintImageUrl?: string;
   correctChunk: string;
   correctAnswer: string;
   options: string[];
@@ -219,10 +222,14 @@ const makeSentenceHint = (word: string, maskedWord: string) => {
   if (word.endsWith("ING")) return `He is ${lowerMaskedWord} after school.`;
   if (word.endsWith("ED")) return `She ${lowerMaskedWord} it yesterday.`;
 
-  return `The teacher points to the ${lowerMaskedWord} in class.`;
+  return `Complete the word: ${lowerMaskedWord}.`;
 };
 
-const makeFinalQuestion = (word: string, sourceWords: string[]): FinalQuestion => {
+const makeFinalQuestion = (
+  word: string,
+  sourceWords: string[],
+  imageMap: Record<string, string> = {}
+): FinalQuestion => {
   const { start, chunkLength } = getMissingChunkWindow(word);
   const correctChunk = word.slice(start, start + chunkLength);
   const maskedWord = `${word.slice(0, start)}${"_".repeat(chunkLength)}${word.slice(
@@ -247,6 +254,7 @@ const makeFinalQuestion = (word: string, sourceWords: string[]): FinalQuestion =
   return {
     clueDisplay: maskedWord.split("").join(" "),
     sentenceHint: makeSentenceHint(word, maskedWord),
+    hintImageUrl: imageMap[word],
     correctChunk,
     correctAnswer: word,
     options: shuffle([correctChunk, ...wrongChunks]).slice(0, 4),
@@ -374,6 +382,7 @@ export default function WordSearch() {
   const [unlockedDifficulty, setUnlockedDifficulty] = useState("Easy");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [availableWords, setAvailableWords] = useState<string[]>([]);
+  const [wordImageMap, setWordImageMap] = useState<Record<string, string>>({});
   const [cells, setCells] = useState<Cell[]>([]);
   const [puzzleWords, setPuzzleWords] = useState<PuzzleWord[]>([]);
   const [foundWords, setFoundWords] = useState<string[]>([]);
@@ -575,6 +584,27 @@ export default function WordSearch() {
   }, []);
 
   useEffect(() => {
+    if (!finalResult) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousPosition = document.body.style.position;
+    const previousWidth = document.body.style.width;
+    const previousRootOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "relative";
+    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.position = previousPosition;
+      document.body.style.width = previousWidth;
+      document.documentElement.style.overflow = previousRootOverflow;
+    };
+  }, [finalResult]);
+
+  useEffect(() => {
     let active = true;
 
     const loadWords = async () => {
@@ -590,51 +620,115 @@ export default function WordSearch() {
       if (!active) return;
 
       if (error) {
-        console.log("WordSearch raw game_questions count", 0);
-        console.log("WordSearch record language_pair list", []);
-        console.log("WordSearch first question_data.pairs sample", null);
-        console.log("WordSearch extracted English words count", 0);
         setAvailableWords([]);
+        setWordImageMap({});
         setVocabularyLoading(false);
         return;
       }
 
-      const rawEnglishWords = (data || []).flatMap((set: any) => {
+      const rawEnglishEntries = (data || []).flatMap((set: any) => {
         const pairs: Pair[] = set.question_data?.pairs || [];
 
         if (set.language_pair === "zh_en") {
-          return pairs.map((pair) => pair.left || pair.vocab_word || "");
+          return pairs.map((pair) => ({
+            word: pair.left || pair.vocab_word || "",
+            imageUrl: pair.image_url || "",
+            lookupValues: [pair.image_keyword, pair.vocab_word, pair.left, pair.right],
+          }));
         }
 
         if (set.language_pair === "en_ja") {
-          return pairs.map((pair) => pair.left || pair.vocab_word || "");
+          return pairs.map((pair) => ({
+            word: pair.left || pair.vocab_word || "",
+            imageUrl: pair.image_url || "",
+            lookupValues: [pair.image_keyword, pair.vocab_word, pair.left, pair.right],
+          }));
         }
 
         return [];
       });
-      const words = Array.from(
+      const cleanedEntries = rawEnglishEntries
+        .map((entry) => ({
+          ...entry,
+          word: cleanEnglishWord(String(entry.word || "")),
+          lookupValues: entry.lookupValues
+            .map((value) => String(value || "").trim())
+            .filter(Boolean),
+        }))
+        .filter(
+          (entry) =>
+            entry.word.length >= config.minLength &&
+            entry.word.length <= config.maxLength
+        );
+      const directImageMap = new Map<string, string>();
+
+      cleanedEntries.forEach((entry) => {
+        if (entry.imageUrl && !directImageMap.has(entry.word)) {
+          directImageMap.set(entry.word, entry.imageUrl);
+        }
+      });
+
+      const missingImageLookupValues = Array.from(
         new Set(
-          rawEnglishWords
-            .map((word) => cleanEnglishWord(String(word || "")))
-            .filter(
-              (word) =>
-                word.length >= config.minLength &&
-                word.length <= config.maxLength
-            )
+          cleanedEntries
+            .filter((entry) => !directImageMap.has(entry.word))
+            .flatMap((entry) => entry.lookupValues)
+            .flatMap((value) => {
+              const lower = value.toLowerCase();
+              return lower === value ? [value] : [value, lower];
+            })
         )
       );
+      const approvedImageMap = new Map<string, string>();
 
-      console.log("WordSearch raw game_questions count", data?.length || 0);
-      console.log(
-        "WordSearch record language_pair list",
-        (data || []).map((set: any) => set.language_pair)
+      if (missingImageLookupValues.length > 0) {
+        const imageColumns = ["keyword", "vocab_word", "left_text", "right_text"];
+        const imageResults = await Promise.all(
+          imageColumns.map((column) =>
+            supabase
+              .from("vocab_images")
+              .select("keyword, vocab_word, left_text, right_text, image_url, status")
+              .eq("status", "approved")
+              .in(column, missingImageLookupValues)
+          )
+        );
+
+        if (!active) return;
+
+        imageResults.forEach(({ data: imageData }) => {
+          (imageData || []).forEach((image) => {
+            [image.keyword, image.vocab_word, image.left_text, image.right_text].forEach(
+              (value) => {
+                if (value && image.image_url) {
+                  approvedImageMap.set(String(value).trim().toLowerCase(), image.image_url);
+                }
+              }
+            );
+          });
+        });
+      }
+
+      const words = Array.from(
+        new Set(cleanedEntries.map((entry) => entry.word))
       );
-      console.log(
-        "WordSearch first question_data.pairs sample",
-        data?.[0]?.question_data?.pairs?.[0] || null
-      );
-      console.log("WordSearch extracted English words count", words.length);
+      const nextWordImageMap: Record<string, string> = {};
+
+      cleanedEntries.forEach((entry) => {
+        if (nextWordImageMap[entry.word]) return;
+
+        const approvedImageUrl = entry.lookupValues
+          .map((value) => approvedImageMap.get(value.toLowerCase()))
+          .find(Boolean);
+
+        const imageUrl = directImageMap.get(entry.word) || approvedImageUrl;
+
+        if (imageUrl) {
+          nextWordImageMap[entry.word] = imageUrl;
+        }
+      });
+
       setAvailableWords(words);
+      setWordImageMap(nextWordImageMap);
       setVocabularyLoading(false);
     };
 
@@ -876,7 +970,9 @@ export default function WordSearch() {
       (_, index) => sourceWords[index % sourceWords.length]
     );
 
-    const questions = selectedWords.map((word) => makeFinalQuestion(word, sourceWords));
+    const questions = selectedWords.map((word) =>
+      makeFinalQuestion(word, sourceWords, wordImageMap)
+    );
 
     setFinalQuestions(questions);
     setFinalIndex(0);
@@ -1164,8 +1260,8 @@ export default function WordSearch() {
         )}
 
         {finalResult && (
-          <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/75 px-4">
-            <div className="w-full max-w-lg rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
+          <div className="fixed inset-0 z-[160] flex items-center justify-center overflow-hidden overscroll-none bg-black/75 px-4 py-4">
+            <div className="max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:p-8">
               <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
               <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
                 Final Test
@@ -1261,6 +1357,13 @@ export default function WordSearch() {
               <p className={`text-4xl font-black tracking-widest sm:text-5xl ${palette.title}`}>
                 {finalQuestions[finalIndex].clueDisplay}
               </p>
+              {finalQuestions[finalIndex].hintImageUrl && (
+                <img
+                  src={finalQuestions[finalIndex].hintImageUrl}
+                  alt="Vocabulary hint"
+                  className="mx-auto mt-5 h-32 w-32 rounded-[1.5rem] object-cover shadow-[0_16px_40px_rgba(0,0,0,0.22)] sm:h-40 sm:w-40"
+                />
+              )}
               <p className={`mt-4 text-sm font-bold sm:text-base ${palette.text}`}>
                 {finalQuestions[finalIndex].sentenceHint}
               </p>
@@ -1360,7 +1463,7 @@ export default function WordSearch() {
               </div>
             )}
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
               {difficulties.map((item) => {
                 const active = item.key === difficulty;
                 const locked =
@@ -1372,16 +1475,16 @@ export default function WordSearch() {
                     key={item.key}
                     disabled={locked}
                     onClick={() => setDifficulty(item.key)}
-                    className={`relative overflow-hidden rounded-[1.4rem] border p-4 text-left transition ${active
+                    className={`relative overflow-hidden rounded-[1.2rem] border p-3 text-left transition sm:rounded-[1.4rem] sm:p-4 ${active
                       ? "border-[#8B5CF6] bg-[#8B5CF6]/20"
                       : palette.soft
                       } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
                   >
-                    <p className={`text-xs font-black uppercase tracking-widest ${palette.muted}`}>
+                    <p className={`text-[11px] font-black uppercase tracking-widest sm:text-xs ${palette.muted}`}>
                       {item.key}
                     </p>
-                    <p className={`mt-2 text-3xl font-black ${palette.title}`}>{item.words}</p>
-                    <p className={`text-sm font-bold ${palette.text}`}>Hidden words</p>
+                    <p className={`mt-1 text-2xl font-black sm:mt-2 sm:text-3xl ${palette.title}`}>{item.words}</p>
+                    <p className={`text-xs font-bold sm:text-sm ${palette.text}`}>Hidden words</p>
                     {locked && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
                         <span className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white">
@@ -1436,8 +1539,9 @@ export default function WordSearch() {
             {loading && (
               <ArcadeLoadingScreen
                 title="Preparing Word Search..."
-                subtitle="Hiding vocabulary across the puzzle grid."
+                subtitle="Building puzzle"
                 icon={Search}
+                progress={loading ? 76 : 100}
                 isLight={isLight}
               />
             )}

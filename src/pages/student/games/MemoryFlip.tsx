@@ -124,34 +124,7 @@ const MemoryCardImage = ({
       return;
     }
 
-    let settled = false;
-    const timeout = window.setTimeout(() => {
-      if (settled) return;
-      settled = true;
-      setDisplaySrc(FALLBACK_IMAGE);
-    }, 1200);
-    const img = new Image();
-
-    img.onload = () => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timeout);
-      setDisplaySrc(src);
-    };
-
-    img.onerror = () => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timeout);
-      setDisplaySrc(FALLBACK_IMAGE);
-    };
-
-    img.src = src;
-
-    return () => {
-      settled = true;
-      window.clearTimeout(timeout);
-    };
+    setDisplaySrc(src);
   }, [src]);
 
   return (
@@ -363,6 +336,27 @@ export default function MemoryFlip() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!masteryResult) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousPosition = document.body.style.position;
+    const previousWidth = document.body.style.width;
+    const previousRootOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "relative";
+    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.position = previousPosition;
+      document.body.style.width = previousWidth;
+      document.documentElement.style.overflow = previousRootOverflow;
+    };
+  }, [masteryResult]);
+
   const toggleFullscreen = async () => {
     if (!gameWindowRef.current) return;
 
@@ -440,7 +434,7 @@ export default function MemoryFlip() {
               clearTimeout(timeout);
               resolve();
             };
-            const timeout = setTimeout(finish, 1200);
+            const timeout = setTimeout(finish, 6000);
             const img = new Image();
             img.src = url;
             img.onload = finish;
@@ -652,7 +646,7 @@ export default function MemoryFlip() {
     if (!isCurrentLoad()) return;
 
     const approvedImageMap = new Map<string, string>();
-    const reserveCount = selectedPairCount + 2;
+    const reserveCount = Math.min(rawPairs.length, selectedPairCount * 3);
     const selectedRawPairs = rawPairs.slice(0, reserveCount);
     const missingImageLookupValues = Array.from(
       new Set(
@@ -1157,13 +1151,13 @@ export default function MemoryFlip() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[300] flex items-center justify-center bg-black/75 px-4"
+            className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden overscroll-none bg-black/75 px-4 py-4"
           >
             <motion.div
               initial={{ scale: 0.9, y: 24 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg rounded-[2.8rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
+              className="max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2.8rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:p-8"
             >
               <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
 
@@ -1488,7 +1482,7 @@ export default function MemoryFlip() {
                       </p>
                     </div>
 
-                    <div className="mt-6 grid gap-4 lg:grid-cols-4">
+                    <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                       {[
                         { key: "Easy", icon: Brain, pairs: 6, active: difficulty === "Easy", activeClass: "border-[#52bd7f] bg-[#52bd7f]/18 shadow-[0_16px_42px_rgba(82,189,127,0.16)]" },
                         { key: "Medium", icon: Zap, pairs: 8, active: difficulty === "Medium", activeClass: "border-[#3B82F6] bg-[#3B82F6]/18 shadow-[0_16px_42px_rgba(59,130,246,0.16)]" },
@@ -1508,26 +1502,26 @@ export default function MemoryFlip() {
                             key={item.key}
                             disabled={locked}
                             onClick={() => setDifficulty(item.key)}
-                            className={`relative min-h-[150px] overflow-hidden rounded-[1.45rem] border p-5 text-left transition-all duration-300 active:scale-95 ${item.active
+                            className={`relative min-h-[88px] overflow-hidden rounded-[1.25rem] border p-3 text-left transition-all duration-300 active:scale-95 sm:min-h-[150px] sm:rounded-[1.45rem] sm:p-5 ${item.active
                               ? item.activeClass
                               : isLight
                                 ? "border-[#eee8ff] bg-white hover:bg-[#faf8ff]"
                                 : "border-white/10 bg-white/[0.07] hover:bg-white/10"
-                              } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
+                            } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
                           >
                             <div className="absolute right-4 top-4">
-                              <Icon className={`h-7 w-7 ${isLight ? "text-primary" : "text-white"}`} />
+                              <Icon className={`h-5 w-5 sm:h-7 sm:w-7 ${isLight ? "text-primary" : "text-white"}`} />
                             </div>
 
-                            <p className={`text-sm font-black uppercase tracking-widest ${themeClass.muted}`}>
+                            <p className={`text-[11px] font-black uppercase tracking-widest sm:text-sm ${themeClass.muted}`}>
                               {item.key}
                             </p>
 
-                            <h3 className={`mt-4 text-4xl font-black ${themeClass.title}`}>
+                            <h3 className={`mt-2 text-2xl font-black sm:mt-4 sm:text-4xl ${themeClass.title}`}>
                               {item.pairs}
                             </h3>
 
-                            <p className={`mt-1 text-sm ${themeClass.muted}`}>
+                            <p className={`mt-0.5 text-xs sm:mt-1 sm:text-sm ${themeClass.muted}`}>
                               Matching Pairs
                             </p>
 
@@ -1699,8 +1693,9 @@ export default function MemoryFlip() {
                   {loading && (
                     <ArcadeLoadingScreen
                       title="Preparing Memory Flip..."
-                      subtitle="Fetching pairs, resolving images, and shuffling the cards."
+                      subtitle="Loading cards"
                       icon={Brain}
+                      progress={loading ? 72 : 100}
                       isLight={isLight}
                       className="mb-6"
                     />
