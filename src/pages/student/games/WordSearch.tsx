@@ -247,7 +247,7 @@ export default function WordSearch() {
   const [finalAnswerLocked, setFinalAnswerLocked] = useState(false);
   const [finalResult, setFinalResult] = useState<FinalResult | null>(null);
   const [savedSession, setSavedSession] = useState<SavedWordSearchSession | null>(null);
-  const [openDropdown, setOpenDropdown] = useState<"grade" | "difficulty" | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<"grade" | null>(null);
 
   const config = getDifficultyConfig(difficulty);
   const isLight = theme === "light";
@@ -710,7 +710,7 @@ export default function WordSearch() {
 
   const renderArcadeDropdown = (
     label: string,
-    id: "grade" | "difficulty",
+    id: "grade",
     value: string,
     options: string[],
     onChange: (value: string) => void
@@ -962,7 +962,7 @@ export default function WordSearch() {
               </div>
             </div>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
               <div className="block">
                 <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
                   LANGUAGE
@@ -976,20 +976,6 @@ export default function WordSearch() {
                 </div>
               </div>
               {renderArcadeDropdown("Grade", "grade", grade, grades, setGrade)}
-              {renderArcadeDropdown(
-                "Difficulty",
-                "difficulty",
-                difficulty,
-                difficulties.map((item) => item.key),
-                (value) => {
-                  if (
-                    difficultyOrder.indexOf(value) <=
-                    difficultyOrder.indexOf(unlockedDifficulty)
-                  ) {
-                    setDifficulty(value);
-                  }
-                }
-              )}
             </div>
 
             {savedSession && (
