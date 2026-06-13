@@ -23,6 +23,7 @@ const LunaMascotChat = () => {
     "/tutor/lessons",
     "/games",
     "/memory-flip",
+    "/word-search",
     "/generate-games",
   
     "/en/careers",

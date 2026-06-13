@@ -37,9 +37,9 @@ const games = [
   {
     title: "Word Search",
     description: "Find hidden vocabulary words in a timed puzzle.",
-    path: "#",
+    path: "/word-search",
     icon: Search,
-    status: "Coming Soon",
+    status: "Available",
     color: "bg-[#ff8bd2]",
   },
   {

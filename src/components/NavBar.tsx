@@ -33,6 +33,9 @@ const NavBar = () => {
     "/memory-flip",
     "/tutor/lessons",
     "/student/lessons",
+    "/admin/dashboard",
+    "/admin/assign",
+    "/admin/questions",
     "/admin/lessons",
     "/admin",
     "/studentoverview",
@@ -43,9 +46,12 @@ const NavBar = () => {
   const pathWithoutLang =
     location.pathname.replace(/^\/(en|zh|ja)/, "") || "/";
 
-  const isApp = appRoutes.some((route) =>
-    pathWithoutLang.startsWith(route)
-  );
+  const isDashboardUser =
+    role === "admin" || role === "tutor" || role === "student";
+
+  const isApp =
+    isDashboardUser ||
+    appRoutes.some((route) => pathWithoutLang.startsWith(route));
 
   const brandName = isApp ? "Luna Studies" : "Luna Education";
 

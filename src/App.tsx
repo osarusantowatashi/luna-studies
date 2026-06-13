@@ -46,6 +46,7 @@ const StudentLessons = lazy(() => import("./pages/student/StudentLessons"));
 const Practice = lazy(() => import("./pages/student/Practice"));
 const GamesArcade = lazy(() => import("./pages/student/games/GamesArcade"));
 const MemoryFlip = lazy(() => import("./pages/student/games/MemoryFlip"));
+const WordSearch = lazy(() => import("./pages/student/games/WordSearch"));
 const Mistakes = lazy(() => import("./pages/student/Mistakes"));
 
 const Page = lazy(() => import("./pages/shared/Page"));
@@ -191,6 +192,15 @@ const App = () => {
             element={
               <ProtectedRoute allowedRoles={["admin", "student"]}>
                 <MemoryFlip />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/word-search"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "student"]}>
+                <WordSearch />
               </ProtectedRoute>
             }
           />
