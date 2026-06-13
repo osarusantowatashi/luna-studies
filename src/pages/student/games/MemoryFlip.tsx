@@ -56,6 +56,7 @@ const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"
 const FALLBACK_IMAGE =
   "https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg";
 const MEMORY_FLIP_SESSION_KEY = "luna_memory_flip_session_v1";
+const MEMORY_FLIP_SESSION_TTL_MS = 30 * 60 * 1000;
 
 const getTimeLimit = (pairCount: number, difficulty: string) => {
   if (difficulty === "Easy") return pairCount * 18;
@@ -99,6 +100,65 @@ const getCardTextClass = (cardCount: number) => {
   if (cardCount <= 12) return "text-[13px] sm:text-[15px]";
   if (cardCount <= 20) return "text-[11px] min-[390px]:text-[12px] sm:text-[15px]";
   return "text-[10px] min-[390px]:text-[11px] sm:text-[15px]";
+};
+
+const MemoryCardImage = ({
+  src,
+  alt,
+  className,
+}: {
+  src?: string;
+  alt: string;
+  className: string;
+}) => {
+  const [displaySrc, setDisplaySrc] = useState(FALLBACK_IMAGE);
+
+  useEffect(() => {
+    if (!src) {
+      setDisplaySrc(FALLBACK_IMAGE);
+      return;
+    }
+
+    let settled = false;
+    const timeout = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      setDisplaySrc(FALLBACK_IMAGE);
+    }, 1200);
+    const img = new Image();
+
+    img.onload = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      setDisplaySrc(src);
+    };
+
+    img.onerror = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      setDisplaySrc(FALLBACK_IMAGE);
+    };
+
+    img.src = src;
+
+    return () => {
+      settled = true;
+      window.clearTimeout(timeout);
+    };
+  }, [src]);
+
+  return (
+    <img
+      src={displaySrc}
+      alt={alt}
+      className={className}
+      onError={(event) => {
+        event.currentTarget.src = FALLBACK_IMAGE;
+      }}
+    />
+  );
 };
 
 export default function MemoryFlip() {
@@ -275,7 +335,16 @@ export default function MemoryFlip() {
     if (!rawSession) return;
 
     try {
-      setSavedSession(JSON.parse(rawSession));
+      const parsedSession = JSON.parse(rawSession);
+      const savedAt = Number(parsedSession?.savedAt || 0);
+      const expired = !savedAt || Date.now() - savedAt > MEMORY_FLIP_SESSION_TTL_MS;
+
+      if (expired) {
+        sessionStorage.removeItem(MEMORY_FLIP_SESSION_KEY);
+        return;
+      }
+
+      setSavedSession(parsedSession);
     } catch {
       sessionStorage.removeItem(MEMORY_FLIP_SESSION_KEY);
     }
@@ -474,6 +543,7 @@ export default function MemoryFlip() {
       score,
       secondsLeft,
       level,
+      savedAt: Date.now(),
     };
 
     sessionStorage.setItem(MEMORY_FLIP_SESSION_KEY, JSON.stringify(session));
@@ -493,7 +563,13 @@ export default function MemoryFlip() {
     setMoves(savedSession.moves || 0);
     setCombo(savedSession.combo || 0);
     setScore(savedSession.score || 0);
-    setSecondsLeft(savedSession.secondsLeft || getTimeLimit(pairCount, difficulty));
+    setSecondsLeft(
+      savedSession.secondsLeft ||
+      getTimeLimit(
+        getPairCountByDifficulty(savedSession.difficulty || "Easy"),
+        savedSession.difficulty || "Easy"
+      )
+    );
     setLevel(savedSession.level || 1);
     setErrorMsg("");
     setTimeUp(false);
@@ -670,7 +746,7 @@ export default function MemoryFlip() {
 
     const imageUrls = pairs.map((pair: any) => pair.image_url).filter(Boolean) as string[];
 
-    await preloadImages(imageUrls);
+    void preloadImages(imageUrls);
 
     setMasteryPool((prev) => {
       const map = new Map(prev.map((pair) => [pair.pairKey, pair]));
@@ -1688,13 +1764,10 @@ export default function MemoryFlip() {
                                 className={`absolute inset-0 rounded-[1.6rem] border [backface-visibility:hidden] [transform:rotateY(180deg)] ${themeClass.cardFront} ${card.matched ? "border-emerald-400 bg-emerald-500/15 opacity-90" : ""}`}
                               >
                                 <div className="flex h-full flex-col items-center justify-between p-2 sm:p-3">
-                                  <img
-                                    src={card.imageUrl || FALLBACK_IMAGE}
+                                  <MemoryCardImage
+                                    src={card.imageUrl}
                                     alt={card.text}
                                     className={`rounded-[1.2rem] object-cover shadow-lg ${getCardImageClass(cards.length)}`}
-                                    onError={(e) => {
-                                      e.currentTarget.src = FALLBACK_IMAGE;
-                                    }}
                                   />
 
                                   <div className="mt-1.5 flex min-h-[30px] w-full items-center justify-center rounded-xl bg-white/90 px-1.5 sm:mt-2 sm:min-h-[38px] sm:px-2">

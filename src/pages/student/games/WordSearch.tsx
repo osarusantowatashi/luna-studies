@@ -406,38 +406,48 @@ export default function WordSearch() {
         .select("language_pair, question_data")
         .eq("game_type", "memory_flip")
         .eq("grade", grade)
-        .in("language_pair", ["zh_en", "en_ja"]);
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.log("WordSearch records returned", 0);
-        console.log("WordSearch extracted words count", 0);
-        console.log("WordSearch first few extracted words", []);
+        console.log("WordSearch raw game_questions count", 0);
+        console.log("WordSearch record language_pair list", []);
+        console.log("WordSearch first question_data.pairs sample", null);
+        console.log("WordSearch extracted English words count", 0);
         setAvailableWords([]);
         return;
       }
 
+      const rawEnglishWords = (data || []).flatMap((set: any) => {
+        const pairs: Pair[] = set.question_data?.pairs || [];
+
+        if (set.language_pair === "zh_en") {
+          return pairs.map((pair) => pair.right || "");
+        }
+
+        if (set.language_pair === "en_ja") {
+          return pairs.map((pair) => pair.left || "");
+        }
+
+        return [];
+      });
       const words = Array.from(
         new Set(
-          (data || [])
-            .flatMap((set: any) => {
-              const pairs: Pair[] = set.question_data?.pairs || [];
-
-              if (set.language_pair !== "zh_en" && set.language_pair !== "en_ja") {
-                return [];
-              }
-
-              return pairs.map((pair) =>
-                set.language_pair === "zh_en" ? pair.right || "" : pair.left || ""
-              );
-            })
-            .map(cleanEnglishWord)
+          rawEnglishWords
+            .map((word) => cleanEnglishWord(String(word || "")))
             .filter((word) => word.length >= 3 && word.length <= 12)
         )
       );
 
-      console.log("WordSearch records returned", data?.length || 0);
-      console.log("WordSearch extracted words count", words.length);
-      console.log("WordSearch first few extracted words", words.slice(0, 10));
+      console.log("WordSearch raw game_questions count", data?.length || 0);
+      console.log(
+        "WordSearch record language_pair list",
+        (data || []).map((set: any) => set.language_pair)
+      );
+      console.log(
+        "WordSearch first question_data.pairs sample",
+        data?.[0]?.question_data?.pairs?.[0] || null
+      );
+      console.log("WordSearch extracted English words count", words.length);
       setAvailableWords(words);
     };
 
