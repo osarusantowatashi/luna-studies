@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -62,14 +62,17 @@ type SavedWordSearchSession = {
 
 const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
 const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
-const difficulties = [
-  { key: "Easy", words: 6, size: 10, seconds: 180 },
-  { key: "Medium", words: 8, size: 12, seconds: 240 },
-  { key: "Hard", words: 10, size: 14, seconds: 300 },
-  { key: "Advanced", words: 12, size: 15, seconds: 360 },
-];
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const directions = [
+const easyDirections = [
+  [0, 1],
+  [1, 0],
+];
+const mediumDirections = [
+  [0, 1],
+  [1, 0],
+  [1, 1],
+];
+const allDirections = [
   [0, 1],
   [1, 0],
   [1, 1],
@@ -78,6 +81,44 @@ const directions = [
   [-1, 0],
   [-1, -1],
   [1, -1],
+];
+const difficulties = [
+  {
+    key: "Easy",
+    words: 5,
+    size: 6,
+    seconds: 210,
+    minLength: 3,
+    maxLength: 6,
+    directions: easyDirections,
+  },
+  {
+    key: "Medium",
+    words: 6,
+    size: 8,
+    seconds: 240,
+    minLength: 3,
+    maxLength: 8,
+    directions: mediumDirections,
+  },
+  {
+    key: "Hard",
+    words: 8,
+    size: 10,
+    seconds: 300,
+    minLength: 4,
+    maxLength: 10,
+    directions: allDirections,
+  },
+  {
+    key: "Advanced",
+    words: 10,
+    size: 12,
+    seconds: 360,
+    minLength: 5,
+    maxLength: 12,
+    directions: allDirections,
+  },
 ];
 const WORD_SEARCH_GAME_KEY = "word_search";
 
@@ -168,7 +209,11 @@ const wordFits = (
   return true;
 };
 
-const placeWord = (grid: string[][], word: string): PuzzleWord | null => {
+const placeWord = (
+  grid: string[][],
+  word: string,
+  directions: number[][]
+): PuzzleWord | null => {
   for (let attempt = 0; attempt < 220; attempt += 1) {
     const [rowStep, colStep] = directions[Math.floor(Math.random() * directions.length)];
     const row = Math.floor(Math.random() * grid.length);
@@ -191,12 +236,12 @@ const placeWord = (grid: string[][], word: string): PuzzleWord | null => {
   return null;
 };
 
-const createPuzzle = (wordList: string[], size: number) => {
+const createPuzzle = (wordList: string[], size: number, directions: number[][]) => {
   const grid = createBlankGrid(size);
   const placedWords: PuzzleWord[] = [];
 
   wordList.forEach((word) => {
-    const placed = placeWord(grid, word);
+    const placed = placeWord(grid, word, directions);
 
     if (placed) placedWords.push(placed);
   });
@@ -224,6 +269,7 @@ const createPuzzle = (wordList: string[], size: number) => {
 
 export default function WordSearch() {
   const navigate = useNavigate();
+  const arcadeRef = useRef<HTMLDivElement | null>(null);
   const [grade, setGrade] = useState("Grade 1");
   const [difficulty, setDifficulty] = useState("Easy");
   const [unlockedDifficulty, setUnlockedDifficulty] = useState("Easy");
@@ -254,6 +300,8 @@ export default function WordSearch() {
   const [finalResult, setFinalResult] = useState<FinalResult | null>(null);
   const [savedSession, setSavedSession] = useState<SavedWordSearchSession | null>(null);
   const [openDropdown, setOpenDropdown] = useState<"grade" | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobileFullscreen, setIsMobileFullscreen] = useState(false);
 
   const config = getDifficultyConfig(difficulty);
   const isLight = theme === "light";
@@ -398,6 +446,18 @@ export default function WordSearch() {
   }, []);
 
   useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  useEffect(() => {
     const loadWords = async () => {
       const { data, error } = await supabase
         .from("game_questions")
@@ -432,7 +492,11 @@ export default function WordSearch() {
         new Set(
           rawEnglishWords
             .map((word) => cleanEnglishWord(String(word || "")))
-            .filter((word) => word.length >= 3 && word.length <= 12)
+            .filter(
+              (word) =>
+                word.length >= config.minLength &&
+                word.length <= config.maxLength
+            )
         )
       );
 
@@ -450,7 +514,7 @@ export default function WordSearch() {
     };
 
     loadWords();
-  }, [grade]);
+  }, [grade, config.minLength, config.maxLength]);
 
   useEffect(() => {
     if (!gameStarted || complete || expired) return;
@@ -496,6 +560,35 @@ export default function WordSearch() {
     setSavedSession(session);
   };
 
+  const enterGameMode = async () => {
+    const isMobile =
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+      window.innerWidth < 768;
+
+    if (isMobile) {
+      setIsMobileFullscreen(true);
+      return;
+    }
+
+    try {
+      await arcadeRef.current?.requestFullscreen();
+    } catch {
+      // Fullscreen can be blocked by the browser; gameplay should still start.
+    }
+  };
+
+  const exitGameMode = async () => {
+    setIsMobileFullscreen(false);
+
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+      } catch {
+        // Exiting the menu should still work if the browser refuses this call.
+      }
+    }
+  };
+
   const buildRound = (roundLevel: number) => {
     setLoading(true);
     setErrorMsg("");
@@ -506,7 +599,11 @@ export default function WordSearch() {
     setShowRoundResult(false);
     setSecondsLeft(config.seconds);
 
-    if (availableWords.length < config.words) {
+    const eligibleWords = availableWords.filter(
+      (word) => word.length >= config.minLength && word.length <= config.maxLength
+    );
+
+    if (eligibleWords.length < config.words) {
       setCells([]);
       setPuzzleWords([]);
       setGameStarted(true);
@@ -515,8 +612,8 @@ export default function WordSearch() {
       return;
     }
 
-    const chosenWords = shuffle(availableWords).slice(0, config.words);
-    const puzzle = createPuzzle(chosenWords, config.size);
+    const chosenWords = shuffle(eligibleWords).slice(0, config.words);
+    const puzzle = createPuzzle(chosenWords, config.size, config.directions);
 
     if (puzzle.placedWords.length < config.words) {
       setErrorMsg("This puzzle could not fit all selected words. Try again.");
@@ -531,7 +628,7 @@ export default function WordSearch() {
     setLoading(false);
   };
 
-  const startGame = () => {
+  const startGame = async () => {
     clearSavedSession();
     setScore(0);
     setFinalResult(null);
@@ -539,6 +636,7 @@ export default function WordSearch() {
     setFinalQuestions([]);
     setFinalIndex(0);
     setFinalCorrect(0);
+    await enterGameMode();
     buildRound(1);
   };
 
@@ -546,7 +644,7 @@ export default function WordSearch() {
     buildRound(level + 1);
   };
 
-  const resumeSavedSession = () => {
+  const resumeSavedSession = async () => {
     if (!savedSession) return;
 
     setGrade(savedSession.grade);
@@ -566,11 +664,12 @@ export default function WordSearch() {
     setShowRoundResult(false);
     setShowFinalTest(false);
     setFinalResult(null);
+    await enterGameMode();
     setGameStarted(true);
     clearSavedSession();
   };
 
-  const resetToMenu = () => {
+  const resetToMenu = async () => {
     saveCurrentSession();
     setGameStarted(false);
     setCells([]);
@@ -590,6 +689,7 @@ export default function WordSearch() {
     setFinalCorrect(0);
     setFinalResult(null);
     setSecondsLeft(config.seconds);
+    await exitGameMode();
   };
 
   const generateFinalTest = () => {
@@ -782,7 +882,13 @@ export default function WordSearch() {
         )}
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+      <div
+        ref={arcadeRef}
+        className={`relative z-10 ${isMobileFullscreen
+          ? `fixed inset-0 z-[250] h-[100dvh] max-w-none overflow-y-auto px-2 py-2 ${palette.page}`
+          : "mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"
+          }`}
+      >
         <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
           <button
             onClick={() => navigate("/games")}
@@ -835,12 +941,13 @@ export default function WordSearch() {
 
               <div className="mt-8 grid gap-3">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (finalResult.passed) {
                       const nextDifficulty = finalResult.nextDifficulty;
 
                       setFinalResult(null);
                       setGameStarted(false);
+                      await exitGameMode();
 
                       if (nextDifficulty) {
                         setDifficulty(nextDifficulty);
@@ -864,10 +971,10 @@ export default function WordSearch() {
                 </button>
 
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setFinalResult(null);
                     clearSavedSession();
-                    resetToMenu();
+                    await resetToMenu();
                   }}
                   className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
                 >
@@ -1058,8 +1165,8 @@ export default function WordSearch() {
             </button>
           </div>
         ) : (
-          <div className={`rounded-[2rem] border p-3 sm:p-5 ${palette.panel}`}>
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className={`rounded-[1.5rem] border p-2 sm:p-4 ${palette.panel}`}>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
                   Word Search
@@ -1077,18 +1184,18 @@ export default function WordSearch() {
               </button>
             </div>
 
-            <div className="mb-4 grid grid-cols-4 gap-2">
+            <div className="mb-3 grid grid-cols-4 gap-1.5 sm:gap-2">
               {[
                 ["Score", score],
                 ["Found", `${foundWords.length}/${puzzleWords.length}`],
                 ["Round", `${level}/5`],
                 ["Time", `${secondsLeft}s`],
               ].map(([label, value]) => (
-                <div key={label} className={`rounded-xl px-2 py-2 text-center ${palette.soft}`}>
+                <div key={label} className={`rounded-xl px-2 py-1.5 text-center ${palette.soft}`}>
                   <p className={`text-[9px] font-black uppercase tracking-widest ${palette.muted}`}>
                     {label}
                   </p>
-                  <p className={`mt-1 text-base font-black sm:text-xl ${label === "Time" && secondsLeft <= 20 ? "text-red-400" : palette.title}`}>
+                  <p className={`mt-0.5 text-sm font-black sm:text-lg ${label === "Time" && secondsLeft <= 20 ? "text-red-400" : palette.title}`}>
                     {value}
                   </p>
                 </div>
