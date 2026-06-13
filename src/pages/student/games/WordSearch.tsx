@@ -158,10 +158,10 @@ const getNextDifficulty = (difficulty: string) => {
 };
 
 const getGridMaxWidth = (size: number) => {
-  if (size <= 6) return "min(84vw, 360px)";
-  if (size <= 8) return "min(88vw, 430px)";
-  if (size <= 10) return "min(90vw, 520px)";
-  return "min(92vw, 590px)";
+  if (size <= 6) return "min(84vw, 390px)";
+  if (size <= 8) return "min(88vw, 500px)";
+  if (size <= 10) return "min(90vw, 590px)";
+  return "min(92vw, 660px)";
 };
 
 const getGridLetterClass = (size: number) => {
@@ -399,10 +399,13 @@ export default function WordSearch() {
   const [openDropdown, setOpenDropdown] = useState<"grade" | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobileFullscreen, setIsMobileFullscreen] = useState(false);
+  const [showResumeConfirm, setShowResumeConfirm] = useState(false);
 
   const config = getDifficultyConfig(difficulty);
   const isLight = theme === "light";
   const fullscreenActive = isFullscreen || isMobileFullscreen;
+  const gameModeActive = gameStarted || showFinalTest || !!finalResult;
+  const showPageChrome = !fullscreenActive;
   const foundSet = useMemo(() => new Set(foundWords), [foundWords]);
   const selectedSet = useMemo(() => new Set(selectedCells), [selectedCells]);
   const foundCellSet = useMemo(
@@ -433,6 +436,10 @@ export default function WordSearch() {
     button: isLight
       ? "border-[#eee8ff] bg-white text-primary shadow-[0_8px_25px_rgba(66,56,120,0.08)] hover:bg-[#faf8ff]"
       : "border-white/10 bg-white/5 text-white hover:bg-white/10",
+    gameWindow: isLight
+      ? "border-[#eee8ff] bg-white/92 shadow-[0_24px_80px_rgba(66,56,120,0.12)]"
+      : "border-white/10 bg-[#0A1628]/88 shadow-[0_24px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl",
+    hudBox: isLight ? "border border-[#eee8ff] bg-[#faf8ff]" : "border border-white/10 bg-black/20",
     boardCell: isLight
       ? "border-[#eee8ff] bg-gradient-to-br from-white to-[#f6f1ff] text-primary shadow-[0_8px_22px_rgba(66,56,120,0.08)]"
       : "border-white/10 bg-gradient-to-br from-white/[0.14] to-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]",
@@ -758,7 +765,7 @@ export default function WordSearch() {
 
   const startGame = async () => {
     if (savedSession) {
-      await resumeSavedSession();
+      setShowResumeConfirm(true);
       return;
     }
 
@@ -766,6 +773,7 @@ export default function WordSearch() {
   };
 
   const startNewGame = async () => {
+    setShowResumeConfirm(false);
     clearSavedSession();
     setScore(0);
     setFinalResult(null);
@@ -784,6 +792,7 @@ export default function WordSearch() {
   const resumeSavedSession = async () => {
     if (!savedSession) return;
 
+    setShowResumeConfirm(false);
     setGrade(savedSession.grade);
     setDifficulty(savedSession.difficulty);
     setUnlockedDifficulty(savedSession.unlockedDifficulty);
@@ -825,6 +834,7 @@ export default function WordSearch() {
     setFinalIndex(0);
     setFinalCorrect(0);
     setFinalResult(null);
+    setShowResumeConfirm(false);
     setSecondsLeft(config.seconds);
     await exitGameMode();
   };
@@ -1015,25 +1025,9 @@ export default function WordSearch() {
         )}
       </div>
 
-      <div
-        ref={arcadeRef}
-        className={`relative z-10 ${isMobileFullscreen
-          ? `fixed inset-0 z-[250] h-[100dvh] max-w-none overflow-y-auto px-2 py-2 ${palette.page}`
-          : "mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"
-          }`}
-      >
-        {(gameStarted || showFinalTest || finalResult) && (
-          <button
-            type="button"
-            onClick={toggleFullscreen}
-            className={`fixed right-3 top-3 z-[140] flex h-11 w-11 items-center justify-center rounded-2xl border ${palette.button}`}
-            title={fullscreenActive ? "Exit Fullscreen" : "Enter Fullscreen"}
-          >
-            {fullscreenActive ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
-          </button>
-        )}
-
-        <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
+      <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+        {showPageChrome && (
+          <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
           <button
             onClick={async () => {
               if (gameStarted) saveCurrentSession();
@@ -1053,7 +1047,62 @@ export default function WordSearch() {
           >
             {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
           </button>
-        </div>
+          </div>
+        )}
+
+        <div
+          ref={arcadeRef}
+          className={`relative overflow-hidden border ${palette.gameWindow} ${isMobileFullscreen
+            ? "fixed inset-0 z-[250] h-[100dvh] overflow-y-auto rounded-none p-2 sm:p-3"
+            : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
+            }`}
+        >
+          <div className={fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}>
+            {gameModeActive && (
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
+                title={fullscreenActive ? "Exit Fullscreen" : "Enter Fullscreen"}
+              >
+                {fullscreenActive ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+              </button>
+            )}
+
+            {showResumeConfirm && savedSession && (
+              <div className="fixed inset-0 z-[180] flex items-center justify-center bg-black/75 px-4">
+                <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
+                  <Trophy className="mx-auto h-14 w-14 text-[#FACC15]" />
+                  <h2 className="mt-4 text-3xl font-black text-white">
+                    Resume unfinished game?
+                  </h2>
+                  <p className="mt-3 text-sm font-bold leading-6 text-slate-300">
+                    You have an unfinished session: {savedSession.grade} · {savedSession.difficulty} · Round {savedSession.level}/5
+                  </p>
+
+                  <div className="mt-6 grid gap-3">
+                    <button
+                      onClick={resumeSavedSession}
+                      className="h-12 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                    >
+                      RESUME SAVED GAME
+                    </button>
+                    <button
+                      onClick={startNewGame}
+                      className="h-12 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                    >
+                      START NEW GAME
+                    </button>
+                    <button
+                      onClick={() => setShowResumeConfirm(false)}
+                      className="h-12 rounded-2xl border border-white/10 bg-transparent font-black text-slate-300"
+                    >
+                      CANCEL
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
         {finalFeedback && (
           <div className={`fixed inset-0 z-[200] flex items-center justify-center px-4 ${finalFeedback.type === "correct" ? "bg-emerald-500/85" : "bg-red-500/85"}`}>
@@ -1155,7 +1204,7 @@ export default function WordSearch() {
           </div>
         )}
 
-        {showFinalTest && finalQuestions[finalIndex] && (
+        {showFinalTest && finalQuestions[finalIndex] ? (
           <div className={`rounded-[2rem] border p-5 sm:p-8 ${palette.panel}`}>
             <div className="text-center">
               <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
@@ -1193,9 +1242,7 @@ export default function WordSearch() {
               ))}
             </div>
           </div>
-        )}
-
-        {!showFinalTest && !gameStarted ? (
+        ) : !gameStarted ? (
           <div className={`rounded-[2rem] border p-5 sm:p-6 ${palette.panel}`}>
             <div className="grid gap-6 lg:grid-cols-[1.1fr_320px]">
               <div>
@@ -1267,7 +1314,7 @@ export default function WordSearch() {
                       onClick={clearSavedSession}
                       className={`h-11 rounded-xl border px-4 text-sm font-black ${palette.button}`}
                     >
-                      START OVER
+                      CLEAR SAVE
                     </button>
                   </div>
                 </div>
@@ -1316,7 +1363,7 @@ export default function WordSearch() {
             </button>
           </div>
         ) : (
-          <div className={`rounded-[1.5rem] border p-2 sm:p-4 ${palette.panel}`}>
+          <div className={`flex flex-col rounded-[1.5rem] border p-2 sm:p-4 ${palette.panel} ${fullscreenActive ? "min-h-[calc(100dvh-1rem)]" : ""}`}>
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
@@ -1342,7 +1389,7 @@ export default function WordSearch() {
                 ["Round", `${level}/5`],
                 ["Time", `${secondsLeft}s`],
               ].map(([label, value]) => (
-                <div key={label} className={`rounded-xl px-2 py-1.5 text-center ${palette.soft}`}>
+                <div key={label} className={`rounded-xl px-2 py-2 text-center ${palette.hudBox}`}>
                   <p className={`text-[9px] font-black uppercase tracking-widest ${palette.muted}`}>
                     {label}
                   </p>
@@ -1372,8 +1419,8 @@ export default function WordSearch() {
             )}
 
             {!loading && !errorMsg && (
-              <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-                <div className={`rounded-[1.5rem] border p-3 sm:p-4 ${palette.soft}`}>
+              <div className="grid flex-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+                <div className={`rounded-[1.5rem] border p-2 sm:p-3 ${palette.soft}`}>
                   <div
                     className="mx-auto grid touch-none select-none gap-1 rounded-[1.2rem]"
                     style={{
@@ -1419,7 +1466,7 @@ export default function WordSearch() {
                   </div>
                 </div>
 
-                <div className={`rounded-[1.5rem] border p-4 ${palette.soft}`}>
+                <div className={`rounded-[1.5rem] border p-3 sm:p-4 ${palette.soft}`}>
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
                       Word List
@@ -1470,8 +1517,10 @@ export default function WordSearch() {
             )}
           </div>
         )}
+          </div>
+        </div>
 
-        {!isMobileFullscreen && (
+        {showPageChrome && (
           <div className={`mt-8 rounded-[2rem] border p-5 ${palette.panel}`}>
             <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
               More Games
