@@ -18,6 +18,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ArcadeLoadingScreen from "@/components/games/ArcadeLoadingScreen";
 import { supabase } from "@/lib/supabase";
 import {
   clearGameSession,
@@ -367,6 +368,7 @@ const createPuzzle = (wordList: string[], size: number, directions: number[][]) 
 export default function WordSearch() {
   const navigate = useNavigate();
   const arcadeRef = useRef<HTMLDivElement | null>(null);
+  const buildRequestRef = useRef(0);
   const [grade, setGrade] = useState("Grade 1");
   const [difficulty, setDifficulty] = useState("Easy");
   const [unlockedDifficulty, setUnlockedDifficulty] = useState("Easy");
@@ -380,6 +382,7 @@ export default function WordSearch() {
   const [dragging, setDragging] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [vocabularyLoading, setVocabularyLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [score, setScore] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(getDifficultyConfig(difficulty).seconds);
@@ -438,7 +441,7 @@ export default function WordSearch() {
       : "border-white/10 bg-white/5 text-white hover:bg-white/10",
     gameWindow: isLight
       ? "border-[#eee8ff] bg-white/92 shadow-[0_24px_80px_rgba(66,56,120,0.12)]"
-      : "border-white/10 bg-[#0A1628]/88 shadow-[0_24px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl",
+      : "border-white/10 bg-[#071426]/95 shadow-[0_24px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl",
     hudBox: isLight ? "border border-[#eee8ff] bg-[#faf8ff]" : "border border-white/10 bg-black/20",
     boardCell: isLight
       ? "border-[#eee8ff] bg-gradient-to-br from-white to-[#f6f1ff] text-primary shadow-[0_8px_22px_rgba(66,56,120,0.08)]"
@@ -572,7 +575,11 @@ export default function WordSearch() {
   }, []);
 
   useEffect(() => {
+    let active = true;
+
     const loadWords = async () => {
+      setVocabularyLoading(true);
+
       const { data, error } = await supabase
         .from("game_questions")
         .select("language_pair, question_data")
@@ -580,12 +587,15 @@ export default function WordSearch() {
         .eq("grade", grade)
         .order("created_at", { ascending: false });
 
+      if (!active) return;
+
       if (error) {
         console.log("WordSearch raw game_questions count", 0);
         console.log("WordSearch record language_pair list", []);
         console.log("WordSearch first question_data.pairs sample", null);
         console.log("WordSearch extracted English words count", 0);
         setAvailableWords([]);
+        setVocabularyLoading(false);
         return;
       }
 
@@ -625,9 +635,14 @@ export default function WordSearch() {
       );
       console.log("WordSearch extracted English words count", words.length);
       setAvailableWords(words);
+      setVocabularyLoading(false);
     };
 
     loadWords();
+
+    return () => {
+      active = false;
+    };
   }, [grade, config.minLength, config.maxLength]);
 
   useEffect(() => {
@@ -725,6 +740,10 @@ export default function WordSearch() {
   };
 
   const buildRound = (roundLevel: number) => {
+    if (vocabularyLoading) return;
+
+    const buildRequestId = buildRequestRef.current + 1;
+    buildRequestRef.current = buildRequestId;
     setLoading(true);
     setErrorMsg("");
     setFoundWords([]);
@@ -733,37 +752,42 @@ export default function WordSearch() {
     setDragging(false);
     setShowRoundResult(false);
     setSecondsLeft(config.seconds);
-
-    const eligibleWords = availableWords.filter(
-      (word) => word.length >= config.minLength && word.length <= config.maxLength
-    );
-
-    if (eligibleWords.length < config.words) {
-      setCells([]);
-      setPuzzleWords([]);
-      setGameStarted(true);
-      setErrorMsg(`Not enough English words for ${grade} ${difficulty} yet.`);
-      setLoading(false);
-      return;
-    }
-
-    const chosenWords = shuffle(eligibleWords).slice(0, config.words);
-    const puzzle = createPuzzle(chosenWords, config.size, config.directions);
-
-    if (puzzle.placedWords.length < config.words) {
-      setErrorMsg("This puzzle could not fit all selected words. Try again.");
-      setLoading(false);
-      return;
-    }
-
-    setCells(puzzle.cells);
-    setPuzzleWords(puzzle.placedWords);
-    setLevel(roundLevel);
     setGameStarted(true);
-    setLoading(false);
+
+    window.setTimeout(() => {
+      if (buildRequestRef.current !== buildRequestId) return;
+
+      const eligibleWords = availableWords.filter(
+        (word) => word.length >= config.minLength && word.length <= config.maxLength
+      );
+
+      if (eligibleWords.length < config.words) {
+        setCells([]);
+        setPuzzleWords([]);
+        setErrorMsg(`Not enough English words for ${grade} ${difficulty} yet.`);
+        setLoading(false);
+        return;
+      }
+
+      const chosenWords = shuffle(eligibleWords).slice(0, config.words);
+      const puzzle = createPuzzle(chosenWords, config.size, config.directions);
+
+      if (puzzle.placedWords.length < config.words) {
+        setErrorMsg("This puzzle could not fit all selected words. Try again.");
+        setLoading(false);
+        return;
+      }
+
+      setCells(puzzle.cells);
+      setPuzzleWords(puzzle.placedWords);
+      setLevel(roundLevel);
+      setLoading(false);
+    }, 220);
   };
 
   const startGame = async () => {
+    if (vocabularyLoading) return;
+
     if (savedSession) {
       setShowResumeConfirm(true);
       return;
@@ -773,6 +797,8 @@ export default function WordSearch() {
   };
 
   const startNewGame = async () => {
+    if (vocabularyLoading) return;
+
     setShowResumeConfirm(false);
     clearSavedSession();
     setScore(0);
@@ -816,6 +842,7 @@ export default function WordSearch() {
   };
 
   const resetToMenu = async () => {
+    buildRequestRef.current += 1;
     saveCurrentSession();
     setGameStarted(false);
     setCells([]);
@@ -1057,7 +1084,19 @@ export default function WordSearch() {
             : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
             }`}
         >
-          <div className={fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}>
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+            {isLight ? (
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
+            ) : (
+              <>
+                <div className="absolute left-[-120px] top-[-120px] h-[320px] w-[320px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
+                <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-[#2563EB]/20 blur-3xl" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
+              </>
+            )}
+          </div>
+
+          <div className={`relative z-10 ${fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
             {gameModeActive && (
               <button
                 type="button"
@@ -1357,14 +1396,15 @@ export default function WordSearch() {
 
             <button
               onClick={startGame}
-              className="mt-6 flex h-14 w-full items-center justify-center rounded-[1.6rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-base font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01]"
+              disabled={vocabularyLoading}
+              className="mt-6 flex h-14 w-full items-center justify-center rounded-[1.6rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-base font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              START {difficulty.toUpperCase()} WORD SEARCH
+              {vocabularyLoading ? "LOADING VOCABULARY..." : `START ${difficulty.toUpperCase()} WORD SEARCH`}
             </button>
           </div>
         ) : (
           <div className={`flex flex-col rounded-[1.5rem] border p-2 sm:p-4 ${palette.panel} ${fullscreenActive ? "min-h-[calc(100dvh-1rem)]" : ""}`}>
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2 pr-12">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
                   Word Search
@@ -1373,13 +1413,6 @@ export default function WordSearch() {
                   English · {grade} · {difficulty}
                 </p>
               </div>
-
-              <button
-                onClick={resetToMenu}
-                className={`rounded-xl border px-4 py-2 text-sm font-black ${palette.button}`}
-              >
-                Exit
-              </button>
             </div>
 
             <div className="mb-3 grid grid-cols-4 gap-1.5 sm:gap-2">
@@ -1401,9 +1434,12 @@ export default function WordSearch() {
             </div>
 
             {loading && (
-              <div className={`rounded-[1.5rem] border p-8 text-center font-black ${palette.soft} ${palette.title}`}>
-                Building puzzle...
-              </div>
+              <ArcadeLoadingScreen
+                title="Preparing Word Search..."
+                subtitle="Hiding vocabulary across the puzzle grid."
+                icon={Search}
+                isLight={isLight}
+              />
             )}
 
             {errorMsg && !loading && (
@@ -1506,9 +1542,10 @@ export default function WordSearch() {
                       <p className={`mt-2 text-sm font-bold ${palette.text}`}>Score: {score}</p>
                       <button
                         onClick={startGame}
-                        className="mt-4 h-12 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                        disabled={vocabularyLoading}
+                        className="mt-4 h-12 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white disabled:cursor-not-allowed disabled:opacity-70"
                       >
-                        PLAY AGAIN
+                        {vocabularyLoading ? "LOADING VOCABULARY..." : "PLAY AGAIN"}
                       </button>
                     </div>
                   )}
