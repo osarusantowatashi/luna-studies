@@ -1269,7 +1269,7 @@ export default function MemoryFlip() {
       </AnimatePresence>
 
       <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
-          {showPageChrome && (
+        {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:gap-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${themeClass.topBar}`}>
             <button
               onClick={() => navigate("/games")}
@@ -1308,68 +1308,74 @@ export default function MemoryFlip() {
               </div>
             </div>
           </div>
-          )}
+        )}
 
-          <div
-            ref={gameWindowRef}
-            className={`relative overflow-hidden border ${themeClass.gameWindow} ${isMobileFullscreen
-                ? "fixed inset-0 z-[250] mb-0 h-[100dvh] overflow-y-auto rounded-none p-3"
-                : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
-              }`}
-          >
-            <div className={fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[640px]"}>
-              <button
-                onClick={toggleFullscreen}
-                className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
-                title={fullscreenActive ? "Exit Fullscreen" : "Fullscreen"}
-              >
-                {fullscreenActive ? (
-                  <Minimize2 className="h-5 w-5" />
-                ) : (
-                  <Maximize2 className="h-5 w-5" />
-                )}
-              </button>
+        <div
+          ref={gameWindowRef}
+          className={`relative overflow-hidden border ${themeClass.gameWindow} ${isMobileFullscreen
+            ? "fixed inset-0 z-[250] mb-0 h-[100dvh] overflow-y-auto rounded-none p-3"
+            : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
+            }`}
+        >
+          <div className={fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[640px]"}>
+            <button
+              onClick={toggleFullscreen}
+              className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
+              title={fullscreenActive ? "Exit Fullscreen" : "Fullscreen"}
+            >
+              {fullscreenActive ? (
+                <Minimize2 className="h-5 w-5" />
+              ) : (
+                <Maximize2 className="h-5 w-5" />
+              )}
+            </button>
 
-              {showMasteryTest && masteryQuestions[masteryIndex] ? (
-                <div className={`mx-auto flex min-h-[calc(100dvh-2rem)] max-w-3xl items-center rounded-[2rem] border p-5 sm:p-8 ${themeClass.panel}`}>
-                  <div className="w-full">
-                    <div className="text-center">
-                      <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                        Mastery Test
-                      </p>
+            {showMasteryTest && masteryQuestions[masteryIndex] ? (
+              <div className={`mx-auto flex min-h-[calc(100dvh-2rem)] max-w-3xl items-center rounded-[2rem] border p-5 sm:p-8 ${themeClass.panel}`}>
+                <div className="w-full">
+                  <div className="text-center">
+                    <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                      Mastery Test
+                    </p>
 
-                      <h1 className={`mt-3 text-3xl font-black sm:text-5xl ${themeClass.title}`}>
-                        Final Check
-                      </h1>
+                    <h1 className={`mt-3 text-3xl font-black sm:text-5xl ${themeClass.title}`}>
+                      Final Check
+                    </h1>
 
-                      <p className={`mt-3 ${themeClass.text}`}>
-                        Question {masteryIndex + 1} / {masteryQuestions.length}
-                      </p>
-                    </div>
+                    <p className={`mt-3 ${themeClass.text}`}>
+                      Question {masteryIndex + 1} / {masteryQuestions.length}
+                    </p>
+                  </div>
 
-                    <div className={`mt-6 rounded-[2rem] border p-6 text-center sm:mt-8 sm:p-8 ${themeClass.softPanel}`}>
-                      <p className={`text-3xl font-black sm:text-4xl ${themeClass.title}`}>
-                        {masteryQuestions[masteryIndex].question}
-                      </p>
-                    </div>
+                  <div className={`mt-6 rounded-[2rem] border p-6 text-center sm:mt-8 sm:p-8 ${themeClass.softPanel}`}>
+                    <p className={`text-3xl font-black sm:text-4xl ${themeClass.title}`}>
+                      {masteryQuestions[masteryIndex].question}
+                    </p>
+                  </div>
 
-                    <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4">
-                      {masteryQuestions[masteryIndex].options.map((option: string) => (
-                        <button
-                          key={option}
-                          onClick={() => submitMasteryAnswer(option)}
-                          className={`min-h-[62px] rounded-[1.5rem] border px-5 text-base font-black transition hover:-translate-y-1 sm:min-h-[72px] sm:text-lg ${isLight
-                            ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
-                            : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
-                            }`}
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4">
+                    {masteryQuestions[masteryIndex].options.map((option: string) => (
+                      <button
+                        key={option}
+                        onClick={() => submitMasteryAnswer(option)}
+                        className={`min-h-[62px] rounded-[1.5rem] border px-5 text-base font-black transition hover:-translate-y-1 sm:min-h-[72px] sm:text-lg ${isLight
+                          ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
+                          : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
+                          }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              ) : !gameStarted && (
+              </div>
+            ) : !gameStarted ? (
+              vocabularyLoading ? (
+                <ArcadeLoadingScreen
+                  isLight={isLight}
+                  className="min-h-[420px]"
+                />
+              ) : (
                 <>
                   <div className={`mb-4 overflow-hidden rounded-[1.6rem] border ${themeClass.panel}`}>
                     <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.2fr_260px]">
@@ -1531,7 +1537,7 @@ export default function MemoryFlip() {
                               : isLight
                                 ? "border-[#eee8ff] bg-white hover:bg-[#faf8ff]"
                                 : "border-white/10 bg-white/[0.07] hover:bg-white/10"
-                            } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
+                              } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
                           >
                             <div className="absolute right-4 top-4">
                               <Icon className={`h-5 w-5 sm:h-7 sm:w-7 ${isLight ? "text-primary" : "text-white"}`} />
@@ -1574,227 +1580,226 @@ export default function MemoryFlip() {
                     </button>
                   </div>
                 </>
-              )}
+              )
+            ) : null}
 
-              <AnimatePresence>
-                {showResultModal && (
+            <AnimatePresence>
+              {showResultModal && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4"
+                >
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4"
+                    initial={{ scale: 0.9, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
                   >
-                    <motion.div
-                      initial={{ scale: 0.9, y: 20 }}
-                      animate={{ scale: 1, y: 0 }}
-                      exit={{ scale: 0.95, opacity: 0 }}
-                      className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
-                    >
-                      <img
-                        src="/mascot/hapiko-step-2.png"
-                        alt="Hapiko"
-                        className="mx-auto h-32 w-32 object-contain"
-                      />
+                    <img
+                      src="/mascot/hapiko-step-2.png"
+                      alt="Hapiko"
+                      className="mx-auto h-32 w-32 object-contain"
+                    />
 
-                      <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                        Challenge Cleared
-                      </p>
+                    <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                      Challenge Cleared
+                    </p>
 
-                      <h2 className="mt-3 text-4xl font-black text-white">
-                        Great Job!
-                      </h2>
+                    <h2 className="mt-3 text-4xl font-black text-white">
+                      Great Job!
+                    </h2>
 
-                      <p className="mt-4 text-slate-300">
-                        You completed challenge {level} / 5 for {difficulty}.
-                      </p>
+                    <p className="mt-4 text-slate-300">
+                      You completed challenge {level} / 5 for {difficulty}.
+                    </p>
 
-                      <p className="mt-3 text-3xl">
-                        {"⭐".repeat(stars)}
-                      </p>
+                    <p className="mt-3 text-3xl">
+                      {"⭐".repeat(stars)}
+                    </p>
 
-                      <div className="mt-8 grid gap-3">
-                        <button
-                          onClick={async () => {
-                            const nextLevel = level + 1;
+                    <div className="mt-8 grid gap-3">
+                      <button
+                        onClick={async () => {
+                          const nextLevel = level + 1;
 
-                            setShowResultModal(false);
-                            setCards([]);
-                            setSelectedCards([]);
-                            setLoading(true);
+                          setShowResultModal(false);
+                          setCards([]);
+                          setSelectedCards([]);
+                          setLoading(true);
 
-                            if (nextLevel > 5) {
-                              generateMasteryTest();
-                              return;
-                            }
+                          if (nextLevel > 5) {
+                            generateMasteryTest();
+                            return;
+                          }
 
-                            setLevel(nextLevel);
+                          setLevel(nextLevel);
 
-                            await loadGame({
-                              selectedLanguagePair: languagePair,
-                              selectedGrade: grade,
-                              selectedDifficulty: difficulty,
-                              selectedPairCount: getPairCountByDifficulty(difficulty),
-                            });
-                          }}
-                          className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
-                        >
-                          NEXT CHALLENGE
-                        </button>
+                          await loadGame({
+                            selectedLanguagePair: languagePair,
+                            selectedGrade: grade,
+                            selectedDifficulty: difficulty,
+                            selectedPairCount: getPairCountByDifficulty(difficulty),
+                          });
+                        }}
+                        className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                      >
+                        NEXT CHALLENGE
+                      </button>
 
-                        <button
-                          onClick={async () => {
-                            await leaveArcade();
-                          }}
-                          className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
-                        >
-                          Exit Game
-                        </button>
-                      </div>
-                    </motion.div>
+                      <button
+                        onClick={async () => {
+                          await leaveArcade();
+                        }}
+                        className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                      >
+                        Exit Game
+                      </button>
+                    </div>
                   </motion.div>
-                )}
-              </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              {gameStarted && (
-                <>
-                  <div className={`mb-3 rounded-[1.5rem] border p-3 sm:p-4 ${themeClass.panel}`}>
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
-                          Memory Flip
-                        </p>
+            {gameStarted && (
 
-                        <p className={`mt-0.5 text-xs font-bold sm:text-sm ${themeClass.title}`}>
-                          {languageLabel} · {grade} · {difficulty}
-                        </p>
-                      </div>
+              <>
+                <div className={`mb-3 rounded-[1.5rem] border p-3 sm:p-4 ${themeClass.panel}`}>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
+                        Memory Flip
+                      </p>
 
-                      <div className="flex items-center gap-2">
-                        <div className={`rounded-xl px-3 py-1.5 text-xs font-black sm:text-sm ${themeClass.hudBox} ${themeClass.title}`}>
-                          Round {level}/5
-                        </div>
-
-                        <button
-                          onClick={leaveArcade}
-                          className={`rounded-xl border px-3 py-1.5 text-xs font-black sm:text-sm ${themeClass.button}`}
-                        >
-                          Exit
-                        </button>
-                      </div>
+                      <p className={`mt-0.5 text-xs font-bold sm:text-sm ${themeClass.title}`}>
+                        {languageLabel} · {grade} · {difficulty}
+                      </p>
                     </div>
 
-                    <div className={`mt-3 h-1.5 overflow-hidden rounded-full ${isLight ? "bg-[#f0eaff]" : "bg-white/10"}`}>
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] transition-all duration-500"
-                        style={{ width: `${(level / 5) * 100}%` }}
-                      />
-                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`rounded-xl px-3 py-1.5 text-xs font-black sm:text-sm ${themeClass.hudBox} ${themeClass.title}`}>
+                        Round {level}/5
+                      </div>
 
-                    <div className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-2">
-                      {[
-                        ["Score", score, themeClass.title],
-                        ["Moves", moves, themeClass.title],
-                        ["Combo", `x${combo}`, "text-[#FACC15]"],
-                        ["Time", `${secondsLeft}s`, secondsLeft <= 10 ? "text-red-400" : themeClass.title],
-                      ].map(([label, value, valueClass]) => (
-                        <div
-                          key={label}
-                          className={`rounded-xl px-2 py-2 text-center ${themeClass.hudBox} ${label === "Time" && secondsLeft <= 10 ? "animate-pulse ring-1 ring-red-400" : ""
-                            }`}
-                        >
-                          <p className={`text-[9px] font-black uppercase tracking-widest ${themeClass.muted}`}>
-                            {label}
-                          </p>
-
-                          <p className={`mt-0.5 text-base font-black sm:text-xl ${valueClass}`}>
-                            {value}
-                          </p>
-                        </div>
-                      ))}
+                      <button
+                        onClick={leaveArcade}
+                        className={`rounded-xl border px-3 py-1.5 text-xs font-black sm:text-sm ${themeClass.button}`}
+                      >
+                        Exit
+                      </button>
                     </div>
                   </div>
 
-                  {loading && (
-                    <ArcadeLoadingScreen
-                      title="Preparing Memory Flip..."
-                      subtitle="Loading cards"
-                      icon={Brain}
-                      isLight={isLight}
-                      className="mb-6"
+                  <div className={`mt-3 h-1.5 overflow-hidden rounded-full ${isLight ? "bg-[#f0eaff]" : "bg-white/10"}`}>
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] transition-all duration-500"
+                      style={{ width: `${(level / 5) * 100}%` }}
                     />
-                  )}
+                  </div>
 
-                  {errorMsg && !loading && (
-                    <div className="flex flex-1 flex-col items-center justify-center rounded-[2rem] border border-[#FACC15]/30 bg-[#FACC15]/10 p-8 text-center">
-                      <img
-                        src="/mascot/hapiko-step-2.png"
-                        alt="Hapiko"
-                        className="mx-auto h-24 w-24 object-contain"
-                      />
-
-                      <h2 className={`mt-4 text-2xl font-black ${themeClass.title}`}>
-                        Stage Completed
-                      </h2>
-
-                      <p className={`mt-3 ${themeClass.text}`}>
-                        {errorMsg}
-                      </p>
-
-                      <button
-                        onClick={leaveArcade}
-                        className={`mt-6 h-12 rounded-2xl px-6 font-black ${themeClass.button}`}
+                  <div className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-2">
+                    {[
+                      ["Score", score, themeClass.title],
+                      ["Moves", moves, themeClass.title],
+                      ["Combo", `x${combo}`, "text-[#FACC15]"],
+                      ["Time", `${secondsLeft}s`, secondsLeft <= 10 ? "text-red-400" : themeClass.title],
+                    ].map(([label, value, valueClass]) => (
+                      <div
+                        key={label}
+                        className={`rounded-xl px-2 py-2 text-center ${themeClass.hudBox} ${label === "Time" && secondsLeft <= 10 ? "animate-pulse ring-1 ring-red-400" : ""
+                          }`}
                       >
-                        Back to Memory Flip Menu
-                      </button>
-                    </div>
-                  )}
+                        <p className={`text-[9px] font-black uppercase tracking-widest ${themeClass.muted}`}>
+                          {label}
+                        </p>
 
-                  {timeUp && (
-                    <div className="flex flex-1 flex-col items-center justify-center rounded-[2rem] border border-red-400/30 bg-red-500/10 p-8 text-center">
-                      <img
-                        src="/mascot/hapiko-step-2.png"
-                        alt="Hapiko"
-                        className="mx-auto h-24 w-24 object-contain"
-                      />
+                        <p className={`mt-0.5 text-base font-black sm:text-xl ${valueClass}`}>
+                          {value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-                      <h2 className={`mt-4 text-3xl font-black ${themeClass.title}`}>
-                        Time's Up!
-                      </h2>
+                {loading && (
+                  <ArcadeLoadingScreen
+                    isLight={isLight}
+                    className="mb-6"
+                  />
+                )}
 
-                      <p className={`mt-3 ${themeClass.text}`}>
-                        Hapiko believes you can clear this stage next time.
-                      </p>
+                {errorMsg && !loading && (
+                  <div className="flex flex-1 flex-col items-center justify-center rounded-[2rem] border border-[#FACC15]/30 bg-[#FACC15]/10 p-8 text-center">
+                    <img
+                      src="/mascot/hapiko-step-2.png"
+                      alt="Hapiko"
+                      className="mx-auto h-24 w-24 object-contain"
+                    />
 
-                      <button
-                        onClick={leaveArcade}
-                        className={`mt-6 h-12 rounded-2xl px-6 font-black ${themeClass.button}`}
-                      >
-                        Back to Memory Flip Menu
-                      </button>
-                    </div>
-                  )}
+                    <h2 className={`mt-4 text-2xl font-black ${themeClass.title}`}>
+                      Stage Completed
+                    </h2>
 
-                  {!loading && !errorMsg && !timeUp && (
-                    <div className="relative mx-auto max-w-[980px]">
-                      <AnimatePresence>
-                        {comboPop && comboPop >= 2 && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.6, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 1.2, y: -20 }}
-                            className="pointer-events-none absolute left-0 right-0 top-0 z-20 text-center text-4xl font-black text-[#FACC15] drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
-                          >
-                            COMBO x{comboPop}!
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                    <p className={`mt-3 ${themeClass.text}`}>
+                      {errorMsg}
+                    </p>
 
-                      <div className={`grid justify-center gap-1.5 sm:gap-2 ${getCardGridClass(cards.length)}`}>
-                        {cards.map((card) => {
-                          const visible = card.flipped || card.matched;
+                    <button
+                      onClick={leaveArcade}
+                      className={`mt-6 h-12 rounded-2xl px-6 font-black ${themeClass.button}`}
+                    >
+                      Back to Memory Flip Menu
+                    </button>
+                  </div>
+                )}
 
-                          return (
-                            <motion.button
+                {timeUp && (
+                  <div className="flex flex-1 flex-col items-center justify-center rounded-[2rem] border border-red-400/30 bg-red-500/10 p-8 text-center">
+                    <img
+                      src="/mascot/hapiko-step-2.png"
+                      alt="Hapiko"
+                      className="mx-auto h-24 w-24 object-contain"
+                    />
+
+                    <h2 className={`mt-4 text-3xl font-black ${themeClass.title}`}>
+                      Time's Up!
+                    </h2>
+
+                    <p className={`mt-3 ${themeClass.text}`}>
+                      Hapiko believes you can clear this stage next time.
+                    </p>
+
+                    <button
+                      onClick={leaveArcade}
+                      className={`mt-6 h-12 rounded-2xl px-6 font-black ${themeClass.button}`}
+                    >
+                      Back to Memory Flip Menu
+                    </button>
+                  </div>
+                )}
+
+                {!loading && !errorMsg && !timeUp && (
+                  <div className="relative mx-auto max-w-[980px]">
+                    <AnimatePresence>
+                      {comboPop && comboPop >= 2 && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.6, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 1.2, y: -20 }}
+                          className="pointer-events-none absolute left-0 right-0 top-0 z-20 text-center text-4xl font-black text-[#FACC15] drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+                        >
+                          COMBO x{comboPop}!
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div className={`grid justify-center gap-1.5 sm:gap-2 ${getCardGridClass(cards.length)}`}>
+                      {cards.map((card) => {
+                        const visible = card.flipped || card.matched;
+
+                        return (
+                          <motion.button
                             animate={
                               wrongPairIds.includes(card.id)
                                 ? { x: [0, -8, 8, -6, 6, 0] }
@@ -1840,18 +1845,18 @@ export default function MemoryFlip() {
                                 </div>
                               </div>
                             </motion.div>
-                            </motion.button>
-                          );
-                        })}
-                      </div>
+                          </motion.button>
+                        );
+                      })}
                     </div>
-                  )}
-                </>
-              )}
-            </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
+        </div>
 
-          {showPageChrome && (
+        {showPageChrome && (
           <div className={`rounded-[2rem] border p-5 ${themeClass.panel}`}>
             <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
               More Games
@@ -1876,9 +1881,9 @@ export default function MemoryFlip() {
                         ? isLight
                           ? "border-[#eee8ff] bg-white hover:-translate-y-1 hover:bg-[#faf8ff]"
                           : "border-white/10 bg-white/[0.07] hover:-translate-y-1 hover:bg-white/10"
-                      : isLight
-                        ? "border-[#eee8ff] bg-[#faf8ff] opacity-60"
-                        : "border-white/10 bg-white/5 opacity-50"
+                        : isLight
+                          ? "border-[#eee8ff] bg-[#faf8ff] opacity-60"
+                          : "border-white/10 bg-white/5 opacity-50"
                       }`}
                   >
                     <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-2xl ${isLight ? "bg-[#f6f1ff]" : "bg-white/10"}`}>
@@ -1897,8 +1902,8 @@ export default function MemoryFlip() {
               })}
             </div>
           </div>
-          )}
-        </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 
 type ArcadeLoadingScreenProps = {
-  title: string;
+  title?: string;
   subtitle?: string;
-  icon?: unknown;
   progress?: number;
   isLight?: boolean;
   className?: string;
 };
 
 export default function ArcadeLoadingScreen({
-  title,
+  title = "Loading",
   subtitle,
   progress,
   isLight = false,
@@ -18,10 +17,10 @@ export default function ArcadeLoadingScreen({
 }: ArcadeLoadingScreenProps) {
   const hasProgress = typeof progress === "number";
   const [animatedProgress, setAnimatedProgress] = useState(0);
+
   const progressValue = hasProgress
     ? Math.min(100, Math.max(0, progress))
     : animatedProgress;
-  const progressWidth = `${progressValue}%`;
 
   useEffect(() => {
     if (hasProgress) return;
@@ -29,8 +28,11 @@ export default function ArcadeLoadingScreen({
     setAnimatedProgress(0);
 
     const timer = window.setInterval(() => {
-      setAnimatedProgress((current) => (current >= 100 ? 0 : Math.min(100, current + 4)));
-    }, 90);
+      setAnimatedProgress((current) => {
+        if (current >= 96) return 96;
+        return Math.min(96, current + Math.ceil((100 - current) * 0.08));
+      });
+    }, 80);
 
     return () => window.clearInterval(timer);
   }, [hasProgress]);
@@ -39,35 +41,35 @@ export default function ArcadeLoadingScreen({
     <div
       role="status"
       aria-live="polite"
-      className={`flex flex-1 items-center justify-center rounded-[1.5rem] border p-5 sm:p-8 ${
+      className={`flex flex-1 items-center justify-center rounded-[1.5rem] border p-6 ${
         isLight
           ? "border-[#eee8ff] bg-[#faf8ff]/95"
-          : "border-white/10 bg-white/[0.06] backdrop-blur-xl"
+          : "border-white/10 bg-[#071426]/95 backdrop-blur-xl"
       } ${className}`}
     >
-      <div className="w-full max-w-sm text-center">
-        <h2 className={`text-base font-black uppercase tracking-[0.18em] ${isLight ? "text-primary" : "text-white"}`}>
+      <div className="w-full max-w-md rounded-[1.5rem] border border-[#22D3EE]/45 bg-[#24194A] p-6 text-center shadow-[0_0_35px_rgba(34,211,238,0.18)]">
+        <p className="text-xl font-black uppercase tracking-[0.18em] text-[#22D3EE] drop-shadow-[0_0_10px_rgba(34,211,238,0.65)]">
           {title}
-        </h2>
+        </p>
 
         {subtitle && (
-          <p className={`mt-1 text-xs font-bold ${isLight ? "text-primary/55" : "text-slate-400"}`}>
+          <p className="mt-2 text-xs font-bold uppercase tracking-[0.14em] text-[#C4B5FD]">
             {subtitle}
           </p>
         )}
 
-        <div className="mt-5 flex items-center gap-3">
-          <div className={`h-4 flex-1 overflow-hidden rounded-md border ${isLight ? "border-[#eee8ff] bg-[#f0eaff]" : "border-white/10 bg-black/30"}`}>
+        <div className="mt-5 rounded-xl border-4 border-[#22D3EE] bg-[#2D2944] p-1 shadow-[0_0_18px_rgba(34,211,238,0.5)]">
+          <div className="h-8 overflow-hidden rounded-md bg-[#3A374B]">
             <div
-              className="h-full rounded-sm bg-gradient-to-r from-[#8B5CF6] via-[#3B82F6] to-[#22D3EE] transition-all duration-150"
-              style={{ width: progressWidth }}
+              className="h-full rounded-md bg-[repeating-linear-gradient(135deg,#22D3EE_0px,#22D3EE_12px,transparent_12px,transparent_22px)] transition-all duration-150"
+              style={{ width: `${progressValue}%` }}
             />
           </div>
-
-          <span className={`w-11 text-right text-xs font-black tabular-nums ${isLight ? "text-primary/60" : "text-slate-300"}`}>
-            {Math.round(progressValue)}%
-          </span>
         </div>
+
+        <p className="mt-5 text-4xl font-black tabular-nums text-[#22D3EE] drop-shadow-[0_0_10px_rgba(34,211,238,0.65)]">
+          {Math.round(progressValue)}%
+        </p>
       </div>
     </div>
   );

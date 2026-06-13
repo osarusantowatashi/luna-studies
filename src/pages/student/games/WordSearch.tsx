@@ -408,7 +408,7 @@ export default function WordSearch() {
   const [finalAnswerLocked, setFinalAnswerLocked] = useState(false);
   const [finalResult, setFinalResult] = useState<FinalResult | null>(null);
   const [savedSession, setSavedSession] = useState<SavedWordSearchSession | null>(null);
-  const [openDropdown, setOpenDropdown] = useState<"grade" | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<"grade" | "difficulty" | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobileFullscreen, setIsMobileFullscreen] = useState(false);
   const [showResumeConfirm, setShowResumeConfirm] = useState(false);
@@ -1089,7 +1089,7 @@ export default function WordSearch() {
 
   const renderArcadeDropdown = (
     label: string,
-    id: "grade",
+    id: "grade" | "difficulty",
     value: string,
     options: string[],
     onChange: (value: string) => void
@@ -1156,25 +1156,25 @@ export default function WordSearch() {
       <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
         {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
-          <button
-            onClick={async () => {
-              if (gameStarted) saveCurrentSession();
-              await exitGameMode();
-              navigate("/games");
-            }}
-            className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-black ${palette.button}`}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Games Arcade
-          </button>
+            <button
+              onClick={async () => {
+                if (gameStarted) saveCurrentSession();
+                await exitGameMode();
+                navigate("/games");
+              }}
+              className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-black ${palette.button}`}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Games Arcade
+            </button>
 
-          <button
-            onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
-            className={`flex h-11 w-11 items-center justify-center rounded-xl border ${palette.button}`}
-            title={theme === "dark" ? "Dark Mode" : "Light Mode"}
-          >
-            {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-          </button>
+            <button
+              onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+              className={`flex h-11 w-11 items-center justify-center rounded-xl border ${palette.button}`}
+              title={theme === "dark" ? "Dark Mode" : "Light Mode"}
+            >
+              {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            </button>
           </div>
         )}
 
@@ -1244,456 +1244,451 @@ export default function WordSearch() {
               </div>
             )}
 
-        {finalFeedback && (
-          <div className={`fixed inset-0 z-[200] flex items-center justify-center px-4 ${finalFeedback.type === "correct" ? "bg-emerald-500/85" : "bg-red-500/85"}`}>
-            <div className="text-center text-white">
-              {finalFeedback.type === "correct" ? (
-                <CheckCircle2 className="mx-auto h-24 w-24" />
-              ) : (
-                <XCircle className="mx-auto h-24 w-24" />
-              )}
-              <h2 className="mt-6 text-5xl font-black">
-                {finalFeedback.type === "correct" ? "Correct!" : "Incorrect"}
-              </h2>
-              {finalFeedback.correctAnswer && (
-                <p className="mt-4 text-2xl font-black">
-                  Correct answer: {finalFeedback.correctAnswer}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {finalResult && (
-          <div className="fixed inset-0 z-[160] flex items-center justify-center overflow-hidden overscroll-none bg-black/75 px-4 py-4">
-            <div className="max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:p-8">
-              <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
-              <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                Final Test
-              </p>
-              <h2 className="mt-3 text-4xl font-black text-white">
-                {finalResult.passed ? "You Passed!" : "Try Again!"}
-              </h2>
-              <p className="mt-4 text-slate-300">{finalResult.correct} / 10 Correct</p>
-
-              <div className="mt-8 grid gap-3">
-                <button
-                  onClick={async () => {
-                    if (finalResult.passed) {
-                      const nextDifficulty = finalResult.nextDifficulty;
-
-                      setFinalResult(null);
-                      setGameStarted(false);
-                      await exitGameMode();
-
-                      if (nextDifficulty) {
-                        setDifficulty(nextDifficulty);
-                        setUnlockedDifficulty(nextDifficulty);
-                      }
-
-                      return;
-                    }
-
-                    setFinalResult(null);
-                    setScore(0);
-                    buildRound(1);
-                  }}
-                  className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
-                >
-                  {finalResult.passed
-                    ? finalResult.nextDifficulty
-                      ? `GO TO ${finalResult.nextDifficulty.toUpperCase()}`
-                      : "BACK TO MENU"
-                    : "RETRY"}
-                </button>
-
-                <button
-                  onClick={async () => {
-                    setFinalResult(null);
-                    clearSavedSession();
-                    await resetToMenu();
-                  }}
-                  className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
-                >
-                  BACK TO MENU
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showRoundResult && (
-          <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 px-4">
-            <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
-              <Trophy className="mx-auto h-16 w-16 text-[#FACC15]" />
-              <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                Puzzle Cleared
-              </p>
-              <h2 className="mt-3 text-4xl font-black text-white">Great Job!</h2>
-              <p className="mt-4 text-slate-300">
-                You completed round {level} / 5 for {difficulty}.
-              </p>
-              <p className="mt-2 text-sm font-bold text-slate-300">Score: {score}</p>
-              <button
-                onClick={startNextChallenge}
-                className="mt-8 h-14 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
-              >
-                NEXT CHALLENGE
-              </button>
-            </div>
-          </div>
-        )}
-
-        {showFinalTest && finalQuestions[finalIndex] ? (
-          <div className={`rounded-[2rem] border p-5 sm:p-8 ${palette.panel}`}>
-            <div className="text-center">
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                Final Test
-              </p>
-              <h1 className={`mt-3 text-4xl font-black sm:text-5xl ${palette.title}`}>
-                Spell Check
-              </h1>
-              <p className={`mt-3 ${palette.text}`}>
-                Question {finalIndex + 1} / {finalQuestions.length}
-              </p>
-            </div>
-
-            <div className={`mt-8 rounded-[2rem] border p-8 text-center ${palette.soft}`}>
-              <p className={`text-4xl font-black tracking-widest sm:text-5xl ${palette.title}`}>
-                {finalQuestions[finalIndex].clueDisplay}
-              </p>
-              {finalQuestions[finalIndex].hintImageUrl && (
-                <img
-                  src={finalQuestions[finalIndex].hintImageUrl}
-                  alt="Vocabulary hint"
-                  className="mx-auto mt-5 h-32 w-32 rounded-[1.5rem] object-cover shadow-[0_16px_40px_rgba(0,0,0,0.22)] sm:h-40 sm:w-40"
-                />
-              )}
-              <p className={`mt-4 text-sm font-bold sm:text-base ${palette.text}`}>
-                {finalQuestions[finalIndex].sentenceHint}
-              </p>
-            </div>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {finalQuestions[finalIndex].options.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => submitFinalAnswer(option)}
-                  className={`min-h-[72px] rounded-[1.5rem] border px-5 text-lg font-black transition hover:-translate-y-1 ${isLight
-                    ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
-                    : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
-                    }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : !gameStarted ? (
-          <div className={`rounded-[2rem] border p-5 sm:p-6 ${palette.panel}`}>
-            <div className="grid gap-6 lg:grid-cols-[1.1fr_320px]">
-              <div>
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/35 bg-[#8B5CF6]/10 px-3 py-1.5">
-                  <Search className="h-4 w-4 text-[#C4B5FD]" />
-                  <span className="text-[11px] font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
-                    Luna Word Arcade
-                  </span>
-                </div>
-
-                <h1 className={`text-4xl font-black leading-tight sm:text-5xl ${palette.title}`}>
-                  Word Search
-                </h1>
-                <p className={`mt-3 max-w-2xl text-sm leading-7 sm:text-base ${palette.text}`}>
-                  Find English vocabulary hidden across the grid. Words can run forwards,
-                  backwards, vertically, horizontally, or diagonally.
-                </p>
-              </div>
-
-              <div className={`rounded-[1.5rem] border p-4 ${palette.soft}`}>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
-                  Vocabulary Pool
-                </p>
-                <p className={`mt-3 text-3xl font-black ${palette.title}`}>
-                  {availableWords.length}
-                </p>
-                <p className={`mt-1 text-sm font-bold ${palette.text}`}>
-                  English words available
-                </p>
-                <p className={`mt-2 text-xs font-black ${palette.muted}`}>
-                  {eligibleWordCount} eligible for {difficulty}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
-              <div className="block">
-                <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
-                  LANGUAGE
-                </span>
-                <div className={`flex h-12 w-full items-center rounded-2xl border px-4 text-sm font-black ${isLight
-                  ? "border-[#eee8ff] bg-white text-primary"
-                  : "border-white/10 bg-[#0D1B2E] text-white"
-                  }`}
-                >
-                  English
-                </div>
-              </div>
-              {renderArcadeDropdown("Grade", "grade", grade, grades, setGrade)}
-            </div>
-
-            {savedSession && (
-              <div className={`mt-5 rounded-[1.5rem] border p-4 ${palette.soft}`}>
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className={`text-sm font-black ${palette.title}`}>
-                      Resume unfinished Word Search?
+            {finalFeedback && (
+              <div className={`fixed inset-0 z-[200] flex items-center justify-center px-4 ${finalFeedback.type === "correct" ? "bg-emerald-500/85" : "bg-red-500/85"}`}>
+                <div className="text-center text-white">
+                  {finalFeedback.type === "correct" ? (
+                    <CheckCircle2 className="mx-auto h-24 w-24" />
+                  ) : (
+                    <XCircle className="mx-auto h-24 w-24" />
+                  )}
+                  <h2 className="mt-6 text-5xl font-black">
+                    {finalFeedback.type === "correct" ? "Correct!" : "Incorrect"}
+                  </h2>
+                  {finalFeedback.correctAnswer && (
+                    <p className="mt-4 text-2xl font-black">
+                      Correct answer: {finalFeedback.correctAnswer}
                     </p>
-                    <p className={`mt-1 text-xs font-bold ${palette.text}`}>
-                      {savedSession.grade} · {savedSession.difficulty} · Round {savedSession.level}/5
-                    </p>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={resumeSavedSession}
-                      className="h-11 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] px-4 text-sm font-black text-white"
-                    >
-                      RESUME
-                    </button>
-                    <button
-                      onClick={clearSavedSession}
-                      className={`h-11 rounded-xl border px-4 text-sm font-black ${palette.button}`}
-                    >
-                      CLEAR SAVE
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="mt-6 sm:hidden">
-              <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
-                Difficulty
-              </span>
-              <select
-                value={difficulty}
-                onChange={(event) => setDifficulty(event.target.value)}
-                className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
-                  ? "border-[#eee8ff] bg-white text-primary"
-                  : "border-white/10 bg-[#0D1B2E] text-white"
-                  }`}
-              >
-                {difficulties.map((item) => {
-                  const locked =
-                    difficultyOrder.indexOf(item.key) >
-                    difficultyOrder.indexOf(unlockedDifficulty);
-
-                  return (
-                    <option key={item.key} value={item.key} disabled={locked}>
-                      {item.key} · {item.words} words{locked ? " · Locked" : ""}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-
-            <div className="mt-6 hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
-              {difficulties.map((item) => {
-                const active = item.key === difficulty;
-                const locked =
-                  difficultyOrder.indexOf(item.key) >
-                  difficultyOrder.indexOf(unlockedDifficulty);
-
-                return (
-                  <button
-                    key={item.key}
-                    disabled={locked}
-                    onClick={() => setDifficulty(item.key)}
-                    className={`relative overflow-hidden rounded-[1.2rem] border p-3 text-left transition sm:rounded-[1.4rem] sm:p-4 ${active
-                      ? "border-[#8B5CF6] bg-[#8B5CF6]/20"
-                      : palette.soft
-                      } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
-                  >
-                    <p className={`text-[11px] font-black uppercase tracking-widest sm:text-xs ${palette.muted}`}>
-                      {item.key}
-                    </p>
-                    <p className={`mt-1 text-2xl font-black sm:mt-2 sm:text-3xl ${palette.title}`}>{item.words}</p>
-                    <p className={`text-xs font-bold sm:text-sm ${palette.text}`}>Hidden words</p>
-                    {locked && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
-                        <span className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white">
-                          Locked
-                        </span>
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            <button
-              onClick={startGame}
-              disabled={vocabularyLoading}
-              className="mt-6 flex h-14 w-full items-center justify-center rounded-[1.6rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-base font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {vocabularyLoading ? "LOADING VOCABULARY..." : `START ${difficulty.toUpperCase()} WORD SEARCH`}
-            </button>
-          </div>
-        ) : (
-          <div className={`flex flex-col rounded-[1.5rem] border ${palette.panel} ${fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "p-2 sm:p-4"}`}>
-            <div className={`flex flex-wrap items-center justify-between gap-2 pr-12 ${fullscreenActive ? "mb-1" : "mb-2"}`}>
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
-                  Word Search
-                </p>
-                <p className={`mt-1 text-sm font-bold ${palette.title}`}>
-                  English · {grade} · {difficulty}
-                </p>
-              </div>
-            </div>
-
-            <div className={`grid grid-cols-4 gap-1.5 sm:gap-2 ${fullscreenActive ? "mb-2" : "mb-3"}`}>
-              {[
-                ["Score", score],
-                ["Found", `${foundWords.length}/${puzzleWords.length}`],
-                ["Round", `${level}/5`],
-                ["Time", `${secondsLeft}s`],
-              ].map(([label, value]) => (
-                <div key={label} className={`rounded-xl px-2 text-center ${palette.hudBox} ${fullscreenActive ? "py-1.5" : "py-2"}`}>
-                  <p className={`text-[9px] font-black uppercase tracking-widest ${palette.muted}`}>
-                    {label}
-                  </p>
-                  <p className={`mt-0.5 text-sm font-black sm:text-lg ${label === "Time" && secondsLeft <= 20 ? "text-red-400" : palette.title}`}>
-                    {value}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {loading && (
-              <ArcadeLoadingScreen
-                title="Preparing Word Search..."
-                subtitle="Building puzzle"
-                icon={Search}
-                isLight={isLight}
-              />
-            )}
-
-            {errorMsg && !loading && (
-              <div className="rounded-[1.5rem] border border-[#FACC15]/30 bg-[#FACC15]/10 p-8 text-center">
-                <p className={`font-bold ${palette.text}`}>{errorMsg}</p>
-                <button
-                  onClick={resetToMenu}
-                  className={`mt-5 rounded-xl border px-5 py-3 font-black ${palette.button}`}
-                >
-                  Back to Menu
-                </button>
-              </div>
-            )}
-
-            {!loading && !errorMsg && (
-              <div className={`grid min-h-0 flex-1 items-start lg:grid-cols-[minmax(0,1fr)_280px] ${fullscreenActive ? "gap-2 lg:gap-3" : "gap-4"}`}>
-                <div className={`rounded-[1.5rem] border p-2 sm:p-3 ${palette.soft}`}>
-                  <div
-                    className="mx-auto grid touch-none select-none gap-1 rounded-[1.2rem]"
-                    style={{
-                      gridTemplateColumns: `repeat(${config.size}, minmax(0, 1fr))`,
-                      width: fullscreenActive
-                        ? "min(100%, calc(100dvh - 205px), 660px)"
-                        : "100%",
-                      maxWidth: getGridMaxWidth(config.size),
-                    }}
-                    onPointerMove={handleBoardMove}
-                    onPointerUp={finishSelection}
-                    onPointerCancel={finishSelection}
-                    onPointerLeave={() => {
-                      if (dragging) finishSelection();
-                    }}
-                  >
-                    {cells.map((cell) => {
-                      const found = foundCellSet.has(cell.id);
-                      const selected = selectedSet.has(cell.id);
-
-                      return (
-                        <button
-                          key={cell.id}
-                          data-word-search-cell={cell.id}
-                          onPointerDown={(event) => {
-                            event.preventDefault();
-                            event.currentTarget.setPointerCapture(event.pointerId);
-                            setDragging(true);
-                            setSelectionStart(cell.id);
-                            setSelectedCells([cell.id]);
-                          }}
-                          onPointerEnter={() => {
-                            if (dragging) updateSelection(cell.id);
-                          }}
-                          className={`aspect-square rounded-lg border font-black leading-none transition ${getGridLetterClass(config.size)} ${found
-                            ? "border-emerald-400 bg-emerald-500 text-white shadow-[0_0_18px_rgba(16,185,129,0.45)]"
-                            : selected
-                              ? "border-[#FACC15] bg-[#FACC15] text-[#0f172a] shadow-[0_0_18px_rgba(250,204,21,0.45)]"
-                              : palette.boardCell
-                            }`}
-                        >
-                          {cell.letter}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className={`rounded-[1.5rem] border p-3 sm:p-4 ${palette.soft}`}>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
-                      Word List
-                    </p>
-                    <Timer className={`h-4 w-4 ${palette.muted}`} />
-                  </div>
-
-                  <div className="mt-4 grid gap-2">
-                    {puzzleWords.map((item) => {
-                      const found = foundSet.has(item.word);
-
-                      return (
-                        <div
-                          key={item.word}
-                          className={`flex items-center justify-between rounded-xl border px-3 py-2 ${found
-                            ? "border-emerald-400 bg-emerald-500/15"
-                            : isLight
-                              ? "border-[#eee8ff] bg-white"
-                              : "border-white/10 bg-black/15"
-                            }`}
-                        >
-                          <span className={`font-black tracking-wide ${found ? "text-emerald-400 line-through" : palette.title}`}>
-                            {item.word}
-                          </span>
-                          {found && <Check className="h-4 w-4 text-emerald-400" />}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {expired && (
-                    <div className={`mt-5 rounded-2xl border p-4 text-center ${palette.soft}`}>
-                      <Trophy className="mx-auto h-10 w-10 text-[#FACC15]" />
-                      <h2 className={`mt-3 text-2xl font-black ${palette.title}`}>
-                        Time's Up!
-                      </h2>
-                      <p className={`mt-2 text-sm font-bold ${palette.text}`}>Score: {score}</p>
-                      <button
-                        onClick={startGame}
-                        disabled={vocabularyLoading}
-                        className="mt-4 h-12 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white disabled:cursor-not-allowed disabled:opacity-70"
-                      >
-                        {vocabularyLoading ? "LOADING VOCABULARY..." : "PLAY AGAIN"}
-                      </button>
-                    </div>
                   )}
                 </div>
               </div>
             )}
-          </div>
-        )}
+
+            {finalResult && (
+              <div className="fixed inset-0 z-[160] flex items-center justify-center overflow-hidden overscroll-none bg-black/75 px-4 py-4">
+                <div className="max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:p-8">
+                  <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
+                  <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                    Final Test
+                  </p>
+                  <h2 className="mt-3 text-4xl font-black text-white">
+                    {finalResult.passed ? "You Passed!" : "Try Again!"}
+                  </h2>
+                  <p className="mt-4 text-slate-300">{finalResult.correct} / 10 Correct</p>
+
+                  <div className="mt-8 grid gap-3">
+                    <button
+                      onClick={async () => {
+                        if (finalResult.passed) {
+                          const nextDifficulty = finalResult.nextDifficulty;
+
+                          setFinalResult(null);
+                          setGameStarted(false);
+                          await exitGameMode();
+
+                          if (nextDifficulty) {
+                            setDifficulty(nextDifficulty);
+                            setUnlockedDifficulty(nextDifficulty);
+                          }
+
+                          return;
+                        }
+
+                        setFinalResult(null);
+                        setScore(0);
+                        buildRound(1);
+                      }}
+                      className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                    >
+                      {finalResult.passed
+                        ? finalResult.nextDifficulty
+                          ? `GO TO ${finalResult.nextDifficulty.toUpperCase()}`
+                          : "BACK TO MENU"
+                        : "RETRY"}
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        setFinalResult(null);
+                        clearSavedSession();
+                        await resetToMenu();
+                      }}
+                      className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                    >
+                      BACK TO MENU
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {showRoundResult && (
+              <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 px-4">
+                <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
+                  <Trophy className="mx-auto h-16 w-16 text-[#FACC15]" />
+                  <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                    Puzzle Cleared
+                  </p>
+                  <h2 className="mt-3 text-4xl font-black text-white">Great Job!</h2>
+                  <p className="mt-4 text-slate-300">
+                    You completed round {level} / 5 for {difficulty}.
+                  </p>
+                  <p className="mt-2 text-sm font-bold text-slate-300">Score: {score}</p>
+                  <button
+                    onClick={startNextChallenge}
+                    className="mt-8 h-14 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                  >
+                    NEXT CHALLENGE
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {showFinalTest && finalQuestions[finalIndex] ? (
+              <div className={`rounded-[2rem] border p-5 sm:p-8 ${palette.panel}`}>
+                <div className="text-center">
+                  <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                    Final Test
+                  </p>
+                  <h1 className={`mt-3 text-4xl font-black sm:text-5xl ${palette.title}`}>
+                    Spell Check
+                  </h1>
+                  <p className={`mt-3 ${palette.text}`}>
+                    Question {finalIndex + 1} / {finalQuestions.length}
+                  </p>
+                </div>
+
+                <div className={`mt-8 rounded-[2rem] border p-8 text-center ${palette.soft}`}>
+                  <p className={`text-4xl font-black tracking-widest sm:text-5xl ${palette.title}`}>
+                    {finalQuestions[finalIndex].clueDisplay}
+                  </p>
+                  {finalQuestions[finalIndex].hintImageUrl && (
+                    <img
+                      src={finalQuestions[finalIndex].hintImageUrl}
+                      alt="Vocabulary hint"
+                      className="mx-auto mt-5 h-32 w-32 rounded-[1.5rem] object-cover shadow-[0_16px_40px_rgba(0,0,0,0.22)] sm:h-40 sm:w-40"
+                    />
+                  )}
+                  <p className={`mt-4 text-sm font-bold sm:text-base ${palette.text}`}>
+                    {finalQuestions[finalIndex].sentenceHint}
+                  </p>
+                </div>
+
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {finalQuestions[finalIndex].options.map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => submitFinalAnswer(option)}
+                      className={`min-h-[72px] rounded-[1.5rem] border px-5 text-lg font-black transition hover:-translate-y-1 ${isLight
+                        ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
+                        : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
+                        }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : !gameStarted ? (
+              vocabularyLoading ? (
+                <ArcadeLoadingScreen
+                  isLight={isLight}
+                  className="min-h-[420px]"
+                />
+              ) : (
+                <div className={`rounded-[2rem] border p-5 sm:p-6 ${palette.panel}`}>
+                  <div className="grid gap-6 lg:grid-cols-[1.1fr_320px]">
+                    <div>
+                      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/35 bg-[#8B5CF6]/10 px-3 py-1.5">
+                        <Search className="h-4 w-4 text-[#C4B5FD]" />
+                        <span className="text-[11px] font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
+                          Luna Word Arcade
+                        </span>
+                      </div>
+
+                      <h1 className={`text-4xl font-black leading-tight sm:text-5xl ${palette.title}`}>
+                        Word Search
+                      </h1>
+                      <p className={`mt-3 max-w-2xl text-sm leading-7 sm:text-base ${palette.text}`}>
+                        Find English vocabulary hidden across the grid. Words can run forwards,
+                        backwards, vertically, horizontally, or diagonally.
+                      </p>
+                    </div>
+
+                    <div className={`rounded-[1.5rem] border p-4 ${palette.soft}`}>
+                      <p className="text-xs font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
+                        Vocabulary Pool
+                      </p>
+                      <p className={`mt-3 text-3xl font-black ${palette.title}`}>
+                        {availableWords.length}
+                      </p>
+                      <p className={`mt-1 text-sm font-bold ${palette.text}`}>
+                        English words available
+                      </p>
+                      <p className={`mt-2 text-xs font-black ${palette.muted}`}>
+                        {eligibleWordCount} eligible for {difficulty}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                    <div className="block">
+                      <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
+                        LANGUAGE
+                      </span>
+                      <div className={`flex h-12 w-full items-center rounded-2xl border px-4 text-sm font-black ${isLight
+                        ? "border-[#eee8ff] bg-white text-primary"
+                        : "border-white/10 bg-[#0D1B2E] text-white"
+                        }`}
+                      >
+                        English
+                      </div>
+                    </div>
+                    {renderArcadeDropdown("Grade", "grade", grade, grades, setGrade)}
+                  </div>
+
+                  {savedSession && (
+                    <div className={`mt-5 rounded-[1.5rem] border p-4 ${palette.soft}`}>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className={`text-sm font-black ${palette.title}`}>
+                            Resume unfinished Word Search?
+                          </p>
+                          <p className={`mt-1 text-xs font-bold ${palette.text}`}>
+                            {savedSession.grade} · {savedSession.difficulty} · Round {savedSession.level}/5
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={resumeSavedSession}
+                            className="h-11 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] px-4 text-sm font-black text-white"
+                          >
+                            RESUME
+                          </button>
+                          <button
+                            onClick={clearSavedSession}
+                            className={`h-11 rounded-xl border px-4 text-sm font-black ${palette.button}`}
+                          >
+                            CLEAR SAVE
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-6 sm:hidden">
+                    {renderArcadeDropdown(
+                      "Difficulty",
+                      "difficulty",
+                      difficulty,
+                      difficulties
+                        .filter(
+                          (item) =>
+                            difficultyOrder.indexOf(item.key) <=
+                            difficultyOrder.indexOf(unlockedDifficulty)
+                        )
+                        .map((item) => `${item.key} · ${item.words} words`),
+                      (value) => {
+                        const nextDifficulty = value.split(" · ")[0];
+                        setDifficulty(nextDifficulty);
+                      }
+                    )}
+                  </div>
+
+                  <div className="mt-6 hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+                    {difficulties.map((item) => {
+                      const active = item.key === difficulty;
+                      const locked =
+                        difficultyOrder.indexOf(item.key) >
+                        difficultyOrder.indexOf(unlockedDifficulty);
+
+                      return (
+                        <button
+                          key={item.key}
+                          disabled={locked}
+                          onClick={() => setDifficulty(item.key)}
+                          className={`relative overflow-hidden rounded-[1.2rem] border p-3 text-left transition sm:rounded-[1.4rem] sm:p-4 ${active
+                            ? "border-[#8B5CF6] bg-[#8B5CF6]/20"
+                            : palette.soft
+                            } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
+                        >
+                          <p className={`text-[11px] font-black uppercase tracking-widest sm:text-xs ${palette.muted}`}>
+                            {item.key}
+                          </p>
+                          <p className={`mt-1 text-2xl font-black sm:mt-2 sm:text-3xl ${palette.title}`}>{item.words}</p>
+                          <p className={`text-xs font-bold sm:text-sm ${palette.text}`}>Hidden words</p>
+                          {locked && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
+                              <span className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white">
+                                Locked
+                              </span>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    onClick={startGame}
+                    disabled={vocabularyLoading}
+                    className="mt-6 flex h-14 w-full items-center justify-center rounded-[1.6rem] bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] text-base font-black text-white shadow-[0_15px_50px_rgba(99,102,241,0.45)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {vocabularyLoading ? "LOADING VOCABULARY..." : `START ${difficulty.toUpperCase()} WORD SEARCH`}
+                  </button>
+                </div>
+              )
+            ) : (
+              <div className={`flex flex-col rounded-[1.5rem] border ${palette.panel} ${fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "p-2 sm:p-4"}`}>
+                <div className={`flex flex-wrap items-center justify-between gap-2 pr-12 ${fullscreenActive ? "mb-1" : "mb-2"}`}>
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
+                      Word Search
+                    </p>
+                    <p className={`mt-1 text-sm font-bold ${palette.title}`}>
+                      English · {grade} · {difficulty}
+                    </p>
+                  </div>
+                </div>
+
+                <div className={`grid grid-cols-4 gap-1.5 sm:gap-2 ${fullscreenActive ? "mb-2" : "mb-3"}`}>
+                  {[
+                    ["Score", score],
+                    ["Found", `${foundWords.length}/${puzzleWords.length}`],
+                    ["Round", `${level}/5`],
+                    ["Time", `${secondsLeft}s`],
+                  ].map(([label, value]) => (
+                    <div key={label} className={`rounded-xl px-2 text-center ${palette.hudBox} ${fullscreenActive ? "py-1.5" : "py-2"}`}>
+                      <p className={`text-[9px] font-black uppercase tracking-widest ${palette.muted}`}>
+                        {label}
+                      </p>
+                      <p className={`mt-0.5 text-sm font-black sm:text-lg ${label === "Time" && secondsLeft <= 20 ? "text-red-400" : palette.title}`}>
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                {loading && (
+                  <ArcadeLoadingScreen isLight={isLight} />
+                )}
+
+                {errorMsg && !loading && (
+                  <div className="rounded-[1.5rem] border border-[#FACC15]/30 bg-[#FACC15]/10 p-8 text-center">
+                    <p className={`font-bold ${palette.text}`}>{errorMsg}</p>
+                    <button
+                      onClick={resetToMenu}
+                      className={`mt-5 rounded-xl border px-5 py-3 font-black ${palette.button}`}
+                    >
+                      Back to Menu
+                    </button>
+                  </div>
+                )}
+
+                {!loading && !errorMsg && (
+                  <div className={`grid min-h-0 flex-1 items-start lg:grid-cols-[minmax(0,1fr)_280px] ${fullscreenActive ? "gap-2 lg:gap-3" : "gap-4"}`}>
+                    <div className={`rounded-[1.5rem] border p-2 sm:p-3 ${palette.soft}`}>
+                      <div
+                        className="mx-auto grid touch-none select-none gap-1 rounded-[1.2rem]"
+                        style={{
+                          gridTemplateColumns: `repeat(${config.size}, minmax(0, 1fr))`,
+                          width: fullscreenActive
+                            ? "min(100%, calc(100dvh - 205px), 660px)"
+                            : "100%",
+                          maxWidth: getGridMaxWidth(config.size),
+                        }}
+                        onPointerMove={handleBoardMove}
+                        onPointerUp={finishSelection}
+                        onPointerCancel={finishSelection}
+                        onPointerLeave={() => {
+                          if (dragging) finishSelection();
+                        }}
+                      >
+                        {cells.map((cell) => {
+                          const found = foundCellSet.has(cell.id);
+                          const selected = selectedSet.has(cell.id);
+
+                          return (
+                            <button
+                              key={cell.id}
+                              data-word-search-cell={cell.id}
+                              onPointerDown={(event) => {
+                                event.preventDefault();
+                                event.currentTarget.setPointerCapture(event.pointerId);
+                                setDragging(true);
+                                setSelectionStart(cell.id);
+                                setSelectedCells([cell.id]);
+                              }}
+                              onPointerEnter={() => {
+                                if (dragging) updateSelection(cell.id);
+                              }}
+                              className={`aspect-square rounded-lg border font-black leading-none transition ${getGridLetterClass(config.size)} ${found
+                                ? "border-emerald-400 bg-emerald-500 text-white shadow-[0_0_18px_rgba(16,185,129,0.45)]"
+                                : selected
+                                  ? "border-[#FACC15] bg-[#FACC15] text-[#0f172a] shadow-[0_0_18px_rgba(250,204,21,0.45)]"
+                                  : palette.boardCell
+                                }`}
+                            >
+                              {cell.letter}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className={`rounded-[1.5rem] border p-3 sm:p-4 ${palette.soft}`}>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
+                          Word List
+                        </p>
+                        <Timer className={`h-4 w-4 ${palette.muted}`} />
+                      </div>
+
+                      <div className="mt-4 grid gap-2">
+                        {puzzleWords.map((item) => {
+                          const found = foundSet.has(item.word);
+
+                          return (
+                            <div
+                              key={item.word}
+                              className={`flex items-center justify-between rounded-xl border px-3 py-2 ${found
+                                ? "border-emerald-400 bg-emerald-500/15"
+                                : isLight
+                                  ? "border-[#eee8ff] bg-white"
+                                  : "border-white/10 bg-black/15"
+                                }`}
+                            >
+                              <span className={`font-black tracking-wide ${found ? "text-emerald-400 line-through" : palette.title}`}>
+                                {item.word}
+                              </span>
+                              {found && <Check className="h-4 w-4 text-emerald-400" />}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {expired && (
+                        <div className={`mt-5 rounded-2xl border p-4 text-center ${palette.soft}`}>
+                          <Trophy className="mx-auto h-10 w-10 text-[#FACC15]" />
+                          <h2 className={`mt-3 text-2xl font-black ${palette.title}`}>
+                            Time's Up!
+                          </h2>
+                          <p className={`mt-2 text-sm font-bold ${palette.text}`}>Score: {score}</p>
+                          <button
+                            onClick={startGame}
+                            disabled={vocabularyLoading}
+                            className="mt-4 h-12 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white disabled:cursor-not-allowed disabled:opacity-70"
+                          >
+                            {vocabularyLoading ? "LOADING VOCABULARY..." : "PLAY AGAIN"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -1722,9 +1717,9 @@ export default function WordSearch() {
                         ? isLight
                           ? "border-[#eee8ff] bg-white hover:-translate-y-1 hover:bg-[#faf8ff]"
                           : "border-white/10 bg-white/[0.07] hover:-translate-y-1 hover:bg-white/10"
-                      : isLight
-                        ? "border-[#eee8ff] bg-[#faf8ff] opacity-60"
-                        : "border-white/10 bg-white/5 opacity-50"
+                        : isLight
+                          ? "border-[#eee8ff] bg-[#faf8ff] opacity-60"
+                          : "border-white/10 bg-white/5 opacity-50"
                       }`}
                   >
                     <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-2xl ${isLight ? "bg-[#f6f1ff]" : "bg-white/10"}`}>
