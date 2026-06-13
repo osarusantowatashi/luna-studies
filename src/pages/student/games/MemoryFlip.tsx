@@ -851,7 +851,7 @@ export default function MemoryFlip() {
       playGameSound("correct", 0.25);
       setAnswerFeedback({ type: "correct" });
     } else {
-      playGameSound("wrong", 0.22);
+      playGameSound("wrong", 0.38);
       setAnswerFeedback({
         type: "wrong",
         correctAnswer: current.correctAnswer,
@@ -1268,49 +1268,7 @@ export default function MemoryFlip() {
         )}
       </AnimatePresence>
 
-      {showMasteryTest && masteryQuestions[masteryIndex] && (
-        <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
-          <div className={`w-full max-w-3xl rounded-[2.8rem] border p-8 ${themeClass.panel}`}>
-            <div className="text-center">
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                Mastery Test
-              </p>
-
-              <h1 className={`mt-3 text-4xl font-black sm:text-5xl ${themeClass.title}`}>
-                Final Check
-              </h1>
-
-              <p className={`mt-3 ${themeClass.text}`}>
-                Question {masteryIndex + 1} / {masteryQuestions.length}
-              </p>
-            </div>
-
-            <div className={`mt-8 rounded-[2rem] border p-8 text-center ${themeClass.softPanel}`}>
-              <p className={`text-4xl font-black ${themeClass.title}`}>
-                {masteryQuestions[masteryIndex].question}
-              </p>
-            </div>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {masteryQuestions[masteryIndex].options.map((option: string) => (
-                <button
-                  key={option}
-                  onClick={() => submitMasteryAnswer(option)}
-                  className={`min-h-[72px] rounded-[1.5rem] border px-5 text-lg font-black transition hover:-translate-y-1 ${isLight
-                    ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
-                    : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
-                    }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {!showMasteryTest && (
-        <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
           {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:gap-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${themeClass.topBar}`}>
             <button
@@ -1372,7 +1330,46 @@ export default function MemoryFlip() {
                 )}
               </button>
 
-              {!gameStarted && (
+              {showMasteryTest && masteryQuestions[masteryIndex] ? (
+                <div className={`mx-auto flex min-h-[calc(100dvh-2rem)] max-w-3xl items-center rounded-[2rem] border p-5 sm:p-8 ${themeClass.panel}`}>
+                  <div className="w-full">
+                    <div className="text-center">
+                      <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                        Mastery Test
+                      </p>
+
+                      <h1 className={`mt-3 text-3xl font-black sm:text-5xl ${themeClass.title}`}>
+                        Final Check
+                      </h1>
+
+                      <p className={`mt-3 ${themeClass.text}`}>
+                        Question {masteryIndex + 1} / {masteryQuestions.length}
+                      </p>
+                    </div>
+
+                    <div className={`mt-6 rounded-[2rem] border p-6 text-center sm:mt-8 sm:p-8 ${themeClass.softPanel}`}>
+                      <p className={`text-3xl font-black sm:text-4xl ${themeClass.title}`}>
+                        {masteryQuestions[masteryIndex].question}
+                      </p>
+                    </div>
+
+                    <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4">
+                      {masteryQuestions[masteryIndex].options.map((option: string) => (
+                        <button
+                          key={option}
+                          onClick={() => submitMasteryAnswer(option)}
+                          className={`min-h-[62px] rounded-[1.5rem] border px-5 text-base font-black transition hover:-translate-y-1 sm:min-h-[72px] sm:text-lg ${isLight
+                            ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
+                            : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
+                            }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : !gameStarted && (
                 <>
                   <div className={`mb-4 overflow-hidden rounded-[1.6rem] border ${themeClass.panel}`}>
                     <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.2fr_260px]">
@@ -1482,7 +1479,34 @@ export default function MemoryFlip() {
                       </p>
                     </div>
 
-                    <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                    <div className="mt-6 sm:hidden">
+                      <p className={`mb-2 text-xs font-black uppercase tracking-[0.18em] ${themeClass.muted}`}>
+                        Difficulty
+                      </p>
+                      <select
+                        value={difficulty}
+                        onChange={(event) => setDifficulty(event.target.value)}
+                        className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
+                          ? "border-[#eee8ff] bg-white text-primary"
+                          : "border-white/10 bg-[#0D1B2E] text-white"
+                          }`}
+                      >
+                        {["Easy", "Medium", "Hard", "Advanced"].map((item) => {
+                          const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
+                          const locked =
+                            difficultyOrder.indexOf(item) >
+                            difficultyOrder.indexOf(unlockedDifficulty);
+
+                          return (
+                            <option key={item} value={item} disabled={locked}>
+                              {item} · {getPairCountByDifficulty(item)} pairs{locked ? " · Locked" : ""}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+
+                    <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
                       {[
                         { key: "Easy", icon: Brain, pairs: 6, active: difficulty === "Easy", activeClass: "border-[#52bd7f] bg-[#52bd7f]/18 shadow-[0_16px_42px_rgba(82,189,127,0.16)]" },
                         { key: "Medium", icon: Zap, pairs: 8, active: difficulty === "Medium", activeClass: "border-[#3B82F6] bg-[#3B82F6]/18 shadow-[0_16px_42px_rgba(59,130,246,0.16)]" },
@@ -1695,7 +1719,6 @@ export default function MemoryFlip() {
                       title="Preparing Memory Flip..."
                       subtitle="Loading cards"
                       icon={Brain}
-                      progress={loading ? 72 : 100}
                       isLight={isLight}
                       className="mb-6"
                     />
@@ -1751,26 +1774,27 @@ export default function MemoryFlip() {
                     </div>
                   )}
 
-                  <AnimatePresence>
-                    {comboPop && comboPop >= 2 && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.6, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 1.2, y: -20 }}
-                        className="pointer-events-none mb-4 text-center text-4xl font-black text-[#FACC15]"
-                      >
-                        COMBO x{comboPop}!
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
                   {!loading && !errorMsg && !timeUp && (
-                    <div className={`mx-auto grid max-w-[980px] justify-center gap-1.5 sm:gap-2 ${getCardGridClass(cards.length)}`}>
-                      {cards.map((card) => {
-                        const visible = card.flipped || card.matched;
+                    <div className="relative mx-auto max-w-[980px]">
+                      <AnimatePresence>
+                        {comboPop && comboPop >= 2 && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.6, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 1.2, y: -20 }}
+                            className="pointer-events-none absolute left-0 right-0 top-0 z-20 text-center text-4xl font-black text-[#FACC15] drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+                          >
+                            COMBO x{comboPop}!
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
 
-                        return (
-                          <motion.button
+                      <div className={`grid justify-center gap-1.5 sm:gap-2 ${getCardGridClass(cards.length)}`}>
+                        {cards.map((card) => {
+                          const visible = card.flipped || card.matched;
+
+                          return (
+                            <motion.button
                             animate={
                               wrongPairIds.includes(card.id)
                                 ? { x: [0, -8, 8, -6, 6, 0] }
@@ -1816,9 +1840,10 @@ export default function MemoryFlip() {
                                 </div>
                               </div>
                             </motion.div>
-                          </motion.button>
-                        );
-                      })}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </>
@@ -1874,7 +1899,6 @@ export default function MemoryFlip() {
           </div>
           )}
         </div>
-      )}
     </div>
   );
 }

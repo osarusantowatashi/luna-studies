@@ -19,6 +19,7 @@ const LunaMascotChat = () => {
     "/practice",
     "/mistakes",
     "/studentoverview",
+    "/student/lessons",
     "/dashboard",
     "/tutor/lessons",
     "/games",

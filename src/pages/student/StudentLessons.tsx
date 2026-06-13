@@ -322,18 +322,19 @@ export default function StudentLessons() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-7 gap-2 text-center">
+                    <div className="grid grid-cols-7 gap-1 text-center sm:gap-2">
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                             <div
                                 key={day}
-                                className="py-2 text-xs font-black uppercase tracking-widest text-primary/40"
+                                className="py-2 text-[10px] font-black uppercase tracking-widest text-primary/40 sm:text-xs"
                             >
-                                {day}
+                                <span className="sm:hidden">{day.slice(0, 1)}</span>
+                                <span className="hidden sm:inline">{day}</span>
                             </div>
                         ))}
 
                         {Array.from({ length: monthStart.getDay() }).map((_, index) => (
-                            <div key={`empty-${index}`} />
+                            <div key={`empty-${index}`} className="min-h-[58px] sm:min-h-[130px]" />
                         ))}
 
                         {calendarDays.map((date) => {
@@ -346,13 +347,13 @@ export default function StudentLessons() {
                                     key={date}
                                     type="button"
                                     onClick={() => setSelectedDate(date)}
-                                    className="min-h-[130px] rounded-[1.5rem] border border-primary/10 bg-[#fbfaff] p-3 text-left transition hover:-translate-y-1 hover:bg-[#f6f1ff]"
+                                    className="min-h-[58px] rounded-xl border border-primary/10 bg-[#fbfaff] p-1.5 text-left transition hover:bg-[#f6f1ff] sm:min-h-[130px] sm:rounded-[1.5rem] sm:p-3 sm:hover:-translate-y-1"
                                 >
-                                    <p className="mb-2 text-sm font-black text-primary">
+                                    <p className="mb-1 text-xs font-black text-primary sm:mb-2 sm:text-sm">
                                         {Number(date.split("-")[2])}
                                     </p>
 
-                                    <div className="space-y-1">
+                                    <div className="hidden space-y-1 sm:block">
                                         {dayLessons.slice(0, 3).map((lesson) => (
                                             <div
                                                 key={lesson.id}
@@ -376,6 +377,24 @@ export default function StudentLessons() {
                                             </p>
                                         )}
                                     </div>
+
+                                    {dayLessons.length > 0 && (
+                                        <div className="mt-2 flex items-center gap-1 sm:hidden">
+                                            {dayLessons.slice(0, 3).map((lesson) => (
+                                                <span
+                                                    key={lesson.id}
+                                                    className={`h-1.5 w-1.5 rounded-full border ${getStatusPreviewClass(
+                                                        lesson.status
+                                                    )}`}
+                                                />
+                                            ))}
+                                            {dayLessons.length > 3 && (
+                                                <span className="text-[9px] font-black text-[#8d73ff]">
+                                                    +{dayLessons.length - 3}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
                                 </button>
                             );
                         })}

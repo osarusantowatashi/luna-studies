@@ -418,6 +418,9 @@ export default function WordSearch() {
   const fullscreenActive = isFullscreen || isMobileFullscreen;
   const gameModeActive = gameStarted || showFinalTest || !!finalResult;
   const showPageChrome = !fullscreenActive;
+  const eligibleWordCount = availableWords.filter(
+    (word) => word.length >= config.minLength && word.length <= config.maxLength
+  ).length;
   const foundSet = useMemo(() => new Set(foundWords), [foundWords]);
   const selectedSet = useMemo(() => new Set(selectedCells), [selectedCells]);
   const foundCellSet = useMemo(
@@ -647,6 +650,8 @@ export default function WordSearch() {
 
         return [];
       });
+      const maxWordLength = Math.max(...difficulties.map((item) => item.maxLength));
+      const minWordLength = Math.min(...difficulties.map((item) => item.minLength));
       const cleanedEntries = rawEnglishEntries
         .map((entry) => ({
           ...entry,
@@ -657,8 +662,8 @@ export default function WordSearch() {
         }))
         .filter(
           (entry) =>
-            entry.word.length >= config.minLength &&
-            entry.word.length <= config.maxLength
+            entry.word.length >= minWordLength &&
+            entry.word.length <= maxWordLength
         );
       const directImageMap = new Map<string, string>();
 
@@ -737,7 +742,7 @@ export default function WordSearch() {
     return () => {
       active = false;
     };
-  }, [grade, config.minLength, config.maxLength]);
+  }, [grade]);
 
   useEffect(() => {
     if (!gameStarted || complete || expired) return;
@@ -1414,6 +1419,9 @@ export default function WordSearch() {
                 <p className={`mt-1 text-sm font-bold ${palette.text}`}>
                   English words available
                 </p>
+                <p className={`mt-2 text-xs font-black ${palette.muted}`}>
+                  {eligibleWordCount} eligible for {difficulty}
+                </p>
               </div>
             </div>
 
@@ -1463,7 +1471,33 @@ export default function WordSearch() {
               </div>
             )}
 
-            <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div className="mt-6 sm:hidden">
+              <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
+                Difficulty
+              </span>
+              <select
+                value={difficulty}
+                onChange={(event) => setDifficulty(event.target.value)}
+                className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
+                  ? "border-[#eee8ff] bg-white text-primary"
+                  : "border-white/10 bg-[#0D1B2E] text-white"
+                  }`}
+              >
+                {difficulties.map((item) => {
+                  const locked =
+                    difficultyOrder.indexOf(item.key) >
+                    difficultyOrder.indexOf(unlockedDifficulty);
+
+                  return (
+                    <option key={item.key} value={item.key} disabled={locked}>
+                      {item.key} · {item.words} words{locked ? " · Locked" : ""}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            <div className="mt-6 hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
               {difficulties.map((item) => {
                 const active = item.key === difficulty;
                 const locked =
@@ -1506,8 +1540,8 @@ export default function WordSearch() {
             </button>
           </div>
         ) : (
-          <div className={`flex flex-col rounded-[1.5rem] border p-2 sm:p-4 ${palette.panel} ${fullscreenActive ? "min-h-[calc(100dvh-1rem)]" : ""}`}>
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2 pr-12">
+          <div className={`flex flex-col rounded-[1.5rem] border ${palette.panel} ${fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "p-2 sm:p-4"}`}>
+            <div className={`flex flex-wrap items-center justify-between gap-2 pr-12 ${fullscreenActive ? "mb-1" : "mb-2"}`}>
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
                   Word Search
@@ -1518,14 +1552,14 @@ export default function WordSearch() {
               </div>
             </div>
 
-            <div className="mb-3 grid grid-cols-4 gap-1.5 sm:gap-2">
+            <div className={`grid grid-cols-4 gap-1.5 sm:gap-2 ${fullscreenActive ? "mb-2" : "mb-3"}`}>
               {[
                 ["Score", score],
                 ["Found", `${foundWords.length}/${puzzleWords.length}`],
                 ["Round", `${level}/5`],
                 ["Time", `${secondsLeft}s`],
               ].map(([label, value]) => (
-                <div key={label} className={`rounded-xl px-2 py-2 text-center ${palette.hudBox}`}>
+                <div key={label} className={`rounded-xl px-2 text-center ${palette.hudBox} ${fullscreenActive ? "py-1.5" : "py-2"}`}>
                   <p className={`text-[9px] font-black uppercase tracking-widest ${palette.muted}`}>
                     {label}
                   </p>
@@ -1541,7 +1575,6 @@ export default function WordSearch() {
                 title="Preparing Word Search..."
                 subtitle="Building puzzle"
                 icon={Search}
-                progress={loading ? 76 : 100}
                 isLight={isLight}
               />
             )}
@@ -1559,12 +1592,15 @@ export default function WordSearch() {
             )}
 
             {!loading && !errorMsg && (
-              <div className="grid flex-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+              <div className={`grid min-h-0 flex-1 items-start lg:grid-cols-[minmax(0,1fr)_280px] ${fullscreenActive ? "gap-2 lg:gap-3" : "gap-4"}`}>
                 <div className={`rounded-[1.5rem] border p-2 sm:p-3 ${palette.soft}`}>
                   <div
                     className="mx-auto grid touch-none select-none gap-1 rounded-[1.2rem]"
                     style={{
                       gridTemplateColumns: `repeat(${config.size}, minmax(0, 1fr))`,
+                      width: fullscreenActive
+                        ? "min(100%, calc(100dvh - 205px), 660px)"
+                        : "100%",
                       maxWidth: getGridMaxWidth(config.size),
                     }}
                     onPointerMove={handleBoardMove}
