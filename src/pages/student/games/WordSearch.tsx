@@ -1504,14 +1504,14 @@ export default function WordSearch() {
                   )}
 
                   <div className="mt-6 sm:hidden">
-                    {renderArcadeDropdown(
-                      "Difficulty",
-                      "difficulty",
-                      difficulty,
-                      difficulties.map((item) => `${item.key} · ${item.words} words`),
-                      (value) => {
-                        const nextDifficulty = value.split(" · ")[0];
+                    <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
+                      Difficulty
+                    </span>
 
+                    <select
+                      value={difficulty}
+                      onChange={(event) => {
+                        const nextDifficulty = event.target.value;
                         const locked =
                           difficultyOrder.indexOf(nextDifficulty) >
                           difficultyOrder.indexOf(unlockedDifficulty);
@@ -1519,8 +1519,24 @@ export default function WordSearch() {
                         if (locked) return;
 
                         setDifficulty(nextDifficulty);
-                      }
-                    )}
+                      }}
+                      className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
+                          ? "border-[#eee8ff] bg-white text-primary"
+                          : "border-white/10 bg-[#0D1B2E] text-white"
+                        }`}
+                    >
+                      {difficulties.map((item) => {
+                        const locked =
+                          difficultyOrder.indexOf(item.key) >
+                          difficultyOrder.indexOf(unlockedDifficulty);
+
+                        return (
+                          <option key={item.key} value={item.key} disabled={locked}>
+                            {item.key} · {item.words} words{locked ? " · Locked" : ""}
+                          </option>
+                        );
+                      })}
+                    </select>
                   </div>
 
                   <div className="mt-6 hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">

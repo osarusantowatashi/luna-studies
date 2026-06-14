@@ -1513,24 +1513,28 @@ export default function MemoryFlip() {
                         Difficulty
                       </p>
 
-                      <ArcadeDropdown
+                      <select
                         value={difficulty}
-                        options={["Easy", "Medium", "Hard", "Advanced"].map(
-                          (item) => `${item} · ${getPairCountByDifficulty(item)} pairs`
-                        )}
-                        onChange={(value) => {
-                          const nextDifficulty = value.split(" · ")[0];
+                        onChange={(event) => setDifficulty(event.target.value)}
+                        className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
+                            ? "border-[#eee8ff] bg-white text-primary"
+                            : "border-white/10 bg-[#0D1B2E] text-white"
+                          }`}
+                      >
+                        {["Easy", "Medium", "Hard", "Advanced"].map((item) => {
                           const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
-
                           const locked =
-                            difficultyOrder.indexOf(nextDifficulty) >
+                            difficultyOrder.indexOf(item) >
                             difficultyOrder.indexOf(unlockedDifficulty);
 
-                          if (locked) return;
-
-                          setDifficulty(nextDifficulty);
-                        }}
-                      />
+                          return (
+                            <option key={item} value={item} disabled={locked}>
+                              {item} · {getPairCountByDifficulty(item)} pairs
+                              {locked ? " · Locked" : ""}
+                            </option>
+                          );
+                        })}
+                      </select>
                     </div>
 
                     <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
