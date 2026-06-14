@@ -1053,7 +1053,7 @@ export default function MemoryFlip() {
     useEffect(() => {
       if (!open) return;
 
-      const handlePointerDown = (event: PointerEvent) => {
+      const handleMouseDown = (event: MouseEvent) => {
         if (
           dropdownRef.current &&
           !dropdownRef.current.contains(event.target as Node)
@@ -1062,10 +1062,10 @@ export default function MemoryFlip() {
         }
       };
 
-      document.addEventListener("pointerdown", handlePointerDown);
+      document.addEventListener("mousedown", handleMouseDown);
 
       return () => {
-        document.removeEventListener("pointerdown", handlePointerDown);
+        document.removeEventListener("mousedown", handleMouseDown);
       };
     }, [open]);
 
@@ -1073,11 +1073,9 @@ export default function MemoryFlip() {
       <div
         ref={dropdownRef}
         className="relative"
-        onPointerDown={(event) => event.stopPropagation()}
       >
         <button
           type="button"
-          onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => {
             event.preventDefault();
             setOpen((prev) => !prev);
@@ -1097,7 +1095,7 @@ export default function MemoryFlip() {
               initial={{ opacity: 0, y: -8, scale: 0.98 }}
               animate={{ opacity: 1, y: 8, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              className={`absolute left-0 right-0 top-full z-50 max-h-[210px] overflow-y-auto rounded-[1.4rem] border p-2 ${isLight
+              className={`absolute left-0 right-0 top-full z-[9999] mt-2 max-h-[260px] overflow-y-auto rounded-[1.4rem] border p-2 ${isLight
                 ? "border-[#eee8ff] bg-white shadow-[0_18px_45px_rgba(66,56,120,0.15)]"
                 : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                 }`}
@@ -1118,7 +1116,6 @@ export default function MemoryFlip() {
                     key={option}
                     type="button"
                     disabled={locked}
-                    onPointerDown={(event) => event.stopPropagation()}
                     onClick={(event) => {
                       event.preventDefault();
 
@@ -1338,7 +1335,7 @@ export default function MemoryFlip() {
 
         <div
           ref={gameWindowRef}
-          className={`relative overflow-hidden border ${themeClass.gameWindow} ${isMobileFullscreen
+          className={`relative overflow-visible border ${themeClass.gameWindow} ${isMobileFullscreen
             ? "fixed inset-0 z-[250] mb-0 h-[100dvh] overflow-y-auto rounded-none p-3"
             : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
             }`}
@@ -1479,7 +1476,7 @@ export default function MemoryFlip() {
                     </div>
                   )}
 
-                  <div className={`rounded-[1.6rem] border p-4 sm:p-5 ${themeClass.panel}`}>
+                  <div className={`overflow-visible rounded-[1.6rem] border p-4 sm:p-5 ${themeClass.panel}`}>
                     <div className="grid gap-4 lg:grid-cols-3">
                       <ArcadeDropdown
                         value={languageLabel}
