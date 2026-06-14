@@ -139,6 +139,126 @@ const MemoryCardImage = ({
   );
 };
 
+type ArcadeDropdownProps = {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+  isLight: boolean;
+  unlockedDifficulty: string;
+};
+
+const ArcadeDropdown = ({
+  value,
+  options,
+  onChange,
+  isLight,
+  unlockedDifficulty,
+}: ArcadeDropdownProps) => {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleMouseDown = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleMouseDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [open]);
+
+  return (
+    <div
+      ref={dropdownRef}
+      className="relative"
+    >
+      <button
+        type="button"
+        onClick={(event) => {
+          event.preventDefault();
+          setOpen((prev) => !prev);
+        }}
+        className={`flex h-14 w-full items-center justify-between rounded-[1.4rem] border px-5 text-sm font-black outline-none transition ${isLight
+          ? "border-[#eee8ff] bg-white text-primary shadow-[0_8px_25px_rgba(66,56,120,0.06)]"
+          : "border-white/10 bg-[#0D1B2E] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+          }`}
+      >
+        <span>{value}</span>
+        <span className="text-xs opacity-60">▾</span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 8, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            className={`absolute left-0 right-0 top-full z-[9999] mt-2 max-h-[260px] overflow-y-auto rounded-[1.4rem] border p-2 ${isLight
+              ? "border-[#eee8ff] bg-white shadow-[0_18px_45px_rgba(66,56,120,0.15)]"
+              : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
+              }`}
+          >
+            {options.map((option) => {
+              const diffName = option.split(" · ")[0];
+              const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
+
+              const locked =
+                difficultyOrder.includes(diffName) &&
+                difficultyOrder.indexOf(diffName) >
+                difficultyOrder.indexOf(unlockedDifficulty);
+
+              const active = value === option || option.startsWith(`${value} ·`);
+
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  disabled={locked}
+                  onClick={(event) => {
+                    event.preventDefault();
+
+                    if (locked) return;
+
+                    onChange(option);
+                    setOpen(false);
+                  }}
+                  className={`flex min-h-11 w-full items-center rounded-[1rem] px-4 py-3 text-left text-sm font-black transition ${locked
+                    ? "cursor-not-allowed opacity-45"
+                    : active
+                      ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
+                      : isLight
+                        ? "text-primary hover:bg-[#faf8ff]"
+                        : "text-white hover:bg-white/10"
+                    }`}
+                >
+                  <div className="flex w-full items-center justify-between gap-3">
+                    <span>{option}</span>
+
+                    {locked && (
+                      <span className="text-[10px] font-black uppercase opacity-70">
+                        Locked
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 export default function MemoryFlip() {
   const navigate = useNavigate();
 
@@ -286,7 +406,7 @@ export default function MemoryFlip() {
   }, [isWin, moves, totalPairs, secondsLeft]);
 
   useEffect(() => {
-    if (loading || errorMsg || isGameEnded) return;
+    if (!gameStarted || loading || errorMsg || isGameEnded) return;
 
     const timer = setInterval(() => {
       setSecondsLeft((prev) => {
@@ -302,7 +422,7 @@ export default function MemoryFlip() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [loading, errorMsg, isGameEnded]);
+  }, [gameStarted, loading, errorMsg, isGameEnded]);
 
   useEffect(() => {
     loadProgress();
@@ -1040,120 +1160,6 @@ export default function MemoryFlip() {
     }
   };
 
-  type ArcadeDropdownProps = {
-    value: string;
-    options: string[];
-    onChange: (value: string) => void;
-  };
-
-  const ArcadeDropdown = ({ value, options, onChange }: ArcadeDropdownProps) => {
-    const [open, setOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-      if (!open) return;
-
-      const handleMouseDown = (event: MouseEvent) => {
-        if (
-          dropdownRef.current &&
-          !dropdownRef.current.contains(event.target as Node)
-        ) {
-          setOpen(false);
-        }
-      };
-
-      document.addEventListener("mousedown", handleMouseDown);
-
-      return () => {
-        document.removeEventListener("mousedown", handleMouseDown);
-      };
-    }, [open]);
-
-    return (
-      <div
-        ref={dropdownRef}
-        className="relative"
-      >
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault();
-            setOpen((prev) => !prev);
-          }}
-          className={`flex h-14 w-full items-center justify-between rounded-[1.4rem] border px-5 text-sm font-black outline-none transition ${isLight
-            ? "border-[#eee8ff] bg-white text-primary shadow-[0_8px_25px_rgba(66,56,120,0.06)]"
-            : "border-white/10 bg-[#0D1B2E] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
-            }`}
-        >
-          <span>{value}</span>
-          <span className="text-xs opacity-60">▾</span>
-        </button>
-
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 8, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              className={`absolute left-0 right-0 top-full z-[9999] mt-2 max-h-[260px] overflow-y-auto rounded-[1.4rem] border p-2 ${isLight
-                ? "border-[#eee8ff] bg-white shadow-[0_18px_45px_rgba(66,56,120,0.15)]"
-                : "border-white/10 bg-[#0D1B2E] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
-                }`}
-            >
-              {options.map((option) => {
-                const diffName = option.split(" · ")[0];
-                const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
-
-                const locked =
-                  difficultyOrder.includes(diffName) &&
-                  difficultyOrder.indexOf(diffName) >
-                  difficultyOrder.indexOf(unlockedDifficulty);
-
-                const active = value === option || option.startsWith(`${value} ·`);
-
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    disabled={locked}
-                    onClick={(event) => {
-                      event.preventDefault();
-
-                      if (locked) return;
-
-                      onChange(option);
-                      setOpen(false);
-                    }}
-                    className={`flex min-h-11 w-full items-center rounded-[1rem] px-4 py-3 text-left text-sm font-black transition ${locked
-                      ? "cursor-not-allowed opacity-45"
-                      : active
-                        ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
-                        : isLight
-                          ? "text-primary hover:bg-[#faf8ff]"
-                          : "text-white hover:bg-white/10"
-                      }`}
-                  >
-                    <div className="flex w-full items-center justify-between gap-3">
-                      <span>{option}</span>
-
-                      {locked && (
-                        <span className="text-[10px] font-black uppercase opacity-70">
-                          Locked
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    );
-  };
-
-
-
   return (
     <div className={`relative min-h-screen overflow-hidden ${themeClass.page}`}>
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -1481,6 +1487,8 @@ export default function MemoryFlip() {
                       <ArcadeDropdown
                         value={languageLabel}
                         options={["Chinese ↔ English", "Chinese ↔ Japanese", "English ↔ Japanese"]}
+                        isLight={isLight}
+                        unlockedDifficulty={unlockedDifficulty}
                         onChange={(value) => {
                           if (value === "Chinese ↔ English") setLanguagePair("zh_en");
                           if (value === "Chinese ↔ Japanese") setLanguagePair("zh_ja");
@@ -1491,6 +1499,8 @@ export default function MemoryFlip() {
                       <ArcadeDropdown
                         value={grade}
                         options={grades}
+                        isLight={isLight}
+                        unlockedDifficulty={unlockedDifficulty}
                         onChange={setGrade}
                       />
 
