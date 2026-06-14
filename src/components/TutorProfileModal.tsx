@@ -14,6 +14,8 @@ type Tutor = {
   bio?: string;
   desc?: string;
   experience: string[];
+  teachingStyle?: string[];
+  quote?: string;
 };
 
 type TutorProfileModalProps = {
@@ -55,12 +57,18 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
 
         {/* LEFT */}
         <div className="bg-[#fbfaf6] px-6 pb-8 pt-2 text-center sm:p-8 md:p-10">
-          <div className="mx-auto mb-5 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.6rem] bg-secondary font-serif text-4xl text-primary shadow-soft sm:h-36 sm:w-36 sm:rounded-[2rem] sm:text-5xl">
+          <div
+            className={`mx-auto mb-5 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.6rem] font-serif text-4xl text-primary shadow-soft sm:h-36 sm:w-36 sm:rounded-[2rem] sm:text-5xl ${
+              tutor.name === "Siya" ? "bg-white" : "bg-secondary"
+            }`}
+          >
             {tutor.image ? (
               <img
                 src={tutor.image}
                 alt={tutor.name}
-                className="h-full w-full object-cover object-top"
+                className={`h-full w-full object-center ${
+                  tutor.name === "Siya" ? "object-contain" : "object-cover object-top"
+                }`}
               />
             ) : (
               tutor.name[0]
@@ -119,6 +127,25 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
             {tutor.bio || tutor.desc}
           </p>
 
+          {tutor.teachingStyle && tutor.teachingStyle.length > 0 && (
+            <>
+              <h3 className="mt-8 font-serif text-xl text-primary sm:text-2xl">
+                {label("tutorsPage.popup.teachingStyle", "Teaching Style")}
+              </h3>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {tutor.teachingStyle.slice(0, 3).map((style) => (
+                  <div
+                    key={style}
+                    className="flex min-h-[78px] items-center justify-center rounded-2xl bg-[#f8f6ff] px-4 py-4 text-center text-sm font-bold leading-5 text-primary"
+                  >
+                    {style}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
           <h3 className="mt-8 font-serif text-xl text-primary sm:text-2xl">
             {label("tutorsPage.popup.experience", "Teaching Experience")}          </h3>
           <div className="mt-4 space-y-3">
@@ -148,7 +175,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
           <div className="mt-8 rounded-2xl border bg-[#fbfaf6] p-5">
             <MessageCircle className="mb-3 h-5 w-5 text-[#b8873a]" />
             <p className="text-sm leading-7 text-muted-foreground">
-              {t("tutorsPage.popup.quote", { name: tutor.name })}         </p>
+              {tutor.quote || t("tutorsPage.popup.quote", { name: tutor.name })}         </p>
           </div>
         </div>
       </div>

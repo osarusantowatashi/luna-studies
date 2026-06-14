@@ -41,6 +41,8 @@ const Tutors = () => {
     languages: string;
     bio: string;
     experience: string[];
+    teachingStyle?: string[];
+    quote?: string;
   };
 
   const tutorsRaw = t("tutorsPage.items", { returnObjects: true });
@@ -182,11 +184,19 @@ const Tutors = () => {
                 className="group relative flex min-h-[520px] flex-col overflow-hidden rounded-[2rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl sm:rounded-[2.4rem] sm:p-6 lg:min-h-[560px]"        >
                 <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[#f0eaff]" />
 
-                <div className="relative z-10 h-[220px] overflow-hidden rounded-[2rem] bg-[#f6f2ff] sm:h-[240px] lg:h-[260px]">
+                <div
+                  className={`relative z-10 aspect-square overflow-hidden rounded-[2rem] ${
+                    tutor.name === "Siya" ? "bg-white" : "bg-[#f6f2ff]"
+                  }`}
+                >
                   <img
                     src={tutor.image}
                     alt={tutor.name}
-                    className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+                    className={`h-full w-full object-center transition duration-500 ${
+                      tutor.name === "Siya"
+                        ? "object-contain"
+                        : "object-cover group-hover:scale-105"
+                    }`}
                   />
                 </div>
                 {/* content */}

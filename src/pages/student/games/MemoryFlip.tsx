@@ -4,6 +4,7 @@ import {
   Sparkles,
   Brain,
   Flame,
+  Gem,
   Crown,
   Volume2,
   VolumeX,
@@ -33,6 +34,7 @@ type Pair = {
   pair_id?: number;
   left: string;
   right: string;
+  vocab_word?: string;
   image_keyword?: string;
   image_url?: string;
 };
@@ -53,6 +55,19 @@ type PlayedPair = {
   left: string;
   right: string;
   imageKeyword?: string;
+};
+
+type GameDemoProps = {
+  demoMode?: boolean;
+  fixedGrade?: string;
+  fixedDifficulty?: string;
+  maxDemoPairs?: number;
+  hideStudentIdentity?: boolean;
+  disableProgressSaving?: boolean;
+  disableUnlocking?: boolean;
+  disableResume?: boolean;
+  onDemoComplete?: () => void;
+  onRequestSwitchGame?: (game: "memory" | "word") => void;
 };
 
 const shuffle = <T,>(array: T[]) => [...array].sort(() => Math.random() - 0.5);
@@ -259,12 +274,23 @@ const ArcadeDropdown = ({
   );
 };
 
-export default function MemoryFlip() {
+export default function MemoryFlip({
+  demoMode = false,
+  fixedGrade = "Grade 1",
+  fixedDifficulty = "Easy",
+  maxDemoPairs = 50,
+  hideStudentIdentity = false,
+  disableProgressSaving = false,
+  disableUnlocking = false,
+  disableResume = false,
+  onDemoComplete,
+  onRequestSwitchGame,
+}: GameDemoProps = {}) {
   const navigate = useNavigate();
 
   const [languagePair, setLanguagePair] = useState("zh_en");
-  const [grade, setGrade] = useState("Grade 1");
-  const [difficulty, setDifficulty] = useState("Easy");
+  const [grade, setGrade] = useState(fixedGrade);
+  const [difficulty, setDifficulty] = useState(fixedDifficulty);
   const [unlockedDifficulty, setUnlockedDifficulty] = useState("Easy");
   const [vocabularyPairCount, setVocabularyPairCount] = useState(0);
   const [vocabularyLoading, setVocabularyLoading] = useState(false);
@@ -321,7 +347,13 @@ export default function MemoryFlip() {
   const isLight = theme === "light";
 
   const fullscreenActive = isFullscreen || isMobileFullscreen;
-  const showPageChrome = !fullscreenActive;
+  const showPageChrome = !fullscreenActive && !demoMode;
+  const publicLang =
+    typeof window !== "undefined" && window.location.pathname.startsWith("/zh")
+      ? "zh"
+      : typeof window !== "undefined" && window.location.pathname.startsWith("/ja")
+        ? "ja"
+        : "en";
 
   const themeClass = {
     page: isLight ? "bg-white" : "bg-[#071426]",
@@ -362,6 +394,7 @@ export default function MemoryFlip() {
   const moreGames = [
     { title: "Memory Flip", icon: Brain, available: true, current: true, status: "Available", path: "/memory-flip" },
     { title: "Word Search", icon: Search, available: true, current: false, status: "Available", path: "/word-search" },
+    { title: "Word Match", icon: Gem, available: true, current: false, status: "Available", path: "/word-match" },
     { title: "Word Drive", icon: Car, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "Grammar Runner", icon: Flame, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "Listening Challenge", icon: Headphones, available: false, current: false, status: "Coming Soon", path: "#" },
@@ -425,16 +458,33 @@ export default function MemoryFlip() {
   }, [gameStarted, loading, errorMsg, isGameEnded]);
 
   useEffect(() => {
+    if (demoMode) {
+      setGrade(fixedGrade);
+      setDifficulty(fixedDifficulty);
+      setUnlockedDifficulty(fixedDifficulty);
+      loadVocabularyPool();
+      return;
+    }
+
     loadProgress();
     loadVocabularyPool();
-  }, [languagePair, grade]);
+  }, [languagePair, grade, demoMode, fixedGrade, fixedDifficulty]);
 
   useEffect(() => {
+    if (demoMode || disableResume) return;
+
     setSavedSession(loadGameSession(MEMORY_FLIP_GAME_KEY));
-  }, []);
+  }, [demoMode, disableResume]);
 
   useEffect(() => {
     if (!isWin || showResultModal || showMasteryTest) return;
+
+    if (demoMode) {
+      playGameSound("stage", 0.25);
+      onDemoComplete?.();
+      setShowResultModal(true);
+      return;
+    }
 
     if (level >= 5) {
       generateMasteryTest();
@@ -500,13 +550,19 @@ export default function MemoryFlip() {
     selectedLanguagePair: string,
     selectedGrade: string
   ) => {
-    const { data, error } = await supabase
+    let query = supabase
       .from("game_questions")
       .select("*")
       .eq("game_type", "memory_flip")
       .eq("language_pair", selectedLanguagePair)
       .eq("grade", selectedGrade)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: demoMode });
+
+    if (demoMode) {
+      query = query.limit(10);
+    }
+
+    const { data, error } = await query;
 
     if (!error && data && data.length > 0) {
       const allAvailablePairs = data.flatMap((questionSet) => {
@@ -525,7 +581,7 @@ export default function MemoryFlip() {
 
       if (allAvailablePairs.length > 0) {
         return {
-          pairs: shuffle(allAvailablePairs),
+          pairs: demoMode ? allAvailablePairs : shuffle(allAvailablePairs),
           usedGrade: selectedGrade,
         };
       }
@@ -567,21 +623,29 @@ export default function MemoryFlip() {
   const loadVocabularyPool = async () => {
     setVocabularyLoading(true);
 
-    const { data } = await supabase
+    let query = supabase
       .from("game_questions")
       .select("question_data")
       .eq("game_type", "memory_flip")
       .eq("language_pair", languagePair)
       .eq("grade", grade);
 
+    if (demoMode) {
+      query = query.limit(10);
+    }
+
+    const { data } = await query;
+
     const allPairs =
       data?.flatMap((set) => set.question_data?.pairs || []) || [];
 
-    setVocabularyPairCount(allPairs.length);
+    setVocabularyPairCount(demoMode ? Math.min(allPairs.length, maxDemoPairs) : allPairs.length);
     setVocabularyLoading(false);
   };
 
   const loadProgress = async () => {
+    if (demoMode) return;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -625,6 +689,8 @@ export default function MemoryFlip() {
   };
 
   const saveCurrentSession = () => {
+    if (demoMode || disableResume) return;
+
     if (
       !gameStarted ||
       cards.length === 0 ||
@@ -654,6 +720,8 @@ export default function MemoryFlip() {
   };
 
   const resumeSavedSession = async () => {
+    if (demoMode || disableResume) return;
+
     if (!savedSession) return;
 
     const resumeRequestId = loadRequestRef.current + 1;
@@ -712,7 +780,9 @@ export default function MemoryFlip() {
   const startGame = async () => {
     if (vocabularyLoading || loading) return;
 
-    clearSavedSession();
+    if (!demoMode && !disableResume) {
+      clearSavedSession();
+    }
 
     const isMobile =
       /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
@@ -734,9 +804,9 @@ export default function MemoryFlip() {
 
     await loadGame({
       selectedLanguagePair: languagePair,
-      selectedGrade: grade,
-      selectedDifficulty: difficulty,
-      selectedPairCount: getPairCountByDifficulty(difficulty),
+      selectedGrade: demoMode ? fixedGrade : grade,
+      selectedDifficulty: demoMode ? fixedDifficulty : difficulty,
+      selectedPairCount: getPairCountByDifficulty(demoMode ? fixedDifficulty : difficulty),
     });
   };
 
@@ -766,12 +836,14 @@ export default function MemoryFlip() {
     if (!isCurrentLoad()) return;
 
     const approvedImageMap = new Map<string, string>();
-    const reserveCount = Math.min(rawPairs.length, selectedPairCount * 3);
+    const reserveCount = demoMode
+      ? Math.min(rawPairs.length, maxDemoPairs)
+      : Math.min(rawPairs.length, selectedPairCount * 3);
     const selectedRawPairs = rawPairs.slice(0, reserveCount);
     const missingImageLookupValues = Array.from(
       new Set(
         selectedRawPairs
-          .filter((pair: any) => !pair.image_url)
+          .filter((pair: any) => demoMode || !pair.image_url)
           .flatMap((pair: any) => [
             pair.image_keyword,
             pair.vocab_word,
@@ -816,7 +888,7 @@ export default function MemoryFlip() {
 
     const pairs = selectedRawPairs
       .map((pair: any) => {
-        if (pair.image_url) {
+        if (pair.image_url && !demoMode) {
           return pair;
         }
 
@@ -831,7 +903,7 @@ export default function MemoryFlip() {
           ...pair,
           image_url:
             candidates.map((key) => approvedImageMap.get(key)).find(Boolean) ||
-            pair.image_url ||
+            (!demoMode ? pair.image_url : null) ||
             null,
         };
       })
@@ -914,6 +986,8 @@ export default function MemoryFlip() {
     passed: boolean;
     levelReached: number;
   }) => {
+    if (demoMode || disableProgressSaving) return;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -930,7 +1004,7 @@ export default function MemoryFlip() {
 
     let nextDifficulty = existingProgress?.unlocked_difficulty || unlockedDifficulty;
 
-    if (passed) {
+    if (passed && !disableUnlocking) {
       if (difficulty === "Easy") nextDifficulty = "Medium";
       else if (difficulty === "Medium") nextDifficulty = "Hard";
       else if (difficulty === "Hard") nextDifficulty = "Advanced";
@@ -1332,9 +1406,11 @@ export default function MemoryFlip() {
                 )}
               </button>
 
-              <div className={`rounded-xl border px-4 py-2 text-sm font-black ${themeClass.button}`}>
-                Michael
-              </div>
+              {!hideStudentIdentity && (
+                <div className={`rounded-xl border px-4 py-2 text-sm font-black ${themeClass.button}`}>
+                  Michael
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1406,31 +1482,24 @@ export default function MemoryFlip() {
                 />
               ) : (
                 <>
-                  <div className={`mb-4 overflow-hidden rounded-[1.6rem] border ${themeClass.panel}`}>
-                    <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.2fr_260px]">
+                  <div className={`overflow-visible rounded-[2rem] border p-5 sm:p-6 ${themeClass.panel}`}>
+                    <div className="grid gap-6 lg:grid-cols-[1.1fr_320px]">
                       <div>
-                        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/35 bg-[#8B5CF6]/10 px-3 py-1.5">
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/35 bg-[#8B5CF6]/10 px-3 py-1.5">
                           <Sparkles className="h-4 w-4 text-[#C4B5FD]" />
-
                           <span className="text-[11px] font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
                             Luna Memory Arcade
                           </span>
                         </div>
 
-                        <h1 className={`max-w-2xl text-3xl font-black leading-[1.08] tracking-tight sm:text-4xl ${themeClass.title}`}>
-                          Train Memory.
-                          <br />
-                          Master Vocabulary.
+                        <h1 className={`text-4xl font-black leading-tight sm:text-5xl ${themeClass.title}`}>
+                          Memory Flip
                         </h1>
-
-                        <p className={`mt-3 max-w-xl text-sm leading-6 sm:text-base sm:leading-7 ${themeClass.text}`}>
-                          Match vocabulary cards, clear harder challenges,
-                          and unlock advanced memory stages with Hapiko.
+                        <p className={`mt-3 max-w-2xl text-sm leading-7 sm:text-base ${themeClass.text}`}>
+                          Match vocabulary cards, build recall, and practise vocabulary through quick memory challenges.
                         </p>
 
-                        <div
-                          className={`mt-4 inline-flex max-w-xl items-center gap-2 rounded-full border px-3 py-2 ${themeClass.softPanel}`}
-                        >
+                        <div className={`mt-4 inline-flex max-w-xl items-center gap-2 rounded-full border px-3 py-2 ${themeClass.softPanel}`}>
                           <p className={`text-xs font-bold leading-5 ${themeClass.text}`}>
                             <span className="text-sm">🏆</span>{" "}
                             Pass 5 rounds + final test to unlock the next difficulty
@@ -1438,52 +1507,20 @@ export default function MemoryFlip() {
                         </div>
                       </div>
 
-                      <div className="relative hidden items-center justify-center lg:flex">
-                        <div className="absolute h-[240px] w-[240px] rounded-full bg-[#8B5CF6]/25 blur-3xl" />
-
-                        <motion.img
-                          animate={{ y: [0, -12, 0] }}
-                          transition={{ duration: 4, repeat: Infinity }}
-                          src="/mascot/hapiko-step-2.png"
-                          alt="Hapiko"
-                          className="relative z-10 h-[190px] object-contain drop-shadow-[0_18px_45px_rgba(139,92,246,0.42)]"
-                        />
+                      <div className={`rounded-[1.5rem] border p-4 ${themeClass.softPanel}`}>
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
+                          Vocabulary Pool
+                        </p>
+                        <p className={`mt-3 text-3xl font-black ${themeClass.title}`}>
+                          {vocabularyPairCount}
+                        </p>
+                        <p className={`mt-1 text-sm font-bold ${themeClass.text}`}>
+                          vocabulary pairs available
+                        </p>
                       </div>
                     </div>
-                  </div>
 
-                  {savedSession && (
-                    <div className={`mb-4 rounded-[1.6rem] border p-4 ${themeClass.softPanel}`}>
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className={`text-sm font-black ${themeClass.title}`}>
-                            Resume unfinished Memory Flip?
-                          </p>
-                          <p className={`mt-1 text-xs font-bold ${themeClass.text}`}>
-                            {savedSession.grade} · {savedSession.difficulty} · Round {savedSession.level}/5
-                          </p>
-                        </div>
-
-                        <div className="flex gap-2">
-                          <button
-                            onClick={resumeSavedSession}
-                            className="h-11 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] px-4 text-sm font-black text-white"
-                          >
-                            RESUME
-                          </button>
-                          <button
-                            onClick={clearSavedSession}
-                            className={`h-11 rounded-xl border px-4 text-sm font-black ${themeClass.button}`}
-                          >
-                            START OVER
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className={`overflow-visible rounded-[1.6rem] border p-4 sm:p-5 ${themeClass.panel}`}>
-                    <div className="grid gap-4 lg:grid-cols-3">
+                    <div className="mt-6 grid gap-4 lg:grid-cols-2">
                       <ArcadeDropdown
                         value={languageLabel}
                         options={["Chinese ↔ English", "Chinese ↔ Japanese", "English ↔ Japanese"]}
@@ -1498,25 +1535,44 @@ export default function MemoryFlip() {
 
                       <ArcadeDropdown
                         value={grade}
-                        options={grades}
+                        options={demoMode ? [fixedGrade] : grades}
                         isLight={isLight}
                         unlockedDifficulty={unlockedDifficulty}
-                        onChange={setGrade}
+                        onChange={(value) => {
+                          if (!demoMode) setGrade(value);
+                        }}
                       />
+                    </div>
 
-                      <div className="flex h-14 items-center justify-center rounded-[1.4rem] border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-5 text-sm font-black text-[#C4B5FD]">
-                        Current Difficulty: {difficulty}
+                    {savedSession && !demoMode && !disableResume && (
+                      <div className={`mt-5 rounded-[1.5rem] border p-4 ${themeClass.softPanel}`}>
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div>
+                            <p className={`text-sm font-black ${themeClass.title}`}>
+                              Resume unfinished Memory Flip?
+                            </p>
+                            <p className={`mt-1 text-xs font-bold ${themeClass.text}`}>
+                              {savedSession.grade} · {savedSession.difficulty} · Round {savedSession.level}/5
+                            </p>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={resumeSavedSession}
+                              className="h-11 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] px-4 text-sm font-black text-white"
+                            >
+                              RESUME
+                            </button>
+                            <button
+                              onClick={clearSavedSession}
+                              className={`h-11 rounded-xl border px-4 text-sm font-black ${themeClass.button}`}
+                            >
+                              START OVER
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className={`mt-5 flex items-center justify-center rounded-full border px-4 py-3 ${themeClass.softPanel}`}>
-                      <p className={`text-sm font-black ${themeClass.title}`}>
-                        <span className="mr-2">📚</span>
-                        {vocabularyLoading
-                          ? "Checking vocabulary pairs..."
-                          : `${vocabularyPairCount} vocabulary pairs available`}
-                      </p>
-                    </div>
+                    )}
 
                     <div className="mt-6 sm:hidden">
                       <p className={`mb-2 text-xs font-black uppercase tracking-[0.18em] ${themeClass.muted}`}>
@@ -1525,6 +1581,7 @@ export default function MemoryFlip() {
 
                       <select
                         value={difficulty}
+                        disabled={demoMode}
                         onChange={(event) => setDifficulty(event.target.value)}
                         className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
                             ? "border-[#eee8ff] bg-white text-primary"
@@ -1565,8 +1622,10 @@ export default function MemoryFlip() {
                         return (
                           <button
                             key={item.key}
-                            disabled={locked}
-                            onClick={() => setDifficulty(item.key)}
+                            disabled={locked || demoMode}
+                            onClick={() => {
+                              if (!demoMode) setDifficulty(item.key);
+                            }}
                             className={`relative min-h-[88px] overflow-hidden rounded-[1.25rem] border p-3 text-left transition-all duration-300 active:scale-95 sm:min-h-[150px] sm:rounded-[1.45rem] sm:p-5 ${item.active
                               ? item.activeClass
                               : isLight
@@ -1639,7 +1698,7 @@ export default function MemoryFlip() {
                     />
 
                     <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                      Challenge Cleared
+                      {demoMode ? "Luna Arcade Demo" : "Challenge Cleared"}
                     </p>
 
                     <h2 className="mt-3 text-4xl font-black text-white">
@@ -1647,7 +1706,9 @@ export default function MemoryFlip() {
                     </h2>
 
                     <p className="mt-4 text-slate-300">
-                      You completed challenge {level} / 5 for {difficulty}.
+                      {demoMode
+                        ? "You completed the Luna Arcade demo."
+                        : `You completed challenge ${level} / 5 for ${difficulty}.`}
                     </p>
 
                     <p className="mt-3 text-3xl">
@@ -1657,6 +1718,21 @@ export default function MemoryFlip() {
                     <div className="mt-8 grid gap-3">
                       <button
                         onClick={async () => {
+                          if (demoMode) {
+                            setShowResultModal(false);
+                            setCards([]);
+                            setSelectedCards([]);
+                            setLoading(true);
+                            setLevel(1);
+                            await loadGame({
+                              selectedLanguagePair: languagePair,
+                              selectedGrade: fixedGrade,
+                              selectedDifficulty: fixedDifficulty,
+                              selectedPairCount: getPairCountByDifficulty(fixedDifficulty),
+                            });
+                            return;
+                          }
+
                           const nextLevel = level + 1;
 
                           setShowResultModal(false);
@@ -1680,16 +1756,36 @@ export default function MemoryFlip() {
                         }}
                         className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
                       >
-                        NEXT CHALLENGE
+                        {demoMode ? "Play Again" : "NEXT CHALLENGE"}
                       </button>
+
+                      {demoMode && (
+                        <button
+                          onClick={async () => {
+                            setShowResultModal(false);
+                            await leaveArcade();
+                            onRequestSwitchGame?.("word");
+                          }}
+                          className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                        >
+                          Try Word Search
+                        </button>
+                      )}
 
                       <button
                         onClick={async () => {
+                          if (demoMode) {
+                            setShowResultModal(false);
+                            await leaveArcade();
+                            navigate(`/${publicLang}/enquiry`);
+                            return;
+                          }
+
                           await leaveArcade();
                         }}
                         className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
                       >
-                        Exit Game
+                        {demoMode ? "Book Consultation" : "Exit Game"}
                       </button>
                     </div>
                   </motion.div>
@@ -1897,7 +1993,7 @@ export default function MemoryFlip() {
               More Games
             </p>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-7">
               {moreGames.map((game) => {
                 const Icon = game.icon;
 

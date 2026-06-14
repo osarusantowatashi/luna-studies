@@ -9,7 +9,8 @@
     "enquire": "Enquire",
     "login": "Login",
     "language": "中文",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "arcade": "Arcade"
   },
   "landing": {
     "seo": {
@@ -1493,13 +1494,14 @@
       "about": "About {{name}}",
       "experience": "Teaching Experience",
       "subjects": "Subjects",
-      "quote": "{{name}} focuses on clear explanation, structured guidance, and helping students build confidence step by step."
+      "quote": "{{name}} focuses on clear explanation, structured guidance, and helping students build confidence step by step.",
+      "teachingStyle": "Teaching Style"
     },
     "items": [
       {
         "name": "Grace",
         "image": "/tutors/grace_new.jpg",
-        "role": "Academic English & Head Tutor",
+        "role": "English Tutor",
         "subjects": [
           "IB English",
           "TOEFL",
@@ -1515,12 +1517,18 @@
           "TOEFL speaking and writing preparation",
           "Bilingual education support",
           "Confidence building for academic communication"
-        ]
+        ],
+        "teachingStyle": [
+          "Academic Writing",
+          "Critical Thinking",
+          "Communication Skills"
+        ],
+        "quote": "Grace helps students turn academic English into clear thinking, structured writing and confident communication."
       },
       {
         "name": "Mimi",
         "image": "/tutors/mimi_new.jpg",
-        "role": "Trilingual Educator & Head Tutor",
+        "role": "Academic Tutor",
         "subjects": [
           "Japanese",
           "English",
@@ -1537,12 +1545,18 @@
           "International school admission preparation",
           "TOEFL / IELTS / SAT / O Level preparation",
           "Personalised academic planning and learning strategy"
-        ]
+        ],
+        "teachingStyle": [
+          "Structured Planning",
+          "Trilingual Learning",
+          "Confidence Building"
+        ],
+        "quote": "Mimi helps students connect languages through clear structure, calm guidance and long-term academic planning."
       },
       {
         "name": "Francis",
         "image": "/tutors/francis_new.png",
-        "role": "International Math Tutor",
+        "role": "Mathematics Tutor",
         "subjects": [
           "IGCSE Math",
           "A Level Math",
@@ -1557,12 +1571,18 @@
           "Structured problem-solving training",
           "AEIS Math preparation",
           "International curriculum adaptation support"
-        ]
+        ],
+        "teachingStyle": [
+          "Problem Solving",
+          "Logical Thinking",
+          "Exam Strategies"
+        ],
+        "quote": "Francis helps students understand the logic behind math problems so they can solve with confidence, not guesswork."
       },
       {
         "name": "CJ",
         "image": "/tutors/cj_new.png",
-        "role": "STEM & Singapore Curriculum Tutor",
+        "role": "Academic Tutor",
         "subjects": [
           "AEIS",
           "A Level Math",
@@ -1578,12 +1598,18 @@
           "A Level Mathematics and STEM guidance",
           "Bilingual academic support in English and Mandarin",
           "Helping students adapt to English-based learning environments"
-        ]
+        ],
+        "teachingStyle": [
+          "Singapore Curriculum",
+          "STEM Learning",
+          "Foundation Building"
+        ],
+        "quote": "CJ helps students build strong foundations for Singapore-style learning through patient STEM guidance and bilingual support."
       },
       {
         "name": "Christine",
         "image": "/tutors/christine_new.png",
-        "role": "English Foundations Tutor",
+        "role": "English Tutor",
         "subjects": [
           "English",
           "Grammar",
@@ -1599,12 +1625,18 @@
           "Grammar, reading, and writing support",
           "Structured language-learning guidance",
           "Patient coaching for confidence and communication skills"
-        ]
+        ],
+        "teachingStyle": [
+          "Patient Guidance",
+          "Language Foundations",
+          "Step-by-Step Learning"
+        ],
+        "quote": "Christine helps students grow English foundations step by step with patient guidance and steady encouragement."
       },
       {
         "name": "Kana",
         "image": "/tutors/kana_new.png",
-        "role": "Japanese Language Tutor",
+        "role": "Japanese Tutor",
         "subjects": [
           "Japanese Language",
           "Beginner Japanese",
@@ -1618,7 +1650,70 @@
           "JLPT vocabulary and grammar preparation",
           "Conversation practice for daily and academic situations",
           "Support for students adapting to Japanese school or daily life"
-        ]
+        ],
+        "teachingStyle": [
+          "Practical Japanese",
+          "Grammar Mastery",
+          "Real-Life Communication"
+        ],
+        "quote": "Kana helps learners use Japanese in real situations through clear grammar, practical speaking and supportive practice."
+      },
+      {
+        "name": "Ruth",
+        "image": "/tutors/Ruth.png",
+        "role": "English Tutor",
+        "subjects": [
+          "English Speaking",
+          "Reading",
+          "Writing",
+          "Phonics",
+          "Conversation"
+        ],
+        "education": "University of Lagos, Nigeria",
+        "languages": "English / Mandarin",
+        "bio": "Ruth supports young learners and bilingual students in building natural English fluency, clearer pronunciation, reading confidence and everyday communication skills through warm, interactive lessons.",
+        "experience": [
+          "English language teaching for young learners and bilingual students",
+          "Speaking fluency, pronunciation, and classroom communication coaching",
+          "Reading comprehension, vocabulary, and phonics support",
+          "Writing foundations, sentence structure, and grammar guidance",
+          "Interactive confidence-building lessons for everyday English use"
+        ],
+        "teachingStyle": [
+          "Communication-Focused",
+          "Confidence Building",
+          "Interactive Learning"
+        ],
+        "quote": "Ruth helps students speak English more naturally through friendly interaction, clear correction and confidence-building practice."
+      },
+      {
+        "name": "Siya",
+        "image": "/tutors/siya.jpeg",
+        "role": "Academic Tutor",
+        "subjects": [
+          "Academic Research",
+          "Essay Writing",
+          "Critical Thinking",
+          "Global Perspectives",
+          "English"
+        ],
+        "education": "Keio University, Japan",
+        "languages": "English / Hindi / Japanese",
+        "bio": "Siya guides students in independent thinking, research habits, academic writing and global-perspective discussions, helping learners organise ideas clearly and express arguments with confidence.",
+        "experience": [
+          "Academic research and source evaluation",
+          "Essay writing structure and argument development",
+          "Critical thinking and evidence-based discussion",
+          "Global Perspectives project support",
+          "Independent research planning and study habits",
+          "Academic presentation preparation and delivery"
+        ],
+        "teachingStyle": [
+          "Independent Thinking",
+          "Global Perspective",
+          "Academic Research"
+        ],
+        "quote": "Siya helps students ask stronger questions, research independently and express global ideas with clarity."
       }
     ]
   },
@@ -2108,6 +2203,164 @@
           ]
         }
       }
+    }
+  },
+  "arcadePage": {
+    "seo": {
+      "title": "Luna Arcade Learning Games | Vocabulary Practice Demo | LUNA Studies",
+      "description": "Try Luna Arcade, a public demo of LUNA Studies learning games for vocabulary practice, retention, bilingual learners and international school students."
+    },
+    "hero": {
+      "label": "Luna Arcade",
+      "title": "Experience Learning With Luna",
+      "subtitle": "Explore our vocabulary games, learning system and personalised educational approach.",
+      "playDemo": "Play Free Demo",
+      "bookConsultation": "Book Consultation",
+      "visualAlt": "Hapiko presenting Luna Arcade vocabulary games"
+    },
+    "why": {
+      "title": "Learning Should Feel Engaging",
+      "text": "Luna Arcade turns repeated practice into short, focused challenges that support vocabulary retention, confidence, consistency and motivation.",
+      "cards": {
+        "interactiveGames": "Interactive Games",
+        "progressTracking": "Progress Tracking",
+        "longTermRetention": "Long-Term Retention"
+      }
+    },
+    "demo": {
+      "title": "Try Luna Arcade",
+      "subtitle": "Play our free demo below. No registration required.",
+      "windowTitle": "Luna Arcade Demo",
+      "settings": "Grade 1 · Easy · Chinese ↔ English",
+      "memoryTitle": "Demo Memory Flip",
+      "wordList": "Word List",
+      "wordInstruction": "Demo mode: tap each listed word after finding it in the grid.",
+      "reset": "Reset",
+      "locked": "Locked",
+      "continueDemo": "Continue demo",
+      "notice": {
+        "title": "🎮 Demo Version",
+        "description": "The public demo is designed for quick exploration before creating an account.",
+        "items": [
+          "No account required",
+          "Difficulty progression is disabled",
+          "Unlocking is disabled",
+          "Mastery tests are disabled",
+          "Progress is not saved",
+          "Demo vocabulary pool is limited to approximately 50 words/pairs"
+        ]
+      },
+      "games": {
+        "memory": "Memory Flip",
+        "word": "Word Search",
+        "grammar": "Grammar Runner",
+        "listening": "Listening Challenge",
+        "cat4": "CAT4 Patterns"
+      },
+      "modal": {
+        "title": "Congratulations!",
+        "fullIncludes": "Full Luna Arcade includes:",
+        "includes": [
+          "1000+ vocabulary pairs",
+          "Grade 1-6 progression",
+          "Multiple difficulty levels",
+          "Unlockable challenges",
+          "Mastery tests",
+          "Progress tracking",
+          "Future educational games"
+        ],
+        "bookConsultation": "Book Consultation",
+        "explorePrograms": "Explore Programs"
+      },
+      "loading": "Loading demo vocabulary...",
+      "error": "The public demo vocabulary is not ready yet. Please try again later or book a consultation to learn more.",
+      "fullscreen": "Enter fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "available": "Available",
+      "comingSoon": "Locked / Coming Soon"
+    },
+    "ecosystem": {
+      "title": "More Than Just Games",
+      "text": "Luna Arcade is part of a wider learning ecosystem that connects diagnosis, lessons, practice, review and parent visibility.",
+      "cards": [
+        "Diagnostic Assessment",
+        "Personalised Learning Plan",
+        "Live Lessons",
+        "Practice & Review",
+        "Progress Monitoring"
+      ]
+    },
+    "perfectFor": {
+      "title": "Perfect For",
+      "tags": [
+        "MAP",
+        "WIDA",
+        "CAT4",
+        "AEIS",
+        "International School Students",
+        "Bilingual Learners",
+        "English Learners"
+      ],
+      "items": [
+        {
+          "title": "MAP / WIDA learners",
+          "description": "Build steady English vocabulary for adaptive MAP Growth tasks and WIDA language domains."
+        },
+        {
+          "title": "CAT4 reasoning practice",
+          "description": "Use visual memory and pattern-style practice to support verbal, non-verbal and spatial thinking."
+        },
+        {
+          "title": "AEIS preparation",
+          "description": "Strengthen core English vocabulary and confidence for Singapore school entry preparation."
+        },
+        {
+          "title": "International school students",
+          "description": "Keep academic English practice active between lessons, school assignments and assessments."
+        },
+        {
+          "title": "Bilingual learners",
+          "description": "Connect meanings across languages through repeated recall, image support and playful review."
+        },
+        {
+          "title": "English vocabulary learners",
+          "description": "Practise high-frequency words through short challenges that make review easier to repeat."
+        }
+      ]
+    },
+    "faq": {
+      "title": "FAQ",
+      "items": [
+        {
+          "q": "Are educational games effective?",
+          "a": "They are most useful when connected to a learning plan. Luna Arcade reinforces vocabulary and confidence between lessons."
+        },
+        {
+          "q": "How does Luna Arcade support vocabulary learning?",
+          "a": "Students meet words repeatedly through matching, searching, recall and review activities."
+        },
+        {
+          "q": "Is Luna Arcade suitable for international school students?",
+          "a": "Yes. It supports academic vocabulary, bilingual learners and students preparing for international school expectations."
+        },
+        {
+          "q": "Can parents track progress?",
+          "a": "In the full Luna ecosystem, progress monitoring helps parents see consistency, practice and learning growth."
+        },
+        {
+          "q": "What ages is Luna Arcade designed for?",
+          "a": "The current learning flow is designed for primary and middle-school learners, with Grade 1-6 progression."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready To Start Learning With Luna?",
+      "description": "Book a consultation and receive a personalised learning recommendation.",
+      "button": "Book Consultation"
+    },
+    "moreGames": {
+      "title": "More Games",
+      "wordDrive": "Word Drive"
     }
   }
 }

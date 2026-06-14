@@ -9,7 +9,8 @@
     "enquire": "联系我们",
     "login": "登录",
     "language": "English",
-    "getStarted": "立即开始"
+    "getStarted": "立即开始",
+    "arcade": "Arcade"
   },
   "landing": {
     "seo": {
@@ -1493,13 +1494,14 @@
       "about": "关于 {{name}}",
       "experience": "教学经验",
       "subjects": "教学科目",
-      "quote": "{{name}} 注重清晰讲解、系统化引导，并帮助学生一步一步建立学习自信。"
+      "quote": "{{name}} 注重清晰讲解、系统化引导，并帮助学生一步一步建立学习自信。",
+      "teachingStyle": "教学特点"
     },
     "items": [
       {
         "name": "Grace",
         "image": "/tutors/grace_new.jpg",
-        "role": "学术英语与 首席导师",
+        "role": "English Tutor",
         "subjects": [
           "IB 英语",
           "TOEFL",
@@ -1515,12 +1517,18 @@
           "TOEFL 口语与写作训练",
           "双语教育支持",
           "帮助学生建立学术表达自信"
-        ]
+        ],
+        "teachingStyle": [
+          "学术写作",
+          "批判思维",
+          "沟通表达"
+        ],
+        "quote": "Grace 帮助学生把学术英语转化为清晰思考、结构化写作和自信表达。"
       },
       {
         "name": "Mimi",
         "image": "/tutors/mimi_new.jpg",
-        "role": "三语教育导师 · 首席导师",
+        "role": "Academic Tutor",
         "subjects": [
           "日语",
           "英语",
@@ -1537,12 +1545,18 @@
           "国际学校申请与入学辅导",
           "TOEFL / IELTS / SAT / O Level 备考",
           "个性化学习规划与学习策略制定"
-        ]
+        ],
+        "teachingStyle": [
+          "结构化规划",
+          "三语学习",
+          "信心建立"
+        ],
+        "quote": "Mimi 通过清晰结构、稳定引导和长期学术规划，帮助学生连接不同语言学习。"
       },
       {
         "name": "Francis",
         "image": "/tutors/francis_new.png",
-        "role": "国际数学导师",
+        "role": "Mathematics Tutor",
         "subjects": [
           "IGCSE 数学",
           "A Level 数学",
@@ -1557,12 +1571,18 @@
           "结构化解题训练",
           "AEIS 数学备考",
           "国际课程体系适应指导"
-        ]
+        ],
+        "teachingStyle": [
+          "问题解决",
+          "逻辑思维",
+          "考试策略"
+        ],
+        "quote": "Francis 帮助学生理解数学问题背后的逻辑，用信心和方法解题，而不是猜答案。"
       },
       {
         "name": "CJ",
         "image": "/tutors/cj_new.png",
-        "role": "STEM 与新加坡课程导师",
+        "role": "Academic Tutor",
         "subjects": [
           "AEIS",
           "A Level 数学",
@@ -1578,12 +1598,18 @@
           "A Level 数学与 STEM 指导",
           "英语与中文双语学术支持",
           "帮助学生适应英文学习环境"
-        ]
+        ],
+        "teachingStyle": [
+          "新加坡课程",
+          "STEM 学习",
+          "基础建设"
+        ],
+        "quote": "CJ 通过耐心的 STEM 指导和双语支持，帮助学生建立适应新加坡课程的扎实基础。"
       },
       {
         "name": "Christine",
         "image": "/tutors/christine_new.png",
-        "role": "英语基础导师",
+        "role": "English Tutor",
         "subjects": [
           "英语",
           "语法",
@@ -1599,12 +1625,18 @@
           "语法、阅读与写作辅导",
           "系统化语言学习指导",
           "耐心培养学生表达与沟通能力"
-        ]
+        ],
+        "teachingStyle": [
+          "耐心引导",
+          "语言基础",
+          "循序渐进"
+        ],
+        "quote": "Christine 用耐心引导和持续鼓励，帮助学生一步一步建立英语基础。"
       },
       {
         "name": "Kana",
         "image": "/tutors/kana_new.png",
-        "role": "日语导师",
+        "role": "Japanese Tutor",
         "subjects": [
           "日语",
           "初级日语",
@@ -1618,7 +1650,70 @@
           "JLPT文法与词汇考试辅导",
           "日常会话与学术日语训练",
           "协助学生适应日本学校与生活环境"
-        ]
+        ],
+        "teachingStyle": [
+          "实用日语",
+          "语法掌握",
+          "真实沟通"
+        ],
+        "quote": "Kana 通过清晰语法、实用会话和支持性练习，帮助学生在真实情境中使用日语。"
+      },
+      {
+        "name": "Ruth",
+        "image": "/tutors/Ruth.png",
+        "role": "English Tutor",
+        "subjects": [
+          "英语口语",
+          "阅读",
+          "写作",
+          "自然拼读",
+          "会话"
+        ],
+        "education": "University of Lagos, Nigeria",
+        "languages": "英语 / 中文",
+        "bio": "Ruth 支持低龄学习者和双语学生建立自然英语表达、更清晰的发音、阅读信心和日常沟通能力，课堂温暖且互动性强。",
+        "experience": [
+          "面向低龄学习者和双语学生的英语语言教学",
+          "英语口语流利度、发音和课堂表达训练",
+          "阅读理解、词汇和自然拼读支持",
+          "写作基础、句子结构和语法指导",
+          "通过互动课堂帮助学生建立日常英语表达信心"
+        ],
+        "teachingStyle": [
+          "沟通导向",
+          "信心建立",
+          "互动学习"
+        ],
+        "quote": "Ruth 通过友好的互动、清晰的纠正和鼓励式练习，帮助学生更自然地开口说英语。"
+      },
+      {
+        "name": "Siya",
+        "image": "/tutors/siya.jpeg",
+        "role": "Academic Tutor",
+        "subjects": [
+          "学术研究",
+          "论文写作",
+          "批判思维",
+          "全球视野",
+          "英语"
+        ],
+        "education": "Keio University, Japan",
+        "languages": "英语 / 印地语 / 日语",
+        "bio": "Siya 引导学生发展独立思考、研究习惯、学术写作和全球议题讨论能力，帮助学生更清楚地组织观点并自信表达论证。",
+        "experience": [
+          "学术研究与资料评估",
+          "论文写作结构与论点发展",
+          "批判思维和基于证据的讨论训练",
+          "Global Perspectives 项目支持",
+          "独立研究规划与学习习惯培养",
+          "学术展示准备与表达训练"
+        ],
+        "teachingStyle": [
+          "独立思考",
+          "全球视野",
+          "学术研究"
+        ],
+        "quote": "Siya 帮助学生提出更好的问题，独立研究，并清晰表达具有全球视野的观点。"
       }
     ]
   },
@@ -2108,6 +2203,164 @@
           ]
         }
       }
+    }
+  },
+  "arcadePage": {
+    "seo": {
+      "title": "Luna Arcade 学习游戏 | 词汇练习 Demo | LUNA Studies",
+      "description": "体验 Luna Arcade 免费 Demo，了解 LUNA Studies 如何通过词汇游戏、双语学习和学习系统帮助国际学校学生持续进步。"
+    },
+    "hero": {
+      "label": "Luna Arcade",
+      "title": "体验 Luna 的学习方式",
+      "subtitle": "探索我们的词汇游戏、学习系统与个性化教育方法。",
+      "playDemo": "试玩免费 Demo",
+      "bookConsultation": "预约咨询",
+      "visualAlt": "Hapiko 展示 Luna Arcade 词汇学习游戏"
+    },
+    "why": {
+      "title": "学习也可以更有参与感",
+      "text": "Luna Arcade 将重复练习变成短而专注的挑战，帮助学生提升词汇记忆、自信、学习稳定性和动力。",
+      "cards": {
+        "interactiveGames": "互动游戏",
+        "progressTracking": "进度追踪",
+        "longTermRetention": "长期记忆"
+      }
+    },
+    "demo": {
+      "title": "试玩 Luna Arcade",
+      "subtitle": "无需注册，即可体验下方免费 Demo。",
+      "windowTitle": "Luna Arcade Demo",
+      "settings": "Grade 1 · Easy · 中文 ↔ 英语",
+      "memoryTitle": "Memory Flip Demo",
+      "wordList": "单词列表",
+      "wordInstruction": "Demo 模式：在网格中找到单词后，点击右侧列表中的对应单词。",
+      "reset": "重置",
+      "locked": "未开放",
+      "continueDemo": "继续试玩",
+      "notice": {
+        "title": "🎮 Demo 版本",
+        "description": "公开 Demo 用于快速体验 Luna Arcade，无需先创建账户。",
+        "items": [
+          "无需账户",
+          "难度进阶已关闭",
+          "解锁功能已关闭",
+          "掌握度测试已关闭",
+          "进度不会保存",
+          "Demo 词汇池约限制为 50 个单词/配对"
+        ]
+      },
+      "games": {
+        "memory": "Memory Flip",
+        "word": "Word Search",
+        "grammar": "Grammar Runner",
+        "listening": "Listening Challenge",
+        "cat4": "CAT4 Patterns"
+      },
+      "modal": {
+        "title": "恭喜完成！",
+        "fullIncludes": "完整 Luna Arcade 包含：",
+        "includes": [
+          "1000+ 词汇配对",
+          "Grade 1-6 进阶体系",
+          "多个难度等级",
+          "可解锁挑战",
+          "掌握度测试",
+          "学习进度追踪",
+          "未来更多教育游戏"
+        ],
+        "bookConsultation": "预约咨询",
+        "explorePrograms": "查看课程"
+      },
+      "loading": "正在加载 Demo 词汇...",
+      "error": "公开 Demo 词汇暂时未准备好。请稍后再试，或预约咨询了解更多。",
+      "fullscreen": "进入全屏",
+      "exitFullscreen": "退出全屏",
+      "available": "Available",
+      "comingSoon": "Locked / Coming Soon"
+    },
+    "ecosystem": {
+      "title": "不只是游戏",
+      "text": "Luna Arcade 是完整学习生态的一部分，连接诊断、课程、练习、复习和家长可见的学习进展。",
+      "cards": [
+        "诊断评估",
+        "个性化学习计划",
+        "真人课程",
+        "练习与复习",
+        "进度监测"
+      ]
+    },
+    "perfectFor": {
+      "title": "适合学生",
+      "tags": [
+        "MAP",
+        "WIDA",
+        "CAT4",
+        "AEIS",
+        "国际学校学生",
+        "双语学习者",
+        "英语学习者"
+      ],
+      "items": [
+        {
+          "title": "MAP / WIDA 学习者",
+          "description": "为 MAP Growth 自适应测试和 WIDA 听说读写能力建立更稳定的英语词汇基础。"
+        },
+        {
+          "title": "CAT4 推理练习",
+          "description": "通过视觉记忆和模式类练习，支持语言、非语言和空间推理能力。"
+        },
+        {
+          "title": "AEIS 备考",
+          "description": "加强核心英语词汇和学习信心，帮助学生准备新加坡学校入学考试。"
+        },
+        {
+          "title": "国际学校学生",
+          "description": "在课程、作业和测评之间保持学术英语练习，帮助学习更连续。"
+        },
+        {
+          "title": "双语学习者",
+          "description": "通过图片支持、重复回忆和游戏化复习，帮助学生连接不同语言中的含义。"
+        },
+        {
+          "title": "英语词汇学习者",
+          "description": "用短小挑战反复练习高频词汇，让复习更容易坚持。"
+        }
+      ]
+    },
+    "faq": {
+      "title": "常见问题",
+      "items": [
+        {
+          "q": "教育游戏真的有效吗？",
+          "a": "当游戏与学习计划结合时效果最好。Luna Arcade 用来巩固课后词汇、自信和学习习惯。"
+        },
+        {
+          "q": "Luna Arcade 如何支持词汇学习？",
+          "a": "学生会通过配对、搜索、回忆和复习活动多次接触同一批词汇。"
+        },
+        {
+          "q": "Luna Arcade 适合国际学校学生吗？",
+          "a": "适合。它支持学术词汇、双语学习者，以及正在适应国际学校要求的学生。"
+        },
+        {
+          "q": "家长可以追踪学习进度吗？",
+          "a": "在完整 Luna 学习生态中，进度监测可以帮助家长看到孩子的练习稳定性和学习成长。"
+        },
+        {
+          "q": "Luna Arcade 适合什么年龄段？",
+          "a": "目前学习路径主要面向小学和初中阶段学生，并提供 Grade 1-6 的进阶设计。"
+        }
+      ]
+    },
+    "cta": {
+      "title": "准备开始 Luna 学习吗？",
+      "description": "预约咨询，获取适合孩子的个性化学习建议。",
+      "button": "预约咨询"
+    },
+    "moreGames": {
+      "title": "更多游戏",
+      "wordDrive": "Word Drive"
     }
   }
 }

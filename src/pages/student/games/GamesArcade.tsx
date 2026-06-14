@@ -6,6 +6,7 @@ import {
   Search,
   Headphones,
   Blocks,
+  Gem,
   Sparkles,
   ArrowRight,
 } from "lucide-react";
@@ -25,6 +26,14 @@ const games = [
     icon: Search,
     status: "Available",
     color: "bg-[#ff8bd2]",
+  },
+  {
+    title: "Word Match",
+    description: "Swap letters to form Luna vocabulary words before time runs out.",
+    path: "/word-match",
+    icon: Gem,
+    status: "Available",
+    color: "bg-[#8d73ff]",
   },
   {
     title: "Word Drive",
@@ -71,7 +80,7 @@ export default function GamesArcade() {
           <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
           <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
 
-          <div className="relative z-10 grid items-center gap-10 lg:grid-cols-[1.15fr_420px]">
+          <div className="relative z-10">
             <div>
               <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
                 <Sparkles className="h-5 w-5" />
@@ -89,29 +98,6 @@ export default function GamesArcade() {
               <p className="mt-6 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg">
                 Build vocabulary, grammar, reasoning, and language confidence through short interactive learning games.
               </p>
-            </div>
-
-            <div className="rounded-[2.5rem] bg-[#faf8ff] p-7 shadow-[0_20px_60px_rgba(66,56,120,0.08)]">
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
-                Your Progress
-              </p>
-
-              <div className="mt-7 space-y-4">
-                <div className="flex items-center justify-between rounded-2xl bg-white px-5 py-4">
-                  <span className="font-bold text-primary/55">Games Played</span>
-                  <span className="text-xl font-black text-primary">0</span>
-                </div>
-
-                <div className="flex items-center justify-between rounded-2xl bg-white px-5 py-4">
-                  <span className="font-bold text-primary/55">Challenges Cleared</span>
-                  <span className="text-xl font-black text-primary">0</span>
-                </div>
-
-                <div className="flex items-center justify-between rounded-2xl bg-white px-5 py-4">
-                  <span className="font-bold text-primary/55">Current Streak</span>
-                  <span className="text-xl font-black text-primary">0</span>
-                </div>
-              </div>
             </div>
           </div>
         </section>

@@ -7,6 +7,7 @@ import SubjectDetail from "./pages/public/SubjectDetail";
 import WhyLuna from "./pages/public/WhyLuna";
 import Tutors from "./pages/public/Tutors";
 import Enquire from "./pages/public/Enquire";
+import ArcadeLanding from "./pages/public/ArcadeLanding";
 import Terms from "./pages/public/Terms";
 import Privacy from "./pages/public/Privacy";
 import Careers from "./pages/public/Careers";
@@ -47,6 +48,7 @@ const Practice = lazy(() => import("./pages/student/Practice"));
 const GamesArcade = lazy(() => import("./pages/student/games/GamesArcade"));
 const MemoryFlip = lazy(() => import("./pages/student/games/MemoryFlip"));
 const WordSearch = lazy(() => import("./pages/student/games/WordSearch"));
+const WordMatch = lazy(() => import("./pages/student/games/WordMatch"));
 const Mistakes = lazy(() => import("./pages/student/Mistakes"));
 
 const Page = lazy(() => import("./pages/shared/Page"));
@@ -123,6 +125,7 @@ const App = () => {
           <Route path="/:lang/careers" element={<Careers />} />
           <Route path="/:lang/careers/:slug" element={<CareerDetail />} />
           <Route path="/:lang/tutors" element={<Layout><Tutors /></Layout>} />
+          <Route path="/:lang/arcade" element={<Layout><ArcadeLanding /></Layout>} />
           <Route path="/:lang/enquiry" element={<Layout><Enquire /></Layout>} />
 
 
@@ -139,6 +142,7 @@ const App = () => {
           <Route path="/subjects" element={<Navigate to="/en/subjects" replace />} />
           <Route path="/whyluna" element={<Navigate to="/en/whyluna" replace />} />
           <Route path="/tutors" element={<Navigate to="/en/tutors" replace />} />
+          <Route path="/arcade" element={<Navigate to="/en/arcade" replace />} />
           <Route path="/enquiry" element={<Navigate to="/en/enquiry" replace />} />
 
 
@@ -213,6 +217,15 @@ const App = () => {
             element={
               <ProtectedRoute allowedRoles={["admin", "student"]}>
                 <WordSearch />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/word-match"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "student"]}>
+                <WordMatch />
               </ProtectedRoute>
             }
           />

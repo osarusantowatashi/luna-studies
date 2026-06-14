@@ -9,7 +9,8 @@
     "enquire": "お問い合わせ",
     "login": "ログイン",
     "language": "English",
-    "getStarted": "始める"
+    "getStarted": "始める",
+    "arcade": "Arcade"
   },
   "landing": {
     "seo": {
@@ -1344,13 +1345,14 @@
       "about": "{{name}}について",
       "experience": "指導経験",
       "subjects": "対応科目",
-      "quote": "{{name}} は、分かりやすい説明、体系的な指導、生徒が一歩ずつ自信を持てるようになることを大切にしています。"
+      "quote": "{{name}} は、分かりやすい説明、体系的な指導、生徒が一歩ずつ自信を持てるようになることを大切にしています。",
+      "teachingStyle": "指導スタイル"
     },
     "items": [
       {
         "name": "Grace",
         "image": "/tutors/grace_new.jpg",
-        "role": "アカデミック英語・ヘッドチューター",
+        "role": "English Tutor",
         "subjects": [
           "IB English",
           "TOEFL",
@@ -1366,12 +1368,18 @@
           "TOEFLスピーキング・ライティング対策",
           "バイリンガル教育サポート",
           "学術的な表現力と自信の育成"
-        ]
+        ],
+        "teachingStyle": [
+          "アカデミックライティング",
+          "批判的思考",
+          "コミュニケーション"
+        ],
+        "quote": "Grace は、アカデミック英語を明確な思考、構造的な文章、そして自信あるコミュニケーションにつなげます。"
       },
       {
         "name": "Mimi",
         "image": "/tutors/mimi_new.jpg",
-        "role": "トリリンガル教育講師・ヘッドチューター",
+        "role": "Academic Tutor",
         "subjects": [
           "日本語",
           "英語",
@@ -1388,12 +1396,18 @@
           "インターナショナルスクール入学対策",
           "TOEFL / IELTS / SAT / O Level 対策",
           "個別学習計画と学習戦略の設計"
-        ]
+        ],
+        "teachingStyle": [
+          "構造的な学習計画",
+          "トリリンガル学習",
+          "自信づくり"
+        ],
+        "quote": "Mimi は、分かりやすい構造、落ち着いた指導、長期的な学習計画を通して、多言語学習を支えます。"
       },
       {
         "name": "Francis",
         "image": "/tutors/francis_new.png",
-        "role": "国際数学講師",
+        "role": "Mathematics Tutor",
         "subjects": [
           "IGCSE 数学",
           "A Level 数学",
@@ -1408,12 +1422,18 @@
           "構造的な問題解決トレーニング",
           "AEIS数学対策",
           "国際カリキュラム適応サポート"
-        ]
+        ],
+        "teachingStyle": [
+          "問題解決",
+          "論理的思考",
+          "試験戦略"
+        ],
+        "quote": "Francis は、数学問題の背後にある論理を理解し、推測ではなく自信を持って解けるよう支えます。"
       },
       {
         "name": "CJ",
         "image": "/tutors/cj_new.png",
-        "role": "STEM・シンガポールカリキュラム講師",
+        "role": "Academic Tutor",
         "subjects": [
           "AEIS",
           "A Level 数学",
@@ -1429,12 +1449,18 @@
           "A Level数学とSTEM指導",
           "英語・中国語による学習サポート",
           "英語ベースの学習環境への適応支援"
-        ]
+        ],
+        "teachingStyle": [
+          "シンガポールカリキュラム",
+          "STEM 学習",
+          "基礎づくり"
+        ],
+        "quote": "CJ は、丁寧な STEM 指導とバイリンガルサポートで、シンガポール式学習の基礎づくりを支えます。"
       },
       {
         "name": "Christine",
         "image": "/tutors/christine_new.png",
-        "role": "英語基礎講師",
+        "role": "English Tutor",
         "subjects": [
           "英語",
           "文法",
@@ -1450,12 +1476,18 @@
           "文法・読解・ライティングサポート",
           "体系的な言語学習指導",
           "自信とコミュニケーション力を育てる指導"
-        ]
+        ],
+        "teachingStyle": [
+          "丁寧な指導",
+          "言語基礎",
+          "ステップ学習"
+        ],
+        "quote": "Christine は、丁寧な指導と励ましを通して、英語の基礎を一歩ずつ育てます。"
       },
       {
         "name": "Kana",
         "image": "/tutors/kana_new.png",
-        "role": "日本語講師",
+        "role": "Japanese Tutor",
         "subjects": [
           "日本語",
           "初級日本語",
@@ -1469,7 +1501,70 @@
           "JLPT文法・語彙対策",
           "日常会話・アカデミック日本語指導",
           "日本での学校生活・日常生活への適応サポート"
-        ]
+        ],
+        "teachingStyle": [
+          "実用日本語",
+          "文法理解",
+          "実生活コミュニケーション"
+        ],
+        "quote": "Kana は、明確な文法説明、実用会話、安心できる練習を通して、日本語を実生活で使えるよう支えます。"
+      },
+      {
+        "name": "Ruth",
+        "image": "/tutors/Ruth.png",
+        "role": "English Tutor",
+        "subjects": [
+          "英会話",
+          "読解",
+          "ライティング",
+          "フォニックス",
+          "会話"
+        ],
+        "education": "University of Lagos, Nigeria",
+        "languages": "英語 / 中国語",
+        "bio": "Ruth は、幼い学習者やバイリンガル生徒が自然な英語表現、より明確な発音、読解への自信、日常コミュニケーション力を伸ばせるよう、温かくインタラクティブな授業で支えます。",
+        "experience": [
+          "幼い学習者やバイリンガル生徒への英語指導",
+          "スピーキングの流暢さ、発音、授業での発言力の指導",
+          "読解、語彙、フォニックスのサポート",
+          "ライティング基礎、文構造、文法指導",
+          "日常英語への自信を育てるインタラクティブな授業"
+        ],
+        "teachingStyle": [
+          "コミュニケーション重視",
+          "自信づくり",
+          "インタラクティブ学習"
+        ],
+        "quote": "Ruth は、やさしい対話、分かりやすい修正、励ましのある練習を通して、生徒がより自然に英語を話せるよう支えます。"
+      },
+      {
+        "name": "Siya",
+        "image": "/tutors/siya.jpeg",
+        "role": "Academic Tutor",
+        "subjects": [
+          "アカデミック研究",
+          "エッセイライティング",
+          "批判的思考",
+          "グローバル視点",
+          "英語"
+        ],
+        "education": "Keio University, Japan",
+        "languages": "英語 / ヒンディー語 / 日本語",
+        "bio": "Siya は、自立的な思考、研究習慣、アカデミックライティング、グローバルなテーマでの議論を支え、生徒が考えを整理し、自信を持って論じられるよう導きます。",
+        "experience": [
+          "アカデミック研究と資料評価",
+          "エッセイ構成と論点形成の指導",
+          "批判的思考と根拠に基づくディスカッション",
+          "Global Perspectives プロジェクトのサポート",
+          "自立研究の計画と学習習慣づくり",
+          "アカデミックプレゼンテーションの準備と発表練習"
+        ],
+        "teachingStyle": [
+          "自立的思考",
+          "グローバル視点",
+          "アカデミック研究"
+        ],
+        "quote": "Siya は、生徒がより良い問いを立て、自分で調べ、グローバルな考えを明確に表現できるよう支えます。"
       }
     ]
   },
@@ -2108,6 +2203,164 @@
           ]
         }
       }
+    }
+  },
+  "arcadePage": {
+    "seo": {
+      "title": "Luna Arcade 学習ゲーム | 語彙練習デモ | LUNA Studies",
+      "description": "Luna Arcade の無料デモで、LUNA Studies の語彙ゲーム、バイリンガル学習、国際校生向け学習システムを体験できます。"
+    },
+    "hero": {
+      "label": "Luna Arcade",
+      "title": "Lunaの学びを体験",
+      "subtitle": "語彙ゲーム、学習システム、個別最適化された教育アプローチを体験できます。",
+      "playDemo": "無料デモを試す",
+      "bookConsultation": "相談を予約",
+      "visualAlt": "Hapiko が Luna Arcade の語彙ゲームを紹介している様子"
+    },
+    "why": {
+      "title": "学びはもっと楽しく続けられる",
+      "text": "Luna Arcade は反復練習を短く集中できるチャレンジに変え、語彙定着、自信、継続力、学習意欲を支えます。",
+      "cards": {
+        "interactiveGames": "インタラクティブゲーム",
+        "progressTracking": "進捗トラッキング",
+        "longTermRetention": "長期定着"
+      }
+    },
+    "demo": {
+      "title": "Luna Arcade を試す",
+      "subtitle": "登録不要で、下の無料デモをプレイできます。",
+      "windowTitle": "Luna Arcade Demo",
+      "settings": "Grade 1 · Easy · 中国語 ↔ 英語",
+      "memoryTitle": "Memory Flip Demo",
+      "wordList": "単語リスト",
+      "wordInstruction": "デモモード：グリッドで単語を見つけたら、リスト内の単語をタップしてください。",
+      "reset": "リセット",
+      "locked": "ロック中",
+      "continueDemo": "デモを続ける",
+      "notice": {
+        "title": "🎮 デモ版",
+        "description": "公開デモは、アカウント作成前に Luna Arcade を手軽に体験するためのものです。",
+        "items": [
+          "アカウント不要",
+          "難易度の進行は無効",
+          "アンロック機能は無効",
+          "習熟度テストは無効",
+          "進捗は保存されません",
+          "デモ語彙プールは約50語/ペアに制限されています"
+        ]
+      },
+      "games": {
+        "memory": "Memory Flip",
+        "word": "Word Search",
+        "grammar": "Grammar Runner",
+        "listening": "Listening Challenge",
+        "cat4": "CAT4 Patterns"
+      },
+      "modal": {
+        "title": "おめでとうございます！",
+        "fullIncludes": "Luna Arcade 完全版に含まれるもの：",
+        "includes": [
+          "1000+ 語彙ペア",
+          "Grade 1-6 のステップアップ",
+          "複数の難易度",
+          "アンロック式チャレンジ",
+          "習熟度テスト",
+          "進捗トラッキング",
+          "今後追加される教育ゲーム"
+        ],
+        "bookConsultation": "相談を予約",
+        "explorePrograms": "プログラムを見る"
+      },
+      "loading": "デモ語彙を読み込み中...",
+      "error": "公開デモの語彙は現在準備中です。後ほど再度お試しいただくか、相談予約をご利用ください。",
+      "fullscreen": "全画面表示",
+      "exitFullscreen": "全画面を終了",
+      "available": "Available",
+      "comingSoon": "Locked / Coming Soon"
+    },
+    "ecosystem": {
+      "title": "ゲームだけではない学習体験",
+      "text": "Luna Arcade は、診断、授業、練習、復習、進捗確認をつなぐ Luna の学習エコシステムの一部です。",
+      "cards": [
+        "診断評価",
+        "個別学習プラン",
+        "ライブ授業",
+        "練習と復習",
+        "進捗モニタリング"
+      ]
+    },
+    "perfectFor": {
+      "title": "こんな生徒に",
+      "tags": [
+        "MAP",
+        "WIDA",
+        "CAT4",
+        "AEIS",
+        "インターナショナルスクール生",
+        "バイリンガル学習者",
+        "英語学習者"
+      ],
+      "items": [
+        {
+          "title": "MAP / WIDA 学習者",
+          "description": "MAP Growth の適応型テストや WIDA の4技能に向けて、英語語彙の土台を着実に伸ばします。"
+        },
+        {
+          "title": "CAT4 推理練習",
+          "description": "視覚記憶やパターン型の練習を通じて、言語・非言語・空間推理を支えます。"
+        },
+        {
+          "title": "AEIS 対策",
+          "description": "シンガポール入学準備に必要な基礎英語語彙と学習への自信を強化します。"
+        },
+        {
+          "title": "インターナショナルスクール生",
+          "description": "授業、課題、評価の間にもアカデミック英語の練習を続けやすくします。"
+        },
+        {
+          "title": "バイリンガル学習者",
+          "description": "画像サポート、反復想起、楽しい復習を通じて、言語間の意味理解をつなげます。"
+        },
+        {
+          "title": "英語語彙学習者",
+          "description": "短いチャレンジで頻出語彙を繰り返し練習し、復習を続けやすくします。"
+        }
+      ]
+    },
+    "faq": {
+      "title": "よくある質問",
+      "items": [
+        {
+          "q": "教育ゲームは効果がありますか？",
+          "a": "学習計画とつながっているときに最も効果的です。Luna Arcade は授業間の語彙定着と自信づくりを支えます。"
+        },
+        {
+          "q": "Luna Arcade は語彙学習をどう支えますか？",
+          "a": "マッチング、検索、想起、復習を通じて、同じ語彙に繰り返し触れます。"
+        },
+        {
+          "q": "インターナショナルスクール生にも合いますか？",
+          "a": "はい。学術語彙、バイリンガル学習者、国際校の学習環境に慣れる生徒をサポートします。"
+        },
+        {
+          "q": "保護者は進捗を確認できますか？",
+          "a": "Luna の完全な学習エコシステムでは、練習の継続性や学習の伸びを確認できます。"
+        },
+        {
+          "q": "Luna Arcade は何歳向けですか？",
+          "a": "現在の学習フローは主に小学生から中学生向けで、Grade 1-6 の進度設計があります。"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Lunaで学習を始めませんか？",
+      "description": "相談を予約して、お子さまに合った学習提案を受け取りましょう。",
+      "button": "相談を予約"
+    },
+    "moreGames": {
+      "title": "その他のゲーム",
+      "wordDrive": "Word Drive"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   Blocks,
@@ -7,6 +7,7 @@ import {
   Check,
   CheckCircle2,
   Flame,
+  Gem,
   Headphones,
   Maximize2,
   Minimize2,
@@ -15,6 +16,8 @@ import {
   Sun,
   Timer,
   Trophy,
+  Volume2,
+  VolumeX,
   XCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -71,6 +74,19 @@ type SavedWordSearchSession = {
   score: number;
   secondsLeft: number;
   level: number;
+};
+
+type GameDemoProps = {
+  demoMode?: boolean;
+  fixedGrade?: string;
+  fixedDifficulty?: string;
+  maxDemoPairs?: number;
+  hideStudentIdentity?: boolean;
+  disableProgressSaving?: boolean;
+  disableUnlocking?: boolean;
+  disableResume?: boolean;
+  onDemoComplete?: () => void;
+  onRequestSwitchGame?: (game: "memory" | "word") => void;
 };
 
 const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
@@ -143,6 +159,11 @@ const cleanEnglishWord = (value: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^A-Za-z]/g, "")
     .toUpperCase();
+
+const getEnglishWordFromPair = (pair: Pair) =>
+  [pair.vocab_word, pair.left, pair.right]
+    .map((value) => cleanEnglishWord(String(value || "")))
+    .find((word) => word.length >= 3 && word.length <= 12) || "";
 
 const cellId = (row: number, col: number) => `${row}-${col}`;
 
@@ -373,14 +394,27 @@ const createPuzzle = (wordList: string[], size: number, directions: number[][]) 
   };
 };
 
-export default function WordSearch() {
+export default function WordSearch({
+  demoMode = false,
+  fixedGrade = "Grade 1",
+  fixedDifficulty = "Easy",
+  maxDemoPairs = 50,
+  hideStudentIdentity = false,
+  disableProgressSaving = false,
+  disableUnlocking = false,
+  disableResume = false,
+  onDemoComplete,
+  onRequestSwitchGame,
+}: GameDemoProps = {}) {
   const navigate = useNavigate();
+  void hideStudentIdentity;
   const arcadeRef = useRef<HTMLDivElement | null>(null);
   const buildRequestRef = useRef(0);
-  const [grade, setGrade] = useState("Grade 1");
-  const [difficulty, setDifficulty] = useState("Easy");
+  const [grade, setGrade] = useState(fixedGrade);
+  const [difficulty, setDifficulty] = useState(fixedDifficulty);
   const [unlockedDifficulty, setUnlockedDifficulty] = useState("Easy");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [soundOn, setSoundOn] = useState(true);
   const [availableWords, setAvailableWords] = useState<string[]>([]);
   const [wordImageMap, setWordImageMap] = useState<Record<string, string>>({});
   const [cells, setCells] = useState<Cell[]>([]);
@@ -417,7 +451,13 @@ export default function WordSearch() {
   const isLight = theme === "light";
   const fullscreenActive = isFullscreen || isMobileFullscreen;
   const gameModeActive = gameStarted || showFinalTest || !!finalResult;
-  const showPageChrome = !fullscreenActive;
+  const showPageChrome = !fullscreenActive && !demoMode;
+  const publicLang =
+    typeof window !== "undefined" && window.location.pathname.startsWith("/zh")
+      ? "zh"
+      : typeof window !== "undefined" && window.location.pathname.startsWith("/ja")
+        ? "ja"
+        : "en";
   const eligibleWordCount = availableWords.filter(
     (word) => word.length >= config.minLength && word.length <= config.maxLength
   ).length;
@@ -463,15 +503,37 @@ export default function WordSearch() {
   const moreGames = [
     { title: "Memory Flip", icon: Brain, available: true, current: false, status: "Available", path: "/memory-flip" },
     { title: "Word Search", icon: Search, available: true, current: true, status: "Available", path: "/word-search" },
+    { title: "Word Match", icon: Gem, available: true, current: false, status: "Available", path: "/word-match" },
     { title: "Word Drive", icon: Car, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "Grammar Runner", icon: Flame, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "Listening Challenge", icon: Headphones, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "CAT4 Patterns", icon: Blocks, available: false, current: false, status: "Coming Soon", path: "#" },
   ];
 
+  const soundMap = useMemo(() => {
+    return {
+      correct: new Audio("/sounds/success.mp3"),
+      stage: new Audio("/sounds/mastery-test.mp3"),
+      wrong: new Audio("/sounds/time-up.mp3"),
+      timeUp: new Audio("/sounds/time-up.mp3"),
+    };
+  }, []);
+
+  const playGameSound = useCallback((sound: keyof typeof soundMap, volume = 0.45) => {
+    if (!soundOn) return;
+
+    const audio = soundMap[sound];
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = volume;
+    audio.play().catch(() => { });
+  }, [soundMap, soundOn]);
+
   const scopeKey = `english:${grade}`;
 
   const loadProgress = async () => {
+    if (demoMode) return;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -512,6 +574,8 @@ export default function WordSearch() {
     passed: boolean;
     levelReached: number;
   }) => {
+    if (demoMode || disableProgressSaving) return;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -528,7 +592,7 @@ export default function WordSearch() {
 
     if (error) return;
 
-    const nextDifficulty = passed
+    const nextDifficulty = passed && !disableUnlocking
       ? getNextDifficulty(difficulty) || existingProgress?.unlocked_difficulty || unlockedDifficulty
       : existingProgress?.unlocked_difficulty || unlockedDifficulty;
     const nextStreak = passed ? (existingProgress?.current_streak || 0) + 1 : 0;
@@ -567,12 +631,21 @@ export default function WordSearch() {
   };
 
   useEffect(() => {
+    if (demoMode) {
+      setGrade(fixedGrade);
+      setDifficulty(fixedDifficulty);
+      setUnlockedDifficulty(fixedDifficulty);
+      return;
+    }
+
     loadProgress();
-  }, [grade]);
+  }, [grade, demoMode, fixedGrade, fixedDifficulty]);
 
   useEffect(() => {
+    if (demoMode || disableResume) return;
+
     setSavedSession(loadGameSession<SavedWordSearchSession>(WORD_SEARCH_GAME_KEY));
-  }, []);
+  }, [demoMode, disableResume]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -613,12 +686,18 @@ export default function WordSearch() {
     const loadWords = async () => {
       setVocabularyLoading(true);
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("game_questions")
         .select("language_pair, question_data")
         .eq("game_type", "memory_flip")
         .eq("grade", grade)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: demoMode });
+
+      if (demoMode) {
+        query = query.eq("language_pair", "zh_en").limit(10);
+      }
+
+      const { data, error } = await query;
 
       if (!active) return;
 
@@ -634,7 +713,7 @@ export default function WordSearch() {
 
         if (set.language_pair === "zh_en") {
           return pairs.map((pair) => ({
-            word: pair.left || pair.vocab_word || "",
+            word: getEnglishWordFromPair(pair),
             imageUrl: pair.image_url || "",
             lookupValues: [pair.image_keyword, pair.vocab_word, pair.left, pair.right],
           }));
@@ -642,7 +721,7 @@ export default function WordSearch() {
 
         if (set.language_pair === "en_ja") {
           return pairs.map((pair) => ({
-            word: pair.left || pair.vocab_word || "",
+            word: getEnglishWordFromPair(pair),
             imageUrl: pair.image_url || "",
             lookupValues: [pair.image_keyword, pair.vocab_word, pair.left, pair.right],
           }));
@@ -668,7 +747,7 @@ export default function WordSearch() {
       const directImageMap = new Map<string, string>();
 
       cleanedEntries.forEach((entry) => {
-        if (entry.imageUrl && !directImageMap.has(entry.word)) {
+        if (!demoMode && entry.imageUrl && !directImageMap.has(entry.word)) {
           directImageMap.set(entry.word, entry.imageUrl);
         }
       });
@@ -676,7 +755,7 @@ export default function WordSearch() {
       const missingImageLookupValues = Array.from(
         new Set(
           cleanedEntries
-            .filter((entry) => !directImageMap.has(entry.word))
+            .filter((entry) => demoMode || !directImageMap.has(entry.word))
             .flatMap((entry) => entry.lookupValues)
             .flatMap((value) => {
               const lower = value.toLowerCase();
@@ -725,14 +804,18 @@ export default function WordSearch() {
           .map((value) => approvedImageMap.get(value.toLowerCase()))
           .find(Boolean);
 
-        const imageUrl = directImageMap.get(entry.word) || approvedImageUrl;
+        const imageUrl = demoMode
+          ? approvedImageUrl
+          : directImageMap.get(entry.word) || approvedImageUrl;
 
         if (imageUrl) {
           nextWordImageMap[entry.word] = imageUrl;
         }
       });
 
-      setAvailableWords(words);
+      const demoWords = Object.keys(nextWordImageMap).slice(0, maxDemoPairs);
+
+      setAvailableWords(demoMode ? demoWords : words);
       setWordImageMap(nextWordImageMap);
       setVocabularyLoading(false);
     };
@@ -742,27 +825,44 @@ export default function WordSearch() {
     return () => {
       active = false;
     };
-  }, [grade]);
+  }, [grade, demoMode, maxDemoPairs]);
 
   useEffect(() => {
     if (!gameStarted || complete || expired) return;
 
     const timer = window.setInterval(() => {
-      setSecondsLeft((current) => Math.max(0, current - 1));
+      setSecondsLeft((current) => {
+        if (current <= 1) {
+          window.clearInterval(timer);
+          playGameSound("timeUp", 0.45);
+          return 0;
+        }
+
+        return current - 1;
+      });
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [complete, expired, gameStarted]);
+  }, [complete, expired, gameStarted, playGameSound]);
 
   useEffect(() => {
     if (!complete || showRoundResult || showFinalTest || finalResult) return;
 
+    if (demoMode) {
+      playGameSound("stage", 0.25);
+      onDemoComplete?.();
+      setShowRoundResult(true);
+      return;
+    }
+
     if (level >= 5) {
+      playGameSound("stage", 0.25);
       generateFinalTest();
     } else {
+      playGameSound("stage", 0.25);
       setShowRoundResult(true);
     }
-  }, [complete, showRoundResult, showFinalTest, finalResult, level]);
+  }, [complete, showRoundResult, showFinalTest, finalResult, level, demoMode, onDemoComplete, playGameSound]);
 
   const clearSavedSession = () => {
     clearGameSession(WORD_SEARCH_GAME_KEY);
@@ -770,6 +870,8 @@ export default function WordSearch() {
   };
 
   const saveCurrentSession = () => {
+    if (demoMode || disableResume) return;
+
     if (!gameStarted || puzzleWords.length === 0 || complete || expired || showFinalTest) return;
 
     const session: SavedWordSearchSession = {
@@ -887,7 +989,7 @@ export default function WordSearch() {
   const startGame = async () => {
     if (vocabularyLoading) return;
 
-    if (savedSession) {
+    if (!demoMode && !disableResume && savedSession) {
       setShowResumeConfirm(true);
       return;
     }
@@ -899,7 +1001,9 @@ export default function WordSearch() {
     if (vocabularyLoading) return;
 
     setShowResumeConfirm(false);
-    clearSavedSession();
+    if (!demoMode && !disableResume) {
+      clearSavedSession();
+    }
     setScore(0);
     setFinalResult(null);
     setShowFinalTest(false);
@@ -911,10 +1015,17 @@ export default function WordSearch() {
   };
 
   const startNextChallenge = () => {
+    if (demoMode) {
+      buildRound(1);
+      return;
+    }
+
     buildRound(level + 1);
   };
 
   const resumeSavedSession = async () => {
+    if (demoMode || disableResume) return;
+
     if (!savedSession) return;
 
     setShowResumeConfirm(false);
@@ -1005,6 +1116,10 @@ export default function WordSearch() {
       correctAnswer: correct ? undefined : current.correctChunk,
     });
 
+    if (!correct) {
+      playGameSound("wrong", 0.38);
+    }
+
     if (isLastQuestion) {
       setShowFinalTest(false);
     }
@@ -1022,9 +1137,15 @@ export default function WordSearch() {
       const passed = nextCorrect >= 6;
       const nextDifficulty = getNextDifficulty(difficulty);
 
-      clearSavedSession();
+      if (passed) {
+        playGameSound("stage", 0.25);
+      }
 
-      if (passed && nextDifficulty) {
+      if (!demoMode && !disableResume) {
+        clearSavedSession();
+      }
+
+      if (passed && nextDifficulty && !disableUnlocking) {
         setUnlockedDifficulty(nextDifficulty);
       }
 
@@ -1041,7 +1162,7 @@ export default function WordSearch() {
       setFinalResult({
         passed,
         correct: nextCorrect,
-        nextDifficulty,
+        nextDifficulty: disableUnlocking ? null : nextDifficulty,
       });
     }, 450);
   };
@@ -1068,6 +1189,7 @@ export default function WordSearch() {
     const match = wordLookup.get(selectedWord) || wordLookup.get(reversedWord);
 
     if (match && !foundSet.has(match.word)) {
+      playGameSound("correct", 0.25);
       setFoundWords((current) => [...current, match.word]);
       setScore((current) => current + match.word.length * 10 + secondsLeft);
     }
@@ -1194,13 +1316,23 @@ export default function WordSearch() {
               Back to Games Arcade
             </button>
 
-            <button
-              onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
-              className={`flex h-11 w-11 items-center justify-center rounded-xl border ${palette.button}`}
-              title={theme === "dark" ? "Dark Mode" : "Light Mode"}
-            >
-              {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSoundOn((current) => !current)}
+                className={`flex h-11 w-11 items-center justify-center rounded-xl border ${palette.button}`}
+                title={soundOn ? "Sound On" : "Sound Off"}
+              >
+                {soundOn ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+              </button>
+
+              <button
+                onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+                className={`flex h-11 w-11 items-center justify-center rounded-xl border ${palette.button}`}
+                title={theme === "dark" ? "Dark Mode" : "Light Mode"}
+              >
+                {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
         )}
 
@@ -1312,7 +1444,7 @@ export default function WordSearch() {
                           setGameStarted(false);
                           await exitGameMode();
 
-                          if (nextDifficulty) {
+                          if (nextDifficulty && !disableUnlocking) {
                             setDifficulty(nextDifficulty);
                             setUnlockedDifficulty(nextDifficulty);
                           }
@@ -1353,19 +1485,45 @@ export default function WordSearch() {
                 <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
                   <Trophy className="mx-auto h-16 w-16 text-[#FACC15]" />
                   <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                    Puzzle Cleared
+                    {demoMode ? "Luna Arcade Demo" : "Puzzle Cleared"}
                   </p>
                   <h2 className="mt-3 text-4xl font-black text-white">Great Job!</h2>
                   <p className="mt-4 text-slate-300">
-                    You completed round {level} / 5 for {difficulty}.
+                    {demoMode
+                      ? "You completed the Luna Arcade demo."
+                      : `You completed round ${level} / 5 for ${difficulty}.`}
                   </p>
                   <p className="mt-2 text-sm font-bold text-slate-300">Score: {score}</p>
                   <button
                     onClick={startNextChallenge}
                     className="mt-8 h-14 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
                   >
-                    NEXT CHALLENGE
+                    {demoMode ? "Play Again" : "NEXT CHALLENGE"}
                   </button>
+                  {demoMode && (
+                    <>
+                      <button
+                        onClick={async () => {
+                          setShowRoundResult(false);
+                          await resetToMenu();
+                          onRequestSwitchGame?.("memory");
+                        }}
+                        className="mt-3 h-14 w-full rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                      >
+                        Try Memory Flip
+                      </button>
+                      <button
+                        onClick={async () => {
+                          setShowRoundResult(false);
+                          await resetToMenu();
+                          navigate(`/${publicLang}/enquiry`);
+                        }}
+                        className="mt-3 h-14 w-full rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                      >
+                        Book Consultation
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -1439,6 +1597,13 @@ export default function WordSearch() {
                         Find English vocabulary hidden across the grid. Words can run forwards,
                         backwards, vertically, horizontally, or diagonally.
                       </p>
+
+                      <div className={`mt-4 inline-flex max-w-xl items-center gap-2 rounded-full border px-3 py-2 ${palette.soft}`}>
+                        <p className={`text-xs font-bold leading-5 ${palette.text}`}>
+                          <span className="text-sm">🏆</span>{" "}
+                          Pass 5 rounds + final test to unlock the next difficulty
+                        </p>
+                      </div>
                     </div>
 
                     <div className={`rounded-[1.5rem] border p-4 ${palette.soft}`}>
@@ -1470,10 +1635,18 @@ export default function WordSearch() {
                         English
                       </div>
                     </div>
-                    {renderArcadeDropdown("Grade", "grade", grade, grades, setGrade)}
+                    {renderArcadeDropdown(
+                      "Grade",
+                      "grade",
+                      grade,
+                      demoMode ? [fixedGrade] : grades,
+                      (value) => {
+                        if (!demoMode) setGrade(value);
+                      }
+                    )}
                   </div>
 
-                  {savedSession && (
+                  {savedSession && !demoMode && !disableResume && (
                     <div className={`mt-5 rounded-[1.5rem] border p-4 ${palette.soft}`}>
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -1510,7 +1683,10 @@ export default function WordSearch() {
 
                     <select
                       value={difficulty}
+                      disabled={demoMode}
                       onChange={(event) => {
+                        if (demoMode) return;
+
                         const nextDifficulty = event.target.value;
                         const locked =
                           difficultyOrder.indexOf(nextDifficulty) >
@@ -1549,8 +1725,10 @@ export default function WordSearch() {
                       return (
                         <button
                           key={item.key}
-                          disabled={locked}
-                          onClick={() => setDifficulty(item.key)}
+                          disabled={locked || demoMode}
+                          onClick={() => {
+                            if (!demoMode) setDifficulty(item.key);
+                          }}
                           className={`relative overflow-hidden rounded-[1.2rem] border p-3 text-left transition sm:rounded-[1.4rem] sm:p-4 ${active
                             ? "border-[#8B5CF6] bg-[#8B5CF6]/20"
                             : palette.soft
@@ -1741,7 +1919,7 @@ export default function WordSearch() {
               More Games
             </p>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-7">
               {moreGames.map((game) => {
                 const Icon = game.icon;
 
