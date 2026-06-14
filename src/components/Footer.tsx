@@ -8,7 +8,11 @@ export default function Footer() {
   const location = useLocation();
   const { t } = useTranslation();
 
-  const currentLang = location.pathname.startsWith("/zh") ? "zh" : "en";
+  const currentLang = location.pathname.startsWith("/zh")
+    ? "zh"
+    : location.pathname.startsWith("/ja")
+      ? "ja"
+      : "en";
 
   const withLang = (path: string) =>
     `/${currentLang}${path === "/" ? "" : path}`;

@@ -155,7 +155,8 @@ const NavBar = () => {
     const pathWithoutLang =
       location.pathname.replace(/^\/(en|zh|ja)/, "") || "/";
 
-    window.location.href = `/${nextLang}${pathWithoutLang}`;
+    window.location.href =
+      pathWithoutLang === "/" ? `/${nextLang}` : `/${nextLang}${pathWithoutLang}`;
   };
 
   const withLang = (path: string) =>

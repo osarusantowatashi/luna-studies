@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Landing from "./pages/public/Landing";
 import Subjects from "./pages/public/Subjects";
@@ -77,6 +77,13 @@ const TutorPage = ({ children }: { children: React.ReactNode }) => (
   </ProtectedRoute>
 );
 
+const RedirectJpToJa = () => {
+  const location = useLocation();
+  const nextPath = location.pathname.replace(/^\/jp(?=\/|$)/, "/ja");
+
+  return <Navigate to={`${nextPath}${location.search}${location.hash}`} replace />;
+};
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -99,6 +106,9 @@ const App = () => {
 
         <Routes>
           {/* Public */}
+          <Route path="/jp" element={<RedirectJpToJa />} />
+          <Route path="/jp/*" element={<RedirectJpToJa />} />
+
           <Route path="/" element={<Layout><Landing /></Layout>} />
           <Route path="/:lang" element={<Layout><Landing /></Layout>} />
 

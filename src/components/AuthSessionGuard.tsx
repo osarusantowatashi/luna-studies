@@ -22,7 +22,6 @@ const publicRoutePrefixes = [
   "/en",
   "/zh",
   "/ja",
-  "/jp",
   "/login",
   "/signup",
   "/careers",
