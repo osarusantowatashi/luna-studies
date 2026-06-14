@@ -1137,15 +1137,7 @@ export default function MemoryFlip() {
                       }`}
                   >
                     <div className="flex w-full items-center justify-between gap-3">
-                      <span><div className="flex w-full items-center justify-between gap-3">
-                        <span>{option}</span>
-
-                        {locked && (
-                          <span className="text-[10px] font-black uppercase opacity-70">
-                            Locked
-                          </span>
-                        )}
-                      </div></span>
+                      <span>{option}</span>
 
                       {locked && (
                         <span className="text-[10px] font-black uppercase opacity-70">

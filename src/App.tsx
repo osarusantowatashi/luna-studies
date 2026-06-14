@@ -57,6 +57,7 @@ import ProtectedRoute from "./pages/shared/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 import LunaMascotChat from "./components/LunaMascotChat";
 import HapikoGuide from "./components/HapikoGuide";
+import AuthSessionGuard from "./components/AuthSessionGuard";
 
 const AdminPage = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute allowedRoles={["admin"]}>
@@ -80,6 +81,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <AuthSessionGuard />
 
       <Suspense
 
