@@ -160,6 +160,7 @@ type ArcadeDropdownProps = {
   onChange: (value: string) => void;
   isLight: boolean;
   unlockedDifficulty: string;
+  lockedOptions?: string[];
 };
 
 const ArcadeDropdown = ({
@@ -168,6 +169,7 @@ const ArcadeDropdown = ({
   onChange,
   isLight,
   unlockedDifficulty,
+  lockedOptions = [],
 }: ArcadeDropdownProps) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -227,6 +229,7 @@ const ArcadeDropdown = ({
               const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
 
               const locked =
+                lockedOptions.includes(option) ||
                 difficultyOrder.includes(diffName) &&
                 difficultyOrder.indexOf(diffName) >
                 difficultyOrder.indexOf(unlockedDifficulty);
@@ -459,9 +462,10 @@ export default function MemoryFlip({
 
   useEffect(() => {
     if (demoMode) {
+      setLanguagePair("zh_en");
       setGrade("Grade 1");
-      setDifficulty(fixedDifficulty);
-      setUnlockedDifficulty("Advanced");
+      setDifficulty("Easy");
+      setUnlockedDifficulty("Easy");
       loadVocabularyPool();
       return;
     }
@@ -820,10 +824,10 @@ export default function MemoryFlip({
     setLevel(1);
 
     await loadGame({
-      selectedLanguagePair: languagePair,
+      selectedLanguagePair: demoMode ? "zh_en" : languagePair,
       selectedGrade: demoMode ? "Grade 1" : grade,
-      selectedDifficulty: difficulty,
-      selectedPairCount: getPairCountByDifficulty(difficulty),
+      selectedDifficulty: demoMode ? "Easy" : difficulty,
+      selectedPairCount: getPairCountByDifficulty(demoMode ? "Easy" : difficulty),
     });
   };
 
@@ -1543,7 +1547,9 @@ export default function MemoryFlip({
                         options={["Chinese ↔ English", "Chinese ↔ Japanese", "English ↔ Japanese"]}
                         isLight={isLight}
                         unlockedDifficulty={unlockedDifficulty}
+                        lockedOptions={demoMode ? ["Chinese ↔ Japanese", "English ↔ Japanese"] : []}
                         onChange={(value) => {
+                          if (demoMode && value !== "Chinese ↔ English") return;
                           if (value === "Chinese ↔ English") setLanguagePair("zh_en");
                           if (value === "Chinese ↔ Japanese") setLanguagePair("zh_ja");
                           if (value === "English ↔ Japanese") setLanguagePair("en_ja");
@@ -1552,9 +1558,10 @@ export default function MemoryFlip({
 
                       <ArcadeDropdown
                         value={grade}
-                        options={demoMode ? ["Grade 1"] : grades}
+                        options={grades}
                         isLight={isLight}
                         unlockedDifficulty={unlockedDifficulty}
+                        lockedOptions={demoMode ? grades.filter((item) => item !== "Grade 1") : []}
                         onChange={(value) => {
                           if (!demoMode) setGrade(value);
                         }}
@@ -1741,10 +1748,10 @@ export default function MemoryFlip({
                             setLoading(true);
                             setLevel(1);
                             await loadGame({
-                              selectedLanguagePair: languagePair,
+                              selectedLanguagePair: "zh_en",
                               selectedGrade: "Grade 1",
-                              selectedDifficulty: difficulty,
-                              selectedPairCount: getPairCountByDifficulty(difficulty),
+                              selectedDifficulty: "Easy",
+                              selectedPairCount: getPairCountByDifficulty("Easy"),
                             });
                             return;
                           }

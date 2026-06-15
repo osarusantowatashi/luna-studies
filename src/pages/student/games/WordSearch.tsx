@@ -1215,7 +1215,8 @@ export default function WordSearch({
     id: "grade" | "difficulty",
     value: string,
     options: string[],
-    onChange: (value: string) => void
+    onChange: (value: string) => void,
+    lockedOptions: string[] = []
   ) => (
     <div className="relative">
       <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
@@ -1245,6 +1246,7 @@ export default function WordSearch({
             const diffName = option.split(" · ")[0];
 
             const locked =
+              lockedOptions.includes(option) ||
               id === "difficulty" &&
               difficultyOrder.indexOf(diffName) >
               difficultyOrder.indexOf(unlockedDifficulty);
@@ -1640,10 +1642,11 @@ export default function WordSearch({
                       "Grade",
                       "grade",
                       grade,
-                      demoMode ? [fixedGrade] : grades,
+                      grades,
                       (value) => {
                         if (!demoMode) setGrade(value);
-                      }
+                      },
+                      demoMode ? grades.filter((item) => item !== "Grade 1") : []
                     )}
                   </div>
 
@@ -1684,7 +1687,6 @@ export default function WordSearch({
 
                     <select
                       value={difficulty}
-                      disabled={demoMode}
                       onChange={(event) => {
                         if (demoMode) return;
 
@@ -1726,7 +1728,7 @@ export default function WordSearch({
                       return (
                         <button
                           key={item.key}
-                          disabled={locked || demoMode}
+                          disabled={locked}
                           onClick={() => {
                             if (!demoMode) setDifficulty(item.key);
                           }}
