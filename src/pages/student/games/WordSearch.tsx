@@ -632,9 +632,9 @@ export default function WordSearch({
 
   useEffect(() => {
     if (demoMode) {
-      setGrade(fixedGrade);
-      setDifficulty(fixedDifficulty);
-      setUnlockedDifficulty(fixedDifficulty);
+      setGrade("Grade 1");
+      setDifficulty("Easy");
+      setUnlockedDifficulty("Easy");
       return;
     }
 
@@ -686,15 +686,18 @@ export default function WordSearch({
     const loadWords = async () => {
       setVocabularyLoading(true);
 
+      const questionTable = demoMode ? "public_demo_questions" : "game_questions";
+      const queryGrade = demoMode ? "Grade 1" : grade;
       let query = supabase
-        .from("game_questions")
+        .from(questionTable)
         .select("language_pair, question_data")
         .eq("game_type", "memory_flip")
-        .eq("grade", grade)
-        .order("created_at", { ascending: demoMode });
+        .eq("grade", queryGrade);
 
       if (demoMode) {
-        query = query.eq("language_pair", "zh_en").limit(10);
+        query = query.eq("language_pair", "zh_en");
+      } else {
+        query = query.order("created_at", { ascending: false });
       }
 
       const { data, error } = await query;
@@ -747,7 +750,7 @@ export default function WordSearch({
       const directImageMap = new Map<string, string>();
 
       cleanedEntries.forEach((entry) => {
-        if (!demoMode && entry.imageUrl && !directImageMap.has(entry.word)) {
+        if (entry.imageUrl && !directImageMap.has(entry.word)) {
           directImageMap.set(entry.word, entry.imageUrl);
         }
       });
@@ -755,7 +758,7 @@ export default function WordSearch({
       const missingImageLookupValues = Array.from(
         new Set(
           cleanedEntries
-            .filter((entry) => demoMode || !directImageMap.has(entry.word))
+            .filter((entry) => !directImageMap.has(entry.word))
             .flatMap((entry) => entry.lookupValues)
             .flatMap((value) => {
               const lower = value.toLowerCase();
@@ -804,16 +807,14 @@ export default function WordSearch({
           .map((value) => approvedImageMap.get(value.toLowerCase()))
           .find(Boolean);
 
-        const imageUrl = demoMode
-          ? approvedImageUrl
-          : directImageMap.get(entry.word) || approvedImageUrl;
+        const imageUrl = directImageMap.get(entry.word) || approvedImageUrl;
 
         if (imageUrl) {
           nextWordImageMap[entry.word] = imageUrl;
         }
       });
 
-      const demoWords = Object.keys(nextWordImageMap).slice(0, maxDemoPairs);
+      const demoWords = words.slice(0, maxDemoPairs);
 
       setAvailableWords(demoMode ? demoWords : words);
       setWordImageMap(nextWordImageMap);

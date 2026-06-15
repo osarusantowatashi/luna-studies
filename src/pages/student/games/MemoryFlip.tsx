@@ -459,9 +459,9 @@ export default function MemoryFlip({
 
   useEffect(() => {
     if (demoMode) {
-      setGrade(fixedGrade);
+      setGrade("Grade 1");
       setDifficulty(fixedDifficulty);
-      setUnlockedDifficulty(fixedDifficulty);
+      setUnlockedDifficulty("Advanced");
       loadVocabularyPool();
       return;
     }
@@ -550,26 +550,37 @@ export default function MemoryFlip({
     selectedLanguagePair: string,
     selectedGrade: string
   ) => {
-    let query = supabase
-      .from("game_questions")
-      .select("*")
-      .eq("game_type", "memory_flip")
-      .eq("language_pair", selectedLanguagePair)
-      .eq("grade", selectedGrade)
-      .order("created_at", { ascending: demoMode });
+    const questionTable = demoMode ? "public_demo_questions" : "game_questions";
+    const buildQuery = (language: string) =>
+      supabase
+        .from(questionTable)
+        .select("*")
+        .eq("game_type", "memory_flip")
+        .eq("language_pair", language)
+        .eq("grade", demoMode ? "Grade 1" : selectedGrade);
 
-    if (demoMode) {
-      query = query.limit(10);
+    let query = buildQuery(selectedLanguagePair);
+
+    if (!demoMode) {
+      query = query.order("created_at", { ascending: false });
     }
 
-    const { data, error } = await query;
+    let { data, error } = await query;
+
+    if (demoMode && (!data || data.length === 0) && selectedLanguagePair !== "zh_en") {
+      const fallbackResult = await buildQuery("zh_en");
+      data = fallbackResult.data;
+      error = fallbackResult.error;
+    }
 
     if (!error && data && data.length > 0) {
       const allAvailablePairs = data.flatMap((questionSet) => {
         const pairs: Pair[] = questionSet.question_data?.pairs || [];
+        const questionLanguagePair =
+          questionSet.language_pair || selectedLanguagePair;
 
         return pairs.map((pair) => {
-          const pairKey = `${selectedLanguagePair}_${selectedGrade}_${pair.left}_${pair.right}`;
+          const pairKey = `${questionLanguagePair}_${selectedGrade}_${pair.left}_${pair.right}`;
 
           return {
             ...pair,
@@ -623,18 +634,24 @@ export default function MemoryFlip({
   const loadVocabularyPool = async () => {
     setVocabularyLoading(true);
 
-    let query = supabase
-      .from("game_questions")
-      .select("question_data")
-      .eq("game_type", "memory_flip")
-      .eq("language_pair", languagePair)
-      .eq("grade", grade);
+    const questionTable = demoMode ? "public_demo_questions" : "game_questions";
+    const queryGrade = demoMode ? "Grade 1" : grade;
+    const buildQuery = (selectedLanguagePair: string) =>
+      supabase
+        .from(questionTable)
+        .select("language_pair, question_data")
+        .eq("game_type", "memory_flip")
+        .eq("language_pair", selectedLanguagePair)
+        .eq("grade", queryGrade);
 
-    if (demoMode) {
-      query = query.limit(10);
+    let query = buildQuery(languagePair);
+
+    let { data } = await query;
+
+    if (demoMode && (!data || data.length === 0) && languagePair !== "zh_en") {
+      const fallbackResult = await buildQuery("zh_en");
+      data = fallbackResult.data;
     }
-
-    const { data } = await query;
 
     const allPairs =
       data?.flatMap((set) => set.question_data?.pairs || []) || [];
@@ -804,9 +821,9 @@ export default function MemoryFlip({
 
     await loadGame({
       selectedLanguagePair: languagePair,
-      selectedGrade: demoMode ? fixedGrade : grade,
-      selectedDifficulty: demoMode ? fixedDifficulty : difficulty,
-      selectedPairCount: getPairCountByDifficulty(demoMode ? fixedDifficulty : difficulty),
+      selectedGrade: demoMode ? "Grade 1" : grade,
+      selectedDifficulty: difficulty,
+      selectedPairCount: getPairCountByDifficulty(difficulty),
     });
   };
 
@@ -843,7 +860,7 @@ export default function MemoryFlip({
     const missingImageLookupValues = Array.from(
       new Set(
         selectedRawPairs
-          .filter((pair: any) => demoMode || !pair.image_url)
+          .filter((pair: any) => !pair.image_url)
           .flatMap((pair: any) => [
             pair.image_keyword,
             pair.vocab_word,
@@ -902,8 +919,8 @@ export default function MemoryFlip({
         return {
           ...pair,
           image_url:
+            pair.image_url ||
             candidates.map((key) => approvedImageMap.get(key)).find(Boolean) ||
-            (!demoMode ? pair.image_url : null) ||
             null,
         };
       })
@@ -1535,7 +1552,7 @@ export default function MemoryFlip({
 
                       <ArcadeDropdown
                         value={grade}
-                        options={demoMode ? [fixedGrade] : grades}
+                        options={demoMode ? ["Grade 1"] : grades}
                         isLight={isLight}
                         unlockedDifficulty={unlockedDifficulty}
                         onChange={(value) => {
@@ -1581,7 +1598,6 @@ export default function MemoryFlip({
 
                       <select
                         value={difficulty}
-                        disabled={demoMode}
                         onChange={(event) => setDifficulty(event.target.value)}
                         className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
                             ? "border-[#eee8ff] bg-white text-primary"
@@ -1622,9 +1638,9 @@ export default function MemoryFlip({
                         return (
                           <button
                             key={item.key}
-                            disabled={locked || demoMode}
+                            disabled={locked}
                             onClick={() => {
-                              if (!demoMode) setDifficulty(item.key);
+                              setDifficulty(item.key);
                             }}
                             className={`relative min-h-[88px] overflow-hidden rounded-[1.25rem] border p-3 text-left transition-all duration-300 active:scale-95 sm:min-h-[150px] sm:rounded-[1.45rem] sm:p-5 ${item.active
                               ? item.activeClass
@@ -1726,9 +1742,9 @@ export default function MemoryFlip({
                             setLevel(1);
                             await loadGame({
                               selectedLanguagePair: languagePair,
-                              selectedGrade: fixedGrade,
-                              selectedDifficulty: fixedDifficulty,
-                              selectedPairCount: getPairCountByDifficulty(fixedDifficulty),
+                              selectedGrade: "Grade 1",
+                              selectedDifficulty: difficulty,
+                              selectedPairCount: getPairCountByDifficulty(difficulty),
                             });
                             return;
                           }
