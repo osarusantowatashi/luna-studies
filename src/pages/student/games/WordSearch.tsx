@@ -1265,7 +1265,9 @@ export default function WordSearch({
                   setOpenDropdown(null);
                 }}
                 className={`flex min-h-11 w-full items-center rounded-[1rem] px-4 py-3 text-left text-sm font-black transition ${locked
-                  ? "cursor-not-allowed opacity-45"
+                  ? isLight
+                    ? "cursor-not-allowed bg-[#faf8ff] text-primary/75"
+                    : "cursor-not-allowed bg-white/[0.06] text-white/75"
                   : active
                     ? "bg-[#8B5CF6]/20 text-[#C4B5FD]"
                     : isLight
