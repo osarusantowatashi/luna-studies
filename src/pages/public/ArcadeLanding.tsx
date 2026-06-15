@@ -102,9 +102,47 @@ export default function ArcadeLanding() {
   );
   const faqs = asFaqArray(t("arcadePage.faq.items", { returnObjects: true }));
   const perfectForIcons = [Target, Brain, BookOpen, GraduationCap, MessageCircle, Sparkles];
-  const demoNoticeItems = asStringArray(
-    t("arcadePage.demo.notice.items", { returnObjects: true })
-  );
+  const demoIntro = {
+    en: {
+      title: "Try Luna Arcade Demo",
+      subtitle: "Explore a sample of our vocabulary games before creating an account.",
+      cta: "Create an account to save progress, unlock levels, and access full vocabulary sets.",
+      chips: [
+        "No account needed",
+        "Free public preview",
+        "Grade 1 sample",
+        "English vocabulary focus",
+        "Progress is not saved",
+        "Full levels unlock after joining",
+      ],
+    },
+    zh: {
+      title: "试玩 Luna Arcade Demo",
+      subtitle: "在创建账户前，先体验 Luna 的词汇游戏样本。",
+      cta: "创建账户后即可保存进度、解锁等级，并使用完整词汇库。",
+      chips: [
+        "无需账户",
+        "免费公开预览",
+        "Grade 1 样本",
+        "英语词汇重点",
+        "进度不会保存",
+        "加入后解锁完整等级",
+      ],
+    },
+    ja: {
+      title: "Luna Arcade Demo を試す",
+      subtitle: "アカウント作成前に、語彙ゲームのサンプルを体験できます。",
+      cta: "アカウントを作成すると、進捗保存、レベル解放、完全な語彙セットを利用できます。",
+      chips: [
+        "アカウント不要",
+        "無料公開プレビュー",
+        "Grade 1 サンプル",
+        "英語語彙にフォーカス",
+        "進捗は保存されません",
+        "参加後に全レベル解放",
+      ],
+    },
+  }[lang];
   const demoGames = [
     {
       key: "memory" as const,
@@ -200,8 +238,11 @@ export default function ArcadeLanding() {
                   className="mx-auto h-56 object-contain drop-shadow-[0_18px_40px_rgba(139,115,255,0.35)]"
                 />
                 <div className="mt-4 rounded-[2rem] bg-[#071426] p-4 text-white">
-                  <div className="grid grid-cols-4 gap-2">
-                    {["猫", "Cat", "书", "Book"].map((item) => (
+                  <p className="mb-3 text-center text-[11px] font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
+                    Chinese → English → Japanese
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["猫", "Cat", "ねこ", "书", "Book", "本"].map((item) => (
                       <div
                         key={item}
                         className="flex aspect-square items-center justify-center rounded-xl bg-white/10 text-lg font-black"
@@ -243,63 +284,38 @@ export default function ArcadeLanding() {
               <p className="mt-3 text-base leading-8 text-primary/60">{tr("demo.subtitle")}</p>
             </div>
 
-            <div className="rounded-[2.5rem] border border-white/10 bg-[#071426] p-4 shadow-[0_30px_100px_rgba(0,0,0,0.28)] sm:p-5">
-              <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
-                {tr("moreGames.title")}
-              </p>
+            <div className="mb-5 overflow-hidden rounded-[2rem] border border-[#eee8ff] bg-white p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] sm:p-6">
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div className="max-w-xl">
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8B5CF6]">
+                    Luna Arcade Preview
+                  </p>
+                  <h3 className="mt-2 font-poppins text-2xl font-black text-primary sm:text-3xl">
+                    {demoIntro.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7 text-primary/60">
+                    {demoIntro.subtitle}
+                  </p>
+                  <p className="mt-3 text-sm font-bold leading-6 text-primary/70">
+                    {demoIntro.cta}
+                  </p>
+                </div>
 
-              <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                {demoGames.map(({ key, title, status, icon: Icon, available }) => {
-                  const active = key === game;
-
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      disabled={!available}
-                      onClick={() => {
-                        if (key === "memory" || key === "word") setGame(key);
-                      }}
-                      className={`rounded-[1.3rem] border p-3 text-left transition sm:rounded-[1.5rem] sm:p-4 ${
-                        active
-                          ? "border-[#8B5CF6]/50 bg-[#8B5CF6]/20"
-                          : available
-                            ? "border-white/10 bg-white/[0.07] hover:-translate-y-1 hover:bg-white/10"
-                            : "border-white/10 bg-white/5 opacity-55"
-                      }`}
+                <div className="flex max-w-2xl flex-wrap gap-2">
+                  {demoIntro.chips.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-[#8B5CF6]/15 bg-[#f6f1ff] px-3 py-2 text-xs font-black text-primary/75"
                     >
-                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10">
-                        <Icon className="h-6 w-6 text-white" />
-                      </div>
-                      <p className="text-sm font-black text-white">{title}</p>
-                      <p className="mt-1 text-xs font-bold text-slate-400">{status}</p>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mb-5 rounded-[1.5rem] border border-[#8B5CF6]/35 bg-[#8B5CF6]/10 p-4 text-white">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                  <div>
-                    <p className="text-sm font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
-                      {tr("demo.notice.title")}
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                      {tr("demo.notice.description")}
-                    </p>
-                  </div>
-
-                  <div className="grid gap-2 text-xs font-bold text-slate-200 sm:grid-cols-2 lg:min-w-[520px]">
-                    {demoNoticeItems.map((item) => (
-                      <div key={item} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
+                      {item}
+                    </span>
+                  ))}
                 </div>
               </div>
+            </div>
 
-              <div className="overflow-hidden rounded-[2rem] border border-white/10">
+            <div className="overflow-hidden rounded-[2rem] bg-[#071426] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-3">
+              <div className="overflow-hidden rounded-[1.5rem] bg-[#071426]">
                 <Suspense
                   fallback={
                     <div className="flex min-h-[420px] items-center justify-center bg-[#071426] text-sm font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
@@ -319,6 +335,49 @@ export default function ArcadeLanding() {
                     />
                   )}
                 </Suspense>
+              </div>
+
+              <div className="mt-3 border-t border-white/10 px-2 pb-2 pt-4 sm:px-3">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
+                    {tr("moreGames.title")}
+                  </p>
+                  <p className="hidden text-xs font-bold text-slate-400 sm:block">
+                    {game === "memory" ? tr("demo.games.memory") : tr("demo.games.word")}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                  {demoGames.map(({ key, title, status, icon: Icon, available }) => {
+                    const active = key === game;
+
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        disabled={!available}
+                        onClick={() => {
+                          if (key === "memory" || key === "word") setGame(key);
+                        }}
+                        className={`rounded-[1rem] border p-3 text-left transition ${
+                          active
+                            ? "border-[#8B5CF6]/45 bg-[#8B5CF6]/18"
+                            : available
+                              ? "border-white/10 bg-white/[0.055] hover:-translate-y-0.5 hover:bg-white/10"
+                              : "border-white/[0.08] bg-white/[0.035]"
+                        }`}
+                      >
+                        <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-white/10">
+                          <Icon className={`h-5 w-5 ${available ? "text-white" : "text-white/65"}`} />
+                        </div>
+                        <p className={`text-xs font-black sm:text-sm ${available ? "text-white" : "text-white/70"}`}>
+                          {title}
+                        </p>
+                        <p className="mt-1 text-[11px] font-bold text-slate-400">{status}</p>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

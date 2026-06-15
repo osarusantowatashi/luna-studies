@@ -1293,18 +1293,20 @@ export default function WordSearch({
   );
 
   return (
-    <div className={`relative min-h-screen overflow-hidden ${palette.page}`}>
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {isLight ? (
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
-        ) : (
-          <>
-            <div className="absolute left-[-120px] top-[-120px] h-[340px] w-[340px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
-            <div className="absolute bottom-[-140px] right-[-100px] h-[380px] w-[380px] rounded-full bg-[#2563EB]/20 blur-3xl" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
-          </>
-        )}
-      </div>
+    <div className={demoMode ? "relative overflow-hidden bg-transparent" : `relative min-h-screen overflow-hidden ${palette.page}`}>
+      {!demoMode && (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          {isLight ? (
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
+          ) : (
+            <>
+              <div className="absolute left-[-120px] top-[-120px] h-[340px] w-[340px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
+              <div className="absolute bottom-[-140px] right-[-100px] h-[380px] w-[380px] rounded-full bg-[#2563EB]/20 blur-3xl" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
+            </>
+          )}
+        </div>
+      )}
 
       <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
         {showPageChrome && (
@@ -1343,22 +1345,26 @@ export default function WordSearch({
 
         <div
           ref={arcadeRef}
-          className={`relative overflow-visible border ${palette.gameWindow} ${isMobileFullscreen
+          className={`relative overflow-visible ${isMobileFullscreen
             ? "fixed inset-0 z-[250] h-[100dvh] overflow-y-auto rounded-none p-2 sm:p-3"
+            : demoMode
+              ? "mb-0 border-0 bg-transparent p-0 shadow-none"
             : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
-            }`}
+            } ${!isMobileFullscreen && !demoMode ? `border ${palette.gameWindow}` : ""}`}
         >
-          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            {isLight ? (
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
-            ) : (
-              <>
-                <div className="absolute left-[-120px] top-[-120px] h-[320px] w-[320px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
-                <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-[#2563EB]/20 blur-3xl" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
-              </>
-            )}
-          </div>
+          {!demoMode && (
+            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+              {isLight ? (
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
+              ) : (
+                <>
+                  <div className="absolute left-[-120px] top-[-120px] h-[320px] w-[320px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
+                  <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-[#2563EB]/20 blur-3xl" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
+                </>
+              )}
+            </div>
+          )}
 
           <div className={`relative z-10 ${fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
             {gameModeActive && (
