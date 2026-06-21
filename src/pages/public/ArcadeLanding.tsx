@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -72,6 +72,7 @@ export default function ArcadeLanding() {
   const [game, setGame] = useState<DemoGame>("memory");
   const demoFrameRef = useRef<HTMLDivElement | null>(null);
   const [demoFullscreen, setDemoFullscreen] = useState(false);
+  const [activeDemoFullscreen, setActiveDemoFullscreen] = useState(false);
 
   const withLang = (path: string) => `/${lang}${path}`;
   const tr = (key: string) => t(`arcadePage.${key}`);
@@ -90,7 +91,9 @@ export default function ArcadeLanding() {
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setDemoFullscreen(document.fullscreenElement === demoFrameRef.current);
+      const active = document.fullscreenElement === demoFrameRef.current;
+      setDemoFullscreen(active);
+      setActiveDemoFullscreen(active);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -107,14 +110,23 @@ export default function ArcadeLanding() {
     try {
       if (document.fullscreenElement === demoFrame) {
         await document.exitFullscreen();
+        setActiveDemoFullscreen(false);
         return;
       }
 
       await demoFrame.requestFullscreen();
+      setActiveDemoFullscreen(true);
     } catch {
       // Fullscreen is optional for the public preview.
     }
   };
+
+  const handleDemoFullscreenChange = useCallback(
+    (active: boolean) => {
+      setActiveDemoFullscreen(demoFullscreen || active);
+    },
+    [demoFullscreen]
+  );
 
   const whyCards = [
     { title: tr("why.cards.interactiveGames"), icon: Gamepad2 },
@@ -357,7 +369,7 @@ export default function ArcadeLanding() {
 
             <div
               ref={demoFrameRef}
-              className={`relative overflow-hidden rounded-[2rem] bg-[#071426] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-3 ${demoFullscreen ? "flex h-[100dvh] flex-col rounded-none" : ""}`}
+              className={`relative overflow-hidden rounded-[2rem] bg-[#071426] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-3 ${demoFullscreen ? "flex h-[100dvh] flex-col rounded-none p-0 shadow-none sm:p-0" : ""}`}
             >
               <button
                 type="button"
@@ -373,7 +385,7 @@ export default function ArcadeLanding() {
                 )}
               </button>
 
-              <div className={`overflow-hidden rounded-[2rem] bg-[#071426] sm:rounded-[2.5rem] ${demoFullscreen ? "min-h-0 flex-1" : ""}`}>
+              <div className={`overflow-hidden rounded-[2rem] bg-[#071426] sm:rounded-[2.5rem] ${demoFullscreen ? "h-full min-h-0 flex-1 rounded-none sm:rounded-none" : ""}`}>
                 <Suspense
                   fallback={
                     <div className="flex min-h-[420px] items-center justify-center bg-[#071426] text-sm font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
@@ -384,25 +396,31 @@ export default function ArcadeLanding() {
                   {game === "memory" && (
                     <MemoryFlip
                       {...demoProps}
-                      onRequestSwitchGame={() => setGame("word")}
+                      demoFullscreenActive={demoFullscreen}
+                      onDemoFullscreenChange={handleDemoFullscreenChange}
+                      onRequestSwitchGame={(nextGame) => setGame(nextGame)}
                     />
                   )}
                   {game === "word" && (
                     <WordSearch
                       {...demoProps}
-                      onRequestSwitchGame={() => setGame("letter")}
+                      demoFullscreenActive={demoFullscreen}
+                      onDemoFullscreenChange={handleDemoFullscreenChange}
+                      onRequestSwitchGame={(nextGame) => setGame(nextGame)}
                     />
                   )}
                   {game === "letter" && (
                     <LetterMatch
                       {...demoProps}
-                      onRequestSwitchGame={() => setGame("memory")}
+                      demoFullscreenActive={demoFullscreen}
+                      onDemoFullscreenChange={handleDemoFullscreenChange}
+                      onRequestSwitchGame={(nextGame) => setGame(nextGame)}
                     />
                   )}
                 </Suspense>
               </div>
 
-              <div className="mt-3 border-t border-white/10 px-2 pb-2 pt-4 sm:px-3">
+              {!activeDemoFullscreen && <div className="mt-3 border-t border-white/10 px-2 pb-2 pt-4 sm:px-3">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <p className="text-xs font-black uppercase tracking-[0.22em] text-[#C4B5FD]">
                     {tr("moreGames.title")}
@@ -447,7 +465,7 @@ export default function ArcadeLanding() {
                     );
                   })}
                 </div>
-              </div>
+              </div>}
             </div>
           </div>
         </section>

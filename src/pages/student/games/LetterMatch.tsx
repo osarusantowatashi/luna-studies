@@ -98,11 +98,13 @@ type GameDemoProps = {
   fixedGrade?: string;
   fixedDifficulty?: DifficultyKey;
   maxDemoPairs?: number;
+  demoFullscreenActive?: boolean;
   hideStudentIdentity?: boolean;
   disableProgressSaving?: boolean;
   disableUnlocking?: boolean;
   disableResume?: boolean;
   onDemoComplete?: () => void;
+  onDemoFullscreenChange?: (active: boolean) => void;
   onRequestSwitchGame?: (game: "memory" | "word" | "letter") => void;
 };
 
@@ -227,11 +229,14 @@ export default function LetterMatch({
   fixedGrade = "Grade 1",
   fixedDifficulty = "Easy",
   maxDemoPairs = 50,
+  demoFullscreenActive = false,
   hideStudentIdentity = false,
   disableProgressSaving = false,
   disableUnlocking = false,
   disableResume = false,
   onDemoComplete,
+  onDemoFullscreenChange,
+  onRequestSwitchGame,
 }: GameDemoProps = {}) {
   const navigate = useNavigate();
   const arcadeRef = useRef<HTMLDivElement | null>(null);
@@ -267,6 +272,7 @@ export default function LetterMatch({
   const [floatingScore, setFloatingScore] = useState<number | null>(null);
   const [missedThisQuestion, setMissedThisQuestion] = useState(false);
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
+  const [showDemoResult, setShowDemoResult] = useState(false);
   const [savedSession, setSavedSession] = useState<SavedLetterMatchSession | null>(null);
   const [showResumeConfirm, setShowResumeConfirm] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -279,6 +285,12 @@ export default function LetterMatch({
   const gameModeActive = gameStarted || !!gameResult;
   const gameplayFrameActive = gameStarted;
   const showPageChrome = !fullscreenActive && !demoMode;
+  const publicLang =
+    typeof window !== "undefined" && window.location.pathname.startsWith("/zh")
+      ? "zh"
+      : typeof window !== "undefined" && window.location.pathname.startsWith("/ja")
+        ? "ja"
+        : "en";
   const menuSelectedClass = isLight
     ? "border-[#6D28D9] bg-[#EDE9FE] text-[#3B0764] shadow-[0_10px_28px_rgba(109,40,217,0.18)]"
     : "border-[#A78BFA] bg-[#7C3AED]/35 text-white shadow-[0_10px_28px_rgba(124,58,237,0.25)]";
@@ -327,13 +339,24 @@ export default function LetterMatch({
     };
   }, []);
 
+  const stopAllSounds = () => {
+    if (!soundMap) return;
+
+    Object.values(soundMap).forEach((audio) => {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.loop = false;
+    });
+  };
+
   const playGameSound = (sound: "correct" | "wrong" | "stage" | "timeUp", volume = 0.45) => {
     if (!soundOn) return;
-
     const audio = soundMap?.[sound];
     if (!audio) return;
 
+    audio.pause();
     audio.currentTime = 0;
+    audio.loop = false;
     audio.volume = volume;
     void audio.play().catch(() => { });
   };
@@ -580,6 +603,13 @@ export default function LetterMatch({
   }, [theme]);
 
   useEffect(() => {
+    if (!demoMode) return;
+    onDemoFullscreenChange?.(fullscreenActive);
+  }, [demoMode, fullscreenActive, onDemoFullscreenChange]);
+
+  useEffect(() => () => stopAllSounds(), [soundMap]);
+
+  useEffect(() => {
     if (demoMode || disableResume) return;
 
     setSavedSession(loadGameSession<SavedLetterMatchSession>(LETTER_MATCH_GAME_KEY));
@@ -613,6 +643,7 @@ export default function LetterMatch({
     playGameSound("timeUp", 0.35);
     setGameStarted(false);
     const finalCorrect = mode === "test" ? testCorrect : 0;
+    stopAllSounds();
     setGameResult({
       passed: false,
       testCorrect: finalCorrect,
@@ -628,6 +659,7 @@ export default function LetterMatch({
   }, [config.testTarget, expired, gameResult, mode, score, testCorrect]);
 
   useEffect(() => {
+    if (!gameStarted) return;
     if (mode === "test") return;
     if (!allBlanksFilled || feedback || !currentItem) return;
 
@@ -637,7 +669,7 @@ export default function LetterMatch({
     }
 
     handleWrongAnswer();
-  }, [allBlanksFilled, currentAnswer, currentItem, feedback, mode]);
+  }, [allBlanksFilled, currentAnswer, currentItem, feedback, gameStarted, mode]);
 
   const enterGameMode = async () => {
     if (demoMode) return;
@@ -799,11 +831,13 @@ export default function LetterMatch({
   const startNewGame = async () => {
     if (vocabularyLoading) return;
 
+    stopAllSounds();
     setShowResumeConfirm(false);
     if (!demoMode && !disableResume) {
       clearSavedSession();
     }
     setGameResult(null);
+    setShowDemoResult(false);
     setErrorMsg("");
 
     if (vocabulary.length < 3) {
@@ -823,6 +857,19 @@ export default function LetterMatch({
     setPracticeItems([]);
     setTestItems([]);
     setAnswerFeedback(null);
+
+    if (demoMode) {
+      const firstItem = shuffle(vocabulary)[0];
+
+      if (firstItem) {
+        loadQuestion(firstItem, "practice");
+      }
+
+      setLoading(false);
+      setGameStarted(true);
+      return;
+    }
+
     setGameStarted(true);
 
     window.setTimeout(() => {
@@ -832,6 +879,8 @@ export default function LetterMatch({
   };
 
   const startFinalTest = (completedItems = practiceItems) => {
+    if (demoMode) return;
+
     const sourceItems = completedItems.length > 0 ? completedItems : practiceItems;
     const selectedItems = shuffle(sourceItems).slice(0, config.testTarget);
 
@@ -860,6 +909,7 @@ export default function LetterMatch({
     setFeedback(null);
     setFloatingScore(null);
     setActiveBankLetterId(null);
+    stopAllSounds();
     setGameResult({
       passed,
       testCorrect: correctCount,
@@ -886,11 +936,13 @@ export default function LetterMatch({
   };
 
   const resetToMenu = async () => {
+    stopAllSounds();
     saveCurrentSession();
     setGameStarted(false);
     setLoading(false);
     setErrorMsg("");
     setGameResult(null);
+    setShowDemoResult(false);
     setMode("practice");
     setProgress(0);
     setTestCorrect(0);
@@ -945,6 +997,19 @@ export default function LetterMatch({
 
     window.setTimeout(() => {
       if (nextProgress >= config.practiceTarget) {
+        if (demoMode) {
+          setAnswerFeedback(null);
+          setFeedback(null);
+          setFloatingScore(null);
+          setActiveBankLetterId(null);
+          stopAllSounds();
+          setGameStarted(false);
+          setShowDemoResult(true);
+          playGameSound("stage", 0.25);
+          onDemoComplete?.();
+          return;
+        }
+
         startFinalTest(nextPracticeItems);
         return;
       }
@@ -1091,7 +1156,7 @@ export default function LetterMatch({
   };
 
   return (
-    <div className={demoMode ? "relative overflow-hidden bg-transparent" : `relative min-h-screen overflow-hidden ${palette.page}`}>
+    <div className={demoMode ? `relative overflow-hidden bg-transparent ${demoFullscreenActive ? "h-full min-h-0" : ""}` : `relative min-h-screen overflow-hidden ${palette.page}`}>
       <style>
         {`
           @keyframes letter-match-pop {
@@ -1143,7 +1208,7 @@ export default function LetterMatch({
         )}
       </div>}
 
-      <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+      <div className={demoMode && demoFullscreenActive ? "relative z-10 h-full min-h-0 w-full overflow-hidden p-0" : "relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"}>
         {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
             <button
@@ -1189,13 +1254,15 @@ export default function LetterMatch({
           className={`relative ${gameplayFrameActive ? "overflow-hidden" : "overflow-visible"} ${!demoMode && !gameplayFrameActive ? `border ${palette.gameWindow}` : ""} ${isMobileFullscreen
             ? `fixed inset-0 z-[250] h-[100dvh] overflow-y-auto rounded-none ${gameplayFrameActive ? "p-0" : "p-2 sm:p-3"}`
             : demoMode
-              ? "mb-0 border-0 bg-transparent p-0 shadow-none"
+              ? demoFullscreenActive
+                ? "mb-0 h-full min-h-0 overflow-hidden border-0 bg-transparent p-0 shadow-none"
+                : "mb-0 border-0 bg-transparent p-0 shadow-none"
             : gameplayFrameActive
               ? "mb-8 rounded-[1.6rem] p-0 sm:rounded-[2.5rem]"
               : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
             }`}
         >
-          <div className={`relative z-10 ${fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
+          <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "h-full min-h-0 overflow-hidden" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
             {!demoMode && gameModeActive && !gameStarted && (
               <button
                 type="button"
@@ -1205,6 +1272,60 @@ export default function LetterMatch({
               >
                 {fullscreenActive ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
               </button>
+            )}
+
+            {demoMode && showDemoResult && (
+              <div className="fixed inset-0 z-[190] flex items-center justify-center bg-black/70 px-4">
+                <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
+                  <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
+
+                  <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                    Luna Arcade Demo
+                  </p>
+
+                  <h2 className="mt-3 text-4xl font-black text-white">
+                    Great Job!
+                  </h2>
+
+                  <p className="mt-4 text-slate-300">
+                    You completed the Luna Arcade demo.
+                  </p>
+
+                  <div className="mt-8 grid gap-3">
+                    <button
+                      onClick={async () => {
+                        setShowDemoResult(false);
+                        await startNewGame();
+                      }}
+                      className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                    >
+                      Play Again
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        setShowDemoResult(false);
+                        await resetToMenu();
+                        onRequestSwitchGame?.("word");
+                      }}
+                      className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                    >
+                      Try Word Search
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        setShowDemoResult(false);
+                        await resetToMenu();
+                        navigate(`/${publicLang}/enquiry`);
+                      }}
+                      className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                    >
+                      Book Consultation
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
 
             {gameResult && (
@@ -1476,7 +1597,7 @@ export default function LetterMatch({
                 </div>
               )
             ) : mode === "test" && currentItem ? (
-              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#5B21B6] via-[#BE185D] to-[#F97316] ${demoMode ? "sm:rounded-[2.5rem]" : ""} ${fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
+              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#5B21B6] via-[#BE185D] to-[#F97316] ${demoMode ? "sm:rounded-[2.5rem]" : ""} ${demoMode && demoFullscreenActive ? "h-full min-h-0 p-2" : fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
                 {answerFeedback && !gameResult && (
                   <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#180B3D]/62 px-4 backdrop-blur-sm">
                     <div className={`w-full max-w-sm rounded-[2rem] border-4 p-6 text-center shadow-[0_28px_90px_rgba(0,0,0,0.45)] ${answerFeedback.correct
@@ -1672,7 +1793,7 @@ export default function LetterMatch({
                 </div>
               </div>
             ) : (
-              <div className={`relative flex flex-col overflow-hidden bg-gradient-to-br from-[#5B21B6] via-[#BE185D] to-[#F97316] ${demoMode ? "rounded-[2rem] sm:rounded-[2.5rem]" : ""} ${fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
+              <div className={`relative flex flex-col overflow-hidden bg-gradient-to-br from-[#5B21B6] via-[#BE185D] to-[#F97316] ${demoMode ? "rounded-[2rem] sm:rounded-[2.5rem]" : ""} ${demoMode && demoFullscreenActive ? "h-full min-h-0 p-2" : fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.24),transparent_24%),radial-gradient(circle_at_80%_70%,rgba(250,204,21,0.2),transparent_28%)]" />
 
                 <div className="relative z-10 mb-4 rounded-[2rem] border-4 border-[#A78BFA] bg-gradient-to-r from-[#7C3AED]/80 via-[#DB2777]/70 to-[#FB923C]/70 p-4 shadow-[0_18px_55px_rgba(124,58,237,0.45)]">

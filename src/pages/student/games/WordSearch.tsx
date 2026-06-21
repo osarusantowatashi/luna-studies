@@ -83,11 +83,13 @@ type GameDemoProps = {
   fixedGrade?: string;
   fixedDifficulty?: string;
   maxDemoPairs?: number;
+  demoFullscreenActive?: boolean;
   hideStudentIdentity?: boolean;
   disableProgressSaving?: boolean;
   disableUnlocking?: boolean;
   disableResume?: boolean;
   onDemoComplete?: () => void;
+  onDemoFullscreenChange?: (active: boolean) => void;
   onRequestSwitchGame?: (game: "memory" | "word" | "letter") => void;
 };
 
@@ -430,11 +432,13 @@ export default function WordSearch({
   fixedGrade = "Grade 1",
   fixedDifficulty = "Easy",
   maxDemoPairs = 50,
+  demoFullscreenActive = false,
   hideStudentIdentity = false,
   disableProgressSaving = false,
   disableUnlocking = false,
   disableResume = false,
   onDemoComplete,
+  onDemoFullscreenChange,
   onRequestSwitchGame,
 }: GameDemoProps = {}) {
   const navigate = useNavigate();
@@ -465,6 +469,7 @@ export default function WordSearch({
   const [secondsLeft, setSecondsLeft] = useState(getDifficultyConfig(difficulty).seconds);
   const [level, setLevel] = useState(1);
   const [showRoundResult, setShowRoundResult] = useState(false);
+  const [showDemoResult, setShowDemoResult] = useState(false);
   const [showFinalTest, setShowFinalTest] = useState(false);
   const [finalQuestions, setFinalQuestions] = useState<FinalQuestion[]>([]);
   const [finalIndex, setFinalIndex] = useState(0);
@@ -547,6 +552,11 @@ export default function WordSearch({
   useEffect(() => {
     localStorage.setItem("arcade_theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!demoMode) return;
+    onDemoFullscreenChange?.(fullscreenActive);
+  }, [demoMode, fullscreenActive, onDemoFullscreenChange]);
 
   const moreGames = [
     { title: "Memory Flip", icon: Brain, available: true, current: false, status: "Available", path: "/memory-flip" },
@@ -905,7 +915,8 @@ export default function WordSearch({
     if (demoMode) {
       playGameSound("stage", 0.25);
       onDemoComplete?.();
-      buildRound(1);
+      setGameStarted(false);
+      setShowDemoResult(true);
       return;
     }
 
@@ -1072,6 +1083,7 @@ export default function WordSearch({
       clearSavedSession();
     }
     setScore(0);
+    setShowDemoResult(false);
     setFinalResult(null);
     setShowFinalTest(false);
     setFinalQuestions([]);
@@ -1113,6 +1125,7 @@ export default function WordSearch({
     setErrorMsg("");
     setLoading(false);
     setShowRoundResult(false);
+    setShowDemoResult(false);
     setShowFinalTest(false);
     setFinalResult(null);
     await enterGameMode();
@@ -1136,6 +1149,7 @@ export default function WordSearch({
     setScore(0);
     setLevel(1);
     setShowRoundResult(false);
+    setShowDemoResult(false);
     setShowFinalTest(false);
     setFinalQuestions([]);
     setFinalIndex(0);
@@ -1360,7 +1374,7 @@ export default function WordSearch({
   );
 
   return (
-    <div className={demoMode ? "relative overflow-hidden bg-transparent" : `relative min-h-screen overflow-hidden ${palette.page}`}>
+    <div className={demoMode ? `relative overflow-hidden bg-transparent ${demoFullscreenActive ? "h-full min-h-0" : ""}` : `relative min-h-screen overflow-hidden ${palette.page}`}>
       <style>
         {`
           @keyframes letter-match-confetti {
@@ -1384,7 +1398,7 @@ export default function WordSearch({
         </div>
       )}
 
-      <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+      <div className={demoMode && demoFullscreenActive ? "relative z-10 h-full min-h-0 w-full overflow-hidden p-0" : "relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"}>
         {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
             <button
@@ -1428,13 +1442,15 @@ export default function WordSearch({
           className={`relative ${gameplayFrameActive ? "overflow-hidden" : "overflow-visible"} ${isMobileFullscreen
             ? `fixed inset-0 z-[250] h-[100dvh] overflow-y-auto rounded-none ${gameplayFrameActive ? "p-0" : "p-2 sm:p-3"}`
             : demoMode
-              ? "mb-0 border-0 bg-transparent p-0 shadow-none"
+              ? demoFullscreenActive
+                ? "mb-0 h-full min-h-0 overflow-hidden border-0 bg-transparent p-0 shadow-none"
+                : "mb-0 border-0 bg-transparent p-0 shadow-none"
               : gameplayFrameActive
                 ? "mb-8 rounded-[1.6rem] p-0 sm:rounded-[2.5rem]"
                 : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
             } ${!isMobileFullscreen && !demoMode && !gameplayFrameActive ? `border ${palette.gameWindow}` : ""}`}
         >
-          <div className={`relative z-10 ${fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
+          <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "h-full min-h-0 overflow-hidden" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
             {!demoMode && gameModeActive && !gameStarted && (
               <button
                 type="button"
@@ -1475,6 +1491,62 @@ export default function WordSearch({
                       className="h-12 rounded-2xl border border-white/10 bg-transparent font-black text-slate-300"
                     >
                       CANCEL
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {demoMode && showDemoResult && (
+              <div className="fixed inset-0 z-[190] flex items-center justify-center bg-black/70 px-4">
+                <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
+                  <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
+
+                  <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#A7F3D0]">
+                    Luna Arcade Demo
+                  </p>
+
+                  <h2 className="mt-3 text-4xl font-black text-white">
+                    Great Job!
+                  </h2>
+
+                  <p className="mt-4 text-slate-300">
+                    You completed the Luna Arcade demo.
+                  </p>
+
+                  <div className="mt-8 grid gap-3">
+                    <button
+                      onClick={() => {
+                        setShowDemoResult(false);
+                        setScore(0);
+                        setMasteryPool([]);
+                        buildRound(1);
+                      }}
+                      className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
+                    >
+                      Play Again
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        setShowDemoResult(false);
+                        await resetToMenu();
+                        onRequestSwitchGame?.("memory");
+                      }}
+                      className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                    >
+                      Try Memory Flip
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        setShowDemoResult(false);
+                        await resetToMenu();
+                        navigate(`/${publicLang}/enquiry`);
+                      }}
+                      className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
+                    >
+                      Book Consultation
                     </button>
                   </div>
                 </div>
@@ -1604,7 +1676,7 @@ export default function WordSearch({
             )}
 
             {showFinalTest && finalQuestions[finalIndex] ? (
-              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#064E3B] via-[#0F766E] to-[#1D4ED8] ${fullscreenActive ? "min-h-[calc(100dvh-1.5rem)] p-4" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
+              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#064E3B] via-[#0F766E] to-[#1D4ED8] ${demoMode && demoFullscreenActive ? "h-full min-h-0 p-2 sm:p-3" : fullscreenActive ? "min-h-[calc(100dvh-1.5rem)] p-4" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(167,243,208,0.26),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
                 <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
                   <div>
@@ -1919,7 +1991,7 @@ export default function WordSearch({
                 </div>
               )
             ) : (
-              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#064E3B] via-[#0F766E] to-[#1D4ED8] ${fullscreenActive ? "min-h-[calc(100dvh-1.5rem)] p-4" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
+              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#064E3B] via-[#0F766E] to-[#1D4ED8] ${demoMode && demoFullscreenActive ? "h-full min-h-0 p-2 sm:p-3" : fullscreenActive ? "min-h-[calc(100dvh-1.5rem)] p-4" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(167,243,208,0.26),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
                 <div className="relative z-10 mb-4 rounded-[2rem] border-4 border-[#A7F3D0] bg-gradient-to-r from-[#064E3B]/85 via-[#0F766E]/75 to-[#1D4ED8]/75 p-4 shadow-[0_18px_55px_rgba(15,118,110,0.45)]">
                   <div className="flex flex-wrap items-center justify-between gap-2">

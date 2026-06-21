@@ -64,11 +64,13 @@ type GameDemoProps = {
   fixedGrade?: string;
   fixedDifficulty?: string;
   maxDemoPairs?: number;
+  demoFullscreenActive?: boolean;
   hideStudentIdentity?: boolean;
   disableProgressSaving?: boolean;
   disableUnlocking?: boolean;
   disableResume?: boolean;
   onDemoComplete?: () => void;
+  onDemoFullscreenChange?: (active: boolean) => void;
   onRequestSwitchGame?: (game: "memory" | "word" | "letter") => void;
 };
 
@@ -299,11 +301,13 @@ export default function MemoryFlip({
   fixedGrade = "Grade 1",
   fixedDifficulty = "Easy",
   maxDemoPairs = 50,
+  demoFullscreenActive = false,
   hideStudentIdentity = false,
   disableProgressSaving = false,
   disableUnlocking = false,
   disableResume = false,
   onDemoComplete,
+  onDemoFullscreenChange,
   onRequestSwitchGame,
 }: GameDemoProps = {}) {
   const navigate = useNavigate();
@@ -416,6 +420,11 @@ export default function MemoryFlip({
   useEffect(() => {
     localStorage.setItem("arcade_theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!demoMode) return;
+    onDemoFullscreenChange?.(fullscreenActive);
+  }, [demoMode, fullscreenActive, onDemoFullscreenChange]);
 
   const languageLabel =
     languagePair === "zh_en"
@@ -1301,7 +1310,7 @@ export default function MemoryFlip({
   };
 
   return (
-    <div className={demoMode ? "relative overflow-hidden bg-transparent" : `relative min-h-screen overflow-hidden ${themeClass.page}`}>
+    <div className={demoMode ? `relative overflow-hidden bg-transparent ${demoFullscreenActive ? "h-full min-h-0" : ""}` : `relative min-h-screen overflow-hidden ${themeClass.page}`}>
       <style>
         {`
           @keyframes letter-match-confetti {
@@ -1476,7 +1485,7 @@ export default function MemoryFlip({
         )}
       </AnimatePresence>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+      <div className={demoMode && demoFullscreenActive ? "relative z-10 h-full min-h-0 w-full overflow-hidden p-0" : "relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"}>
         {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:gap-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${themeClass.topBar}`}>
             <button
@@ -1525,7 +1534,9 @@ export default function MemoryFlip({
           className={`relative ${gameStarted || showMasteryTest ? "overflow-hidden" : "overflow-visible"} ${isMobileFullscreen
             ? "fixed inset-0 z-[250] mb-0 h-[100dvh] overflow-y-auto rounded-none p-0"
             : demoMode
-              ? "mb-0 border-0 bg-transparent p-0 shadow-none"
+              ? demoFullscreenActive
+                ? "mb-0 h-full min-h-0 overflow-hidden border-0 bg-transparent p-0 shadow-none"
+                : "mb-0 border-0 bg-transparent p-0 shadow-none"
               : gameStarted || showMasteryTest
                 ? "mb-8 overflow-hidden rounded-[2rem] p-0"
                 : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
@@ -1534,7 +1545,7 @@ export default function MemoryFlip({
               : ""
             }`}
         >
-          <div className={fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[640px]"}>
+          <div className={demoMode && demoFullscreenActive ? "h-full min-h-0 overflow-hidden" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[640px]"}>
             {!demoMode && !gameStarted && (
               <button
                 onClick={toggleFullscreen}
@@ -1550,7 +1561,7 @@ export default function MemoryFlip({
             )}
 
             {showMasteryTest && masteryQuestions[masteryIndex] ? (
-              <div className={`relative flex flex-col overflow-hidden bg-gradient-to-br from-[#312E81] via-[#7C3AED] to-[#DB2777] ${fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "p-2 sm:p-4"}`}>
+              <div className={`relative flex flex-col overflow-hidden bg-gradient-to-br from-[#312E81] via-[#7C3AED] to-[#DB2777] ${demoMode && demoFullscreenActive ? "h-full min-h-0 p-2" : fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "p-2 sm:p-4"}`}>
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,255,255,0.22),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
                 <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
                   <div>
@@ -2003,10 +2014,10 @@ export default function MemoryFlip({
             </AnimatePresence>
 
             {gameStarted && (
-              <div className={`relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#6D28D9] p-2 sm:p-4 ${fullscreenActive ? "min-h-[100dvh]" : "min-h-[720px]"
+              <div className={`relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#6D28D9] p-2 sm:p-4 ${demoMode && demoFullscreenActive ? "flex h-full min-h-0 flex-col" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[720px]"
                 }`}>
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(196,181,253,0.28),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.14),transparent_30%)]" />
-                <div className="relative z-10">
+                <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "flex min-h-0 flex-1 flex-col" : ""}`}>
                   <div className="relative mb-3 overflow-hidden rounded-[1.7rem] border-4 border-[#FDE68A]/75 bg-[#3B0764]/45 p-3 shadow-[inset_0_8px_24px_rgba(0,0,0,0.22)] sm:p-4">
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,255,255,0.22),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
                     <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
@@ -2131,7 +2142,7 @@ export default function MemoryFlip({
                   )}
 
                   {!loading && !errorMsg && !timeUp && (
-                    <div className="relative mx-auto flex min-h-[520px] max-w-[980px] items-center justify-center py-6 sm:min-h-[600px]">
+                    <div className={`relative mx-auto flex max-w-[980px] items-center justify-center ${demoMode && demoFullscreenActive ? "min-h-0 flex-1 py-2" : "min-h-[520px] py-6 sm:min-h-[600px]"}`}>
                       <AnimatePresence>
                         {comboPop && comboPop >= 2 && (
                           <motion.div
