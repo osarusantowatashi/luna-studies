@@ -28,9 +28,9 @@ const games = [
     color: "bg-[#ff8bd2]",
   },
   {
-    title: "Word Match",
-    description: "Swap letters to form Luna vocabulary words before time runs out.",
-    path: "/word-match",
+    title: "Letter Match",
+    description: "Spell the English word from a picture using the letter bank.",
+    path: "/letter-match",
     icon: Gem,
     status: "Available",
     color: "bg-[#8d73ff]",

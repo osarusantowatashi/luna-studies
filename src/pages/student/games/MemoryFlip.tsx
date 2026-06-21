@@ -19,6 +19,8 @@ import {
   XCircle,
   Trophy,
   CheckCircle2,
+  Star,
+  Timer,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ArcadeLoadingScreen from "@/components/games/ArcadeLoadingScreen";
@@ -67,16 +69,19 @@ type GameDemoProps = {
   disableUnlocking?: boolean;
   disableResume?: boolean;
   onDemoComplete?: () => void;
-  onRequestSwitchGame?: (game: "memory" | "word") => void;
+  onRequestSwitchGame?: (game: "memory" | "word" | "letter") => void;
 };
 
 const shuffle = <T,>(array: T[]) => [...array].sort(() => Math.random() - 0.5);
 
 const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
+const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
 
 const FALLBACK_IMAGE =
   "https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg";
 const MEMORY_FLIP_GAME_KEY = "memory_flip";
+const MEMORY_FLIP_MASTERY_PASS_RATE = 0.8;
+const getPassMarkPercent = (rate: number) => Math.round(rate * 100);
 
 const getTimeLimit = (pairCount: number, difficulty: string) => {
   if (difficulty === "Easy") return pairCount * 18;
@@ -91,11 +96,21 @@ const getPairCountByDifficulty = (difficulty: string) => {
   return 12;
 };
 
+const getHighestDifficulty = (first?: string | null, second?: string | null) => {
+  const firstDifficulty = first || "Easy";
+  const secondDifficulty = second || "Easy";
+
+  return difficultyOrder.indexOf(firstDifficulty) >=
+    difficultyOrder.indexOf(secondDifficulty)
+    ? firstDifficulty
+    : secondDifficulty;
+};
+
 const getCardGridClass = (cardCount: number) => {
   if (cardCount <= 12) return "grid-cols-3 sm:grid-cols-4";
   if (cardCount <= 16) return "grid-cols-4";
-  if (cardCount <= 20) return "grid-cols-4 sm:grid-cols-5";
-  return "grid-cols-4 sm:grid-cols-6";
+  if (cardCount <= 20) return "grid-cols-4 gap-1 sm:grid-cols-5 sm:gap-1.5";
+  return "grid-cols-4 gap-1 sm:grid-cols-6 sm:gap-1.5";
 };
 
 const getCardSizeClass = (cardCount: number) => {
@@ -104,16 +119,16 @@ const getCardSizeClass = (cardCount: number) => {
   }
 
   if (cardCount <= 20) {
-    return "h-[92px] w-[92px] min-[390px]:h-[100px] min-[390px]:w-[100px] sm:h-[148px] sm:w-[148px] lg:h-[158px] lg:w-[158px]";
+    return "h-[82px] w-[82px] min-[390px]:h-[92px] min-[390px]:w-[92px] sm:h-[116px] sm:w-[116px] lg:h-[124px] lg:w-[124px] xl:h-[132px] xl:w-[132px]";
   }
 
-  return "h-[84px] w-[84px] min-[390px]:h-[92px] min-[390px]:w-[92px] sm:h-[148px] sm:w-[148px] lg:h-[158px] lg:w-[158px]";
+  return "h-[72px] w-[72px] min-[390px]:h-[82px] min-[390px]:w-[82px] sm:h-[102px] sm:w-[102px] lg:h-[110px] lg:w-[110px] xl:h-[118px] xl:w-[118px]";
 };
 
 const getCardImageClass = (cardCount: number) => {
   if (cardCount <= 12) return "h-[78px] w-[78px] sm:h-[92px] sm:w-[92px]";
-  if (cardCount <= 20) return "h-[54px] w-[54px] min-[390px]:h-[60px] min-[390px]:w-[60px] sm:h-[92px] sm:w-[92px]";
-  return "h-[44px] w-[44px] min-[390px]:h-[50px] min-[390px]:w-[50px] sm:h-[92px] sm:w-[92px]";
+  if (cardCount <= 20) return "h-[48px] w-[48px] min-[390px]:h-[56px] min-[390px]:w-[56px] sm:h-[70px] sm:w-[70px] lg:h-[76px] lg:w-[76px]";
+  return "h-[38px] w-[38px] min-[390px]:h-[46px] min-[390px]:w-[46px] sm:h-[58px] sm:w-[58px] lg:h-[64px] lg:w-[64px]";
 };
 
 const getCardTextClass = (cardCount: number) => {
@@ -319,6 +334,7 @@ export default function MemoryFlip({
   const [showResultModal, setShowResultModal] = useState(false);
   const [showMasteryTest, setShowMasteryTest] = useState(false);
   const [masteryQuestions, setMasteryQuestions] = useState<any[]>([]);
+  const [masteryTotal, setMasteryTotal] = useState(10);
   const [masteryIndex, setMasteryIndex] = useState(0);
   const [masteryCorrect, setMasteryCorrect] = useState(0);
   const [masteryResult, setMasteryResult] = useState<{
@@ -336,7 +352,9 @@ export default function MemoryFlip({
   const [masteryAnswerLocked, setMasteryAnswerLocked] = useState(false);
 
   const [soundOn, setSoundOn] = useState(true);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">(
+    () => (localStorage.getItem("arcade_theme") as "dark" | "light") || "dark"
+  );
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobileFullscreen, setIsMobileFullscreen] = useState(false);
 
@@ -350,6 +368,12 @@ export default function MemoryFlip({
   );
 
   const isLight = theme === "light";
+  const menuSelectedClass = isLight
+    ? "border-[#6D28D9] bg-[#EDE9FE] text-[#3B0764] shadow-[0_10px_28px_rgba(109,40,217,0.18)]"
+    : "border-[#A78BFA] bg-[#7C3AED]/35 text-white shadow-[0_10px_28px_rgba(124,58,237,0.25)]";
+  const menuSelectedCardClass = isLight
+    ? "border-[#6D28D9] bg-[#EDE9FE] shadow-[0_16px_42px_rgba(109,40,217,0.18)]"
+    : "border-[#A78BFA] bg-[#7C3AED]/30 shadow-[0_16px_42px_rgba(124,58,237,0.24)]";
 
   const fullscreenActive = isFullscreen || isMobileFullscreen;
   const showPageChrome = !fullscreenActive && !demoMode;
@@ -385,9 +409,13 @@ export default function MemoryFlip({
       ? "border-[#eee8ff] bg-white shadow-[0_12px_30px_rgba(66,56,120,0.10)]"
       : "border-white/10 bg-white/10 backdrop-blur-xl",
     cardBack: isLight
-      ? "border-[#eee8ff] bg-gradient-to-br from-[#f6f1ff] to-white"
-      : "border-[#1E2F4A] bg-gradient-to-br from-[#12243A] to-[#091423]",
+      ? "border-[#C4B5FD]/80 bg-gradient-to-br from-[#F5F3FF] via-[#EDE9FE] to-[#DDD6FE]"
+      : "border-[#C4B5FD]/60 bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#4C1D95] shadow-[inset_0_2px_0_rgba(255,255,255,0.16)]",
   };
+
+  useEffect(() => {
+    localStorage.setItem("arcade_theme", theme);
+  }, [theme]);
 
   const languageLabel =
     languagePair === "zh_en"
@@ -399,7 +427,7 @@ export default function MemoryFlip({
   const moreGames = [
     { title: "Memory Flip", icon: Brain, available: true, current: true, status: "Available", path: "/memory-flip" },
     { title: "Word Search", icon: Search, available: true, current: false, status: "Available", path: "/word-search" },
-    { title: "Word Match", icon: Gem, available: true, current: false, status: "Available", path: "/word-match" },
+    { title: "Letter Match", icon: Gem, available: true, current: false, status: "Available", path: "/letter-match" },
     { title: "Word Drive", icon: Car, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "Grammar Runner", icon: Flame, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "Listening Challenge", icon: Headphones, available: false, current: false, status: "Coming Soon", path: "#" },
@@ -436,15 +464,8 @@ export default function MemoryFlip({
   const isWin = !loading && totalPairs > 0 && matchedCount === totalPairs;
   const isGameEnded = isWin || timeUp;
 
-  const stars = useMemo(() => {
-    if (!isWin) return 0;
-    if (moves <= totalPairs + 4 && secondsLeft > 10) return 3;
-    if (moves <= totalPairs + 8) return 2;
-    return 1;
-  }, [isWin, moves, totalPairs, secondsLeft]);
-
   useEffect(() => {
-    if (!gameStarted || loading || errorMsg || isGameEnded) return;
+    if (!gameStarted || loading || errorMsg || isGameEnded || showMasteryTest) return;
 
     const timer = setInterval(() => {
       setSecondsLeft((prev) => {
@@ -460,7 +481,7 @@ export default function MemoryFlip({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameStarted, loading, errorMsg, isGameEnded]);
+  }, [gameStarted, loading, errorMsg, isGameEnded, showMasteryTest]);
 
   useEffect(() => {
     if (demoMode) {
@@ -496,9 +517,21 @@ export default function MemoryFlip({
       generateMasteryTest();
     } else {
       playGameSound("stage", 0.25);
-      setShowResultModal(true);
+      const nextLevel = level + 1;
+
+      setCards([]);
+      setSelectedCards([]);
+      setLoading(true);
+      setLevel(nextLevel);
+
+      void loadGame({
+        selectedLanguagePair: languagePair,
+        selectedGrade: grade,
+        selectedDifficulty: difficulty,
+        selectedPairCount: getPairCountByDifficulty(difficulty),
+      });
     }
-  }, [isWin, showResultModal, showMasteryTest, level]);
+  }, [isWin, showResultModal, showMasteryTest, level, languagePair, grade, difficulty]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -534,6 +567,7 @@ export default function MemoryFlip({
   }, [masteryResult]);
 
   const toggleFullscreen = async () => {
+    if (demoMode) return;
     if (!gameWindowRef.current) return;
 
     const isMobile =
@@ -776,17 +810,19 @@ export default function MemoryFlip({
     setShowMasteryTest(false);
     setGameStarted(true);
 
-    const isMobile =
-      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-      window.innerWidth < 768;
+    if (!demoMode) {
+      const isMobile =
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+        window.innerWidth < 768;
 
-    if (isMobile) {
-      setIsMobileFullscreen(true);
-    } else {
-      try {
-        await gameWindowRef.current?.requestFullscreen();
-      } catch {
-        // Browsers can block fullscreen unless the gesture is accepted.
+      if (isMobile) {
+        setIsMobileFullscreen(true);
+      } else {
+        try {
+          await gameWindowRef.current?.requestFullscreen();
+        } catch {
+          // Browsers can block fullscreen unless the gesture is accepted.
+        }
       }
     }
 
@@ -807,17 +843,19 @@ export default function MemoryFlip({
       clearSavedSession();
     }
 
-    const isMobile =
-      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-      window.innerWidth < 768;
+    if (!demoMode) {
+      const isMobile =
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+        window.innerWidth < 768;
 
-    if (isMobile) {
-      setIsMobileFullscreen(true);
-    } else {
-      try {
-        await gameWindowRef.current?.requestFullscreen();
-      } catch {
-        // Browsers can block fullscreen unless the gesture is accepted.
+      if (isMobile) {
+        setIsMobileFullscreen(true);
+      } else {
+        try {
+          await gameWindowRef.current?.requestFullscreen();
+        } catch {
+          // Browsers can block fullscreen unless the gesture is accepted.
+        }
       }
     }
 
@@ -936,7 +974,7 @@ export default function MemoryFlip({
     if (pairs.length < selectedPairCount || !usedGrade) {
       setCards([]);
       setErrorMsg(
-        `Hapiko noticed that there are not enough approved ${selectedGrade} ${selectedDifficulty} vocabulary pairs yet. Please ask admin to approve or generate more pairs.`
+        `Not enough approved ${selectedGrade} ${selectedDifficulty} vocabulary pairs yet. Please ask admin to approve or generate more pairs.`
       );
       setLoading(false);
       return;
@@ -1025,13 +1063,16 @@ export default function MemoryFlip({
       .eq("grade", grade)
       .maybeSingle();
 
-    let nextDifficulty = existingProgress?.unlocked_difficulty || unlockedDifficulty;
+    const storedUnlocked = existingProgress?.unlocked_difficulty || unlockedDifficulty;
+    let earnedDifficulty: "Medium" | "Hard" | "Advanced" | null = null;
 
     if (passed && !disableUnlocking) {
-      if (difficulty === "Easy") nextDifficulty = "Medium";
-      else if (difficulty === "Medium") nextDifficulty = "Hard";
-      else if (difficulty === "Hard") nextDifficulty = "Advanced";
+      if (difficulty === "Easy") earnedDifficulty = "Medium";
+      else if (difficulty === "Medium") earnedDifficulty = "Hard";
+      else if (difficulty === "Hard") earnedDifficulty = "Advanced";
     }
+
+    const nextDifficulty = getHighestDifficulty(storedUnlocked, earnedDifficulty);
 
     await supabase.from("student_memory_flip_progress").upsert(
       {
@@ -1059,8 +1100,9 @@ export default function MemoryFlip({
     const current = masteryQuestions[masteryIndex];
     const isCorrect = answer === current.correctAnswer;
 
+    const totalQuestions = masteryQuestions.length || masteryTotal || 10;
     const nextCorrect = isCorrect ? masteryCorrect + 1 : masteryCorrect;
-    const isLastQuestion = masteryIndex >= masteryQuestions.length - 1;
+    const isLastQuestion = masteryIndex >= totalQuestions - 1;
 
     setMasteryAnswerLocked(true);
 
@@ -1075,12 +1117,7 @@ export default function MemoryFlip({
       });
     }
 
-    if (isLastQuestion) {
-      setShowMasteryTest(false);
-      setShowResultModal(false);
-    }
-
-    setTimeout(async () => {
+    window.setTimeout(async () => {
       setAnswerFeedback(null);
       setMasteryAnswerLocked(false);
 
@@ -1090,22 +1127,31 @@ export default function MemoryFlip({
         return;
       }
 
+      setAnswerFeedback(null);
+      setMasteryAnswerLocked(false);
       setShowMasteryTest(false);
       setShowResultModal(false);
+      setGameStarted(false);
+      setCards([]);
+      setSelectedCards([]);
 
-      const passed = nextCorrect >= 6;
-      let nextDifficulty: "Medium" | "Hard" | "Advanced" | null = null;
+      const passed = nextCorrect / totalQuestions >= MEMORY_FLIP_MASTERY_PASS_RATE;
+      let earnedDifficulty: "Medium" | "Hard" | "Advanced" | null = null;
 
-      if (difficulty === "Easy") nextDifficulty = "Medium";
-      else if (difficulty === "Medium") nextDifficulty = "Hard";
-      else if (difficulty === "Hard") nextDifficulty = "Advanced";
+      if (difficulty === "Easy") earnedDifficulty = "Medium";
+      else if (difficulty === "Medium") earnedDifficulty = "Hard";
+      else if (difficulty === "Hard") earnedDifficulty = "Advanced";
+
+      const nextDifficulty =
+        earnedDifficulty &&
+          difficultyOrder.indexOf(earnedDifficulty) > difficultyOrder.indexOf(unlockedDifficulty)
+          ? earnedDifficulty
+          : null;
 
       if (passed) {
         playGameSound("stage", 0.25);
 
-        if (nextDifficulty) {
-          setUnlockedDifficulty(nextDifficulty);
-        }
+        setUnlockedDifficulty((current) => getHighestDifficulty(current, nextDifficulty));
       } else {
         playGameSound("wrong", 0.25);
       }
@@ -1114,12 +1160,6 @@ export default function MemoryFlip({
       setCombo(0);
       setScore(0);
       setMoves(0);
-      setMasteryPool([]);
-      setGameStarted(false);
-      setCards([]);
-      setSelectedCards([]);
-      setMasteryQuestions([]);
-      setMasteryIndex(0);
       setMasteryCorrect(0);
       setTimeUp(false);
       setLoading(false);
@@ -1134,7 +1174,7 @@ export default function MemoryFlip({
         passed,
         levelReached: level,
       });
-    }, 450);
+    }, isCorrect ? 700 : 1000);
   };
 
   const generateMasteryTest = async () => {
@@ -1157,8 +1197,11 @@ export default function MemoryFlip({
     });
 
     setMasteryQuestions(questions);
+    setMasteryTotal(questions.length || 10);
     setMasteryIndex(0);
     setMasteryCorrect(0);
+    setGameStarted(false);
+    setSelectedCards([]);
     setShowMasteryTest(true);
   };
 
@@ -1259,6 +1302,15 @@ export default function MemoryFlip({
 
   return (
     <div className={demoMode ? "relative overflow-hidden bg-transparent" : `relative min-h-screen overflow-hidden ${themeClass.page}`}>
+      <style>
+        {`
+          @keyframes letter-match-confetti {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(190px) rotate(260deg); opacity: 0; }
+          }
+        `}
+      </style>
       {!demoMode && (
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           {isLight ? (
@@ -1279,84 +1331,104 @@ export default function MemoryFlip({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden overscroll-none bg-black/75 px-4 py-4"
+            className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden overscroll-none bg-[#1E0B4B]/85 px-4 py-4 backdrop-blur-md"
           >
+            {masteryResult.passed &&
+              Array.from({ length: 18 }, (_, index) => (
+                <span
+                  key={index}
+                  className="pointer-events-none absolute h-3 w-2 rounded-full"
+                  style={{
+                    left: `${8 + ((index * 17) % 84)}%`,
+                    top: `${-8 - (index % 5) * 8}px`,
+                    background: ["#FACC15", "#FB7185", "#38BDF8", "#34D399", "#A78BFA"][index % 5],
+                    animation: `letter-match-confetti ${2.2 + (index % 4) * 0.35}s ease-in ${index * 0.08}s infinite`,
+                  }}
+                />
+              ))}
             <motion.div
               initial={{ scale: 0.9, y: 24 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2.8rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:p-8"
+              className="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2rem] border-4 border-[#C4B5FD] bg-gradient-to-b from-[#312E81] via-[#7C3AED] to-[#DB2777] p-1 text-center shadow-[0_34px_110px_rgba(124,58,237,0.55)] sm:rounded-[2.5rem]"
             >
-              <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
+              <div className="relative rounded-[1.7rem] bg-[#180B3D]/92 p-6 sm:rounded-[2.2rem] sm:p-8">
+                <div className={`relative mx-auto flex h-24 w-24 items-center justify-center rounded-full border-4 ${masteryResult.passed ? "border-[#FDE68A] bg-[#FACC15]" : "border-[#FDA4AF] bg-[#FB7185]"} shadow-[0_18px_60px_rgba(250,204,21,0.4)]`}>
+                  {masteryResult.passed ? (
+                    <Trophy className="h-14 w-14 text-[#78350F]" />
+                  ) : (
+                    <Star className="h-14 w-14 text-white" />
+                  )}
+                </div>
 
-              <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                Mastery Test
-              </p>
+                <p className="relative mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
+                  Luna Memory Arcade
+                </p>
 
-              <h2 className="mt-3 text-4xl font-black text-white">
-                {masteryResult.passed ? "You Passed!" : "Try Again!"}
-              </h2>
+                <h2 className="relative mt-3 text-4xl font-black leading-tight text-white sm:text-5xl">
+                  {masteryResult.passed ? "Passed" : "Failed"}
+                </h2>
 
-              <p className="mt-4 text-slate-300">
-                {masteryResult.correct} / 10 Correct
-              </p>
+                <p className="relative mt-4 text-base font-bold text-white/85">
+                  Mastery Result: {masteryResult.correct}/{masteryTotal} correct
+                </p>
 
-              <div className="mt-8 grid gap-3">
-                <button
-                  onClick={async () => {
-                    if (masteryResult.passed) {
-                      const nextDifficulty = masteryResult.nextDifficulty;
+                {masteryResult.passed && masteryResult.nextDifficulty && (
+                  <div className="relative mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-black text-white">
+                    <Sparkles className="h-4 w-4 text-[#FDE68A]" />
+                    {masteryResult.nextDifficulty} unlocked
+                  </div>
+                )}
 
-                      setMasteryResult(null);
-                      setGameStarted(false);
-                      setShowMasteryTest(false);
-                      setShowResultModal(false);
-                      setMasteryQuestions([]);
-                      setCards([]);
-                      setSelectedCards([]);
-                      setLevel(1);
+                <div className="relative mt-8 grid gap-3">
+                  <button
+                    onClick={async () => {
+                      if (masteryResult.passed) {
+                        const nextDifficulty = masteryResult.nextDifficulty;
 
-                      if (nextDifficulty) {
-                        setUnlockedDifficulty(nextDifficulty);
-                        setDifficulty(nextDifficulty);
+                        setMasteryResult(null);
+                        setGameStarted(false);
+                        setShowMasteryTest(false);
+                        setShowResultModal(false);
+                        setMasteryQuestions([]);
+                        setCards([]);
+                        setSelectedCards([]);
+                        setLevel(1);
+
+                        if (nextDifficulty) {
+                          setUnlockedDifficulty((current) =>
+                            getHighestDifficulty(current, nextDifficulty)
+                          );
+                          setDifficulty(nextDifficulty);
+                        }
+
+                        return;
                       }
 
-                      return;
-                    }
+                      setMasteryResult(null);
+                      setShowMasteryTest(true);
+                      setMasteryIndex(0);
+                      setMasteryCorrect(0);
+                      setMasteryAnswerLocked(false);
+                    }}
+                    className="h-14 rounded-2xl border-2 border-white/30 bg-gradient-to-r from-[#8B5CF6] via-[#DB2777] to-[#FB7185] font-black text-white shadow-[0_14px_35px_rgba(124,58,237,0.4)] transition hover:scale-[1.02]"
+                  >
+                    {masteryResult.passed ? "CONTINUE" : "RETRY MASTERY TEST"}
+                  </button>
 
-                    setMasteryResult(null);
-                    setGameStarted(true);
-                    setLevel(1);
-                    setMasteryPool([]);
-
-                    await loadGame({
-                      selectedLanguagePair: languagePair,
-                      selectedGrade: grade,
-                      selectedDifficulty: difficulty,
-                      selectedPairCount: getPairCountByDifficulty(difficulty),
-                    });
-                  }}
-                  className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
-                >
-                  {masteryResult.passed
-                    ? masteryResult.nextDifficulty
-                      ? `GO TO ${masteryResult.nextDifficulty.toUpperCase()}`
-                      : "BACK TO MENU"
-                    : "RETRY"}
-                </button>
-
-                <button
-                  onClick={async () => {
-                    setMasteryResult(null);
-                    setShowMasteryTest(false);
-                    setShowResultModal(false);
-                    await leaveArcade();
-                    await loadProgress();
-                  }}
-                  className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
-                >
-                  BACK TO MENU
-                </button>
+                  <button
+                    onClick={async () => {
+                      setMasteryResult(null);
+                      setShowMasteryTest(false);
+                      setShowResultModal(false);
+                      await leaveArcade();
+                      await loadProgress();
+                    }}
+                    className="h-14 rounded-2xl border-2 border-white/15 bg-white/10 font-black text-white transition hover:bg-white/15"
+                  >
+                    BACK TO MENU
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -1370,26 +1442,34 @@ export default function MemoryFlip({
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.08 }}
-            className={`fixed inset-0 z-[200] flex items-center justify-center px-4 ${answerFeedback.type === "correct"
-              ? "bg-emerald-500/85"
-              : "bg-red-500/85"
-              }`}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-[#180B3D]/62 px-4 backdrop-blur-sm"
           >
-            <div className="text-center text-white">
-              {answerFeedback.type === "correct" ? (
-                <CheckCircle2 className="mx-auto h-24 w-24" />
-              ) : (
-                <XCircle className="mx-auto h-24 w-24" />
-              )}
+            <div className={`w-full max-w-sm rounded-[2rem] border-4 p-6 text-center shadow-[0_28px_90px_rgba(0,0,0,0.45)] ${answerFeedback.type === "correct"
+              ? "border-emerald-200 bg-gradient-to-b from-emerald-400 to-emerald-600"
+              : "border-[#FDA4AF] bg-gradient-to-b from-[#FB7185] to-[#BE185D]"
+              }`}
+            >
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-4 border-white/45 bg-white/20">
+                {answerFeedback.type === "correct" ? (
+                  <CheckCircle2 className="h-9 w-9 text-white" />
+                ) : (
+                  <XCircle className="h-9 w-9 text-white" />
+                )}
+              </div>
 
-              <h2 className="mt-6 text-5xl font-black">
+              <h2 className="mt-4 text-3xl font-black text-white">
                 {answerFeedback.type === "correct" ? "Correct!" : "Incorrect"}
               </h2>
 
               {answerFeedback.type === "wrong" && (
-                <p className="mt-4 text-2xl font-black">
-                  Correct answer: {answerFeedback.correctAnswer}
-                </p>
+                <>
+                  <p className="mt-2 text-sm font-black uppercase tracking-[0.18em] text-white/80">
+                    Correct answer
+                  </p>
+                  <p className="mt-2 text-3xl font-black tracking-wide text-white">
+                    {answerFeedback.correctAnswer}
+                  </p>
+                </>
               )}
             </div>
           </motion.div>
@@ -1442,62 +1522,127 @@ export default function MemoryFlip({
 
         <div
           ref={gameWindowRef}
-          className={`relative overflow-visible ${isMobileFullscreen
-            ? "fixed inset-0 z-[250] mb-0 h-[100dvh] overflow-y-auto rounded-none p-3"
+          className={`relative ${gameStarted || showMasteryTest ? "overflow-hidden" : "overflow-visible"} ${isMobileFullscreen
+            ? "fixed inset-0 z-[250] mb-0 h-[100dvh] overflow-y-auto rounded-none p-0"
             : demoMode
               ? "mb-0 border-0 bg-transparent p-0 shadow-none"
-            : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
-            } ${!isMobileFullscreen && !demoMode ? `border ${themeClass.gameWindow}` : ""}`}
+              : gameStarted || showMasteryTest
+                ? "mb-8 overflow-hidden rounded-[2rem] p-0"
+                : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
+            } ${!isMobileFullscreen && !demoMode && !gameStarted && !showMasteryTest
+              ? `border ${themeClass.gameWindow}`
+              : ""
+            }`}
         >
           <div className={fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[640px]"}>
-            <button
-              onClick={toggleFullscreen}
-              className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
-              title={fullscreenActive ? "Exit Fullscreen" : "Fullscreen"}
-            >
-              {fullscreenActive ? (
-                <Minimize2 className="h-5 w-5" />
-              ) : (
-                <Maximize2 className="h-5 w-5" />
-              )}
-            </button>
+            {!demoMode && !gameStarted && (
+              <button
+                onClick={toggleFullscreen}
+                className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
+                title={fullscreenActive ? "Exit Fullscreen" : "Fullscreen"}
+              >
+                {fullscreenActive ? (
+                  <Minimize2 className="h-5 w-5" />
+                ) : (
+                  <Maximize2 className="h-5 w-5" />
+                )}
+              </button>
+            )}
 
             {showMasteryTest && masteryQuestions[masteryIndex] ? (
-              <div className={`mx-auto flex min-h-[calc(100dvh-2rem)] max-w-3xl items-center rounded-[2rem] border p-5 sm:p-8 ${themeClass.panel}`}>
-                <div className="w-full">
-                  <div className="text-center">
+              <div className={`relative flex flex-col overflow-hidden bg-gradient-to-br from-[#312E81] via-[#7C3AED] to-[#DB2777] ${fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "p-2 sm:p-4"}`}>
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,255,255,0.22),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
+                <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
+                      Luna Memory Arcade
+                    </p>
+                    <p className="mt-1 text-sm font-black text-white drop-shadow">
+                      {languageLabel} · {grade} · {difficulty}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="rounded-xl border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur sm:text-sm">
+                      Mastery Test
+                    </div>
+                    <button
+                      onClick={leaveArcade}
+                      className="rounded-xl border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur transition hover:bg-white/25 sm:text-sm"
+                    >
+                      Exit Game
+                    </button>
+                    {!demoMode && (
+                      <button
+                        type="button"
+                        onClick={toggleFullscreen}
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/25 bg-white/15 text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur transition hover:bg-white/25"
+                        title={fullscreenActive ? "Exit Fullscreen" : "Fullscreen"}
+                      >
+                        {fullscreenActive ? (
+                          <Minimize2 className="h-4 w-4" />
+                        ) : (
+                          <Maximize2 className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="relative z-10 my-3 h-4 overflow-hidden rounded-full border border-white/25 bg-black/25">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#DB2777] to-[#FB7185] transition-all duration-500"
+                    style={{ width: `${((masteryIndex + 1) / masteryQuestions.length) * 100}%` }}
+                  />
+                </div>
+
+                <div className="relative z-10 mb-3 grid grid-cols-2 gap-1.5 sm:gap-2">
+                  {[
+                    ["Question", `${masteryIndex + 1}/${masteryQuestions.length}`],
+                    ["Correct", `${masteryCorrect}/${masteryQuestions.length}`],
+                  ].map(([label, value]) => (
+                    <div key={label} className="relative overflow-hidden rounded-2xl border-2 border-white/30 bg-gradient-to-b from-white/25 to-white/10 px-2 py-2 text-center shadow-[0_10px_24px_rgba(0,0,0,0.2)]">
+                      <div className="absolute inset-x-2 top-1 h-3 rounded-full bg-white/25 blur-sm" />
+                      <p className="relative text-[9px] font-black uppercase tracking-widest text-white/80">
+                        {label}
+                      </p>
+                      <p className="relative mt-0.5 text-sm font-black text-white drop-shadow sm:text-lg">
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="relative z-10 flex min-h-0 flex-1 items-center justify-center">
+                  <div className="w-full max-w-4xl rounded-[1.6rem] border-4 border-[#C4B5FD] bg-gradient-to-br from-[#312E81]/95 via-[#7C3AED]/90 to-[#DB2777]/90 p-5 text-center shadow-[inset_0_8px_30px_rgba(255,255,255,0.12),0_18px_55px_rgba(124,58,237,0.35)] sm:p-8">
                     <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
                       Mastery Test
                     </p>
-
-                    <h1 className={`mt-3 text-3xl font-black sm:text-5xl ${themeClass.title}`}>
-                      Final Check
+                    <h1 className="mt-2 text-3xl font-black text-white sm:text-5xl">
+                      Match the Meaning
                     </h1>
-
-                    <p className={`mt-3 ${themeClass.text}`}>
-                      Question {masteryIndex + 1} / {masteryQuestions.length}
+                    <p className="mt-3 text-sm font-bold text-white/75">
+                      Choose the matching meaning.
                     </p>
-                  </div>
 
-                  <div className={`mt-6 rounded-[2rem] border p-6 text-center sm:mt-8 sm:p-8 ${themeClass.softPanel}`}>
-                    <p className={`text-3xl font-black sm:text-4xl ${themeClass.title}`}>
-                      {masteryQuestions[masteryIndex].question}
-                    </p>
-                  </div>
+                    <div className="mx-auto mt-6 max-w-2xl p-2">
+                      <p className="text-3xl font-black text-white sm:text-5xl">
+                        {masteryQuestions[masteryIndex].question}
+                      </p>
+                    </div>
 
-                  <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4">
-                    {masteryQuestions[masteryIndex].options.map((option: string) => (
-                      <button
-                        key={option}
-                        onClick={() => submitMasteryAnswer(option)}
-                        className={`min-h-[62px] rounded-[1.5rem] border px-5 text-base font-black transition hover:-translate-y-1 sm:min-h-[72px] sm:text-lg ${isLight
-                          ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
-                          : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
-                          }`}
-                      >
-                        {option}
-                      </button>
-                    ))}
+                    <div className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-4">
+                      {masteryQuestions[masteryIndex].options.map((option: string) => (
+                        <button
+                          key={option}
+                          onClick={() => submitMasteryAnswer(option)}
+                          disabled={masteryAnswerLocked}
+                          className="min-h-[62px] rounded-[1.5rem] border-2 border-white/25 bg-white/10 px-5 text-base font-black text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:-translate-y-1 hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-70 sm:min-h-[72px] sm:text-lg"
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1509,7 +1654,7 @@ export default function MemoryFlip({
                 />
               ) : (
                 <>
-                  <div className={`overflow-visible rounded-[2rem] border p-5 sm:p-6 ${themeClass.panel}`}>
+                  <div className="overflow-visible p-5 sm:p-6">
                     <div className="grid gap-6 lg:grid-cols-[1.1fr_320px]">
                       <div>
                         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/35 bg-[#8B5CF6]/10 px-3 py-1.5">
@@ -1529,7 +1674,7 @@ export default function MemoryFlip({
                         <div className={`mt-4 inline-flex max-w-xl items-center gap-2 rounded-full border px-3 py-2 ${themeClass.softPanel}`}>
                           <p className={`text-xs font-bold leading-5 ${themeClass.text}`}>
                             <span className="text-sm">🏆</span>{" "}
-                            Pass 5 rounds + final test to unlock the next difficulty
+                            Match vocabulary pairs through 5 rounds, then pass the final check to unlock the next difficulty.
                           </p>
                         </div>
                       </div>
@@ -1544,34 +1689,77 @@ export default function MemoryFlip({
                         <p className={`mt-1 text-sm font-bold ${themeClass.text}`}>
                           vocabulary pairs available
                         </p>
+                        <p className={`mt-2 text-xs font-black ${themeClass.muted}`}>
+                          Final check pass mark: {getPassMarkPercent(MEMORY_FLIP_MASTERY_PASS_RATE)}%
+                        </p>
                       </div>
                     </div>
 
-                    <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                      <ArcadeDropdown
-                        value={languageLabel}
-                        options={["Chinese ↔ English", "Chinese ↔ Japanese", "English ↔ Japanese"]}
-                        isLight={isLight}
-                        unlockedDifficulty={unlockedDifficulty}
-                        lockedOptions={demoMode ? ["Chinese ↔ Japanese", "English ↔ Japanese"] : []}
-                        onChange={(value) => {
-                          if (demoMode && value !== "Chinese ↔ English") return;
-                          if (value === "Chinese ↔ English") setLanguagePair("zh_en");
-                          if (value === "Chinese ↔ Japanese") setLanguagePair("zh_ja");
-                          if (value === "English ↔ Japanese") setLanguagePair("en_ja");
-                        }}
-                      />
+                    <div className="mt-6">
+                      <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${themeClass.muted}`}>
+                        Language
+                      </span>
+                      <div className="grid gap-2 sm:grid-cols-3">
+                        {[
+                          { label: "Chinese ↔ English", value: "zh_en" },
+                          { label: "Chinese ↔ Japanese", value: "zh_ja" },
+                          { label: "English ↔ Japanese", value: "en_ja" },
+                        ].map((item) => {
+                          const locked = demoMode && item.value !== "zh_en";
+                          const active = languagePair === item.value;
 
-                      <ArcadeDropdown
-                        value={grade}
-                        options={grades}
-                        isLight={isLight}
-                        unlockedDifficulty={unlockedDifficulty}
-                        lockedOptions={demoMode ? grades.filter((item) => item !== "Grade 1") : []}
-                        onChange={(value) => {
-                          if (!demoMode) setGrade(value);
-                        }}
-                      />
+                          return (
+                            <button
+                              key={item.value}
+                              disabled={locked}
+                              onClick={() => {
+                                if (!locked) setLanguagePair(item.value);
+                              }}
+                              className={`h-12 rounded-2xl border px-3 text-sm font-black transition ${active
+                                ? menuSelectedClass
+                                : locked
+                                  ? isLight
+                                    ? "cursor-not-allowed border-[#eee8ff] bg-[#faf8ff] text-primary/35"
+                                    : "cursor-not-allowed border-white/10 bg-white/5 text-white/35"
+                                  : themeClass.button
+                                }`}
+                            >
+                              {item.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${themeClass.muted}`}>
+                        Grade
+                      </span>
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                        {grades.map((item) => {
+                          const locked = demoMode && item !== "Grade 1";
+
+                          return (
+                            <button
+                              key={item}
+                              disabled={locked}
+                              onClick={() => {
+                                if (!demoMode) setGrade(item);
+                              }}
+                              className={`h-12 rounded-2xl border text-sm font-black transition ${grade === item
+                                ? menuSelectedClass
+                                : locked
+                                  ? isLight
+                                    ? "cursor-not-allowed border-[#eee8ff] bg-[#faf8ff] text-primary/35"
+                                    : "cursor-not-allowed border-white/10 bg-white/5 text-white/35"
+                                  : themeClass.button
+                                }`}
+                            >
+                              {item}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     {savedSession && !demoMode && !disableResume && (
@@ -1613,8 +1801,8 @@ export default function MemoryFlip({
                         value={difficulty}
                         onChange={(event) => setDifficulty(event.target.value)}
                         className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
-                            ? "border-[#eee8ff] bg-white text-primary"
-                            : "border-white/10 bg-[#0D1B2E] text-white"
+                          ? "border-[#eee8ff] bg-white text-primary"
+                          : "border-white/10 bg-[#0D1B2E] text-white"
                           }`}
                       >
                         {["Easy", "Medium", "Hard", "Advanced"].map((item) => {
@@ -1635,10 +1823,10 @@ export default function MemoryFlip({
 
                     <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
                       {[
-                        { key: "Easy", icon: Brain, pairs: 6, active: difficulty === "Easy", activeClass: "border-[#52bd7f] bg-[#52bd7f]/18 shadow-[0_16px_42px_rgba(82,189,127,0.16)]" },
-                        { key: "Medium", icon: Zap, pairs: 8, active: difficulty === "Medium", activeClass: "border-[#3B82F6] bg-[#3B82F6]/18 shadow-[0_16px_42px_rgba(59,130,246,0.16)]" },
-                        { key: "Hard", icon: Flame, pairs: 10, active: difficulty === "Hard", activeClass: "border-[#F97316] bg-[#F97316]/18 shadow-[0_16px_42px_rgba(249,115,22,0.16)]" },
-                        { key: "Advanced", icon: Crown, pairs: 12, active: difficulty === "Advanced", activeClass: "border-[#EAB308] bg-[#EAB308]/18 shadow-[0_16px_42px_rgba(234,179,8,0.16)]" },
+                        { key: "Easy", icon: Brain, pairs: 6, active: difficulty === "Easy" },
+                        { key: "Medium", icon: Zap, pairs: 8, active: difficulty === "Medium" },
+                        { key: "Hard", icon: Flame, pairs: 10, active: difficulty === "Hard" },
+                        { key: "Advanced", icon: Crown, pairs: 12, active: difficulty === "Advanced" },
                       ].map((item) => {
                         const Icon = item.icon;
 
@@ -1656,25 +1844,25 @@ export default function MemoryFlip({
                               setDifficulty(item.key);
                             }}
                             className={`relative min-h-[88px] overflow-hidden rounded-[1.25rem] border p-3 text-left transition-all duration-300 active:scale-95 sm:min-h-[150px] sm:rounded-[1.45rem] sm:p-5 ${item.active
-                              ? item.activeClass
+                              ? menuSelectedCardClass
                               : isLight
                                 ? "border-[#eee8ff] bg-white hover:bg-[#faf8ff]"
                                 : "border-white/10 bg-white/[0.07] hover:bg-white/10"
                               } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
                           >
                             <div className="absolute right-4 top-4">
-                              <Icon className={`h-5 w-5 sm:h-7 sm:w-7 ${isLight ? "text-primary" : "text-white"}`} />
+                              <Icon className={`h-5 w-5 sm:h-7 sm:w-7 ${item.active ? (isLight ? "text-[#4C1D95]" : "text-white") : isLight ? "text-primary" : "text-white"}`} />
                             </div>
 
-                            <p className={`text-[11px] font-black uppercase tracking-widest sm:text-sm ${themeClass.muted}`}>
+                            <p className={`text-[11px] font-black uppercase tracking-widest sm:text-sm ${item.active ? (isLight ? "text-[#4C1D95]" : "text-white") : themeClass.muted}`}>
                               {item.key}
                             </p>
 
-                            <h3 className={`mt-2 text-2xl font-black sm:mt-4 sm:text-4xl ${themeClass.title}`}>
+                            <h3 className={`mt-2 text-2xl font-black sm:mt-4 sm:text-4xl ${item.active ? (isLight ? "text-[#3B0764]" : "text-white") : themeClass.title}`}>
                               {item.pairs}
                             </h3>
 
-                            <p className={`mt-0.5 text-xs sm:mt-1 sm:text-sm ${themeClass.muted}`}>
+                            <p className={`mt-0.5 text-xs font-bold sm:mt-1 sm:text-sm ${item.active ? (isLight ? "text-[#4C1D95]" : "text-white/85") : themeClass.muted}`}>
                               Matching Pairs
                             </p>
 
@@ -1699,7 +1887,7 @@ export default function MemoryFlip({
                         ? "CHECKING VOCABULARY..."
                         : loading
                           ? "PREPARING MEMORY FLIP..."
-                          : `START ${difficulty.toUpperCase()} CHALLENGE`}
+                          : `START ${difficulty.toUpperCase()} MEMORY FLIP`}
                     </button>
                   </div>
                 </>
@@ -1720,14 +1908,10 @@ export default function MemoryFlip({
                     exit={{ scale: 0.95, opacity: 0 }}
                     className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
                   >
-                    <img
-                      src="/mascot/hapiko-step-2.png"
-                      alt="Hapiko"
-                      className="mx-auto h-32 w-32 object-contain"
-                    />
+                    <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
 
                     <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                      {demoMode ? "Luna Arcade Demo" : "Challenge Cleared"}
+                      {demoMode ? "Luna Arcade Demo" : "Round Cleared"}
                     </p>
 
                     <h2 className="mt-3 text-4xl font-black text-white">
@@ -1738,10 +1922,6 @@ export default function MemoryFlip({
                       {demoMode
                         ? "You completed the Luna Arcade demo."
                         : `You completed challenge ${level} / 5 for ${difficulty}.`}
-                    </p>
-
-                    <p className="mt-3 text-3xl">
-                      {"⭐".repeat(stars)}
                     </p>
 
                     <div className="mt-8 grid gap-3">
@@ -1785,7 +1965,7 @@ export default function MemoryFlip({
                         }}
                         className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
                       >
-                        {demoMode ? "Play Again" : "NEXT CHALLENGE"}
+                        {demoMode ? "Play Again" : "NEXT ROUND"}
                       </button>
 
                       {demoMode && (
@@ -1823,195 +2003,207 @@ export default function MemoryFlip({
             </AnimatePresence>
 
             {gameStarted && (
+              <div className={`relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#6D28D9] p-2 sm:p-4 ${fullscreenActive ? "min-h-[100dvh]" : "min-h-[720px]"
+                }`}>
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(196,181,253,0.28),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.14),transparent_30%)]" />
+                <div className="relative z-10">
+                  <div className="relative mb-3 overflow-hidden rounded-[1.7rem] border-4 border-[#FDE68A]/75 bg-[#3B0764]/45 p-3 shadow-[inset_0_8px_24px_rgba(0,0,0,0.22)] sm:p-4">
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,255,255,0.22),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
+                    <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FDE68A]">
+                          Memory Flip
+                        </p>
 
-              <>
-                <div className={`mb-3 rounded-[1.5rem] border p-3 sm:p-4 ${themeClass.panel}`}>
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
-                        Memory Flip
-                      </p>
+                        <p className="mt-0.5 text-xs font-black text-white drop-shadow sm:text-sm">
+                          {languageLabel} · {grade} · {difficulty}
+                        </p>
+                      </div>
 
-                      <p className={`mt-0.5 text-xs font-bold sm:text-sm ${themeClass.title}`}>
-                        {languageLabel} · {grade} · {difficulty}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-xl border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur sm:text-sm">
+                          Round {level}/5
+                        </div>
+
+                        <button
+                          onClick={leaveArcade}
+                          className="rounded-xl border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur transition hover:bg-white/25 sm:text-sm"
+                        >
+                          Exit Game
+                        </button>
+
+                        {!demoMode && (
+                          <button
+                            type="button"
+                            onClick={toggleFullscreen}
+                            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/25 bg-white/15 text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur transition hover:bg-white/25"
+                            title={fullscreenActive ? "Exit Fullscreen" : "Fullscreen"}
+                          >
+                            {fullscreenActive ? (
+                              <Minimize2 className="h-4 w-4" />
+                            ) : (
+                              <Maximize2 className="h-4 w-4" />
+                            )}
+                          </button>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <div className={`rounded-xl px-3 py-1.5 text-xs font-black sm:text-sm ${themeClass.hudBox} ${themeClass.title}`}>
-                        Round {level}/5
-                      </div>
+                    <div className="relative z-10 mt-3 h-2 overflow-hidden rounded-full border border-white/20 bg-black/20">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#DB2777] to-[#FB7185] transition-all duration-500"
+                        style={{ width: `${(level / 5) * 100}%` }}
+                      />
+                    </div>
+
+                    <div className="relative z-10 mt-3 grid grid-cols-4 gap-1.5 sm:gap-2">
+                      {[
+                        ["Score", score, themeClass.title],
+                        ["Moves", moves, themeClass.title],
+                        ["Combo", `x${combo}`, "text-[#FACC15]"],
+                        ["Time", `${secondsLeft}s`, secondsLeft <= 10 ? "text-red-400" : themeClass.title],
+                      ].map(([label, value, valueClass]) => (
+                        <div
+                          key={label}
+                          className={`relative overflow-hidden rounded-2xl border-2 border-white/30 bg-gradient-to-b from-white/25 to-white/10 px-2 py-2 text-center shadow-[0_10px_24px_rgba(0,0,0,0.2)] ${label === "Time" && secondsLeft <= 10 ? "animate-pulse ring-2 ring-red-200" : ""
+                            }`}
+                        >
+                          <div className="absolute inset-x-2 top-1 h-3 rounded-full bg-white/25 blur-sm" />
+                          <p className="relative text-[9px] font-black uppercase tracking-widest text-white/80">
+                            {label}
+                          </p>
+
+                          <p className={`relative mt-0.5 text-base font-black drop-shadow sm:text-xl ${label === "Time" && secondsLeft <= 10 ? "text-red-100" : valueClass === "text-[#FACC15]" ? "text-[#FACC15]" : "text-white"}`}>
+                            {value}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {loading && (
+                    <ArcadeLoadingScreen
+                      isLight={isLight}
+                      className="mb-6"
+                    />
+                  )}
+
+                  {errorMsg && !loading && (
+                    <div className="flex flex-1 flex-col items-center justify-center rounded-[2rem] border border-[#FACC15]/30 bg-[#FACC15]/10 p-8 text-center">
+                      <Brain className="mx-auto h-16 w-16 text-[#FACC15]" />
+
+                      <h2 className={`mt-4 text-2xl font-black ${themeClass.title}`}>
+                        Memory Flip Paused
+                      </h2>
+
+                      <p className={`mt-3 ${themeClass.text}`}>
+                        {errorMsg}
+                      </p>
 
                       <button
                         onClick={leaveArcade}
-                        className={`rounded-xl border px-3 py-1.5 text-xs font-black sm:text-sm ${themeClass.button}`}
+                        className={`mt-6 h-12 rounded-2xl px-6 font-black ${themeClass.button}`}
                       >
-                        Exit
+                        Back to Memory Flip Menu
                       </button>
                     </div>
-                  </div>
+                  )}
 
-                  <div className={`mt-3 h-1.5 overflow-hidden rounded-full ${isLight ? "bg-[#f0eaff]" : "bg-white/10"}`}>
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] transition-all duration-500"
-                      style={{ width: `${(level / 5) * 100}%` }}
-                    />
-                  </div>
+                  {timeUp && (
+                    <div className="flex flex-1 flex-col items-center justify-center rounded-[2rem] border border-red-400/30 bg-red-500/10 p-8 text-center">
+                      <Timer className="mx-auto h-16 w-16 text-red-200" />
 
-                  <div className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-2">
-                    {[
-                      ["Score", score, themeClass.title],
-                      ["Moves", moves, themeClass.title],
-                      ["Combo", `x${combo}`, "text-[#FACC15]"],
-                      ["Time", `${secondsLeft}s`, secondsLeft <= 10 ? "text-red-400" : themeClass.title],
-                    ].map(([label, value, valueClass]) => (
-                      <div
-                        key={label}
-                        className={`rounded-xl px-2 py-2 text-center ${themeClass.hudBox} ${label === "Time" && secondsLeft <= 10 ? "animate-pulse ring-1 ring-red-400" : ""
-                          }`}
+                      <h2 className={`mt-4 text-3xl font-black ${themeClass.title}`}>
+                        Time's Up!
+                      </h2>
+
+                      <p className={`mt-3 ${themeClass.text}`}>
+                        Try again when you are ready.
+                      </p>
+
+                      <button
+                        onClick={leaveArcade}
+                        className={`mt-6 h-12 rounded-2xl px-6 font-black ${themeClass.button}`}
                       >
-                        <p className={`text-[9px] font-black uppercase tracking-widest ${themeClass.muted}`}>
-                          {label}
-                        </p>
+                        Back to Memory Flip Menu
+                      </button>
+                    </div>
+                  )}
 
-                        <p className={`mt-0.5 text-base font-black sm:text-xl ${valueClass}`}>
-                          {value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {loading && (
-                  <ArcadeLoadingScreen
-                    isLight={isLight}
-                    className="mb-6"
-                  />
-                )}
-
-                {errorMsg && !loading && (
-                  <div className="flex flex-1 flex-col items-center justify-center rounded-[2rem] border border-[#FACC15]/30 bg-[#FACC15]/10 p-8 text-center">
-                    <img
-                      src="/mascot/hapiko-step-2.png"
-                      alt="Hapiko"
-                      className="mx-auto h-24 w-24 object-contain"
-                    />
-
-                    <h2 className={`mt-4 text-2xl font-black ${themeClass.title}`}>
-                      Stage Completed
-                    </h2>
-
-                    <p className={`mt-3 ${themeClass.text}`}>
-                      {errorMsg}
-                    </p>
-
-                    <button
-                      onClick={leaveArcade}
-                      className={`mt-6 h-12 rounded-2xl px-6 font-black ${themeClass.button}`}
-                    >
-                      Back to Memory Flip Menu
-                    </button>
-                  </div>
-                )}
-
-                {timeUp && (
-                  <div className="flex flex-1 flex-col items-center justify-center rounded-[2rem] border border-red-400/30 bg-red-500/10 p-8 text-center">
-                    <img
-                      src="/mascot/hapiko-step-2.png"
-                      alt="Hapiko"
-                      className="mx-auto h-24 w-24 object-contain"
-                    />
-
-                    <h2 className={`mt-4 text-3xl font-black ${themeClass.title}`}>
-                      Time's Up!
-                    </h2>
-
-                    <p className={`mt-3 ${themeClass.text}`}>
-                      Hapiko believes you can clear this stage next time.
-                    </p>
-
-                    <button
-                      onClick={leaveArcade}
-                      className={`mt-6 h-12 rounded-2xl px-6 font-black ${themeClass.button}`}
-                    >
-                      Back to Memory Flip Menu
-                    </button>
-                  </div>
-                )}
-
-                {!loading && !errorMsg && !timeUp && (
-                  <div className="relative mx-auto max-w-[980px]">
-                    <AnimatePresence>
-                      {comboPop && comboPop >= 2 && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.6, y: 20 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 1.2, y: -20 }}
-                          className="pointer-events-none absolute left-0 right-0 top-0 z-20 text-center text-4xl font-black text-[#FACC15] drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
-                        >
-                          COMBO x{comboPop}!
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    <div className={`grid justify-center gap-1.5 sm:gap-2 ${getCardGridClass(cards.length)}`}>
-                      {cards.map((card) => {
-                        const visible = card.flipped || card.matched;
-
-                        return (
-                          <motion.button
-                            animate={
-                              wrongPairIds.includes(card.id)
-                                ? { x: [0, -8, 8, -6, 6, 0] }
-                                : card.matched
-                                  ? { scale: [1, 1.08, 1], boxShadow: "0 0 28px rgba(16,185,129,0.55)" }
-                                  : { x: 0, scale: 1 }
-                            }
-                            transition={{ duration: 0.35 }}
-                            whileHover={!card.matched ? { y: -6 } : {}}
-                            whileTap={!card.matched ? { scale: 0.97 } : {}}
-                            key={card.id}
-                            onClick={() => flipCard(card)}
-                            className={`relative justify-self-center overflow-visible rounded-[1.6rem] border-none bg-transparent active:scale-95 [perspective:900px] ${getCardSizeClass(cards.length)}`}
+                  {!loading && !errorMsg && !timeUp && (
+                    <div className="relative mx-auto flex min-h-[520px] max-w-[980px] items-center justify-center py-6 sm:min-h-[600px]">
+                      <AnimatePresence>
+                        {comboPop && comboPop >= 2 && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.6, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 1.2, y: -20 }}
+                            className="pointer-events-none absolute left-0 right-0 top-0 z-20 text-center text-4xl font-black text-[#FACC15] drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
                           >
-                            <motion.div
-                              animate={{ rotateY: visible ? 180 : 0 }}
-                              transition={{ duration: 0.45, ease: "easeInOut" }}
-                              className="relative h-full w-full [transform-style:preserve-3d]"
+                            COMBO x{comboPop}!
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      <div className={`grid justify-center gap-3 sm:gap-5 ${getCardGridClass(cards.length)}`}>
+                        {cards.map((card) => {
+                          const visible = card.flipped || card.matched;
+
+                          return (
+                            <motion.button
+                              animate={
+                                wrongPairIds.includes(card.id)
+                                  ? { x: [0, -8, 8, -6, 6, 0] }
+                                  : card.matched
+                                    ? { scale: [1, 1.08, 1], boxShadow: "0 0 28px rgba(16,185,129,0.55)" }
+                                    : { x: 0, scale: 1 }
+                              }
+                              transition={{ duration: 0.35 }}
+                              whileHover={!card.matched ? { y: -6 } : {}}
+                              whileTap={!card.matched ? { scale: 0.97 } : {}}
+                              key={card.id}
+                              onClick={() => flipCard(card)}
+                              className={`relative justify-self-center overflow-visible rounded-[1.6rem] border-none bg-transparent active:scale-95 [perspective:900px] ${getCardSizeClass(cards.length)}`}
                             >
-                              <div
-                                className={`absolute inset-0 flex items-center justify-center rounded-[1.6rem] border [backface-visibility:hidden] ${themeClass.cardBack}`}
+                              <motion.div
+                                animate={{ rotateY: visible ? 180 : 0 }}
+                                transition={{ duration: 0.45, ease: "easeInOut" }}
+                                className="relative h-full w-full [transform-style:preserve-3d]"
                               >
-                                <div className="absolute inset-0 rounded-[1.6rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_50%)]" />
+                                <div
+                                  className={`absolute inset-0 flex items-center justify-center rounded-[1.6rem] border [backface-visibility:hidden] ${themeClass.cardBack}`}
+                                >
+                                  <div className="absolute inset-0 rounded-[1.6rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_50%)]" />
 
-                                <div className="relative h-[68px] w-[68px] rounded-[1.2rem] border-[6px] border-white bg-[#F6C65B] shadow-[0_8px_0_rgba(0,0,0,0.18)]" />
-                              </div>
+                                  <div className="relative h-[68px] w-[68px] rounded-[1.2rem] border-[6px] border-white bg-[#F6C65B] shadow-[0_8px_0_rgba(0,0,0,0.18)]" />
+                                </div>
 
-                              <div
-                                className={`absolute inset-0 rounded-[1.6rem] border [backface-visibility:hidden] [transform:rotateY(180deg)] ${themeClass.cardFront} ${card.matched ? "border-emerald-400 bg-emerald-500/15 opacity-90" : ""}`}
-                              >
-                                <div className="flex h-full flex-col items-center justify-between p-2 sm:p-3">
-                                  <MemoryCardImage
-                                    src={card.imageUrl}
-                                    alt={card.text}
-                                    className={`rounded-[1.2rem] object-cover shadow-lg ${getCardImageClass(cards.length)}`}
-                                  />
+                                <div
+                                  className={`absolute inset-0 rounded-[1.6rem] border [backface-visibility:hidden] [transform:rotateY(180deg)] ${themeClass.cardFront} ${card.matched ? "border-emerald-400 bg-emerald-500/15 opacity-90" : ""}`}
+                                >
+                                  <div className="flex h-full flex-col items-center justify-between p-2 sm:p-3">
+                                    <MemoryCardImage
+                                      src={card.imageUrl}
+                                      alt={card.text}
+                                      className={`rounded-[1.2rem] object-cover shadow-lg ${getCardImageClass(cards.length)}`}
+                                    />
 
-                                  <div className="mt-1.5 flex min-h-[30px] w-full items-center justify-center rounded-xl bg-white/90 px-1.5 sm:mt-2 sm:min-h-[38px] sm:px-2">
-                                    <p className={`line-clamp-2 text-center font-black leading-tight text-[#0f172a] ${getCardTextClass(cards.length)}`}>
-                                      {card.text}
-                                    </p>
+                                    <div className="mt-1.5 flex min-h-[30px] w-full items-center justify-center rounded-xl bg-white/90 px-1.5 sm:mt-2 sm:min-h-[38px] sm:px-2">
+                                      <p className={`line-clamp-2 text-center font-black leading-tight text-[#0f172a] ${getCardTextClass(cards.length)}`}>
+                                        {card.text}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </motion.div>
-                          </motion.button>
-                        );
-                      })}
+                              </motion.div>
+                            </motion.button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>

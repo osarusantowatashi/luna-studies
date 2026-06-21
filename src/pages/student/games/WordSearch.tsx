@@ -13,6 +13,8 @@ import {
   Minimize2,
   Moon,
   Search,
+  Sparkles,
+  Star,
   Sun,
   Timer,
   Trophy,
@@ -52,7 +54,6 @@ type Cell = {
 type FinalQuestion = {
   clueDisplay: string;
   sentenceHint: string;
-  hintImageUrl?: string;
   correctChunk: string;
   correctAnswer: string;
   options: string[];
@@ -71,6 +72,7 @@ type SavedWordSearchSession = {
   cells: Cell[];
   puzzleWords: PuzzleWord[];
   foundWords: string[];
+  masteryPool: string[];
   score: number;
   secondsLeft: number;
   level: number;
@@ -86,11 +88,13 @@ type GameDemoProps = {
   disableUnlocking?: boolean;
   disableResume?: boolean;
   onDemoComplete?: () => void;
-  onRequestSwitchGame?: (game: "memory" | "word") => void;
+  onRequestSwitchGame?: (game: "memory" | "word" | "letter") => void;
 };
 
 const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
 const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
+const WORD_SEARCH_FINAL_PASS_RATE = 0.8;
+const getPassMarkPercent = (rate: number) => Math.round(rate * 100);
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const easyDirections = [
   [0, 1],
@@ -182,6 +186,16 @@ const getNextDifficulty = (difficulty: string) => {
   return null;
 };
 
+const getHighestDifficulty = (first?: string | null, second?: string | null) => {
+  const firstDifficulty = first || "Easy";
+  const secondDifficulty = second || "Easy";
+
+  return difficultyOrder.indexOf(firstDifficulty) >=
+    difficultyOrder.indexOf(secondDifficulty)
+    ? firstDifficulty
+    : secondDifficulty;
+};
+
 const getGridMaxWidth = (size: number) => {
   if (size <= 6) return "min(84vw, 390px)";
   if (size <= 8) return "min(88vw, 500px)";
@@ -248,8 +262,7 @@ const makeSentenceHint = (word: string, maskedWord: string) => {
 
 const makeFinalQuestion = (
   word: string,
-  sourceWords: string[],
-  imageMap: Record<string, string> = {}
+  sourceWords: string[]
 ): FinalQuestion => {
   const { start, chunkLength } = getMissingChunkWindow(word);
   const correctChunk = word.slice(start, start + chunkLength);
@@ -275,7 +288,6 @@ const makeFinalQuestion = (
   return {
     clueDisplay: maskedWord.split("").join(" "),
     sentenceHint: makeSentenceHint(word, maskedWord),
-    hintImageUrl: imageMap[word],
     correctChunk,
     correctAnswer: word,
     options: shuffle([correctChunk, ...wrongChunks]).slice(0, 4),
@@ -394,6 +406,25 @@ const createPuzzle = (wordList: string[], size: number, directions: number[][]) 
   };
 };
 
+const buildFittingPuzzle = (
+  eligibleWords: string[],
+  wordCount: number,
+  size: number,
+  directions: number[][],
+  attempts = 160
+) => {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const chosenWords = shuffle(eligibleWords).slice(0, wordCount);
+    const puzzle = createPuzzle(chosenWords, size, directions);
+
+    if (puzzle.placedWords.length >= wordCount) {
+      return puzzle;
+    }
+  }
+
+  return null;
+};
+
 export default function WordSearch({
   demoMode = false,
   fixedGrade = "Grade 1",
@@ -413,13 +444,16 @@ export default function WordSearch({
   const [grade, setGrade] = useState(fixedGrade);
   const [difficulty, setDifficulty] = useState(fixedDifficulty);
   const [unlockedDifficulty, setUnlockedDifficulty] = useState("Easy");
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">(
+    () => (localStorage.getItem("arcade_theme") as "dark" | "light") || "dark"
+  );
   const [soundOn, setSoundOn] = useState(true);
   const [availableWords, setAvailableWords] = useState<string[]>([]);
   const [wordImageMap, setWordImageMap] = useState<Record<string, string>>({});
   const [cells, setCells] = useState<Cell[]>([]);
   const [puzzleWords, setPuzzleWords] = useState<PuzzleWord[]>([]);
   const [foundWords, setFoundWords] = useState<string[]>([]);
+  const [masteryPool, setMasteryPool] = useState<string[]>([]);
   const [selectedCells, setSelectedCells] = useState<string[]>([]);
   const [selectionStart, setSelectionStart] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -451,6 +485,7 @@ export default function WordSearch({
   const isLight = theme === "light";
   const fullscreenActive = isFullscreen || isMobileFullscreen;
   const gameModeActive = gameStarted || showFinalTest || !!finalResult;
+  const gameplayFrameActive = gameStarted || showFinalTest;
   const showPageChrome = !fullscreenActive && !demoMode;
   const publicLang =
     typeof window !== "undefined" && window.location.pathname.startsWith("/zh")
@@ -462,6 +497,9 @@ export default function WordSearch({
     (word) => word.length >= config.minLength && word.length <= config.maxLength
   ).length;
   const foundSet = useMemo(() => new Set(foundWords), [foundWords]);
+  const roundProgressPercent = puzzleWords.length
+    ? Math.min(100, (foundWords.length / puzzleWords.length) * 100)
+    : 0;
   const selectedSet = useMemo(() => new Set(selectedCells), [selectedCells]);
   const foundCellSet = useMemo(
     () =>
@@ -478,6 +516,12 @@ export default function WordSearch({
   );
   const complete = gameStarted && puzzleWords.length > 0 && foundWords.length === puzzleWords.length;
   const expired = gameStarted && secondsLeft <= 0 && !complete;
+  const menuSelectedClass = isLight
+    ? "border-[#6D28D9] bg-[#EDE9FE] text-[#3B0764] shadow-[0_10px_28px_rgba(109,40,217,0.18)]"
+    : "border-[#A78BFA] bg-[#7C3AED]/35 text-white shadow-[0_10px_28px_rgba(124,58,237,0.25)]";
+  const menuSelectedCardClass = isLight
+    ? "border-[#6D28D9] bg-[#EDE9FE] shadow-[0_16px_42px_rgba(109,40,217,0.18)]"
+    : "border-[#A78BFA] bg-[#7C3AED]/30 shadow-[0_16px_42px_rgba(124,58,237,0.24)]";
 
   const palette = {
     page: isLight ? "bg-white" : "bg-[#071426]",
@@ -492,18 +536,22 @@ export default function WordSearch({
       ? "border-[#eee8ff] bg-white text-primary shadow-[0_8px_25px_rgba(66,56,120,0.08)] hover:bg-[#faf8ff]"
       : "border-white/10 bg-white/5 text-white hover:bg-white/10",
     gameWindow: isLight
-      ? "border-[#eee8ff] bg-white/92 shadow-[0_24px_80px_rgba(66,56,120,0.12)]"
-      : "border-white/10 bg-[#071426]/95 shadow-[0_24px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl",
+      ? "border-[#eee8ff] bg-white shadow-[0_25px_80px_rgba(66,56,120,0.10)]"
+      : "border-white/10 bg-[#071426] shadow-[0_30px_100px_rgba(0,0,0,0.45)]",
     hudBox: isLight ? "border border-[#eee8ff] bg-[#faf8ff]" : "border border-white/10 bg-black/20",
     boardCell: isLight
       ? "border-[#eee8ff] bg-gradient-to-br from-white to-[#f6f1ff] text-primary shadow-[0_8px_22px_rgba(66,56,120,0.08)]"
       : "border-white/10 bg-gradient-to-br from-white/[0.14] to-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]",
   };
 
+  useEffect(() => {
+    localStorage.setItem("arcade_theme", theme);
+  }, [theme]);
+
   const moreGames = [
     { title: "Memory Flip", icon: Brain, available: true, current: false, status: "Available", path: "/memory-flip" },
     { title: "Word Search", icon: Search, available: true, current: true, status: "Available", path: "/word-search" },
-    { title: "Word Match", icon: Gem, available: true, current: false, status: "Available", path: "/word-match" },
+    { title: "Letter Match", icon: Gem, available: true, current: false, status: "Available", path: "/letter-match" },
     { title: "Word Drive", icon: Car, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "Grammar Runner", icon: Flame, available: false, current: false, status: "Coming Soon", path: "#" },
     { title: "Listening Challenge", icon: Headphones, available: false, current: false, status: "Coming Soon", path: "#" },
@@ -592,9 +640,9 @@ export default function WordSearch({
 
     if (error) return;
 
-    const nextDifficulty = passed && !disableUnlocking
-      ? getNextDifficulty(difficulty) || existingProgress?.unlocked_difficulty || unlockedDifficulty
-      : existingProgress?.unlocked_difficulty || unlockedDifficulty;
+    const storedUnlocked = existingProgress?.unlocked_difficulty || unlockedDifficulty;
+    const earnedDifficulty = passed && !disableUnlocking ? getNextDifficulty(difficulty) : null;
+    const nextDifficulty = getHighestDifficulty(storedUnlocked, earnedDifficulty);
     const nextStreak = passed ? (existingProgress?.current_streak || 0) + 1 : 0;
 
     await supabase.from("student_game_progress").upsert(
@@ -847,12 +895,17 @@ export default function WordSearch({
   }, [complete, expired, gameStarted, playGameSound]);
 
   useEffect(() => {
-    if (!complete || showRoundResult || showFinalTest || finalResult) return;
+    if (!complete || showFinalTest || finalResult) return;
+
+    const completedRoundWords = puzzleWords.map((item) => item.word);
+    setMasteryPool((current) =>
+      Array.from(new Set([...current, ...completedRoundWords]))
+    );
 
     if (demoMode) {
       playGameSound("stage", 0.25);
       onDemoComplete?.();
-      setShowRoundResult(true);
+      buildRound(1);
       return;
     }
 
@@ -861,9 +914,11 @@ export default function WordSearch({
       generateFinalTest();
     } else {
       playGameSound("stage", 0.25);
-      setShowRoundResult(true);
+      window.setTimeout(() => {
+        buildRound(level + 1);
+      }, 650);
     }
-  }, [complete, showRoundResult, showFinalTest, finalResult, level, demoMode, onDemoComplete, playGameSound]);
+  }, [complete, showFinalTest, finalResult, level, demoMode, onDemoComplete, playGameSound, puzzleWords]);
 
   const clearSavedSession = () => {
     clearGameSession(WORD_SEARCH_GAME_KEY);
@@ -882,6 +937,7 @@ export default function WordSearch({
       cells,
       puzzleWords,
       foundWords,
+      masteryPool,
       score,
       secondsLeft,
       level,
@@ -892,6 +948,8 @@ export default function WordSearch({
   };
 
   const enterGameMode = async () => {
+    if (demoMode) return;
+
     const isMobile =
       /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
       window.innerWidth < 768;
@@ -909,6 +967,8 @@ export default function WordSearch({
   };
 
   const toggleFullscreen = async () => {
+    if (demoMode) return;
+
     const isMobile =
       /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
       window.innerWidth < 768;
@@ -971,11 +1031,17 @@ export default function WordSearch({
         return;
       }
 
-      const chosenWords = shuffle(eligibleWords).slice(0, config.words);
-      const puzzle = createPuzzle(chosenWords, config.size, config.directions);
+      const puzzle = buildFittingPuzzle(
+        eligibleWords,
+        config.words,
+        config.size,
+        config.directions
+      );
 
-      if (puzzle.placedWords.length < config.words) {
-        setErrorMsg("This puzzle could not fit all selected words. Try again.");
+      if (!puzzle) {
+        setCells([]);
+        setPuzzleWords([]);
+        setErrorMsg(`Not enough English words for ${grade} ${difficulty} yet.`);
         setLoading(false);
         return;
       }
@@ -1011,6 +1077,7 @@ export default function WordSearch({
     setFinalQuestions([]);
     setFinalIndex(0);
     setFinalCorrect(0);
+    setMasteryPool([]);
     await enterGameMode();
     buildRound(1);
   };
@@ -1036,6 +1103,7 @@ export default function WordSearch({
     setCells(savedSession.cells);
     setPuzzleWords(savedSession.puzzleWords);
     setFoundWords(savedSession.foundWords);
+    setMasteryPool(savedSession.masteryPool || []);
     setSelectedCells([]);
     setSelectionStart(null);
     setDragging(false);
@@ -1059,6 +1127,7 @@ export default function WordSearch({
     setCells([]);
     setPuzzleWords([]);
     setFoundWords([]);
+    setMasteryPool([]);
     setSelectedCells([]);
     setSelectionStart(null);
     setDragging(false);
@@ -1078,7 +1147,9 @@ export default function WordSearch({
   };
 
   const generateFinalTest = () => {
-    const sourceWords = availableWords.length > 0 ? shuffle(availableWords) : puzzleWords.map((item) => item.word);
+    const sourceWords = shuffle(
+      Array.from(new Set([...masteryPool, ...puzzleWords.map((item) => item.word)]))
+    );
 
     if (sourceWords.length === 0) return;
 
@@ -1087,9 +1158,7 @@ export default function WordSearch({
       (_, index) => sourceWords[index % sourceWords.length]
     );
 
-    const questions = selectedWords.map((word) =>
-      makeFinalQuestion(word, sourceWords, wordImageMap)
-    );
+    const questions = selectedWords.map((word) => makeFinalQuestion(word, sourceWords));
 
     setFinalQuestions(questions);
     setFinalIndex(0);
@@ -1117,15 +1186,13 @@ export default function WordSearch({
       correctAnswer: correct ? undefined : current.correctChunk,
     });
 
-    if (!correct) {
+    if (correct) {
+      playGameSound("correct", 0.25);
+    } else {
       playGameSound("wrong", 0.38);
     }
 
-    if (isLastQuestion) {
-      setShowFinalTest(false);
-    }
-
-    setTimeout(async () => {
+    window.setTimeout(async () => {
       setFinalFeedback(null);
       setFinalAnswerLocked(false);
 
@@ -1135,8 +1202,13 @@ export default function WordSearch({
         return;
       }
 
-      const passed = nextCorrect >= 6;
-      const nextDifficulty = getNextDifficulty(difficulty);
+      const passed = nextCorrect / finalQuestions.length >= WORD_SEARCH_FINAL_PASS_RATE;
+      const earnedDifficulty = getNextDifficulty(difficulty);
+      const nextDifficulty =
+        earnedDifficulty &&
+          difficultyOrder.indexOf(earnedDifficulty) > difficultyOrder.indexOf(unlockedDifficulty)
+          ? earnedDifficulty
+          : null;
 
       if (passed) {
         playGameSound("stage", 0.25);
@@ -1146,26 +1218,21 @@ export default function WordSearch({
         clearSavedSession();
       }
 
-      if (passed && nextDifficulty && !disableUnlocking) {
-        setUnlockedDifficulty(nextDifficulty);
+      if (passed && !disableUnlocking) {
+        setUnlockedDifficulty((current) => getHighestDifficulty(current, nextDifficulty));
       }
 
-      await saveProgress({
-        passed,
-        levelReached: level,
-      });
-
-      setShowFinalTest(false);
-      setFinalQuestions([]);
-      setFinalIndex(0);
-      setFinalCorrect(0);
       setLevel(1);
       setFinalResult({
         passed,
         correct: nextCorrect,
         nextDifficulty: disableUnlocking ? null : nextDifficulty,
       });
-    }, 450);
+      await saveProgress({
+        passed,
+        levelReached: level,
+      });
+    }, correct ? 700 : 1000);
   };
 
   const updateSelection = (endId: string) => {
@@ -1294,13 +1361,22 @@ export default function WordSearch({
 
   return (
     <div className={demoMode ? "relative overflow-hidden bg-transparent" : `relative min-h-screen overflow-hidden ${palette.page}`}>
+      <style>
+        {`
+          @keyframes letter-match-confetti {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(190px) rotate(260deg); opacity: 0; }
+          }
+        `}
+      </style>
       {!demoMode && (
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           {isLight ? (
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
           ) : (
             <>
-              <div className="absolute left-[-120px] top-[-120px] h-[340px] w-[340px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
+              <div className={`absolute left-[-120px] top-[-120px] h-[340px] w-[340px] rounded-full blur-3xl ${gameModeActive ? "bg-[#34D399]/20" : "bg-[#8B5CF6]/20"}`} />
               <div className="absolute bottom-[-140px] right-[-100px] h-[380px] w-[380px] rounded-full bg-[#2563EB]/20 blur-3xl" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
             </>
@@ -1339,35 +1415,27 @@ export default function WordSearch({
               >
                 {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
               </button>
+
+              <div className={`rounded-xl border px-4 py-2 text-sm font-black ${palette.button}`}>
+                Michael
+              </div>
             </div>
           </div>
         )}
 
         <div
           ref={arcadeRef}
-          className={`relative overflow-visible ${isMobileFullscreen
-            ? "fixed inset-0 z-[250] h-[100dvh] overflow-y-auto rounded-none p-2 sm:p-3"
+          className={`relative ${gameplayFrameActive ? "overflow-hidden" : "overflow-visible"} ${isMobileFullscreen
+            ? `fixed inset-0 z-[250] h-[100dvh] overflow-y-auto rounded-none ${gameplayFrameActive ? "p-0" : "p-2 sm:p-3"}`
             : demoMode
               ? "mb-0 border-0 bg-transparent p-0 shadow-none"
-            : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
-            } ${!isMobileFullscreen && !demoMode ? `border ${palette.gameWindow}` : ""}`}
+              : gameplayFrameActive
+                ? "mb-8 rounded-[1.6rem] p-0 sm:rounded-[2.5rem]"
+                : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
+            } ${!isMobileFullscreen && !demoMode && !gameplayFrameActive ? `border ${palette.gameWindow}` : ""}`}
         >
-          {!demoMode && (
-            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-              {isLight ? (
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
-              ) : (
-                <>
-                  <div className="absolute left-[-120px] top-[-120px] h-[320px] w-[320px] rounded-full bg-[#8B5CF6]/20 blur-3xl" />
-                  <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-[#2563EB]/20 blur-3xl" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_35%)]" />
-                </>
-              )}
-            </div>
-          )}
-
           <div className={`relative z-10 ${fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
-            {gameModeActive && (
+            {!demoMode && gameModeActive && !gameStarted && (
               <button
                 type="button"
                 onClick={toggleFullscreen}
@@ -1413,175 +1481,219 @@ export default function WordSearch({
               </div>
             )}
 
-            {finalFeedback && (
-              <div className={`fixed inset-0 z-[200] flex items-center justify-center px-4 ${finalFeedback.type === "correct" ? "bg-emerald-500/85" : "bg-red-500/85"}`}>
-                <div className="text-center text-white">
-                  {finalFeedback.type === "correct" ? (
-                    <CheckCircle2 className="mx-auto h-24 w-24" />
-                  ) : (
-                    <XCircle className="mx-auto h-24 w-24" />
-                  )}
-                  <h2 className="mt-6 text-5xl font-black">
+            {finalFeedback && !finalResult && (
+              <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#022C22]/62 px-4 backdrop-blur-sm">
+                <div className={`w-full max-w-sm rounded-[2rem] border-4 p-6 text-center shadow-[0_28px_90px_rgba(0,0,0,0.45)] ${finalFeedback.type === "correct"
+                  ? "border-emerald-200 bg-gradient-to-b from-emerald-400 to-emerald-600"
+                  : "border-[#FDA4AF] bg-gradient-to-b from-[#FB7185] to-[#BE185D]"
+                  }`}
+                >
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-4 border-white/45 bg-white/20">
+                    {finalFeedback.type === "correct" ? (
+                      <CheckCircle2 className="h-9 w-9 text-white" />
+                    ) : (
+                      <XCircle className="h-9 w-9 text-white" />
+                    )}
+                  </div>
+                  <h2 className="mt-4 text-3xl font-black text-white">
                     {finalFeedback.type === "correct" ? "Correct!" : "Incorrect"}
                   </h2>
                   {finalFeedback.correctAnswer && (
-                    <p className="mt-4 text-2xl font-black">
-                      Correct answer: {finalFeedback.correctAnswer}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {finalResult && (
-              <div className="fixed inset-0 z-[160] flex items-center justify-center overflow-hidden overscroll-none bg-black/75 px-4 py-4">
-                <div className="max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:p-8">
-                  <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
-                  <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                    Final Test
-                  </p>
-                  <h2 className="mt-3 text-4xl font-black text-white">
-                    {finalResult.passed ? "You Passed!" : "Try Again!"}
-                  </h2>
-                  <p className="mt-4 text-slate-300">{finalResult.correct} / 10 Correct</p>
-
-                  <div className="mt-8 grid gap-3">
-                    <button
-                      onClick={async () => {
-                        if (finalResult.passed) {
-                          const nextDifficulty = finalResult.nextDifficulty;
-
-                          setFinalResult(null);
-                          setGameStarted(false);
-                          await exitGameMode();
-
-                          if (nextDifficulty && !disableUnlocking) {
-                            setDifficulty(nextDifficulty);
-                            setUnlockedDifficulty(nextDifficulty);
-                          }
-
-                          return;
-                        }
-
-                        setFinalResult(null);
-                        setScore(0);
-                        buildRound(1);
-                      }}
-                      className="h-14 rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
-                    >
-                      {finalResult.passed
-                        ? finalResult.nextDifficulty
-                          ? `GO TO ${finalResult.nextDifficulty.toUpperCase()}`
-                          : "BACK TO MENU"
-                        : "RETRY"}
-                    </button>
-
-                    <button
-                      onClick={async () => {
-                        setFinalResult(null);
-                        clearSavedSession();
-                        await resetToMenu();
-                      }}
-                      className="h-14 rounded-2xl border border-white/10 bg-white/5 font-black text-white"
-                    >
-                      BACK TO MENU
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {showRoundResult && (
-              <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 px-4">
-                <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
-                  <Trophy className="mx-auto h-16 w-16 text-[#FACC15]" />
-                  <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                    {demoMode ? "Luna Arcade Demo" : "Puzzle Cleared"}
-                  </p>
-                  <h2 className="mt-3 text-4xl font-black text-white">Great Job!</h2>
-                  <p className="mt-4 text-slate-300">
-                    {demoMode
-                      ? "You completed the Luna Arcade demo."
-                      : `You completed round ${level} / 5 for ${difficulty}.`}
-                  </p>
-                  <p className="mt-2 text-sm font-bold text-slate-300">Score: {score}</p>
-                  <button
-                    onClick={startNextChallenge}
-                    className="mt-8 h-14 w-full rounded-2xl bg-gradient-to-r from-[#8B5CF6] to-[#2563EB] font-black text-white"
-                  >
-                    {demoMode ? "Play Again" : "NEXT CHALLENGE"}
-                  </button>
-                  {demoMode && (
                     <>
-                      <button
-                        onClick={async () => {
-                          setShowRoundResult(false);
-                          await resetToMenu();
-                          onRequestSwitchGame?.("memory");
-                        }}
-                        className="mt-3 h-14 w-full rounded-2xl border border-white/10 bg-white/5 font-black text-white"
-                      >
-                        Try Memory Flip
-                      </button>
-                      <button
-                        onClick={async () => {
-                          setShowRoundResult(false);
-                          await resetToMenu();
-                          navigate(`/${publicLang}/enquiry`);
-                        }}
-                        className="mt-3 h-14 w-full rounded-2xl border border-white/10 bg-white/5 font-black text-white"
-                      >
-                        Book Consultation
-                      </button>
+                      <p className="mt-2 text-sm font-black uppercase tracking-[0.18em] text-white/80">
+                        Correct answer
+                      </p>
+                      <p className="mt-2 text-3xl font-black tracking-wide text-white">
+                        {finalFeedback.correctAnswer}
+                      </p>
                     </>
                   )}
                 </div>
               </div>
             )}
 
-            {showFinalTest && finalQuestions[finalIndex] ? (
-              <div className={`rounded-[2rem] border p-5 sm:p-8 ${palette.panel}`}>
-                <div className="text-center">
-                  <p className="text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
-                    Final Test
-                  </p>
-                  <h1 className={`mt-3 text-4xl font-black sm:text-5xl ${palette.title}`}>
-                    Spell Check
-                  </h1>
-                  <p className={`mt-3 ${palette.text}`}>
-                    Question {finalIndex + 1} / {finalQuestions.length}
-                  </p>
-                </div>
-
-                <div className={`mt-8 rounded-[2rem] border p-8 text-center ${palette.soft}`}>
-                  <p className={`text-4xl font-black tracking-widest sm:text-5xl ${palette.title}`}>
-                    {finalQuestions[finalIndex].clueDisplay}
-                  </p>
-                  {finalQuestions[finalIndex].hintImageUrl && (
-                    <img
-                      src={finalQuestions[finalIndex].hintImageUrl}
-                      alt="Vocabulary hint"
-                      className="mx-auto mt-5 h-32 w-32 rounded-[1.5rem] object-cover shadow-[0_16px_40px_rgba(0,0,0,0.22)] sm:h-40 sm:w-40"
+            {finalResult && (
+              <div className="fixed inset-0 z-[160] flex items-center justify-center overflow-hidden overscroll-none bg-[#022C22]/85 px-4 py-4 backdrop-blur-md">
+                {finalResult.passed &&
+                  Array.from({ length: 18 }, (_, index) => (
+                    <span
+                      key={index}
+                      className="pointer-events-none absolute h-3 w-2 rounded-full"
+                      style={{
+                        left: `${8 + ((index * 17) % 84)}%`,
+                        top: `${-8 - (index % 5) * 8}px`,
+                        background: ["#A7F3D0", "#34D399", "#38BDF8", "#FACC15", "#60A5FA"][index % 5],
+                        animation: `letter-match-confetti ${2.2 + (index % 4) * 0.35}s ease-in ${index * 0.08}s infinite`,
+                      }}
                     />
-                  )}
-                  <p className={`mt-4 text-sm font-bold sm:text-base ${palette.text}`}>
-                    {finalQuestions[finalIndex].sentenceHint}
-                  </p>
+                  ))}
+                <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2rem] border-4 border-[#A7F3D0] bg-gradient-to-b from-[#064E3B] via-[#0F766E] to-[#1D4ED8] p-1 text-center shadow-[0_34px_110px_rgba(15,118,110,0.55)] sm:rounded-[2.5rem]">
+                  <div className="relative rounded-[1.7rem] bg-[#022C22]/92 p-6 sm:rounded-[2.2rem] sm:p-8">
+                    <div className={`relative mx-auto flex h-24 w-24 items-center justify-center rounded-full border-4 ${finalResult.passed ? "border-[#FDE68A] bg-[#FACC15]" : "border-[#FDA4AF] bg-[#FB7185]"} shadow-[0_18px_60px_rgba(250,204,21,0.35)]`}>
+                      {finalResult.passed ? (
+                        <Trophy className="h-14 w-14 text-[#78350F]" />
+                      ) : (
+                        <Star className="h-14 w-14 text-white" />
+                      )}
+                    </div>
+                    <p className="mt-5 text-sm font-black uppercase tracking-[0.25em] text-[#A7F3D0]">
+                      Luna Explorer Arcade
+                    </p>
+                    <h2 className="mt-3 text-4xl font-black leading-tight text-white sm:text-5xl">
+                      {finalResult.passed ? "Passed" : "Failed"}
+                    </h2>
+                    <p className="mt-4 text-base font-bold text-white/85">
+                      Mastery Result: {finalResult.correct}/{finalQuestions.length || 10} correct
+                    </p>
+                    {finalResult.passed && finalResult.nextDifficulty && (
+                      <div className="relative mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-black text-white">
+                        <Sparkles className="h-4 w-4 text-[#FDE68A]" />
+                        {finalResult.nextDifficulty} unlocked
+                      </div>
+                    )}
+
+                    <div className="mt-8 grid gap-3">
+                      <button
+                        onClick={async () => {
+                          if (finalResult.passed) {
+                            const nextDifficulty = finalResult.nextDifficulty;
+
+                            setFinalResult(null);
+                            setShowFinalTest(false);
+                            setFinalQuestions([]);
+                            setGameStarted(false);
+                            await exitGameMode();
+
+                            if (nextDifficulty && !disableUnlocking) {
+                              setDifficulty(nextDifficulty);
+                              setUnlockedDifficulty((current) =>
+                                getHighestDifficulty(current, nextDifficulty)
+                              );
+                            }
+
+                            return;
+                          }
+
+                          setFinalResult(null);
+                          setShowFinalTest(true);
+                          setFinalIndex(0);
+                          setFinalCorrect(0);
+                          setFinalAnswerLocked(false);
+                        }}
+                        className="h-14 rounded-2xl border-2 border-white/30 bg-gradient-to-r from-[#34D399] via-[#0F766E] to-[#1D4ED8] font-black text-white shadow-[0_14px_35px_rgba(15,118,110,0.4)] transition hover:scale-[1.02]"
+                      >
+                        {finalResult.passed ? "CONTINUE" : "RETRY MASTERY TEST"}
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          setFinalResult(null);
+                          setShowFinalTest(false);
+                          setFinalQuestions([]);
+                          clearSavedSession();
+                          await resetToMenu();
+                        }}
+                        className="h-14 rounded-2xl border-2 border-white/15 bg-white/10 font-black text-white transition hover:bg-white/15"
+                      >
+                        BACK TO MENU
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {showFinalTest && finalQuestions[finalIndex] ? (
+              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#064E3B] via-[#0F766E] to-[#1D4ED8] ${fullscreenActive ? "min-h-[calc(100dvh-1.5rem)] p-4" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(167,243,208,0.26),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
+                <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#A7F3D0]">
+                      Luna Explorer Arcade
+                    </p>
+                    <p className="mt-1 text-sm font-black text-white drop-shadow">
+                      English · {grade} · {difficulty}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="rounded-xl border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur sm:text-sm">
+                      Mastery Test
+                    </div>
+                    <button
+                      onClick={resetToMenu}
+                      className="rounded-xl border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur transition hover:bg-white/25 sm:text-sm"
+                    >
+                      Exit Game
+                    </button>
+                    {!demoMode && (
+                      <button
+                        type="button"
+                        onClick={toggleFullscreen}
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/25 bg-white/15 text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur transition hover:bg-white/25"
+                        title={fullscreenActive ? "Exit Fullscreen" : "Enter Fullscreen"}
+                      >
+                        {fullscreenActive ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  {finalQuestions[finalIndex].options.map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => submitFinalAnswer(option)}
-                      className={`min-h-[72px] rounded-[1.5rem] border px-5 text-lg font-black transition hover:-translate-y-1 ${isLight
-                        ? "border-[#eee8ff] bg-white text-primary hover:bg-[#faf8ff]"
-                        : "border-white/10 bg-white/5 text-white hover:bg-[#8B5CF6]/20"
-                        }`}
-                    >
-                      {option}
-                    </button>
+                <div className="relative z-10 my-3 h-4 overflow-hidden rounded-full border border-white/25 bg-black/25">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#34D399] via-[#0F766E] to-[#1D4ED8] transition-all duration-500"
+                    style={{ width: `${((finalIndex + 1) / finalQuestions.length) * 100}%` }}
+                  />
+                </div>
+
+                <div className="relative z-10 mb-3 grid grid-cols-2 gap-1.5 sm:gap-2">
+                  {[
+                    ["Question", `${finalIndex + 1}/${finalQuestions.length}`],
+                    ["Correct", `${finalCorrect}/${finalQuestions.length}`],
+                  ].map(([label, value]) => (
+                    <div key={label} className="relative overflow-hidden rounded-2xl border-2 border-white/35 bg-gradient-to-b from-white/30 to-white/10 px-2 py-2 text-center shadow-[0_10px_24px_rgba(0,0,0,0.2)]">
+                      <div className="absolute inset-x-2 top-1 h-3 rounded-full bg-white/25 blur-sm" />
+                      <p className="relative text-[9px] font-black uppercase tracking-widest text-white/80">
+                        {label}
+                      </p>
+                      <p className="relative mt-0.5 text-sm font-black text-white drop-shadow sm:text-lg">
+                        {value}
+                      </p>
+                    </div>
                   ))}
+                </div>
+
+                <div className="relative z-10 flex min-h-0 flex-1 items-center justify-center">
+                  <div className="w-full max-w-4xl rounded-[1.6rem] border-4 border-[#A7F3D0] bg-[#022C22]/78 p-5 text-center shadow-[inset_0_8px_30px_rgba(0,0,0,0.28),0_18px_55px_rgba(8,47,73,0.35)] sm:p-8">
+                    <p className="text-sm font-black uppercase tracking-[0.25em] text-[#A7F3D0]">
+                      Mastery Test
+                    </p>
+                    <h1 className="mt-2 text-3xl font-black text-white sm:text-5xl">
+                      Choose the Correct Word
+                    </h1>
+
+                    <div className="mx-auto mt-6 max-w-2xl p-2">
+                      <p className="text-4xl font-black tracking-widest text-white sm:text-5xl">
+                        {finalQuestions[finalIndex].clueDisplay}
+                      </p>
+                      <p className="mt-4 text-sm font-bold text-white/75 sm:text-base">
+                        {finalQuestions[finalIndex].sentenceHint}
+                      </p>
+                    </div>
+
+                    <div className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-4">
+                      {finalQuestions[finalIndex].options.map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => submitFinalAnswer(option)}
+                          disabled={finalAnswerLocked}
+                          className="min-h-[62px] rounded-[1.5rem] border-2 border-white/25 bg-white/10 px-5 text-base font-black text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:-translate-y-1 hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-70 sm:min-h-[72px] sm:text-lg"
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : !gameStarted ? (
@@ -1591,7 +1703,7 @@ export default function WordSearch({
                   className="min-h-[420px]"
                 />
               ) : (
-                <div className={`overflow-visible rounded-[2rem] border p-5 sm:p-6 ${palette.panel}`}>
+                <div className="overflow-visible p-5 sm:p-6">
                   <div className="grid gap-6 lg:grid-cols-[1.1fr_320px]">
                     <div>
                       <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/35 bg-[#8B5CF6]/10 px-3 py-1.5">
@@ -1612,7 +1724,7 @@ export default function WordSearch({
                       <div className={`mt-4 inline-flex max-w-xl items-center gap-2 rounded-full border px-3 py-2 ${palette.soft}`}>
                         <p className={`text-xs font-bold leading-5 ${palette.text}`}>
                           <span className="text-sm">🏆</span>{" "}
-                          Pass 5 rounds + final test to unlock the next difficulty
+                          Find all hidden words in each round. After the required rounds, complete the final spell check to unlock the next difficulty.
                         </p>
                       </div>
                     </div>
@@ -1630,32 +1742,67 @@ export default function WordSearch({
                       <p className={`mt-2 text-xs font-black ${palette.muted}`}>
                         {eligibleWordCount} eligible for {difficulty}
                       </p>
+                      <p className={`mt-2 text-xs font-black ${palette.muted}`}>
+                        Final check pass mark: {getPassMarkPercent(WORD_SEARCH_FINAL_PASS_RATE)}%
+                      </p>
                     </div>
                   </div>
 
-                  <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                    <div className="block">
-                      <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
-                        LANGUAGE
-                      </span>
-                      <div className={`flex h-12 w-full items-center rounded-2xl border px-4 text-sm font-black ${isLight
-                        ? "border-[#eee8ff] bg-white text-primary"
-                        : "border-white/10 bg-[#0D1B2E] text-white"
-                        }`}
-                      >
-                        English
-                      </div>
+                  <div className="mt-6">
+                    <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
+                      Language
+                    </span>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["English", "Japanese", "Chinese"].map((language) => {
+                        const active = language === "English";
+
+                        return (
+                          <button
+                            key={language}
+                            disabled={!active}
+                            className={`h-12 rounded-2xl border text-sm font-black transition ${active
+                              ? menuSelectedClass
+                              : isLight
+                                ? "cursor-not-allowed border-[#eee8ff] bg-[#faf8ff] text-primary/35"
+                                : "cursor-not-allowed border-white/10 bg-white/5 text-white/35"
+                              }`}
+                          >
+                            {language}
+                          </button>
+                        );
+                      })}
                     </div>
-                    {renderArcadeDropdown(
-                      "Grade",
-                      "grade",
-                      grade,
-                      grades,
-                      (value) => {
-                        if (!demoMode) setGrade(value);
-                      },
-                      demoMode ? grades.filter((item) => item !== "Grade 1") : []
-                    )}
+                  </div>
+
+                  <div className="mt-6">
+                    <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${palette.muted}`}>
+                      Grade
+                    </span>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                      {grades.map((item) => {
+                        const locked = demoMode && item !== "Grade 1";
+
+                        return (
+                          <button
+                            key={item}
+                            disabled={locked}
+                            onClick={() => {
+                              if (!demoMode) setGrade(item);
+                            }}
+                            className={`h-12 rounded-2xl border text-sm font-black transition ${grade === item
+                              ? menuSelectedClass
+                              : locked
+                                ? isLight
+                                  ? "cursor-not-allowed border-[#eee8ff] bg-[#faf8ff] text-primary/35"
+                                  : "cursor-not-allowed border-white/10 bg-white/5 text-white/35"
+                                : palette.button
+                              }`}
+                          >
+                            {item}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   {savedSession && !demoMode && !disableResume && (
@@ -1708,8 +1855,8 @@ export default function WordSearch({
                         setDifficulty(nextDifficulty);
                       }}
                       className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
-                          ? "border-[#eee8ff] bg-white text-primary"
-                          : "border-white/10 bg-[#0D1B2E] text-white"
+                        ? "border-[#eee8ff] bg-white text-primary"
+                        : "border-white/10 bg-[#0D1B2E] text-white"
                         }`}
                     >
                       {difficulties.map((item) => {
@@ -1741,15 +1888,15 @@ export default function WordSearch({
                             if (!demoMode) setDifficulty(item.key);
                           }}
                           className={`relative overflow-hidden rounded-[1.2rem] border p-3 text-left transition sm:rounded-[1.4rem] sm:p-4 ${active
-                            ? "border-[#8B5CF6] bg-[#8B5CF6]/20"
+                            ? menuSelectedCardClass
                             : palette.soft
                             } ${locked ? "opacity-65" : "hover:-translate-y-1"}`}
                         >
-                          <p className={`text-[11px] font-black uppercase tracking-widest sm:text-xs ${palette.muted}`}>
+                          <p className={`text-[11px] font-black uppercase tracking-widest sm:text-xs ${active ? (isLight ? "text-[#4C1D95]" : "text-white") : palette.muted}`}>
                             {item.key}
                           </p>
-                          <p className={`mt-1 text-2xl font-black sm:mt-2 sm:text-3xl ${palette.title}`}>{item.words}</p>
-                          <p className={`text-xs font-bold sm:text-sm ${palette.text}`}>Hidden words</p>
+                          <p className={`mt-1 text-2xl font-black sm:mt-2 sm:text-3xl ${active ? (isLight ? "text-[#3B0764]" : "text-white") : palette.title}`}>{item.words}</p>
+                          <p className={`text-xs font-bold sm:text-sm ${active ? (isLight ? "text-[#4C1D95]" : "text-white/85") : palette.text}`}>Hidden words</p>
                           {locked && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
                               <span className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white">
@@ -1772,34 +1919,71 @@ export default function WordSearch({
                 </div>
               )
             ) : (
-              <div className={`flex flex-col rounded-[1.5rem] border ${palette.panel} ${fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "p-2 sm:p-4"}`}>
-                <div className={`flex flex-wrap items-center justify-between gap-2 pr-12 ${fullscreenActive ? "mb-1" : "mb-2"}`}>
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
-                      Word Search
-                    </p>
-                    <p className={`mt-1 text-sm font-bold ${palette.title}`}>
-                      English · {grade} · {difficulty}
-                    </p>
-                  </div>
-                </div>
-
-                <div className={`grid grid-cols-4 gap-1.5 sm:gap-2 ${fullscreenActive ? "mb-2" : "mb-3"}`}>
-                  {[
-                    ["Score", score],
-                    ["Found", `${foundWords.length}/${puzzleWords.length}`],
-                    ["Round", `${level}/5`],
-                    ["Time", `${secondsLeft}s`],
-                  ].map(([label, value]) => (
-                    <div key={label} className={`rounded-xl px-2 text-center ${palette.hudBox} ${fullscreenActive ? "py-1.5" : "py-2"}`}>
-                      <p className={`text-[9px] font-black uppercase tracking-widest ${palette.muted}`}>
-                        {label}
+              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#064E3B] via-[#0F766E] to-[#1D4ED8] ${fullscreenActive ? "min-h-[calc(100dvh-1.5rem)] p-4" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(167,243,208,0.26),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
+                <div className="relative z-10 mb-4 rounded-[2rem] border-4 border-[#A7F3D0] bg-gradient-to-r from-[#064E3B]/85 via-[#0F766E]/75 to-[#1D4ED8]/75 p-4 shadow-[0_18px_55px_rgba(15,118,110,0.45)]">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.25em] text-[#A7F3D0]">
+                        Explorer Word Hunt
                       </p>
-                      <p className={`mt-0.5 text-sm font-black sm:text-lg ${label === "Time" && secondsLeft <= 20 ? "text-red-400" : palette.title}`}>
-                        {value}
+                      <p className="mt-1 text-sm font-black text-white drop-shadow">
+                        English · {grade} · {difficulty}
                       </p>
                     </div>
-                  ))}
+
+                    <div className="flex items-center gap-2">
+                      <div className="rounded-xl border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur sm:text-sm">
+                        Round {level}/5
+                      </div>
+
+                      <button
+                        onClick={resetToMenu}
+                        className="rounded-xl border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur transition hover:bg-white/25 sm:text-sm"
+                      >
+                        Exit Game
+                      </button>
+
+                      {!demoMode && (
+                        <button
+                          type="button"
+                          onClick={toggleFullscreen}
+                          className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/25 bg-white/15 text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur transition hover:bg-white/25"
+                        >
+                          {fullscreenActive ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 h-3 overflow-hidden rounded-full border border-white/20 bg-black/25">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#A7F3D0] via-[#34D399] to-[#38BDF8] transition-all duration-500"
+                      style={{ width: `${roundProgressPercent}%` }}
+                    />
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {[
+                      ["Score", score],
+                      ["Found", `${foundWords.length}/${puzzleWords.length}`],
+                      ["Time", `${secondsLeft}s`],
+                    ].map(([label, value]) => (
+                      <div
+                        key={label}
+                        className={`relative overflow-hidden rounded-2xl border-2 border-white/35 bg-gradient-to-b from-white/30 to-white/10 px-2 py-2 text-center shadow-[0_10px_24px_rgba(0,0,0,0.2)] ${label === "Time" && secondsLeft <= 20 ? "animate-pulse ring-2 ring-red-200" : ""
+                          }`}
+                      >
+                        <p className="relative text-[9px] font-black uppercase tracking-widest text-white/80">
+                          {label}
+                        </p>
+                        <p className={`relative mt-0.5 text-sm font-black drop-shadow sm:text-lg ${label === "Time" && secondsLeft <= 20 ? "text-red-100" : "text-white"
+                          }`}>
+                          {value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {loading && (
@@ -1819,16 +2003,16 @@ export default function WordSearch({
                 )}
 
                 {!loading && !errorMsg && (
-                  <div className={`grid min-h-0 flex-1 items-start lg:grid-cols-[minmax(0,1fr)_280px] ${fullscreenActive ? "gap-2 lg:gap-3" : "gap-4"}`}>
-                    <div className={`rounded-[1.5rem] border p-2 sm:p-3 ${palette.soft}`}>
+                  <div className={`relative z-10 grid min-h-0 flex-1 items-start lg:grid-cols-[minmax(0,1fr)_360px] ${fullscreenActive ? "gap-2 lg:gap-3" : "gap-4"}`}>
+                    <div className="relative overflow-visible p-0">
                       <div
-                        className="mx-auto grid touch-none select-none gap-1 rounded-[1.2rem]"
+                        className="relative mx-auto grid touch-none select-none gap-1 rounded-[1.2rem] border border-white/10 bg-white/10 p-2 shadow-[inset_0_10px_28px_rgba(0,0,0,0.35)]"
                         style={{
                           gridTemplateColumns: `repeat(${config.size}, minmax(0, 1fr))`,
                           width: fullscreenActive
-                            ? "min(100%, calc(100dvh - 205px), 660px)"
+                            ? "min(46vw, calc(100dvh - 180px), 720px)"
                             : "100%",
-                          maxWidth: getGridMaxWidth(config.size),
+                          maxWidth: fullscreenActive ? "720px" : getGridMaxWidth(config.size),
                         }}
                         onPointerMove={handleBoardMove}
                         onPointerUp={finishSelection}
@@ -1869,12 +2053,12 @@ export default function WordSearch({
                       </div>
                     </div>
 
-                    <div className={`rounded-[1.5rem] border p-3 sm:p-4 ${palette.soft}`}>
+                    <div className="rounded-[1.5rem] border border-white/20 bg-white/10 p-3 text-white backdrop-blur sm:p-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
-                          Word List
+                        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#A7F3D0]">
+                          Mission Words
                         </p>
-                        <Timer className={`h-4 w-4 ${palette.muted}`} />
+                        <Timer className="h-4 w-4 text-[#FACC15]" />
                       </div>
 
                       <div className="mt-4 grid gap-2">
@@ -1886,12 +2070,10 @@ export default function WordSearch({
                               key={item.word}
                               className={`flex items-center justify-between rounded-xl border px-3 py-2 ${found
                                 ? "border-emerald-400 bg-emerald-500/15"
-                                : isLight
-                                  ? "border-[#eee8ff] bg-white"
-                                  : "border-white/10 bg-black/15"
+                                : "border-white/20 bg-white/10"
                                 }`}
                             >
-                              <span className={`font-black tracking-wide ${found ? "text-emerald-400 line-through" : palette.title}`}>
+                              <span className={`font-black tracking-wide ${found ? "text-emerald-300 line-through" : "text-white"}`}>
                                 {item.word}
                               </span>
                               {found && <Check className="h-4 w-4 text-emerald-400" />}

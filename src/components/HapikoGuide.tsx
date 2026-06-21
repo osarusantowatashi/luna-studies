@@ -57,6 +57,7 @@ const steps = [
 ];
 
 const allowedPages = ["/studentoverview", "/practice", "/mistakes"];
+const hiddenRoutes = ["/word-match", "/letter-match", "/games/word-match", "/games/letter-match"];
 
 const HapikoGuide = () => {
     const navigate = useNavigate();
@@ -72,8 +73,11 @@ const HapikoGuide = () => {
         const checkGuide = async () => {
             const role = localStorage.getItem("role");
             const isStudentGuidePage = allowedPages.includes(location.pathname);
+            const shouldHide = hiddenRoutes.some((route) =>
+                location.pathname.startsWith(route)
+            );
     
-            if (role !== "student" || !isStudentGuidePage) {
+            if (role !== "student" || !isStudentGuidePage || shouldHide) {
                 setShow(false);
                 return;
             }
@@ -106,8 +110,11 @@ const HapikoGuide = () => {
     useEffect(() => {
         const role = localStorage.getItem("role");
         const isStudentGuidePage = allowedPages.includes(location.pathname);
+        const shouldHide = hiddenRoutes.some((route) =>
+            location.pathname.startsWith(route)
+        );
 
-        if (!show || role !== "student" || !isStudentGuidePage) return;
+        if (!show || role !== "student" || !isStudentGuidePage || shouldHide) return;
 
         const currentStep = steps[stepIndex];
 

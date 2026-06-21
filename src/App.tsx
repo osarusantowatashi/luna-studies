@@ -48,7 +48,7 @@ const Practice = lazy(() => import("./pages/student/Practice"));
 const GamesArcade = lazy(() => import("./pages/student/games/GamesArcade"));
 const MemoryFlip = lazy(() => import("./pages/student/games/MemoryFlip"));
 const WordSearch = lazy(() => import("./pages/student/games/WordSearch"));
-const WordMatch = lazy(() => import("./pages/student/games/WordMatch"));
+const LetterMatch = lazy(() => import("./pages/student/games/LetterMatch"));
 const Mistakes = lazy(() => import("./pages/student/Mistakes"));
 
 const Page = lazy(() => import("./pages/shared/Page"));
@@ -221,11 +221,13 @@ const App = () => {
             }
           />
 
+          <Route path="/word-match" element={<Navigate to="/letter-match" replace />} />
+
           <Route
-            path="/word-match"
+            path="/letter-match"
             element={
               <ProtectedRoute allowedRoles={["admin", "student"]}>
-                <WordMatch />
+                <LetterMatch />
               </ProtectedRoute>
             }
           />

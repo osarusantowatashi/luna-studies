@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -9,9 +9,12 @@ import {
   Car,
   ChevronRight,
   Gamepad2,
+  Gem,
   GraduationCap,
   Headphones,
+  Maximize2,
   MessageCircle,
+  Minimize2,
   Puzzle,
   RotateCcw,
   Search,
@@ -22,13 +25,14 @@ import SeoHelmet from "@/components/SeoHelmet";
 import Footer from "@/components/Footer";
 
 type Lang = "en" | "zh" | "ja";
-type DemoGame = "memory" | "word";
+type DemoGame = "memory" | "word" | "letter";
 type FaqItem = { q: string; a: string };
 type PerfectForItem = { title: string; description: string };
 
 const baseUrl = "https://www.lunastudies.com";
 const MemoryFlip = lazy(() => import("@/pages/student/games/MemoryFlip"));
 const WordSearch = lazy(() => import("@/pages/student/games/WordSearch"));
+const LetterMatch = lazy(() => import("@/pages/student/games/LetterMatch"));
 
 const getLang = (pathname: string): Lang => {
   if (pathname.startsWith("/zh")) return "zh";
@@ -66,6 +70,8 @@ export default function ArcadeLanding() {
   const { t } = useTranslation();
   const lang = getLang(location.pathname);
   const [game, setGame] = useState<DemoGame>("memory");
+  const demoFrameRef = useRef<HTMLDivElement | null>(null);
+  const [demoFullscreen, setDemoFullscreen] = useState(false);
 
   const withLang = (path: string) => `/${lang}${path}`;
   const tr = (key: string) => t(`arcadePage.${key}`);
@@ -80,6 +86,34 @@ export default function ArcadeLanding() {
     disableProgressSaving: true,
     disableUnlocking: true,
     disableResume: true,
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setDemoFullscreen(document.fullscreenElement === demoFrameRef.current);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleDemoFullscreen = async () => {
+    const demoFrame = demoFrameRef.current;
+    if (!demoFrame) return;
+
+    try {
+      if (document.fullscreenElement === demoFrame) {
+        await document.exitFullscreen();
+        return;
+      }
+
+      await demoFrame.requestFullscreen();
+    } catch {
+      // Fullscreen is optional for the public preview.
+    }
   };
 
   const whyCards = [
@@ -156,6 +190,13 @@ export default function ArcadeLanding() {
       title: tr("demo.games.word"),
       status: tr("demo.available"),
       icon: Search,
+      available: true,
+    },
+    {
+      key: "letter" as const,
+      title: "Letter Match",
+      status: tr("demo.available"),
+      icon: Gem,
       available: true,
     },
     {
@@ -314,8 +355,25 @@ export default function ArcadeLanding() {
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-[2rem] bg-[#071426] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-3">
-              <div className="overflow-hidden rounded-[1.5rem] bg-[#071426]">
+            <div
+              ref={demoFrameRef}
+              className={`relative overflow-hidden rounded-[2rem] bg-[#071426] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-3 ${demoFullscreen ? "flex h-[100dvh] flex-col rounded-none" : ""}`}
+            >
+              <button
+                type="button"
+                onClick={toggleDemoFullscreen}
+                className="absolute right-3 top-3 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-[#071426]/85 text-white backdrop-blur-xl transition hover:bg-white/10"
+                title={demoFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                aria-label={demoFullscreen ? "Exit demo fullscreen" : "Open demo fullscreen"}
+              >
+                {demoFullscreen ? (
+                  <Minimize2 className="h-5 w-5" />
+                ) : (
+                  <Maximize2 className="h-5 w-5" />
+                )}
+              </button>
+
+              <div className={`overflow-hidden rounded-[2rem] bg-[#071426] sm:rounded-[2.5rem] ${demoFullscreen ? "min-h-0 flex-1" : ""}`}>
                 <Suspense
                   fallback={
                     <div className="flex min-h-[420px] items-center justify-center bg-[#071426] text-sm font-black uppercase tracking-[0.2em] text-[#C4B5FD]">
@@ -323,13 +381,20 @@ export default function ArcadeLanding() {
                     </div>
                   }
                 >
-                  {game === "memory" ? (
+                  {game === "memory" && (
                     <MemoryFlip
                       {...demoProps}
                       onRequestSwitchGame={() => setGame("word")}
                     />
-                  ) : (
+                  )}
+                  {game === "word" && (
                     <WordSearch
+                      {...demoProps}
+                      onRequestSwitchGame={() => setGame("letter")}
+                    />
+                  )}
+                  {game === "letter" && (
+                    <LetterMatch
                       {...demoProps}
                       onRequestSwitchGame={() => setGame("memory")}
                     />
@@ -343,7 +408,11 @@ export default function ArcadeLanding() {
                     {tr("moreGames.title")}
                   </p>
                   <p className="hidden text-xs font-bold text-slate-400 sm:block">
-                    {game === "memory" ? tr("demo.games.memory") : tr("demo.games.word")}
+                    {game === "memory"
+                      ? tr("demo.games.memory")
+                      : game === "word"
+                        ? tr("demo.games.word")
+                        : "Letter Match"}
                   </p>
                 </div>
 
@@ -357,7 +426,7 @@ export default function ArcadeLanding() {
                         type="button"
                         disabled={!available}
                         onClick={() => {
-                          if (key === "memory" || key === "word") setGame(key);
+                          if (key === "memory" || key === "word" || key === "letter") setGame(key);
                         }}
                         className={`rounded-[1rem] border p-3 text-left transition ${
                           active

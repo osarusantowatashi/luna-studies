@@ -11,6 +11,8 @@ const protectedRoutePrefixes = [
   "/games",
   "/memory-flip",
   "/word-search",
+  "/letter-match",
+  "/word-match",
   "/generate",
   "/practice",
   "/mistakes",
