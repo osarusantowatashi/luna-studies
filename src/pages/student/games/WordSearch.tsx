@@ -489,6 +489,7 @@ export default function WordSearch({
   const config = getDifficultyConfig(difficulty);
   const isLight = theme === "light";
   const fullscreenActive = isFullscreen || isMobileFullscreen;
+  const visualFullscreenActive = fullscreenActive || (demoMode && demoFullscreenActive);
   const gameModeActive = gameStarted || showFinalTest || !!finalResult;
   const gameplayFrameActive = gameStarted || showFinalTest;
   const showPageChrome = !fullscreenActive && !demoMode;
@@ -1398,7 +1399,7 @@ export default function WordSearch({
         </div>
       )}
 
-      <div className={demoMode && demoFullscreenActive ? "relative z-10 h-full min-h-0 w-full overflow-hidden p-0" : "relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"}>
+      <div className={demoMode && demoFullscreenActive ? "relative z-10 h-full min-h-0 w-full overflow-y-auto p-0" : "relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"}>
         {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
             <button
@@ -1443,14 +1444,14 @@ export default function WordSearch({
             ? `fixed inset-0 z-[250] h-[100dvh] overflow-y-auto rounded-none ${gameplayFrameActive ? "p-0" : "p-2 sm:p-3"}`
             : demoMode
               ? demoFullscreenActive
-                ? "mb-0 h-full min-h-0 overflow-hidden border-0 bg-transparent p-0 shadow-none"
+                ? "mb-0 h-full min-h-0 overflow-y-auto border-0 bg-transparent p-0 shadow-none"
                 : "mb-0 border-0 bg-transparent p-0 shadow-none"
               : gameplayFrameActive
                 ? "mb-8 rounded-[1.6rem] p-0 sm:rounded-[2.5rem]"
                 : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
             } ${!isMobileFullscreen && !demoMode && !gameplayFrameActive ? `border ${palette.gameWindow}` : ""}`}
         >
-          <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "h-full min-h-0 overflow-hidden" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
+          <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "h-full min-h-0 overflow-y-auto" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
             {!demoMode && gameModeActive && !gameStarted && (
               <button
                 type="button"
@@ -1991,9 +1992,9 @@ export default function WordSearch({
                 </div>
               )
             ) : (
-              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#064E3B] via-[#0F766E] to-[#1D4ED8] ${demoMode && demoFullscreenActive ? "h-full min-h-0 p-2 sm:p-3" : fullscreenActive ? "min-h-[calc(100dvh-1.5rem)] p-4" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
+              <div className={`relative mx-auto flex w-full max-w-[1500px] flex-col rounded-[2rem] bg-gradient-to-br from-[#064E3B] via-[#0F766E] to-[#1D4ED8] ${demoMode && demoFullscreenActive ? "h-full max-h-[100dvh] min-h-0 overflow-y-auto p-3" : fullscreenActive ? "min-h-[calc(100dvh-1.5rem)] overflow-hidden p-4" : "min-h-[520px] overflow-hidden p-2 sm:min-h-[620px] sm:p-4"}`}>
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(167,243,208,0.26),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
-                <div className="relative z-10 mb-4 rounded-[2rem] border-4 border-[#A7F3D0] bg-gradient-to-r from-[#064E3B]/85 via-[#0F766E]/75 to-[#1D4ED8]/75 p-4 shadow-[0_18px_55px_rgba(15,118,110,0.45)]">
+                <div className={`relative z-10 shrink-0 rounded-[2rem] border-4 border-[#A7F3D0] bg-gradient-to-r from-[#064E3B]/85 via-[#0F766E]/75 to-[#1D4ED8]/75 shadow-[0_18px_55px_rgba(15,118,110,0.45)] ${demoMode && demoFullscreenActive ? "mb-2 p-3" : "mb-4 p-4"}`}>
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.25em] text-[#A7F3D0]">
@@ -2075,16 +2076,22 @@ export default function WordSearch({
                 )}
 
                 {!loading && !errorMsg && (
-                  <div className={`relative z-10 grid min-h-0 flex-1 items-start lg:grid-cols-[minmax(0,1fr)_360px] ${fullscreenActive ? "gap-2 lg:gap-3" : "gap-4"}`}>
+                  <div className={`relative z-10 grid min-h-0 flex-1 items-start ${demoMode && demoFullscreenActive ? "gap-3 overflow-visible lg:grid-cols-[minmax(0,1fr)_340px]" : `lg:grid-cols-[minmax(0,1fr)_360px] ${visualFullscreenActive ? "gap-2 lg:gap-3" : "gap-4"}`}`}>
                     <div className="relative overflow-visible p-0">
                       <div
                         className="relative mx-auto grid touch-none select-none gap-1 rounded-[1.2rem] border border-white/10 bg-white/10 p-2 shadow-[inset_0_10px_28px_rgba(0,0,0,0.35)]"
                         style={{
                           gridTemplateColumns: `repeat(${config.size}, minmax(0, 1fr))`,
-                          width: fullscreenActive
-                            ? "min(46vw, calc(100dvh - 180px), 720px)"
+                          width: demoMode && demoFullscreenActive
+                            ? "min(42vw, calc(100dvh - 300px), 620px)"
+                            : visualFullscreenActive
+                              ? "min(46vw, calc(100dvh - 180px), 720px)"
                             : "100%",
-                          maxWidth: fullscreenActive ? "720px" : getGridMaxWidth(config.size),
+                          maxWidth: demoMode && demoFullscreenActive
+                            ? "620px"
+                            : visualFullscreenActive
+                              ? "720px"
+                              : getGridMaxWidth(config.size),
                         }}
                         onPointerMove={handleBoardMove}
                         onPointerUp={finishSelection}
@@ -2125,7 +2132,7 @@ export default function WordSearch({
                       </div>
                     </div>
 
-                    <div className="rounded-[1.5rem] border border-white/20 bg-white/10 p-3 text-white backdrop-blur sm:p-4">
+                    <div className={`rounded-[1.5rem] border border-white/20 bg-white/10 text-white backdrop-blur ${demoMode && demoFullscreenActive ? "max-h-full min-h-0 overflow-y-auto p-3" : "p-3 sm:p-4"}`}>
                       <div className="flex items-center justify-between">
                         <p className="text-xs font-black uppercase tracking-[0.2em] text-[#A7F3D0]">
                           Mission Words

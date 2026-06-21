@@ -369,7 +369,7 @@ export default function ArcadeLanding() {
 
             <div
               ref={demoFrameRef}
-              className={`relative overflow-hidden rounded-[2rem] bg-[#071426] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-3 ${demoFullscreen ? "flex h-[100dvh] flex-col rounded-none p-0 shadow-none sm:p-0" : ""}`}
+              className={`relative overflow-hidden rounded-[2rem] bg-[#071426] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-3 ${demoFullscreen ? "flex h-[100dvh] w-screen flex-col rounded-none p-0 shadow-none sm:p-0" : ""}`}
             >
               <button
                 type="button"
@@ -385,7 +385,7 @@ export default function ArcadeLanding() {
                 )}
               </button>
 
-              <div className={`overflow-hidden rounded-[2rem] bg-[#071426] sm:rounded-[2.5rem] ${demoFullscreen ? "h-full min-h-0 flex-1 rounded-none sm:rounded-none" : ""}`}>
+              <div className={demoFullscreen ? "h-full min-h-0 w-full flex-1 overflow-y-auto rounded-none bg-[#071426] sm:rounded-none" : "overflow-hidden rounded-[2rem] bg-[#071426] sm:rounded-[2.5rem]"}>
                 <Suspense
                   fallback={
                     <div className="flex min-h-[420px] items-center justify-center bg-[#071426] text-sm font-black uppercase tracking-[0.2em] text-[#C4B5FD]">

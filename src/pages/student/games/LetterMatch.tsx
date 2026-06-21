@@ -282,6 +282,7 @@ export default function LetterMatch({
   const scopeKey = `english:${LETTER_MATCH_GAME_KEY}:${grade}`;
   const isLight = theme === "light";
   const fullscreenActive = isFullscreen || isMobileFullscreen;
+  const visualFullscreenActive = fullscreenActive || (demoMode && demoFullscreenActive);
   const gameModeActive = gameStarted || !!gameResult;
   const gameplayFrameActive = gameStarted;
   const showPageChrome = !fullscreenActive && !demoMode;
@@ -1208,7 +1209,7 @@ export default function LetterMatch({
         )}
       </div>}
 
-      <div className={demoMode && demoFullscreenActive ? "relative z-10 h-full min-h-0 w-full overflow-hidden p-0" : "relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"}>
+      <div className={demoMode && demoFullscreenActive ? "relative z-10 h-full min-h-0 w-full overflow-y-auto p-0" : "relative z-10 mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8"}>
         {showPageChrome && (
           <div className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${palette.panel}`}>
             <button
@@ -1255,14 +1256,14 @@ export default function LetterMatch({
             ? `fixed inset-0 z-[250] h-[100dvh] overflow-y-auto rounded-none ${gameplayFrameActive ? "p-0" : "p-2 sm:p-3"}`
             : demoMode
               ? demoFullscreenActive
-                ? "mb-0 h-full min-h-0 overflow-hidden border-0 bg-transparent p-0 shadow-none"
+                ? "mb-0 h-full min-h-0 overflow-y-auto border-0 bg-transparent p-0 shadow-none"
                 : "mb-0 border-0 bg-transparent p-0 shadow-none"
             : gameplayFrameActive
               ? "mb-8 rounded-[1.6rem] p-0 sm:rounded-[2.5rem]"
               : "mb-8 rounded-[1.6rem] p-3 sm:rounded-[2.5rem] sm:p-4"
             }`}
         >
-          <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "h-full min-h-0 overflow-hidden" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
+          <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "h-full min-h-0 overflow-y-auto" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[520px] sm:min-h-[620px]"}`}>
             {!demoMode && gameModeActive && !gameStarted && (
               <button
                 type="button"
@@ -1793,10 +1794,10 @@ export default function LetterMatch({
                 </div>
               </div>
             ) : (
-              <div className={`relative flex flex-col overflow-hidden bg-gradient-to-br from-[#5B21B6] via-[#BE185D] to-[#F97316] ${demoMode ? "rounded-[2rem] sm:rounded-[2.5rem]" : ""} ${demoMode && demoFullscreenActive ? "h-full min-h-0 p-2" : fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] p-2" : "min-h-[520px] p-2 sm:min-h-[620px] sm:p-4"}`}>
+              <div className={`relative flex flex-col bg-gradient-to-br from-[#5B21B6] via-[#BE185D] to-[#F97316] ${demoMode ? "rounded-[2rem] sm:rounded-[2.5rem]" : ""} ${demoMode && demoFullscreenActive ? "h-full max-h-[100dvh] min-h-0 overflow-y-auto p-3" : fullscreenActive ? "min-h-[calc(100dvh-0.5rem)] overflow-hidden p-2" : "min-h-[520px] overflow-hidden p-2 sm:min-h-[620px] sm:p-4"}`}>
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.24),transparent_24%),radial-gradient(circle_at_80%_70%,rgba(250,204,21,0.2),transparent_28%)]" />
 
-                <div className="relative z-10 mb-4 rounded-[2rem] border-4 border-[#A78BFA] bg-gradient-to-r from-[#7C3AED]/80 via-[#DB2777]/70 to-[#FB923C]/70 p-4 shadow-[0_18px_55px_rgba(124,58,237,0.45)]">
+                <div className={`relative z-10 shrink-0 rounded-[2rem] border-4 border-[#A78BFA] bg-gradient-to-r from-[#7C3AED]/80 via-[#DB2777]/70 to-[#FB923C]/70 shadow-[0_18px_55px_rgba(124,58,237,0.45)] ${demoMode && demoFullscreenActive ? "mb-2 p-3" : "mb-4 p-4"}`}>
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.25em] text-[#FDE68A]">
@@ -1861,8 +1862,8 @@ export default function LetterMatch({
                     <ArcadeLoadingScreen isLight={false} />
                   </div>
                 ) : (
-                  <div className={`relative z-10 grid min-h-0 flex-1 items-start ${fullscreenActive ? "gap-3" : "gap-4"}`}>
-                    <div className={`relative overflow-visible p-3 ${feedback === "wrong" ? "animate-[letter-match-shake_0.55s_ease-in-out]" : "animate-[letter-match-slide_0.35s_ease-out]"}`}>
+                  <div className={`relative z-10 min-h-0 flex-1 ${demoMode && demoFullscreenActive ? "flex flex-col gap-2 overflow-visible" : `grid items-start ${visualFullscreenActive ? "gap-3" : "gap-4"}`}`}>
+                    <div className={`relative overflow-visible ${demoMode && demoFullscreenActive ? "flex min-h-0 flex-1 items-center justify-center p-2" : "p-3"} ${feedback === "wrong" ? "animate-[letter-match-shake_0.55s_ease-in-out]" : "animate-[letter-match-slide_0.35s_ease-out]"}`}>
                       {feedback === "correct" &&
                         Array.from({ length: 16 }, (_, index) => (
                           <span
@@ -1882,8 +1883,8 @@ export default function LetterMatch({
                         </div>
                       )}
 
-                      <div className="mx-auto flex max-w-3xl flex-col items-center pt-4">
-                        <div className={`relative flex aspect-square w-full max-w-[280px] items-center justify-center overflow-hidden rounded-[2rem] border-4 border-white/35 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.18)] ${feedback === "correct" ? "animate-[letter-match-pop_0.7s_ease-in-out]" : ""}`}>
+                      <div className={`mx-auto flex max-w-3xl flex-col items-center ${demoMode && demoFullscreenActive ? "" : "pt-4"}`}>
+                        <div className={`relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-[2rem] border-4 border-white/35 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.18)] ${demoMode && demoFullscreenActive ? "max-w-[220px]" : "max-w-[280px]"} ${feedback === "correct" ? "animate-[letter-match-pop_0.7s_ease-in-out]" : ""}`}>
                           {currentItem.imageUrl ? (
                             <img
                               src={currentItem.imageUrl}
@@ -1900,7 +1901,7 @@ export default function LetterMatch({
                           )}
                         </div>
 
-                        <div className="mt-5 flex flex-wrap justify-center gap-2 sm:gap-3">
+                        <div className={`flex flex-wrap justify-center ${demoMode && demoFullscreenActive ? "mt-3 gap-2" : "mt-5 gap-2 sm:gap-3"}`}>
                           {currentItem.word.split("").map((letter, index) => {
                             const revealed = revealedPositions.has(index);
                             const placedLetter = placedLetters[index];
@@ -1915,7 +1916,7 @@ export default function LetterMatch({
                                   event.preventDefault();
                                   handleDropOnSlot(index, event.dataTransfer.getData("text/plain"));
                                 }}
-                                className={`flex h-14 min-w-[3rem] items-center justify-center rounded-2xl border-4 px-3 text-3xl font-black transition sm:h-16 sm:min-w-[4rem] sm:text-4xl ${revealed
+                                className={`flex items-center justify-center rounded-2xl border-4 font-black transition ${demoMode && demoFullscreenActive ? "h-11 min-w-[2.8rem] px-2 text-2xl sm:h-12 sm:min-w-[3rem]" : "h-14 min-w-[3rem] px-3 text-3xl sm:h-16 sm:min-w-[4rem] sm:text-4xl"} ${revealed
                                   ? "border-[#FDE68A] bg-[#FACC15] text-[#78350F] shadow-[0_8px_0_rgba(120,53,15,0.3)]"
                                   : placedLetter
                                     ? "border-white bg-gradient-to-b from-[#93C5FD] to-[#2563EB] text-white shadow-[0_8px_0_rgba(30,64,175,0.35)]"
@@ -1933,13 +1934,13 @@ export default function LetterMatch({
 
 
 
-                    <div className="w-full">
-                      <div className="rounded-[1.5rem] border-4 border-[#FDE68A]/75 bg-[#3B0764]/45 p-3 shadow-[inset_0_8px_24px_rgba(0,0,0,0.22)]">
-                        <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-[#FDE68A]">
+                    <div className={demoMode && demoFullscreenActive ? "w-full shrink-0" : "w-full"}>
+                      <div className={`rounded-[1.5rem] border-4 border-[#FDE68A]/75 bg-[#3B0764]/45 shadow-[inset_0_8px_24px_rgba(0,0,0,0.22)] ${demoMode && demoFullscreenActive ? "shrink-0 p-2" : "p-3"}`}>
+                        <p className={`${demoMode && demoFullscreenActive ? "mb-2" : "mb-3"} text-xs font-black uppercase tracking-[0.2em] text-[#FDE68A]`}>
                           Letter Bank
                         </p>
 
-                        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
+                        <div className={`grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 ${demoMode && demoFullscreenActive ? "gap-1.5" : "gap-2"}`}>
                           {letterBank.map((letter) => {
                             const used = !availableBankLetters.some((item) => item.id === letter.id);
                             const active = activeBankLetterId === letter.id;
@@ -1954,7 +1955,7 @@ export default function LetterMatch({
                                 onDragStart={(event) => {
                                   event.dataTransfer.setData("text/plain", letter.id);
                                 }}
-                                className={`h-14 rounded-2xl border-4 text-2xl font-black transition sm:h-16 sm:text-3xl ${used
+                                className={`${demoMode && demoFullscreenActive ? "h-11 text-xl sm:h-12 sm:text-2xl" : "h-14 text-2xl sm:h-16 sm:text-3xl"} rounded-2xl border-4 font-black transition ${used
                                   ? "border-white/10 bg-white/10 text-white/25"
                                   : active
                                     ? "border-[#FDE68A] bg-[#FACC15] text-[#78350F] shadow-[0_0_0_4px_rgba(250,204,21,0.24),0_9px_0_rgba(120,53,15,0.28)]"
@@ -1968,7 +1969,7 @@ export default function LetterMatch({
                         </div>
                       </div>
 
-                      <div className="mt-3 rounded-[1.5rem] border-4 border-[#FDE68A]/75 bg-[#3B0764]/45 p-3 shadow-[inset_0_8px_24px_rgba(0,0,0,0.22)]">
+                      <div className={`mt-3 rounded-[1.5rem] border-4 border-[#FDE68A]/75 bg-[#3B0764]/45 p-3 shadow-[inset_0_8px_24px_rgba(0,0,0,0.22)] ${demoMode && demoFullscreenActive ? "max-h-[110px] shrink-0 overflow-y-auto" : ""}`}>
                         <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-white/70">
                           Correct History
                         </p>
