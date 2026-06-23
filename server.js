@@ -124,6 +124,15 @@ app.get("/", (req, res) => {
   res.send("Server is running ✅");
 });
 
+app.get("/api/luna-chat/warmup", (req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.json({
+    ok: true,
+    service: "luna-chat",
+    ready: Boolean(process.env.OPENAI_API_KEY),
+  });
+});
+
 app.post("/api/send-admin-enquiry-email", async (req, res) => {
   try {
     console.log("🔥 ADMIN ENQUIRY EMAIL API HIT");

@@ -19,6 +19,7 @@ const NavBar = () => {
   );
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const langRef = useRef<HTMLDivElement | null>(null);
 
@@ -196,7 +197,81 @@ const NavBar = () => {
     [t("nav.careers"), withLang("/careers")],
   ];
 
+  const serviceItems = [
+    {
+      label: t("services.shortLabels.assessmentPreparation"),
+      path: withLang("/subjects"),
+    },
+    {
+      label: t("services.shortLabels.academicSupport"),
+      path: withLang("/academic-support"),
+    },
+    {
+      label: t("services.shortLabels.applicationEssay"),
+      path: withLang("/services/essay-support"),
+    },
+    {
+      label: t("services.shortLabels.parentInterview"),
+      path: withLang("/services/parent-interview"),
+    },
+    {
+      label: t("services.shortLabels.mockScreening"),
+      path: withLang("/services/mock-interview"),
+    },
+    {
+      label: t("services.shortLabels.examPackage"),
+      path: withLang("/services/exam-package"),
+    },
+    {
+      label: t("services.shortLabels.schoolConsulting"),
+      path: withLang("/services/school-consulting"),
+    },
+    {
+      label: t("services.shortLabels.consultation"),
+      path: withLang("/services/consultation"),
+    },
+  ];
+
+  const currentPathWithHash = `${location.pathname}${location.hash}`;
   const isActive = (path: string) => location.pathname === path;
+  const isItemActive = (path: string) =>
+    path.includes("#") ? currentPathWithHash === path : location.pathname === path;
+  const servicesActive =
+    pathWithoutLang.startsWith("/services") ||
+    pathWithoutLang.startsWith("/subjects") ||
+    pathWithoutLang === "/academic-support";
+  const aboutActive = pathWithoutLang === "/whyluna" || pathWithoutLang.startsWith("/careers");
+
+  const navItemClass = (active: boolean) =>
+    `relative flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-semibold tracking-[0.04em] transition-colors duration-200 after:absolute after:left-1/2 after:-bottom-1 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:transition-opacity ${
+      active
+        ? "text-[#082A55] after:bg-[#D4A12A] after:opacity-100"
+        : "text-primary/60 after:opacity-0 hover:text-[#082A55]"
+    }`;
+
+  const dropdownPanelClass =
+    "absolute left-0 top-[44px] z-50 w-56 overflow-hidden rounded-2xl border border-primary/10 bg-white p-2 shadow-[0_18px_45px_rgba(8,42,85,0.12)]";
+
+  const dropdownItemClass = (active: boolean) =>
+    `block rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+      active
+        ? "bg-[#fff8e7] text-[#082A55]"
+        : "text-[#082A55]/78 hover:bg-[#f8f6ff] hover:text-[#082A55]"
+    }`;
+
+  const mobileLinkClass = (active: boolean) =>
+    `block rounded-xl border px-4 py-3 text-sm font-semibold transition-colors ${
+      active
+        ? "border-[#D4A12A]/35 bg-white text-[#082A55] shadow-sm"
+        : "border-transparent bg-white/70 text-primary/70 hover:bg-white hover:text-[#082A55]"
+    }`;
+
+  const mobileSectionClass = (active: boolean) =>
+    `rounded-2xl border p-2 ${
+      active
+        ? "border-[#D4A12A]/30 bg-white"
+        : "border-primary/10 bg-white/75"
+    }`;
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -208,8 +283,8 @@ const NavBar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/88 backdrop-blur-xl">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link
           to={
             isApp
@@ -220,12 +295,12 @@ const NavBar = () => {
                   : "/studentoverview"
               : withLang("/")
           }
-          className="flex min-w-0 items-center gap-2 sm:gap-3"
+          className="flex min-w-0 items-center gap-2.5 sm:gap-3"
           onClick={() => setMobileOpen(false)}
         >
           <img
             src="/lunalogo.png"
-            className="h-10 w-10 shrink-0 object-contain"
+            className="h-9 w-9 shrink-0 object-contain"
           />
 
           <h1 className="truncate font-serif text-lg tracking-wide text-primary sm:text-xl">
@@ -234,69 +309,124 @@ const NavBar = () => {
         </Link>
 
         {/* DESKTOP NAV */}
-        <nav className="hidden rounded-full border bg-card/80 p-1 shadow-soft md:flex">
-          {links.map(([label, path], index) => {
-            const active = isActive(path);
+        <nav className="hidden items-center gap-1 rounded-full border border-primary/10 bg-white/80 px-2 py-1.5 shadow-[0_10px_28px_rgba(8,42,85,0.06)] md:flex">
+          {isApp ? (
+            links.map(([label, path]) => {
+              const active = isActive(path);
 
-            const link = (
-              <Link
-                key={path}
-                to={path}
-                className={`rounded-full px-5 py-2 text-[13px] font-medium uppercase tracking-wider transition-all duration-200 ${active
-                  ? "scale-105 bg-yellow-400 text-black shadow-md"
-                  : "text-muted-foreground hover:scale-105 hover:bg-secondary hover:text-primary"
-                  }`}
-              >
-                {label}
-              </Link>
-            );
-
-            if (!isApp && index === 3) {
               return (
-                <div key="public-about-nav" className="flex">
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setAboutOpen((prev) => !prev)}
-                      className="flex items-center gap-2 rounded-full px-5 py-2 text-[13px] font-medium uppercase tracking-wider text-muted-foreground transition-all duration-200 hover:scale-105 hover:bg-secondary hover:text-primary"
-                    >
-                      {t("nav.aboutUs")}
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform ${aboutOpen ? "rotate-180" : ""
-                          }`}
-                      />
-                    </button>
-
-                    <AnimatePresence>
-                      {aboutOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                          transition={{ duration: 0.18 }}
-                          className="absolute left-0 top-[48px] z-50 w-48 overflow-hidden rounded-3xl border border-[#E8D8B5] bg-white/95 p-2 shadow-[0_20px_60px_rgba(8,42,85,0.18)] backdrop-blur-xl"
-                        >
-                          {aboutLinks.map(([aboutLabel, aboutPath]) => (
-                            <Link
-                              key={aboutPath}
-                              to={aboutPath}
-                              onClick={() => setAboutOpen(false)}
-                              className="block rounded-2xl px-4 py-3 text-sm font-bold text-[#082A55] transition hover:bg-[#FFF8E7]"
-                            >
-                              {aboutLabel}
-                            </Link>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                  {link}
-                </div>
+                <Link
+                  key={path}
+                  to={path}
+                  className={navItemClass(active)}
+                >
+                  {label}
+                </Link>
               );
-            }
+            })
+          ) : (
+            <>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setServicesOpen((prev) => !prev);
+                    setAboutOpen(false);
+                  }}
+                  className={navItemClass(servicesActive)}
+                >
+                  {t("nav.services")}
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 transition-transform ${servicesOpen ? "rotate-180" : ""
+                      }`}
+                  />
+                </button>
 
-            return link;
-          })}
+                <AnimatePresence>
+                  {servicesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 6 }}
+                      transition={{ duration: 0.14 }}
+                      className={dropdownPanelClass}
+                    >
+                      {serviceItems.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setServicesOpen(false)}
+                          className={dropdownItemClass(isItemActive(item.path))}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {[
+                [t("nav.tutors"), withLang("/tutors")],
+                [t("nav.arcade"), withLang("/arcade")],
+              ].map(([label, path]) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className={navItemClass(isActive(path))}
+                >
+                  {label}
+                </Link>
+              ))}
+
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAboutOpen((prev) => !prev);
+                    setServicesOpen(false);
+                  }}
+                  className={navItemClass(aboutActive)}
+                >
+                  {t("nav.aboutUs")}
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 transition-transform ${aboutOpen ? "rotate-180" : ""
+                      }`}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {aboutOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 6 }}
+                      transition={{ duration: 0.14 }}
+                      className="absolute left-0 top-[44px] z-50 w-48 overflow-hidden rounded-2xl border border-primary/10 bg-white p-2 shadow-[0_18px_45px_rgba(8,42,85,0.12)]"
+                    >
+                      {aboutLinks.map(([aboutLabel, aboutPath]) => (
+                        <Link
+                          key={aboutPath}
+                          to={aboutPath}
+                          onClick={() => setAboutOpen(false)}
+                          className={dropdownItemClass(location.pathname === aboutPath)}
+                        >
+                          {aboutLabel}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <Link
+                to={withLang("/enquiry")}
+                className={navItemClass(isActive(withLang("/enquiry")))}
+              >
+                {t("nav.enquire")}
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* DESKTOP RIGHT */}
@@ -306,9 +436,9 @@ const NavBar = () => {
               <button
                 type="button"
                 onClick={() => setLangOpen((prev) => !prev)}
-                className="flex h-11 items-center gap-2 rounded-full border border-[#E8D8B5] bg-white/90 px-4 text-sm font-semibold text-[#082A55] shadow-[0_10px_30px_rgba(8,42,85,0.08)] transition hover:-translate-y-0.5 hover:border-[#F6C65B] hover:bg-[#FFF8E7]"
+                className="flex h-10 items-center gap-2 rounded-full border border-primary/10 bg-white px-3.5 text-sm font-semibold text-[#082A55] shadow-[0_8px_24px_rgba(8,42,85,0.06)] transition hover:border-[#D4A12A]/40"
               >
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF2C7] text-[#082A55]">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f8f6ff] text-[#082A55]">
                   <Globe2 className="h-4 w-4" />
                 </span>
 
@@ -327,7 +457,7 @@ const NavBar = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
                     transition={{ duration: 0.18 }}
-                    className="absolute right-0 top-[52px] z-50 w-44 overflow-hidden rounded-3xl border border-[#E8D8B5] bg-white/95 p-2 shadow-[0_20px_60px_rgba(8,42,85,0.18)] backdrop-blur-xl"
+                    className="absolute right-0 top-[48px] z-50 w-44 overflow-hidden rounded-2xl border border-primary/10 bg-white p-2 shadow-[0_18px_45px_rgba(8,42,85,0.12)]"
                   >
                     {languageOptions.map((item) => {
                       const active = item.value === currentLang;
@@ -340,14 +470,14 @@ const NavBar = () => {
                             setLangOpen(false);
                             changeLanguage(item.value);
                           }}
-                          className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm font-semibold transition ${active
-                            ? "bg-[#082A55] text-white"
-                            : "text-[#082A55] hover:bg-[#FFF8E7]"
+                          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition ${active
+                            ? "bg-[#f8f6ff] text-[#082A55]"
+                            : "text-[#082A55]/75 hover:bg-[#f8f6ff] hover:text-[#082A55]"
                             }`}
                         >
                           <span
                             className={`flex h-7 w-7 items-center justify-center rounded-full text-xs ${active
-                              ? "bg-[#F6C65B] text-[#082A55]"
+                              ? "bg-[#D4A12A] text-white"
                               : "bg-[#F7F1E5] text-[#082A55]"
                               }`}
                           >
@@ -406,7 +536,7 @@ const NavBar = () => {
         <button
           type="button"
           onClick={() => setMobileOpen((prev) => !prev)}
-          className="flex h-11 w-11 items-center justify-center rounded-2xl border bg-card shadow-soft md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/10 bg-white shadow-[0_8px_24px_rgba(8,42,85,0.06)] md:hidden"
         >
           {mobileOpen ? (
             <X className="h-5 w-5 text-primary" />
@@ -418,51 +548,81 @@ const NavBar = () => {
 
       {/* MOBILE MENU */}
       {mobileOpen && (
-        <div className="border-t border-border/50 bg-background/95 px-4 py-4 shadow-lg backdrop-blur-xl md:hidden">
-          <div className="space-y-2">
-            {links.map(([label, path], index) => {
-              const active = isActive(path);
+        <div className="border-t border-primary/10 bg-white/96 px-4 py-4 shadow-lg backdrop-blur-xl md:hidden">
+          <div className="space-y-2.5">
+            {isApp ? (
+              links.map(([label, path]) => {
+                const active = isActive(path);
 
-              const link = (
-                <Link
-                  key={path}
-                  to={path}
-                  onClick={() => setMobileOpen(false)}
-                  className={`block rounded-2xl px-4 py-3 text-sm font-semibold ${active
-                    ? "bg-yellow-400 text-black"
-                    : "bg-card text-primary"
-                    }`}
-                >
-                  {label}
-                </Link>
-              );
-
-              if (!isApp && index === 3) {
                 return (
-                  <div key="mobile-public-about">
-                    <div className="mb-2 rounded-2xl bg-card p-2">
-                      <p className="px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-primary/45">
-                        {t("nav.aboutUs")}
-                      </p>
-
-                      {aboutLinks.map(([aboutLabel, aboutPath]) => (
-                        <Link
-                          key={aboutPath}
-                          to={aboutPath}
-                          onClick={() => setMobileOpen(false)}
-                          className="block rounded-xl px-3 py-3 text-sm font-semibold text-primary hover:bg-secondary"
-                        >
-                          {aboutLabel}
-                        </Link>
-                      ))}
-                    </div>
-                    {link}
-                  </div>
+                  <Link
+                    key={path}
+                    to={path}
+                    onClick={() => setMobileOpen(false)}
+                    className={mobileLinkClass(active)}
+                  >
+                    {label}
+                  </Link>
                 );
-              }
+              })
+            ) : (
+              <>
+                <div className={mobileSectionClass(servicesActive)}>
+                  <p className="px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-primary/45">
+                    {t("nav.services")}
+                  </p>
+                  {serviceItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileOpen(false)}
+                      className={dropdownItemClass(isItemActive(item.path))}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
 
-              return link;
-            })}
+                {[
+                  [t("nav.tutors"), withLang("/tutors")],
+                  [t("nav.arcade"), withLang("/arcade")],
+                ].map(([label, path]) => (
+                  <Link
+                    key={path}
+                    to={path}
+                    onClick={() => setMobileOpen(false)}
+                    className={mobileLinkClass(isActive(path))}
+                  >
+                    {label}
+                  </Link>
+                ))}
+
+                <div className={mobileSectionClass(aboutActive)}>
+                  <p className="px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-primary/45">
+                    {t("nav.aboutUs")}
+                  </p>
+
+                  {aboutLinks.map(([aboutLabel, aboutPath]) => (
+                    <Link
+                      key={aboutPath}
+                      to={aboutPath}
+                      onClick={() => setMobileOpen(false)}
+                      className={dropdownItemClass(location.pathname === aboutPath)}
+                    >
+                      {aboutLabel}
+                    </Link>
+                  ))}
+                </div>
+
+                <Link
+                  to={withLang("/enquiry")}
+                  onClick={() => setMobileOpen(false)}
+                  className={mobileLinkClass(isActive(withLang("/enquiry")))}
+                >
+                  {t("nav.enquire")}
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="mt-4 grid gap-3">

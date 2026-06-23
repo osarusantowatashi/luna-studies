@@ -2,11 +2,10 @@ import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import TutorProfileModal from "@/components/TutorProfileModal";
 import { motion } from "framer-motion";
 import SeoHelmet from "@/components/SeoHelmet";
+import { getTutors } from "@/lib/tutors";
 
 
 
@@ -30,78 +29,8 @@ const Tutors = () => {
     const value = t(key);
     return value === key ? fallback : value;
   };
-  const [selectedTutor, setSelectedTutor] = useState<any | null>(null);
 
-  type Tutor = {
-    name: string;
-    image: string;
-    role: string;
-    subjects: string[];
-    education: string;
-    languages: string;
-    bio: string;
-    experience: string[];
-    teachingStyle?: string[];
-    quote?: string;
-  };
-
-  const tutorsRaw = t("tutorsPage.items", { returnObjects: true });
-
-  const tutors: Tutor[] = Array.isArray(tutorsRaw)
-    ? (tutorsRaw as Tutor[])
-    : [
-      {
-        name: "Mimi",
-        image: "/tutors/mimi_new.jpg",
-        role: "Trilingual Educator & Head Tutor",
-        subjects: ["Japanese", "English", "TOEFL", "IELTS", "SAT"],
-        education: "Waseda University, Japan",
-        languages: "Japanese / English / Mandarin",
-        bio: "Specialises in trilingual education, international school preparation, and personalised academic planning.",
-        experience: [],
-      },
-      {
-        name: "Grace",
-        image: "/tutors/grace_new.jpg",
-        role: "Academic English & IB Tutor",
-        subjects: ["IB English", "TOEFL", "Academic Writing"],
-        education: "National University of Singapore, Singapore",
-        languages: "English / Mandarin",
-        bio: "Experienced in bilingual education, IB preparation, and academic English.",
-        experience: [],
-      },
-      {
-        name: "Francis",
-        image: "/tutors/francis_new.png",
-        role: "International Math Tutor",
-        subjects: ["IGCSE Math", "A Level Math", "AEIS Math"],
-        education: "University of Sydney, Australia",
-        languages: "English / Mandarin",
-        bio: "Focuses on mathematical logic, structured problem solving, and international curricula.",
-        experience: [],
-      },
-      {
-        name: "CJ",
-        image: "/tutors/cj_new.png",
-        role: "STEM & Singapore Curriculum Tutor",
-        subjects: ["AEIS", "A Level Math", "English"],
-        education: "Nanyang Technological University, Singapore",
-        languages: "English / Mandarin",
-        bio: "Experienced in Singapore local education pathways and bilingual teaching.",
-        experience: [],
-      },
-      {
-        name: "Christine",
-        image: "/tutors/christine_new.png",
-        role: "English Foundations Tutor",
-        subjects: ["English", "Grammar", "Writing"],
-        education: "University of Fuzhou, China",
-        languages: "English / Mandarin",
-        bio: "Specialises in building strong English foundations through structured learning.",
-        experience: [],
-      },
-    ];
-
+  const tutors = getTutors(t);
 
   const baseUrl = "https://www.lunastudies.com";
   const canonicalUrl = `${baseUrl}/${currentLang}/tutors`;
@@ -252,13 +181,15 @@ const Tutors = () => {
 
                   <div className="mt-auto grid gap-3 pt-6 sm:grid-cols-1 lg:grid-cols-2">
                     <Button
-                      onClick={() => setSelectedTutor(tutor)}
+                      asChild
                       className="h-12 w-full rounded-2xl bg-primary px-4 text-sm font-bold"
                     >
-                      <span className="truncate">
-                        {t("tutorsPage.buttons.viewProfile")}
-                      </span>
-                      <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
+                      <Link to={withLang(`/tutors/${tutor.slug}`)}>
+                        <span className="truncate">
+                          {t("tutorsPage.buttons.viewProfile")}
+                        </span>
+                        <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
+                      </Link>
                     </Button>
 
                     <Button
@@ -279,15 +210,6 @@ const Tutors = () => {
             </div>
           </div>
         </section>
-
-
-        <TutorProfileModal
-
-          tutor={selectedTutor}
-
-          onClose={() => setSelectedTutor(null)}
-
-        />
         <Footer />
       </div>
     </>

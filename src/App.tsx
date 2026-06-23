@@ -2,10 +2,20 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Landing from "./pages/public/Landing";
+import Services from "./pages/public/Services";
+import AcademicSupport from "./pages/public/AcademicSupport";
+import {
+  SchoolConsultingPage,
+  SchoolDetailPage,
+  SchoolDetailRouter,
+  SchoolRegionPage,
+  ServiceDetailPage,
+} from "./pages/public/ServiceDetails";
 import Subjects from "./pages/public/Subjects";
 import SubjectDetail from "./pages/public/SubjectDetail";
 import WhyLuna from "./pages/public/WhyLuna";
 import Tutors from "./pages/public/Tutors";
+import TutorDetail from "./pages/public/TutorDetail";
 import Enquire from "./pages/public/Enquire";
 import ArcadeLanding from "./pages/public/ArcadeLanding";
 import Terms from "./pages/public/Terms";
@@ -86,6 +96,33 @@ const RedirectJpToJa = () => {
   return <Navigate to={`${nextPath}${location.search}${location.hash}`} replace />;
 };
 
+const RedirectServicesToEn = () => {
+  const location = useLocation();
+
+  return <Navigate to={`/en${location.pathname}${location.search}${location.hash}`} replace />;
+};
+
+const RedirectEssayWriting = () => {
+  const location = useLocation();
+  const nextPath = location.pathname.replace("/services/essay-writing", "/services/essay-support");
+
+  return <Navigate to={`${nextPath}${location.search}${location.hash}`} replace />;
+};
+
+const RedirectApplicationEssay = () => {
+  const location = useLocation();
+  const nextPath = location.pathname.replace("/services/application-essay", "/services/essay-support");
+
+  return <Navigate to={`${nextPath}${location.search}${location.hash}`} replace />;
+};
+
+const RedirectMockScreening = () => {
+  const location = useLocation();
+  const nextPath = location.pathname.replace("/services/mock-screening", "/services/mock-interview");
+
+  return <Navigate to={`${nextPath}${location.search}${location.hash}`} replace />;
+};
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -119,12 +156,29 @@ const App = () => {
           <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
           <Route path="/:lang/reset-password" element={<ResetPassword />} />
 
+          <Route path="/:lang/services" element={<Layout><Services /></Layout>} />
+          <Route path="/:lang/services/essay-support" element={<Layout><ServiceDetailPage pageKey="essaySupport" /></Layout>} />
+          <Route path="/:lang/services/essay-writing" element={<RedirectEssayWriting />} />
+          <Route path="/:lang/services/application-essay" element={<RedirectApplicationEssay />} />
+          <Route path="/:lang/services/parent-interview" element={<Layout><ServiceDetailPage pageKey="parentInterview" /></Layout>} />
+          <Route path="/:lang/services/mock-interview" element={<Layout><ServiceDetailPage pageKey="mockInterview" /></Layout>} />
+          <Route path="/:lang/services/mock-screening" element={<RedirectMockScreening />} />
+          <Route path="/:lang/services/exam-package" element={<Layout><ServiceDetailPage pageKey="examPackage" /></Layout>} />
+          <Route path="/:lang/services/school-consulting" element={<Layout><SchoolConsultingPage /></Layout>} />
+          <Route path="/:lang/services/school-consulting/japan" element={<Layout><SchoolRegionPage region="japan" /></Layout>} />
+          <Route path="/:lang/services/school-consulting/singapore" element={<Layout><SchoolRegionPage region="singapore" /></Layout>} />
+          <Route path="/:lang/services/school-consulting/japan/:schoolSlug" element={<Layout><SchoolDetailPage region="japan" /></Layout>} />
+          <Route path="/:lang/services/school-consulting/singapore/:schoolSlug" element={<Layout><SchoolDetailPage region="singapore" /></Layout>} />
+          <Route path="/:lang/services/school-consulting/:schoolSlug" element={<Layout><SchoolDetailRouter /></Layout>} />
+          <Route path="/:lang/services/consultation" element={<Layout><ServiceDetailPage pageKey="consultation" /></Layout>} />
+          <Route path="/:lang/academic-support" element={<Layout><AcademicSupport /></Layout>} />
           <Route path="/:lang/subjects" element={<Layout><Subjects /></Layout>} />
           <Route path="/:lang/subjects/:slug" element={<Layout><SubjectDetail /></Layout>} />
           <Route path="/:lang/whyluna" element={<Layout><WhyLuna /></Layout>} />
           <Route path="/:lang/careers" element={<Careers />} />
           <Route path="/:lang/careers/:slug" element={<CareerDetail />} />
           <Route path="/:lang/tutors" element={<Layout><Tutors /></Layout>} />
+          <Route path="/:lang/tutors/:slug" element={<Layout><TutorDetail /></Layout>} />
           <Route path="/:lang/arcade" element={<Layout><ArcadeLanding /></Layout>} />
           <Route path="/:lang/enquiry" element={<Layout><Enquire /></Layout>} />
 
@@ -139,6 +193,20 @@ const App = () => {
 
           {/* Public Redirects */}
           <Route path="/login" element={<Navigate to="/en/login" replace />} />
+          <Route path="/services" element={<Navigate to="/en/services" replace />} />
+          <Route path="/services/essay-support" element={<Navigate to="/en/services/essay-support" replace />} />
+          <Route path="/services/essay-writing" element={<Navigate to="/en/services/essay-support" replace />} />
+          <Route path="/services/application-essay" element={<Navigate to="/en/services/essay-support" replace />} />
+          <Route path="/services/parent-interview" element={<Navigate to="/en/services/parent-interview" replace />} />
+          <Route path="/services/mock-interview" element={<Navigate to="/en/services/mock-interview" replace />} />
+          <Route path="/services/mock-screening" element={<Navigate to="/en/services/mock-interview" replace />} />
+          <Route path="/services/exam-package" element={<Navigate to="/en/services/exam-package" replace />} />
+          <Route path="/services/school-consulting" element={<Navigate to="/en/services/school-consulting" replace />} />
+          <Route path="/services/school-consulting/japan" element={<Navigate to="/en/services/school-consulting/japan" replace />} />
+          <Route path="/services/school-consulting/singapore" element={<Navigate to="/en/services/school-consulting/singapore" replace />} />
+          <Route path="/services/consultation" element={<Navigate to="/en/services/consultation" replace />} />
+          <Route path="/services/*" element={<RedirectServicesToEn />} />
+          <Route path="/academic-support" element={<Navigate to="/en/academic-support" replace />} />
           <Route path="/subjects" element={<Navigate to="/en/subjects" replace />} />
           <Route path="/whyluna" element={<Navigate to="/en/whyluna" replace />} />
           <Route path="/tutors" element={<Navigate to="/en/tutors" replace />} />

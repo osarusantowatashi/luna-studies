@@ -4,13 +4,14 @@
     "home": "Home",
     "whyLuna": "Why Luna",
     "careers": "Careers",
-    "subjects": "Programs",
+    "subjects": "Private Lessons",
     "tutors": "Tutors",
     "enquire": "Enquire",
     "login": "Login",
     "language": "中文",
     "getStarted": "Get started",
-    "arcade": "Arcade"
+    "arcade": "Arcade",
+    "services": "Services"
   },
   "landing": {
     "seo": {
@@ -82,7 +83,7 @@
     "programs": {
       "labelLine1": "We prepare",
       "labelLine2": "you for",
-      "titleLine1": "Every exam.",
+      "titleLine1": "Every assessment.",
       "titleLine2": "Every goal.",
       "titleLine3": "Every",
       "highlight": "future.",
@@ -91,23 +92,38 @@
           "title": "MAP",
           "sub": "Growth Assessment"
         },
-        "toefl": {
-          "title": "TOEFL",
-          "sub": "iBT / Junior Preparation"
-        },
         "wida": {
           "title": "WIDA",
           "sub": "Language Development"
         },
-        "writing": {
-          "title": "Academic Writing",
-          "sub": "Think. Write. Succeed."
+        "cat4": {
+          "title": "CAT4",
+          "sub": "Cognitive Ability"
         },
-        "interview": {
-          "title": "Interview Prep",
-          "sub": "Confidently You."
+        "aeis": {
+          "title": "AEIS",
+          "sub": "Singapore Entrance"
+        },
+        "toefl": {
+          "title": "TOEFL",
+          "sub": "iBT / Junior"
+        },
+        "admissions": {
+          "title": "Admissions",
+          "sub": "School Selection"
+        },
+        "interviews": {
+          "title": "Interviews",
+          "sub": "Expression & Communication"
+        },
+        "ielts": {
+          "title": "IELTS",
+          "sub": "Academic English"
         }
-      }
+      },
+      "label": "LUNA PATHWAYS",
+      "title": "Assessment & Exam Preparation",
+      "description": "Focused preparation for international school assessments, English proficiency tests and academic entrance pathways."
     },
     "pathways": {
       "label": "Global Pathways",
@@ -251,26 +267,152 @@
         },
         "continue": "Click to continue"
       }
+    },
+    "servicesPreview": {
+      "label": "LUNA SERVICES",
+      "titleLine1": "Beyond",
+      "titleLine2": "Tutoring.",
+      "description": "From 1-to-1 lessons to application essays, parent interviews, mock interviews and school consulting, Luna supports families beyond regular tutoring.",
+      "button": "View All Services",
+      "items": {
+        "privateLessons": {
+          "title": "Private Lessons",
+          "desc": "Personalised 1-to-1 tutoring and academic support."
+        },
+        "essay": {
+          "title": "Essay Writing & Editing",
+          "desc": "Application writing support with clearer structure and tone."
+        },
+        "parentInterview": {
+          "title": "Parent Interview Coaching",
+          "desc": "Practice school-fit answers with calm guidance."
+        },
+        "mockInterview": {
+          "title": "Mock Interview",
+          "desc": "Simulated admissions practice with practical feedback."
+        },
+        "examPackage": {
+          "title": "Entrance Exam Package",
+          "desc": "Structured preparation across tests and timelines."
+        },
+        "schoolConsulting": {
+          "title": "School Consulting",
+          "desc": "Compare schools, admissions paths and family fit."
+        },
+        "consultation": {
+          "title": "Consultation",
+          "desc": "Clarify priorities and choose the next best step."
+        }
+      }
     }
   },
   "footer": {
-    "description": "Personalized international education support for students in Singapore, Japan, and beyond.",
-    "quickLinks": "Quick Links",
-    "programmes": "Programmes",
-    "contact": "Contact",
-    "copyright": "© 2026 Luna Education. All rights reserved.",
-    "locations": "Singapore · Tokyo · China · Online"
+    "brand": {
+      "description": "Personalized international education support for students in Singapore, Japan and beyond.",
+      "links": {
+        "home": "Home",
+        "whyLuna": "Why Luna",
+        "tutors": "Tutors",
+        "careers": "Careers"
+      }
+    },
+    "columns": {
+      "aboutUs": "About Us",
+      "programmes": "Programmes",
+      "assessmentPreparation": "Assessment Preparation",
+      "admissions": "Admissions",
+      "serviceSupport": "Service Support",
+      "additionalServices": "Additional Services",
+      "testPrep": "Test Prep",
+      "admissionsSupport": "Admissions Support",
+      "otherServices": "Other Services",
+      "contact": "Contact"
+    },
+    "about": {
+      "aboutLuna": "About Luna",
+      "tutors": "Tutors",
+      "careers": "Careers",
+      "contact": "Contact"
+    },
+    "programs": {
+      "privateLessons": "Private Lessons",
+      "assessmentPreparation": "Assessment Preparation",
+      "map": "MAP Preparation",
+      "wida": "WIDA Preparation",
+      "cat4": "CAT4 Preparation",
+      "aeis": "AEIS Preparation",
+      "toefl": "TOEFL Preparation",
+      "ielts": "IELTS Preparation",
+      "academicSupport": "Academic Support"
+    },
+    "services": {
+      "applicationEssays": "Application Essays",
+      "parentInterview": "Parent Interview",
+      "mockInterview": "Mock Interview",
+      "examPackage": "Entrance Exam Package",
+      "entranceExamPackage": "Entrance Exam Package",
+      "schoolConsulting": "School Consulting",
+      "internationalSchools": "International Schools",
+      "consultation": "Consultation",
+      "arcade": "Arcade",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    },
+    "contact": {
+      "wechat": "WeChat",
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "linkedin": "LinkedIn"
+    },
+    "bottom": {
+      "copyright": "© 2026 Luna Education. All Rights Reserved.",
+      "separator": "|"
+    }
+  },
+  "academicSupport": {
+    "seo": {
+      "title": "Academic Support | English, Math, Japanese & Mandarin | Luna Education",
+      "description": "Long-term academic support for English, math, Japanese, Mandarin, speaking and writing, and school learning."
+    },
+    "hero": {
+      "label": "Academic Support",
+      "title": "Academic Support",
+      "subtitle": "Long-term support for English, math, Japanese, Mandarin, speaking and writing, and school learning."
+    },
+    "cards": {
+      "cta": "View program",
+      "englishFoundation": {
+        "title": "English Foundation",
+        "body": "Build vocabulary, grammar, reading confidence and classroom English for international school learning."
+      },
+      "speakingWriting": {
+        "title": "Speaking & Writing",
+        "body": "Develop clearer spoken expression, structured writing and stronger academic communication."
+      },
+      "mathSupport": {
+        "title": "Math Support",
+        "body": "Strengthen number sense, problem solving, school math foundations and multi-step reasoning."
+      },
+      "japaneseLessons": {
+        "title": "Japanese Lessons",
+        "body": "Support Japanese language growth for school, daily life, conversation and structured study."
+      },
+      "mandarinLessons": {
+        "title": "Mandarin Lessons",
+        "body": "Build Mandarin listening, speaking, reading and writing through practical language support."
+      }
+    }
   },
   "subjects": {
     "seo": {
-      "title": "LUNA Programs | Assessment Preparation & Academic Support",
-      "description": "Explore LUNA Studies programs including MAP, WIDA, CAT4, AEIS, TOEFL, IELTS, JLPT, HSK, English, Math, Japanese and Mandarin support."
+      "title": "LUNA Programmes | Assessment Preparation & Academic Support",
+      "description": "Explore Luna Education programmes for assessment preparation, academic support and long-term learning growth."
     },
     "hero": {
-      "label": "Luna Programs",
-      "titleLine1": "Choose the support",
-      "titleLine2": "that fits your child.",
-      "description": "From assessment preparation to long-term academic support, each Luna program is designed with clear goals, personalised guidance and measurable progress."
+      "label": "Programmes",
+      "titleLine1": "Assessment preparation.",
+      "titleLine2": "Academic support. Steady growth.",
+      "description": "Build long-term learning support around each student’s goals, school expectations and learning rhythm."
     },
     "learnMore": "Learn more",
     "suitableFor": "Suitable for:",
@@ -1097,7 +1239,7 @@
     }
   },
   "subjectDetail": {
-    "backToPrograms": "Programs",
+    "backToPrograms": "Private Lessons",
     "enquireNow": "Enquire Now",
     "howLunaHelps": "How Luna Helps",
     "programFocus": "Program Focus",
@@ -1145,7 +1287,7 @@
     "ctaDescription": "Send us an enquiry and we’ll recommend the right tutor and learning plan for your child.",
     "enquireAbout": "Enquire about {{title}}",
     "notFoundTitle": "Program not found.",
-    "backToProgramsButton": "Back to Programs"
+    "backToProgramsButton": "Back to Private Lessons"
   },
   "enquire": {
     "seo": {
@@ -1440,7 +1582,7 @@
     },
     "input": {
       "placeholder": "Ask Chokina about MAP, TOEFL, CAT4...",
-      "loading": "Chokina is replying..."
+      "loading": "Thinking..."
     },
     "buttons": {
       "submitEnquiry": "Submit Enquiry",
@@ -1478,7 +1620,9 @@
     },
     "buttons": {
       "viewProfile": "View Profile",
-      "book": "Book Consultation"
+      "book": "Book Consultation",
+      "bookWithTutor": "Book a lesson with {{name}}",
+      "backToTutors": "Back to tutors"
     },
     "hero": {
       "label": "Our Tutors",
@@ -2361,6 +2505,1109 @@
     "moreGames": {
       "title": "More Games",
       "wordDrive": "Word Drive"
+    }
+  },
+  "services": {
+    "seo": {
+      "title": "LUNA Services | Private Lessons, Admissions Support & School Consulting",
+      "description": "Explore Luna Education services including private lessons, application essay support, parent interview coaching, mock interviews, entrance exam packages, school consulting and family consultation."
+    },
+    "hero": {
+      "label": "Luna Services",
+      "titleLine1": "Support for every step",
+      "titleLine2": "of your child’s education journey.",
+      "description": "From 1-to-1 lessons to admissions preparation, interview coaching and school consulting, Luna helps families choose the right path with clear guidance.",
+      "primaryButton": "Explore Services",
+      "secondaryButton": "Contact Us"
+    },
+    "intro": {
+      "label": "Beyond Tutoring",
+      "title": "A complete support system for learning and admissions.",
+      "description": "Luna supports students and families across tutoring, assessment preparation, application writing, interview readiness, school selection and education planning. Families can start with one service or combine several into a structured preparation plan."
+    },
+    "showcase": {
+      "label": "What We Support",
+      "titleLine1": "Choose the right",
+      "titleLine2": "service for your family.",
+      "highlight": "Luna"
+    },
+    "learnMore": "Learn more",
+    "enquire": "Enquire",
+    "privateLessonsButton": "View Private Lessons",
+    "items": {
+      "privateLessons": {
+        "title": "Private Lessons",
+        "short": "1-to-1 tutoring",
+        "body": "Personalised 1-to-1 tutoring for subjects, languages and assessment preparation.",
+        "points": [
+          "English, Math, Japanese, Mandarin and academic writing",
+          "MAP, WIDA, CAT4, AEIS, TOEFL, IELTS, JLPT and HSK preparation",
+          "Tutor matching, lesson feedback and progress tracking"
+        ]
+      },
+      "applicationEssay": {
+        "title": "Application Essay Writing & Editing",
+        "short": "Essays & editing",
+        "body": "Support for school application essays, parent statements, student responses and written materials.",
+        "points": [
+          "Structure, clarity and school-fit messaging",
+          "Editing for tone, grammar and final polish",
+          "Guidance without promising admission outcomes"
+        ]
+      },
+      "parentInterview": {
+        "title": "Parent Interview Coaching",
+        "short": "Parent interviews",
+        "body": "Interview preparation for guardians who need to explain their child, family values and school goals clearly.",
+        "points": [
+          "Common school interview question practice",
+          "Answer structure and tone refinement",
+          "Mock Q&A with practical feedback"
+        ]
+      },
+      "mockScreening": {
+        "title": "Mock Screening & Mock Interview",
+        "short": "Mock practice",
+        "body": "Simulated screening sessions for students and families before school admissions or assessment stages.",
+        "points": [
+          "Student interview and parent interview practice",
+          "English conversation or readiness review",
+          "Clear feedback on strengths and next steps"
+        ]
+      },
+      "examPackage": {
+        "title": "Entrance Exam Package",
+        "short": "Exam package",
+        "body": "A structured preparation package combining tutoring, interview practice, writing support and mock review.",
+        "points": [
+          "Personalised plan for admissions timelines",
+          "Subject preparation and assessment practice",
+          "Optional interview and application support"
+        ]
+      },
+      "schoolConsulting": {
+        "title": "School Consulting",
+        "short": "School planning",
+        "body": "Guidance for families comparing schools, curricula, child fit and application timelines.",
+        "points": [
+          "School selection and curriculum comparison",
+          "Child profile and family goal review",
+          "Application timeline and preparation planning"
+        ]
+      },
+      "consultation": {
+        "title": "Consultation Course",
+        "short": "Family consultation",
+        "body": "A focused consultation session for families who need direction before choosing tutoring or admissions support.",
+        "points": [
+          "Review current situation and concerns",
+          "Clarify learning or admissions priorities",
+          "Recommend practical next steps"
+        ]
+      }
+    },
+    "process": {
+      "label": "How It Works",
+      "title": "Clear steps from enquiry to action.",
+      "description": "We help families move from uncertainty to a clear plan.",
+      "stepLabel": "Step",
+      "steps": [
+        {
+          "title": "Understand the Goal",
+          "text": "We first learn about the child’s background, school situation and family priorities."
+        },
+        {
+          "title": "Recommend the Service",
+          "text": "We suggest the most suitable service or combination of services."
+        },
+        {
+          "title": "Match Support",
+          "text": "We match the right tutor, coach or consultant based on the goal."
+        },
+        {
+          "title": "Track Next Steps",
+          "text": "Families receive clearer guidance on progress, feedback and what to do next."
+        }
+      ]
+    },
+    "cta": {
+      "label": "Start With Luna",
+      "title": "Not sure which service fits your family?",
+      "description": "Send us an enquiry and we’ll help you choose the right support.",
+      "button": "Contact Luna"
+    },
+    "shortLabels": {
+      "privateLessons": "Private Lessons",
+      "assessmentPreparation": "Assessment Preparation",
+      "academicSupport": "Academic Support",
+      "applicationEssay": "Application Essays",
+      "parentInterview": "Parent Interview",
+      "mockScreening": "Mock Interview",
+      "examPackage": "Exam Package",
+      "schoolConsulting": "School Consulting",
+      "consultation": "Consultation"
+    },
+    "detailPages": {
+      "essaySupport": {
+        "seo": {
+          "title": "Application Essay Writing & Editing | Luna Education",
+          "description": "Application essay planning, editing and school application writing support for international school and overseas school applications."
+        },
+        "hero": {
+          "label": "Writing Support",
+          "title": "Application Essay Writing & Editing",
+          "subtitle": "Support for school application essays, student statements, parent statements and written responses.",
+          "cta": "Enquire About Essay Support",
+          "secondary": "View All Services"
+        },
+        "heroHighlights": [
+          "School-fit message planning",
+          "Clear structure and flow",
+          "Editing that keeps the student voice"
+        ],
+        "unique": {
+          "label": "Before / After",
+          "title": "Make the message clearer without losing the voice.",
+          "description": "We help families move from generic writing to clearer, more specific application materials.",
+          "beforeLabel": "Before",
+          "before": "I want to join this school because it is good and I like learning new things.",
+          "afterLabel": "After",
+          "after": "I am drawn to the school because its project-based learning and international community match how I learn best: by asking questions, working with others and improving through feedback.",
+          "disclaimer": "Examples are illustrative only. Luna guides planning, editing and clarity while keeping the student’s own work and voice. We do not guarantee admission outcomes."
+        },
+        "cards": {
+          "label": "What We Help With",
+          "title": "Focused writing support for application materials.",
+          "items": [
+            {
+              "title": "Essay Planning",
+              "text": "Clarify the prompt, audience and key message before drafting."
+            },
+            {
+              "title": "Structure & Flow",
+              "text": "Organise ideas so the essay reads clearly from opening to closing."
+            },
+            {
+              "title": "Editing & Polishing",
+              "text": "Improve grammar, tone, word choice and final readability."
+            },
+            {
+              "title": "Application Review",
+              "text": "Review written responses for consistency and school-fit messaging."
+            }
+          ]
+        },
+        "process": {
+          "label": "Process",
+          "title": "A clear writing path.",
+          "steps": [
+            "Understand the school and prompt",
+            "Plan the message",
+            "Edit and refine",
+            "Final review"
+          ]
+        },
+        "faqTitle": "Essay support questions",
+        "faq": [
+          {
+            "q": "Do you write essays for students?",
+            "a": "No. We guide planning, structure, editing and clarity while keeping the student’s own voice."
+          },
+          {
+            "q": "Can you help parents write statements?",
+            "a": "Yes. We help guardians organise ideas and communicate family values clearly."
+          },
+          {
+            "q": "Can you check grammar and tone?",
+            "a": "Yes. We review grammar, tone, flow and readability."
+          },
+          {
+            "q": "Do you guarantee acceptance?",
+            "a": "No. We support preparation and writing quality, but admission decisions belong to schools."
+          }
+        ],
+        "cta": {
+          "title": "Need help with application writing?",
+          "text": "Tell us about the school, deadline and writing requirements. We will suggest a practical support plan.",
+          "button": "Start Essay Support"
+        }
+      },
+      "parentInterview": {
+        "seo": {
+          "title": "Parent Interview Coaching | International School Admissions | Luna Education",
+          "description": "Parent interview coaching for international school admissions, helping guardians prepare clear answers, school-fit responses and confident interview communication."
+        },
+        "hero": {
+          "label": "Interview Coaching",
+          "title": "Parent Interview Coaching",
+          "subtitle": "Help guardians communicate family values, school fit and child background clearly.",
+          "cta": "Prepare for Parent Interview",
+          "secondary": "View All Services"
+        },
+        "heroHighlights": [
+          "School-fit answer practice",
+          "Clear family story",
+          "Confident interview communication"
+        ],
+        "unique": {
+          "label": "Interview Timeline",
+          "title": "Prepare before, during and after the interview.",
+          "description": "We help parents understand the purpose of the interview and prepare calm, clear answers.",
+          "items": [
+            {
+              "title": "Before the Interview",
+              "text": "Research the school, prepare the family story and identify key child strengths."
+            },
+            {
+              "title": "During the Interview",
+              "text": "Answer clearly, calmly and with examples that fit the school context."
+            },
+            {
+              "title": "After the Interview",
+              "text": "Reflect on next steps and follow up appropriately if needed."
+            }
+          ]
+        },
+        "cards": {
+          "label": "Coaching Includes",
+          "title": "Practical interview preparation.",
+          "items": [
+            {
+              "title": "Answer Structure",
+              "text": "Organise answers so they sound clear and natural."
+            },
+            {
+              "title": "English Expression",
+              "text": "Refine wording for families who prefer extra English support."
+            },
+            {
+              "title": "Tone & Confidence",
+              "text": "Practise calm, respectful and school-appropriate communication."
+            },
+            {
+              "title": "Mock Q&A Feedback",
+              "text": "Try common questions and receive practical feedback."
+            }
+          ]
+        },
+        "process": {
+          "label": "Common Questions",
+          "title": "Questions parents often prepare.",
+          "steps": [
+            "Why are you interested in this school?",
+            "How would you describe your child?",
+            "What are your expectations from the school?",
+            "How do you support learning at home?"
+          ]
+        },
+        "faqTitle": "Parent interview questions",
+        "faq": [
+          {
+            "q": "Can both parents join?",
+            "a": "Yes. One or both guardians can join coaching sessions."
+          },
+          {
+            "q": "Can you help if English is not our first language?",
+            "a": "Yes. We help parents express ideas clearly in English while keeping answers natural."
+          },
+          {
+            "q": "Do you provide scripts?",
+            "a": "We do not encourage memorised scripts. We help families build flexible answer structures."
+          },
+          {
+            "q": "Do you guarantee interview success?",
+            "a": "No. We provide preparation, practice and feedback, but schools make final decisions."
+          }
+        ],
+        "cta": {
+          "title": "Prepare for parent interviews with clarity.",
+          "text": "Share your target school and timeline, and we will recommend a coaching plan.",
+          "button": "Book Interview Coaching"
+        }
+      },
+      "mockInterview": {
+        "seo": {
+          "title": "Mock Interview & School Screening Preparation | Luna Education",
+          "description": "Mock interview and school screening preparation for students applying to international schools, including communication practice, readiness checks and feedback."
+        },
+        "hero": {
+          "label": "Mock Practice",
+          "title": "Mock Screening & Mock Interview",
+          "subtitle": "Simulated interview and screening practice for students and families before school admissions.",
+          "cta": "Book Mock Interview",
+          "secondary": "View All Services"
+        },
+        "heroHighlights": [
+          "Student interview practice",
+          "Readiness check",
+          "Feedback and next steps"
+        ],
+        "unique": {
+          "label": "Simulation Flow",
+          "title": "What the session feels like.",
+          "description": "A structured practice session helps students know what to expect.",
+          "items": [
+            {
+              "title": "Enter the Room",
+              "text": "Practise greeting, settling in and listening to instructions."
+            },
+            {
+              "title": "Answer Questions",
+              "text": "Respond to age-appropriate school interview prompts."
+            },
+            {
+              "title": "Receive Feedback",
+              "text": "Review communication, confidence, clarity and readiness."
+            }
+          ]
+        },
+        "cards": {
+          "label": "Screening Components",
+          "title": "What we can practise.",
+          "items": [
+            {
+              "title": "Student Interview",
+              "text": "Conversation practice for school-style questions."
+            },
+            {
+              "title": "English Communication",
+              "text": "Speaking, listening and vocabulary readiness."
+            },
+            {
+              "title": "Academic Readiness",
+              "text": "Light review of learning habits and task confidence."
+            },
+            {
+              "title": "Confidence & Behaviour",
+              "text": "Calm body language, turn-taking and response clarity."
+            }
+          ]
+        },
+        "process": {
+          "label": "Sample Questions",
+          "title": "Student prompts we may practise.",
+          "steps": [
+            "Tell me about yourself.",
+            "What is your favourite subject?",
+            "How do you solve problems with friends?",
+            "Why do you want to join this school?"
+          ]
+        },
+        "faqTitle": "Mock interview questions",
+        "faq": [
+          {
+            "q": "Is this for young children?",
+            "a": "Yes. Sessions are adjusted for the student’s age and school level."
+          },
+          {
+            "q": "Can parents observe?",
+            "a": "Parents may receive feedback and guidance depending on the session format."
+          },
+          {
+            "q": "Is the session in English?",
+            "a": "It can be conducted in English or adapted to the school’s requirements."
+          },
+          {
+            "q": "Do you guarantee admission?",
+            "a": "No. We provide practice and feedback, but schools make admission decisions."
+          }
+        ],
+        "cta": {
+          "title": "Help your child practise before the real interview.",
+          "text": "We will simulate likely moments and provide clear next steps.",
+          "button": "Book Mock Interview"
+        }
+      },
+      "examPackage": {
+        "seo": {
+          "title": "Entrance Exam Package | MAP, WIDA, CAT4, AEIS & Test Preparation | Luna Education",
+          "description": "Structured entrance exam packages combining assessment review, tutoring, study planning, mock practice, progress tracking and admissions support."
+        },
+        "hero": {
+          "label": "Exam Planning",
+          "title": "Entrance Exam Package",
+          "subtitle": "A structured preparation package for families who need coordinated support across exams, tutoring and admissions.",
+          "cta": "Build My Exam Plan",
+          "secondary": "View All Services"
+        },
+        "heroHighlights": [
+          "Diagnostic review",
+          "Weekly lessons",
+          "Progress feedback"
+        ],
+        "unique": {
+          "label": "Exam Pathways",
+          "title": "One plan can connect multiple needs.",
+          "description": "Families can combine exam preparation with writing, interview or admissions support.",
+          "items": [
+            {
+              "title": "MAP / WIDA / CAT4",
+              "text": "Assessment preparation for international school readiness."
+            },
+            {
+              "title": "AEIS / TOEFL / IELTS",
+              "text": "Structured English and academic preparation pathways."
+            },
+            {
+              "title": "JLPT / HSK",
+              "text": "Language preparation can be included when relevant."
+            }
+          ]
+        },
+        "cards": {
+          "label": "Package Dashboard",
+          "title": "What the package can include.",
+          "items": [
+            {
+              "title": "Subject Tutoring",
+              "text": "Lessons matched to current level and target exams."
+            },
+            {
+              "title": "Assessment Preparation",
+              "text": "Practice around format, timing and skill gaps."
+            },
+            {
+              "title": "Mock Review",
+              "text": "Review performance patterns and next priorities."
+            },
+            {
+              "title": "Timeline Planning",
+              "text": "Coordinate study goals with admissions deadlines."
+            }
+          ]
+        },
+        "process": {
+          "label": "Journey",
+          "title": "A simple preparation journey.",
+          "steps": [
+            "Diagnose",
+            "Plan",
+            "Learn",
+            "Practise",
+            "Review"
+          ]
+        },
+        "faqTitle": "Exam package questions",
+        "faq": [
+          {
+            "q": "Is the package only for one exam?",
+            "a": "No. A package can focus on one exam or combine several preparation needs."
+          },
+          {
+            "q": "Can we combine exam prep and interview prep?",
+            "a": "Yes. Interview or writing support can be included where useful."
+          },
+          {
+            "q": "How many lessons are needed?",
+            "a": "It depends on the student’s level, timeline and target assessment."
+          },
+          {
+            "q": "Do you guarantee score improvement?",
+            "a": "No. We support preparation and progress tracking, but cannot guarantee scores."
+          }
+        ],
+        "cta": {
+          "title": "Build a structured exam plan.",
+          "text": "Tell us your target school, exam and timeline. We will suggest the right support mix.",
+          "button": "Build My Exam Plan"
+        }
+      },
+      "schoolConsulting": {
+        "seo": {
+          "title": "International School Consulting | Japan & Singapore School Admissions | Luna Education",
+          "description": "International school consulting for families exploring schools in Japan and Singapore, including school selection, admissions planning, curriculum comparison and application support."
+        },
+        "hero": {
+          "label": "School Consulting",
+          "title": "International School Consulting",
+          "subtitle": "Guidance for families comparing schools, curricula, locations, admissions timelines and child fit.",
+          "cta": "Book School Consultation"
+        },
+        "regions": {
+          "label": "Choose A Region",
+          "title": "Explore school options by location.",
+          "japan": "International Schools in Japan",
+          "singapore": "International Schools in Singapore",
+          "text": "Compare school profiles and plan application preparation with Luna."
+        },
+        "cards": {
+          "label": "Compare",
+          "title": "What we help families compare.",
+          "items": [
+            {
+              "title": "Curriculum",
+              "text": "Understand international, American, British, IB and other pathways."
+            },
+            {
+              "title": "Admissions Requirements",
+              "text": "Review documents, testing, interviews and timelines."
+            },
+            {
+              "title": "English Support",
+              "text": "Consider language readiness and school support needs."
+            },
+            {
+              "title": "Location & Commute",
+              "text": "Think through campus location and daily routines."
+            },
+            {
+              "title": "School Culture",
+              "text": "Compare community, values and learning style."
+            },
+            {
+              "title": "Long-term Pathways",
+              "text": "Plan for future transitions and academic goals."
+            }
+          ]
+        },
+        "process": {
+          "label": "Process",
+          "title": "School consulting process.",
+          "steps": [
+            "Understand family goals",
+            "Shortlist schools",
+            "Plan application timeline",
+            "Prepare materials and interviews"
+          ]
+        }
+      },
+      "consultation": {
+        "seo": {
+          "title": "Education Consultation | Learning & School Planning Advice | Luna Education",
+          "description": "Education consultation for families who need help understanding learning needs, school options, tutoring priorities and next steps."
+        },
+        "hero": {
+          "label": "Education Consultation",
+          "title": "Education Consultation",
+          "subtitle": "A focused conversation to clarify your child’s needs and next steps.",
+          "cta": "Book Consultation",
+          "secondary": "View All Services"
+        },
+        "heroHighlights": [
+          "Learning priorities",
+          "School planning",
+          "Practical next steps"
+        ],
+        "unique": {
+          "label": "Good For Families Who Feel",
+          "title": "Start when the path feels unclear.",
+          "description": "Consultation helps families organise questions before committing to a service.",
+          "items": [
+            {
+              "title": "Not sure which school to choose",
+              "text": "Compare options and clarify what matters most."
+            },
+            {
+              "title": "Not sure which exam to prepare for",
+              "text": "Understand likely assessment or admissions requirements."
+            },
+            {
+              "title": "Not sure where to begin",
+              "text": "Turn many concerns into a practical next-step plan."
+            }
+          ]
+        },
+        "cards": {
+          "label": "Discussion Areas",
+          "title": "What we discuss.",
+          "items": [
+            {
+              "title": "Current Situation",
+              "text": "School background, strengths and concerns."
+            },
+            {
+              "title": "Language Needs",
+              "text": "English, bilingual or academic language priorities."
+            },
+            {
+              "title": "Admissions Goals",
+              "text": "Target schools, deadlines and readiness."
+            },
+            {
+              "title": "Recommended Next Steps",
+              "text": "A realistic plan for support and preparation."
+            }
+          ]
+        },
+        "process": {
+          "label": "What You Receive",
+          "title": "A focused advisory outcome.",
+          "steps": [
+            "Practical direction",
+            "Service recommendation",
+            "Learning priorities",
+            "Follow-up plan"
+          ]
+        },
+        "faqTitle": "Consultation questions",
+        "faq": [
+          {
+            "q": "Is this only for new families?",
+            "a": "No. New and current families can use consultation to clarify priorities."
+          },
+          {
+            "q": "Can we discuss multiple children?",
+            "a": "Yes. Please share each child’s situation in advance if possible."
+          },
+          {
+            "q": "Can consultation be online?",
+            "a": "Yes. Online consultation is available."
+          },
+          {
+            "q": "Is it a guarantee of admission?",
+            "a": "No. Consultation provides guidance and planning, not admission guarantees."
+          }
+        ],
+        "cta": {
+          "title": "Not sure where to begin?",
+          "text": "Start with one focused conversation and leave with clearer next steps.",
+          "button": "Book Consultation"
+        }
+      }
+    },
+    "schools": {
+      "japan": {
+        "seo": {
+          "title": "International Schools in Japan | School Profiles & Admissions Guidance | Luna Education",
+          "description": "Explore international school profiles in Japan with admissions guidance and preparation support from Luna Education."
+        },
+        "title": "International Schools in Japan",
+        "intro": "Explore selected international schools in Japan. Luna helps families compare fit, timelines and preparation needs.",
+        "back": "Back to School Consulting",
+        "button": "View school profile"
+      },
+      "singapore": {
+        "seo": {
+          "title": "International Schools in Singapore | School Profiles & Admissions Guidance | Luna Education",
+          "description": "Explore international school profiles in Singapore with admissions guidance and preparation support from Luna Education."
+        },
+        "title": "International Schools in Singapore",
+        "intro": "Explore selected international schools in Singapore. Luna helps families compare curriculum, admissions and readiness needs.",
+        "back": "Back to School Consulting",
+        "button": "View school profile"
+      },
+      "detail": {
+        "back": "Back to school list",
+        "cta": "Ask Luna About This School",
+        "about": "About The School",
+        "keyFacts": "Key Facts",
+        "profile": "Profile",
+        "related": "Related Schools",
+        "relatedTitle": "Other schools in this region",
+        "placeholderSeo": "School profile and admissions preparation guidance from Luna Education.",
+        "placeholderBio": "This profile is a concise overview for families beginning school research. Luna can help compare requirements, timelines and preparation needs.",
+        "noBoarding": "Please confirm with the school",
+        "moreSoonTitle": "More details coming soon",
+        "moreSoonText": "This school profile is being expanded. Families can still contact Luna for school comparison, application planning and interview preparation."
+      },
+      "asij": {
+        "seo": {
+          "description": "The American School in Japan profile with admissions, curriculum, key facts and application preparation guidance from Luna Education."
+        },
+        "profileTitle": "Admissions, curriculum and school life overview.",
+        "about": [
+          "The American School in Japan is a co-educational private day school serving international families in Tokyo. Its main Chofu campus includes elementary, middle and high school, while early learning is connected with Roppongi.",
+          "The school follows an American-style pathway with college-preparatory learning, AP courses and an American High School Diploma. It serves a broad international community with many nationalities represented.",
+          "Admissions requirements vary by grade level and may include report cards, teacher recommendations, student essays, standardized testing information and family contact details. Families should confirm current requirements directly with the school."
+        ],
+        "facts": [
+          [
+            "Founded",
+            "1902"
+          ],
+          [
+            "Curriculum",
+            "American curriculum, AP courses, American High School Diploma"
+          ],
+          [
+            "Location",
+            "Chofu, Tokyo and Early Learning Center in Roppongi"
+          ],
+          [
+            "Student population",
+            "Over 1,600 students"
+          ],
+          [
+            "Nationalities",
+            "50+ nationalities"
+          ],
+          [
+            "Boarding",
+            "No boarding / no homestay"
+          ],
+          [
+            "Language",
+            "English"
+          ],
+          [
+            "Age range",
+            "Early learning to Grade 12"
+          ]
+        ],
+        "sections": [
+          {
+            "title": "Admissions",
+            "items": [
+              "Applications commonly open around mid-November for August entry.",
+              "Decisions are usually released from late February through spring.",
+              "Requirements vary by level and may include records, recommendations, essays and test information."
+            ]
+          },
+          {
+            "title": "Curriculum",
+            "items": [
+              "Elementary learning includes English language arts, math, science, social studies, arts, music, PE, Japanese and digital citizenship.",
+              "Middle school includes humanities, science, math, health, languages, arts and exploratory options.",
+              "High school includes core academic subjects, modern languages, arts, design, Japan studies and AP options."
+            ]
+          },
+          {
+            "title": "Activities & Outcomes",
+            "items": [
+              "Students can explore arts, athletics, service and student-led learning opportunities.",
+              "High school pathways include AP courses and AP Capstone options.",
+              "The school has a broad alumni network and college-preparatory orientation."
+            ]
+          }
+        ]
+      }
+    },
+    "detailUi": {
+      "advisoryLabel": "Luna advisory focus",
+      "advisoryTitle": "Guidance, preparation and next steps",
+      "startLabel": "Start with Luna",
+      "scenarioLabel": "Real family scenario",
+      "internationalSchoolsTitle": "International Schools",
+      "trustLabel": "Why families trust Luna",
+      "trustTitle": "Support that connects learning, admissions and family communication.",
+      "trustSignals": [
+        "Bilingual support",
+        "School-aware guidance",
+        "Parent communication",
+        "Personalised matching",
+        "Lesson and report feedback"
+      ],
+      "deliverablesLabel": "What you’ll receive",
+      "deliverablesTitle": "Clear materials families can actually use.",
+      "testimonialsLabel": "Hear from our families",
+      "testimonialsTitle": "Realistic feedback from families and students.",
+      "deliverables": {
+        "essaySupport": [
+          { "title": "Annotated essay review", "text": "Comments on structure, clarity, tone and school-fit messaging." },
+          { "title": "Revision checklist", "text": "A practical list of edits before the next draft or final submission." },
+          { "title": "Final polish notes", "text": "Grammar, flow and readability guidance while preserving the student voice." }
+        ],
+        "parentInterview": [
+          { "title": "Interview feedback sheet", "text": "Notes on answer clarity, examples, tone and school fit." },
+          { "title": "Question bank", "text": "Likely parent interview themes and practice prompts." },
+          { "title": "Answer structure plan", "text": "Flexible frameworks so parents sound natural, not scripted." }
+        ],
+        "mockInterview": [
+          { "title": "Student scorecard", "text": "Feedback on listening, clarity, confidence and response habits." },
+          { "title": "Practice notes", "text": "Age-appropriate comments the student can understand and use." },
+          { "title": "Next-step plan", "text": "Specific areas to practise before the real interview." }
+        ],
+        "examPackage": [
+          { "title": "Admission roadmap", "text": "A preparation timeline connecting exams, applications and interviews." },
+          { "title": "Assessment report", "text": "Skill priorities based on current level and target requirements." },
+          { "title": "Study plan", "text": "Weekly learning focus, practice rhythm and review checkpoints." }
+        ],
+        "schoolConsulting": [
+          { "title": "School comparison report", "text": "A structured way to compare curriculum, location, admissions and child fit." },
+          { "title": "Application timeline", "text": "Key preparation windows for documents, testing and interviews." },
+          { "title": "Readiness checklist", "text": "Academic, language and family preparation items to review." }
+        ],
+        "consultation": [
+          { "title": "Priority map", "text": "A simple view of what needs attention now, next and later." },
+          { "title": "Recommendation notes", "text": "Suggested learning or admissions support based on the family’s situation." },
+          { "title": "First-step plan", "text": "Practical next actions after the consultation." }
+        ]
+      },
+      "scenarios": {
+        "essaySupport": {
+          "title": "Best for students who need clearer writing structure.",
+          "text": "Useful when a student has ideas but the application response feels too general, too informal or difficult to organise.",
+          "items": [
+            "Application essays or short-answer prompts",
+            "Parent statements that need clearer examples",
+            "Final review before school submission"
+          ]
+        },
+        "parentInterview": {
+          "title": "Best for families applying to international schools.",
+          "text": "Useful when parents want to explain the child, family values and school fit calmly in English or bilingual settings.",
+          "items": [
+            "Parent interview preparation",
+            "School-fit answer practice",
+            "Confidence building before the real meeting"
+          ]
+        },
+        "mockInterview": {
+          "title": "Best for students preparing for interviews.",
+          "text": "Useful when a child needs to practise greeting, listening, answering and receiving feedback before a school screening.",
+          "items": [
+            "Student interview simulation",
+            "Readiness and communication feedback",
+            "Practice for age-appropriate school questions"
+          ]
+        },
+        "examPackage": {
+          "title": "Best for families managing several deadlines.",
+          "text": "Useful when test preparation, school applications, writing and interviews need to move together in one plan.",
+          "items": [
+            "MAP, WIDA, CAT4, AEIS or language exams",
+            "Weekly preparation and review rhythm",
+            "Application timeline coordination"
+          ]
+        },
+        "consultation": {
+          "title": "Best for families who need a first-step plan.",
+          "text": "Useful when there are several possible paths and the family needs help deciding what to prioritise first.",
+          "items": [
+            "Learning needs and admissions goals",
+            "Service recommendation",
+            "Practical next steps after the call"
+          ]
+        }
+      },
+      "commonWritingIssues": "Common writing issues",
+      "writingIssuesTitle": "Where application writing often gets stuck.",
+      "writingIssuesDescription": "Families often know the student well, but the written application still needs sharper structure, clearer examples and a more appropriate tone.",
+      "viewRegionGuide": "View region guide",
+      "howLunaHelps": "How Luna helps",
+      "schoolDecisionSupport": "Preparation support around the school decision.",
+      "noGuaranteeText": "Families receive guidance, feedback and practical next steps without admission guarantees.",
+      "consultingFaqTitle": "School consulting questions",
+      "consultingCtaTitle": "Need help comparing schools?",
+      "consultingCtaText": "Tell us your region, timeline and child profile. Luna can help you plan the next steps clearly.",
+      "directoryFilters": [
+        "Tokyo",
+        "Yokohama",
+        "American Curriculum",
+        "British Curriculum",
+        "IB",
+        "Elementary",
+        "Secondary"
+      ],
+      "admissions": "Admissions",
+      "admissionsTitle": "Admissions requirements to review.",
+      "gradeLevel": "Grade Level",
+      "requiredDocuments": "Required Documents",
+      "interview": "Interview",
+      "assessment": "Assessment",
+      "notes": "Notes",
+      "curriculum": "Curriculum",
+      "curriculumTitle": "Academic pathway overview.",
+      "studentLife": "Student Life",
+      "studentLifeTitle": "Leadership, extracurriculars and sports.",
+      "outcomes": "Outcomes",
+      "outcomesTitle": "Pathways and outcomes to review carefully.",
+      "schoolFaqTitle": "School profile questions.",
+      "howLunaCanHelp": "How Luna can help",
+      "schoolHelpTitle": "Application preparation around this school.",
+      "viewProfile": "View profile",
+      "profileComingSoon": "Profile coming soon",
+      "schoolHelpItems": [
+        "Application planning",
+        "Essay and parent interview support",
+        "Academic readiness preparation"
+      ],
+      "schoolHelpText": "Luna provides preparation, feedback and next steps. Admission decisions remain with the school.",
+      "consultingFaq": [
+        {
+          "q": "Can Luna recommend schools?",
+          "a": "Luna can help families compare options and prepare questions, but families should make final school decisions based on their own priorities and official school information."
+        },
+        {
+          "q": "Do you work with schools directly?",
+          "a": "Luna provides independent preparation and planning support. We do not imply official partnership with schools unless specifically stated."
+        },
+        {
+          "q": "Can you help with Japan and Singapore?",
+          "a": "Yes. We help families compare pathways, admissions timelines and preparation needs in both regions."
+        },
+        {
+          "q": "Do you guarantee admission?",
+          "a": "No. We support planning and readiness, but admission decisions are made by schools."
+        }
+      ],
+      "curriculumOverview": "Curriculum overview",
+      "curriculumOverviewText": "Curriculum details vary by campus, grade and school year. Families should confirm current pathways directly with the school.",
+      "curriculumOutcomes": "Curriculum Outcomes",
+      "admissionsFit": "Admissions Fit",
+      "admissionsFitText": "Review requirements by grade and timing",
+      "nextSteps": "Next Steps",
+      "nextStepsText": "Plan documents, interviews and readiness",
+      "schoolFaq": [
+        [
+          "Does this school require interviews?",
+          "Interview requirements vary by grade level and application year. Families should confirm directly with the school."
+        ],
+        [
+          "What curriculum does it offer?",
+          "Review the curriculum tags and confirm current pathways directly with the school."
+        ],
+        [
+          "Does it offer boarding?",
+          "Boarding availability varies. Confirm current options directly with the school."
+        ],
+        [
+          "How can Luna help with application preparation?",
+          "Luna can support school research, application planning, essay preparation, interview coaching, mock interviews and academic readiness."
+        ]
+      ],
+      "allLevels": "All levels",
+      "requirementsVary": "Requirements vary by school and grade",
+      "varies": "Varies",
+      "contactLunaPlanning": "Contact Luna to plan the research and preparation process.",
+      "asijNoBoarding": "ASIJ is understood as a day school without boarding or homestay.",
+      "faqLabel": "FAQ",
+      "schoolConsultingPrefix": "School Consulting",
+      "asijStudentCount": "1,600+ Students",
+      "largeK12Community": "Large K-12 Community",
+      "nurseryToSixthForm": "Nursery to Sixth Form",
+      "location": "Location",
+      "ageRange": "Age range",
+      "boarding": "Boarding",
+      "highSchool": "High School",
+      "middleSchool": "Middle School",
+      "elementary": "Elementary",
+      "kindergarten": "Kindergarten",
+      "elementaryPrimary": "Elementary / Primary",
+      "asijAdmissionDocsHigh": "Report cards, recommendations, student essay, testing information",
+      "asijAdmissionDocsMiddle": "Report cards, recommendations, student essay, testing information",
+      "asijAdmissionDocsElementary": "Report cards, recommendations, testing information if available",
+      "asijAdmissionDocsKindergarten": "Report, teacher recommendation and contact information",
+      "likelyRequired": "Likely required",
+      "mayBeRequested": "May be requested",
+      "confirmCurrentRequirements": "Confirm current requirements with the school.",
+      "prepareDocumentsEarly": "Prepare documents early.",
+      "requirementsVaryByGrade": "Requirements vary by grade level.",
+      "ageAppropriateReview": "Age-appropriate review",
+      "asijCurriculumElementary": "English Language Arts, Math, Social Studies, Science, PE, Arts, Music, Japanese and digital citizenship.",
+      "asijCurriculumMiddle": "Humanities, science, math, PE/health, languages, arts/production and exploratory options.",
+      "asijCurriculumHigh": "English, social studies, math, science, modern languages, PE, health, visual and performing arts, study of Japan and AP courses.",
+      "leadership": "Leadership",
+      "artsActivities": "Arts & Activities",
+      "sports": "Sports",
+      "asijLeadershipItems": [
+        "Student-led learning opportunities",
+        "Service and community projects",
+        "Leadership through school activities"
+      ],
+      "genericLeadershipItems": [
+        "Leadership opportunities vary by age and campus",
+        "Families should confirm current programs"
+      ],
+      "asijArtsItems": [
+        "Visual and performing arts",
+        "Creative, innovation and design opportunities",
+        "Clubs and student activities"
+      ],
+      "genericArtsItems": [
+        "Arts, clubs and activities vary by school",
+        "Review current co-curricular options with the school"
+      ],
+      "asijSportsItems": [
+        "Athletics and team participation",
+        "Physical education and health",
+        "Age-appropriate sports pathways"
+      ],
+      "genericSportsItems": [
+        "Sports offerings vary by campus",
+        "Ask about seasonal teams and facilities"
+      ],
+      "universityPathways": "University Pathways",
+      "apCourses": "AP Courses",
+      "alumniNetwork": "Alumni Network",
+      "diploma": "Diploma",
+      "asijUniversityPathways": "College-preparatory American pathway",
+      "asijApCourses": "AP and AP Capstone options may be available",
+      "asijAlumniNetwork": "Large international alumni community",
+      "asijDiploma": "American High School Diploma pathway",
+      "pathwaysVary": "Pathways vary by school and curriculum",
+      "schoolDirectory": {
+        "asij": {
+          "curriculum": "American curriculum, AP, High School Diploma",
+          "ageRange": "Early learning to Grade 12",
+          "note": "A long-established international day school with a Chofu campus and early learning presence in Roppongi."
+        },
+        "british-school-in-tokyo": {
+          "curriculum": "British curriculum",
+          "ageRange": "Early years to sixth form",
+          "note": "A British international school pathway for families seeking UK-style learning in Tokyo."
+        },
+        "nishimachi": {
+          "curriculum": "International elementary and middle years",
+          "ageRange": "Kindergarten to Grade 9",
+          "note": "Known for bilingual and multicultural learning in central Tokyo."
+        },
+        "kist": {
+          "curriculum": "IB continuum",
+          "ageRange": "Preschool to Grade 12",
+          "note": "An IB-focused international school serving families across Tokyo."
+        },
+        "yis": {
+          "curriculum": "IB and international curriculum",
+          "ageRange": "Early learning to Grade 12",
+          "note": "A Yokohama-based international pathway with broad academic and activity options."
+        },
+        "st-marys": {
+          "curriculum": "International / American-style pathway",
+          "ageRange": "Boys, K to Grade 12",
+          "note": "A boys’ international school with college-preparatory learning and activities."
+        },
+        "seisen": {
+          "curriculum": "IB and international curriculum",
+          "ageRange": "Girls, early years to Grade 12",
+          "note": "A girls’ international school with academic and service-oriented learning."
+        },
+        "phoenix-house": {
+          "curriculum": "British-style curriculum",
+          "ageRange": "Primary and middle years",
+          "note": "A newer international school option for families considering a British-style pathway."
+        },
+        "uwcsea": {
+          "curriculum": "UWC / IB pathway",
+          "ageRange": "Kindergarten to Grade 12",
+          "note": "A large international school known for academics, activities and service learning."
+        },
+        "tanglin-trust": {
+          "curriculum": "British curriculum, IGCSE, A Level / IB options",
+          "ageRange": "Nursery to sixth form",
+          "note": "A long-established British international school with strong academic pathways."
+        },
+        "dover-court": {
+          "curriculum": "British curriculum",
+          "ageRange": "Early years to secondary",
+          "note": "A British school option with learning support and international community."
+        },
+        "sas": {
+          "curriculum": "American curriculum",
+          "ageRange": "Preschool to Grade 12",
+          "note": "A major American curriculum school with broad academic and activity programs."
+        },
+        "stamford-american": {
+          "curriculum": "American / IB pathway",
+          "ageRange": "Early learning to Grade 12",
+          "note": "An international school option with multiple curriculum pathways."
+        },
+        "canadian-international": {
+          "curriculum": "IB pathway",
+          "ageRange": "Nursery to Grade 12",
+          "note": "A Canadian-rooted international school with IB learning pathways."
+        },
+        "australian-international": {
+          "curriculum": "Australian / IB pathway",
+          "ageRange": "Infant care to Grade 12",
+          "note": "An Australian international pathway with broad co-curricular options."
+        },
+        "dulwich": {
+          "curriculum": "British curriculum, IGCSE, IB Diploma",
+          "ageRange": "Toddler to Grade 12",
+          "note": "A British international school with a college-style learning pathway."
+        }
+      }
     }
   }
 }

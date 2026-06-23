@@ -15,7 +15,11 @@ import {
   BookOpen,
   Target,
   BarChart3,
-  Globe2,
+  FileText,
+  ClipboardCheck,
+  PackageCheck,
+  School,
+  Compass,
   Star,
   Users,
   Sparkles,
@@ -516,158 +520,245 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* BOTTOM FEATURE CARD */}
+        </section>
+
+
+        {/* ASSESSMENT & ADMISSIONS PATHWAYS */}
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_82%_72%,#fff1bd_0%,transparent_25%),linear-gradient(180deg,#fffdf8_0%,#fbfaff_100%)]" />
+
           <motion.div
-            initial={{ opacity: 0, y: 50, filter: "blur(10px)" }}
+            initial={{ opacity: 0, y: 34, filter: "blur(8px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            viewport={{ once: false, amount: 0.35 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="
-relative z-40 mt-10 overflow-hidden
-rounded-[2rem] border border-white/80
-bg-white/90
-px-5 py-7
-sm:px-7
-lg:px-10 lg:py-8
-shadow-[0_25px_80px_rgba(15,23,42,0.12)]
-backdrop-blur-xl
-lg:grid lg:grid-cols-[1.2fr_4.2fr]
-">
-            {/* LEFT TEXT */}
-            <div
-              className="
-relative
-mb-6
-border-b border-primary/10
-pb-7
-lg:mb-0
-lg:border-b-0 lg:border-r
-lg:pb-0 lg:pr-10
-"  >
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.65, ease: "easeOut" }}
+            className="relative z-10 mx-auto max-w-[1280px] overflow-hidden rounded-[2.4rem] border border-white/80 bg-white/90 px-5 py-7 shadow-[0_28px_90px_rgba(66,56,120,0.13)] backdrop-blur-xl sm:px-7 lg:grid lg:grid-cols-[1.15fr_2.35fr] lg:items-stretch lg:px-10 lg:py-9"
+          >
+            <div className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full bg-[#ffe66d]/45 blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-20 right-[30%] h-56 w-56 rounded-full bg-[#8d73ff]/15 blur-2xl" />
+
+            <div className="relative mb-7 border-b border-primary/10 pb-8 lg:mb-0 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-10">
               <motion.p
                 initial={{ opacity: 0, x: -18 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: false }}
-                transition={{ delay: 0.15 }}
-                className="text-sm font-bold text-[#7c5cff]"
+                transition={{ delay: 0.12 }}
+                className="text-xs font-black uppercase tracking-[0.22em] text-primary/42"
               >
-                {t("landing.programs.labelLine1")}<br />
-                {t("landing.programs.labelLine2")}
+                {t("landing.programs.label")}
               </motion.p>
 
               <motion.h2
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false }}
-                transition={{ delay: 0.25 }}
-                className="mt-4 font-poppins text-3xl font-black leading-tight text-primary"
+                transition={{ delay: 0.2 }}
+                className="mt-5 font-poppins text-[2.15rem] font-black leading-[1.04] tracking-[-0.045em] text-primary sm:text-[2.7rem] lg:text-[2.95rem]"
               >
                 {t("landing.programs.titleLine1")}<br />
                 {t("landing.programs.titleLine2")}<br />
                 {t("landing.programs.titleLine3")}{" "}
-                <span className="relative inline-block">
+                <span className="relative inline-block text-[#8d73ff]">
                   {t("landing.programs.highlight")}
                   <motion.span
                     initial={{ scaleX: 0 }}
                     whileInView={{ scaleX: 1 }}
                     viewport={{ once: false }}
-                    transition={{ delay: 0.55, duration: 0.6 }}
-                    className="absolute -bottom-1 left-0 h-3 w-full origin-left rounded-full bg-[#ffc928]/45"
+                    transition={{ delay: 0.5, duration: 0.6 }}
+                    className="absolute -bottom-0.5 left-1 right-1 h-2 origin-left rounded-full bg-[#ffc928]/45"
                   />
                 </span>
               </motion.h2>
-
-              <motion.div
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: false }}
-                transition={{ delay: 0.45, duration: 0.7 }}
-                className="absolute left-[120px] top-[46px] hidden h-10 w-16 rotate-12 rounded-full border-2 border-[#ffc928] lg:block"
-              />
             </div>
 
-            {/* RIGHT PROGRAMS */}
-            <div className="
-mt-7
-grid grid-cols-2 gap-x-3 gap-y-6
-sm:gap-x-6
-lg:mt-0
-lg:grid-cols-5
-lg:gap-x-2
-"
-            >    {[
-              {
-                icon: BarChart3,
-                title: t("landing.programs.items.map.title"),
-                sub: t("landing.programs.items.map.sub"),
-                bg: "bg-[#ffe66d]",
-              },
-              {
-                icon: Globe2,
-                title: t("landing.programs.items.toefl.title"),
-                sub: t("landing.programs.items.toefl.sub"),
-                bg: "bg-[#8d73ff]",
-                light: true,
-              },
-              {
-                icon: Users,
-                title: t("landing.programs.items.wida.title"),
-                sub: t("landing.programs.items.wida.sub"),
-                bg: "bg-[#b8f36c]",
-              },
-              {
-                icon: BookOpen,
-                title: t("landing.programs.items.writing.title"),
-                sub: t("landing.programs.items.writing.sub"),
-                bg: "bg-[#ff8bd2]",
-              },
-              {
-                icon: MessageCircle,
-                title: t("landing.programs.items.interview.title"),
-                sub: t("landing.programs.items.interview.sub"),
-                bg: "bg-[#ffe66d]",
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 22, scale: 0.92 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: false }}
-                transition={{ delay: 0.25 + i * 0.08, duration: 0.45 }}
-                whileHover={{
-                  y: -8,
-                  scale: 1.015,
-                  rotate: [-5, 4.5, -4, 5, -3.5][i],
-                }} className="
-                relative flex flex-col items-center justify-start
-                rounded-[1.5rem] bg-white/45
-                px-3 py-4
-                text-center
-                sm:px-5
-                lg:min-h-[210px]
-                lg:rounded-none lg:bg-transparent
-                lg:border-r lg:border-primary/10 lg:last:border-r-0
-                "    >
-                <motion.div
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 3 + i * 0.25, repeat: Infinity, ease: "easeInOut" }}
-                  className={`mb-4 flex h-16 w-16 items-center justify-center rounded-full ${item.bg} shadow-[0_14px_35px_rgba(15,23,42,0.10)]`}
-                >
-                  <item.icon className={`h-7 w-7 ${item.light ? "text-white" : "text-primary"}`} />
-                </motion.div>
+            <div className="relative mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:mt-0 lg:grid-cols-5 lg:gap-3">
+              {[
+                {
+                  icon: BarChart3,
+                  title: t("landing.programs.items.map.title"),
+                  sub: t("landing.programs.items.map.sub"),
+                  bg: "bg-[#ffe66d]",
+                  path: withLang("/subjects/map-preparation"),
+                },
+                {
+                  icon: Users,
+                  title: t("landing.programs.items.wida.title"),
+                  sub: t("landing.programs.items.wida.sub"),
+                  bg: "bg-[#b8f36c]",
+                  path: withLang("/subjects/wida-preparation"),
+                },
+                {
+                  icon: Target,
+                  title: t("landing.programs.items.cat4.title"),
+                  sub: t("landing.programs.items.cat4.sub"),
+                  bg: "bg-[#ffc928]",
+                  path: withLang("/subjects/cat4-preparation"),
+                },
+                {
+                  icon: School,
+                  title: t("landing.programs.items.admissions.title"),
+                  sub: t("landing.programs.items.admissions.sub"),
+                  bg: "bg-[#f6f2ff]",
+                  path: withLang("/services/school-consulting"),
+                },
+                {
+                  icon: MessageCircle,
+                  title: t("landing.programs.items.interviews.title"),
+                  sub: t("landing.programs.items.interviews.sub"),
+                  bg: "bg-[#8d73ff]",
+                  path: withLang("/services/mock-interview"),
+                  light: true,
+                },
+              ].map((item, i) => (
+                <Link key={item.title} to={item.path}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 28, scale: 0.94, rotate: i % 2 === 0 ? -1.5 : 1.5 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: false }}
+                    transition={{ delay: 0.16 + i * 0.06, duration: 0.4 }}
+                    whileHover={{ y: -10, scale: 1.03, rotate: i % 2 === 0 ? -2 : 2 }}
+                    className="group relative flex h-full min-h-[190px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[1.8rem] border border-primary/8 bg-white/78 px-3 py-5 text-center shadow-[0_16px_45px_rgba(66,56,120,0.09)] transition hover:border-[#8d73ff]/25 hover:bg-white hover:shadow-[0_28px_70px_rgba(141,115,255,0.20)] sm:px-4 lg:min-h-[220px]"
+                  >
+                    <motion.div
+                      animate={{ y: [0, -4, 0] }}
+                      transition={{ duration: 3 + i * 0.2, repeat: Infinity, ease: "easeInOut" }}
+                      className={`mb-5 flex h-20 w-20 items-center justify-center rounded-[1.8rem] ${item.bg} shadow-[0_18px_45px_rgba(15,23,42,0.13)] transition duration-300 group-hover:scale-110 group-hover:shadow-[0_22px_55px_rgba(141,115,255,0.20)]`}
+                    >
+                      <item.icon className={`h-9 w-9 ${item.light ? "text-white" : "text-primary"}`} />
+                    </motion.div>
 
-                <p className="font-poppins text-lg font-black text-primary">
-                  {item.title}
-                </p>
+                    <p className="font-poppins text-3xl font-black leading-none text-primary">
+                      {item.title}
+                    </p>
 
-                <p className="mt-2 max-w-[130px] text-sm leading-5 text-primary/65">
-                  {item.sub}
-                </p>
-              </motion.div>
-            ))}
+                    <p className="mt-3 max-w-[126px] text-xs font-semibold leading-5 text-primary/55">
+                      {item.sub}
+                    </p>
+
+                    <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 translate-x-1 text-[#8d73ff] opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
+                  </motion.div>
+                </Link>
+              ))}
             </div>
           </motion.div>
+        </section>
 
+
+        {/* SERVICES PREVIEW */}
+        <section className="relative overflow-hidden bg-[#fffdf8] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_84%_72%,#fff1bd_0%,transparent_26%)]" />
+
+          <div className="relative z-10 mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.55 }}
+            >
+              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
+                {t("landing.servicesPreview.label")}
+              </p>
+
+              <h2 className="mt-5 font-poppins text-4xl font-black leading-tight text-primary sm:text-5xl">
+                {t("landing.servicesPreview.titleLine1")}<br />
+                {t("landing.servicesPreview.titleLine2")}
+              </h2>
+
+              <p className="mt-6 max-w-xl text-base leading-8 text-primary/65 sm:text-lg">
+                {t("landing.servicesPreview.description")}
+              </p>
+
+              <Link to={withLang("/services")}>
+                <Button className="mt-8 h-14 rounded-full bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.16)]">
+                  {t("landing.servicesPreview.button")}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </motion.div>
+
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {[
+                {
+                  icon: BookOpen,
+                  title: t("landing.servicesPreview.items.privateLessons.title"),
+                  desc: t("landing.servicesPreview.items.privateLessons.desc"),
+                  path: withLang("/subjects"),
+                },
+                {
+                  icon: FileText,
+                  title: t("landing.servicesPreview.items.essay.title"),
+                  desc: t("landing.servicesPreview.items.essay.desc"),
+                  path: withLang("/services/essay-support"),
+                },
+                {
+                  icon: Users,
+                  title: t("landing.servicesPreview.items.parentInterview.title"),
+                  desc: t("landing.servicesPreview.items.parentInterview.desc"),
+                  path: withLang("/services/parent-interview"),
+                },
+                {
+                  icon: ClipboardCheck,
+                  title: t("landing.servicesPreview.items.mockInterview.title"),
+                  desc: t("landing.servicesPreview.items.mockInterview.desc"),
+                  path: withLang("/services/mock-interview"),
+                },
+                {
+                  icon: PackageCheck,
+                  title: t("landing.servicesPreview.items.examPackage.title"),
+                  desc: t("landing.servicesPreview.items.examPackage.desc"),
+                  path: withLang("/services/exam-package"),
+                },
+                {
+                  icon: School,
+                  title: t("landing.servicesPreview.items.schoolConsulting.title"),
+                  desc: t("landing.servicesPreview.items.schoolConsulting.desc"),
+                  path: withLang("/services/school-consulting"),
+                },
+                {
+                  icon: Compass,
+                  title: t("landing.servicesPreview.items.consultation.title"),
+                  desc: t("landing.servicesPreview.items.consultation.desc"),
+                  path: withLang("/services/consultation"),
+                },
+              ].map((service, index) => {
+                const ServiceIcon = service.icon;
+
+                return (
+                  <Link
+                    key={service.title}
+                    to={service.path}
+                    className={index === 6 ? "sm:col-span-2 xl:col-span-3" : ""}
+                  >
+                    <motion.article
+                      initial={{ opacity: 0, y: 22 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: false, amount: 0.25 }}
+                      transition={{ duration: 0.45, delay: index * 0.04 }}
+                      whileHover={{ y: -5 }}
+                      className="group flex h-full min-h-[150px] flex-col rounded-[1.5rem] border border-white/80 bg-white/92 p-5 shadow-[0_16px_45px_rgba(66,56,120,0.08)] backdrop-blur-xl"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f3efff]">
+                          <ServiceIcon className="h-6 w-6 text-[#8d73ff]" />
+                        </div>
+
+                        <ArrowRight className="h-5 w-5 text-primary/25 transition group-hover:translate-x-1 group-hover:text-[#8d73ff]" />
+                      </div>
+
+                      <h3 className="mt-5 font-poppins text-lg font-black leading-tight text-primary">
+                        {service.title}
+                      </h3>
+
+                      <p className="mt-2 text-sm leading-6 text-primary/60">
+                        {service.desc}
+                      </p>
+
+                    </motion.article>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         </section>
 
 

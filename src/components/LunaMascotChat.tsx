@@ -7,7 +7,29 @@ import { useLocation } from "react-router-dom";
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3001";
 
+let hasWarmedUpLunaChat = false;
+let lunaChatWarmupPromise: Promise<void> | null = null;
 
+const warmUpLunaChat = () => {
+  if (hasWarmedUpLunaChat) return Promise.resolve();
+  if (lunaChatWarmupPromise) return lunaChatWarmupPromise;
+
+  lunaChatWarmupPromise = fetch(`${API_URL}/api/luna-chat/warmup`, {
+    method: "GET",
+    cache: "no-store",
+    keepalive: true,
+  })
+    .then(() => undefined)
+    .catch(() => {
+      // Warmup is best-effort only. Chat messages still use the normal request flow.
+    })
+    .finally(() => {
+      hasWarmedUpLunaChat = true;
+      lunaChatWarmupPromise = null;
+    });
+
+  return lunaChatWarmupPromise;
+};
 
 const LunaMascotChat = () => {
   const { t, i18n } = useTranslation();
@@ -95,6 +117,11 @@ const LunaMascotChat = () => {
     });
   }, [messages, isLoading, showLeadForm]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    warmUpLunaChat();
+  }, [open]);
 
   useEffect(() => {
     let hideTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -326,7 +353,7 @@ const LunaMascotChat = () => {
                     }`}
                 >
                   <div
-                    className={`max-w-[82%] overflow-hidden break-words [overflow-wrap:anywhere] rounded-2xl px-4 py-2 text-sm leading-relaxed ${msg.role === "user"
+                    className={`max-w-[82%] overflow-hidden [overflow-wrap:anywhere] rounded-2xl px-4 py-2 text-sm leading-relaxed ${msg.role === "user"
                       ? "bg-[#082A55] text-white"
                       : "bg-white text-slate-700 shadow-sm"
                       }`}
@@ -489,12 +516,15 @@ const LunaMascotChat = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="absolute bottom-[86px] right-[54px] z-30 w-[210px] rounded-[24px] border border-white/70 bg-white/95 px-4 py-3 shadow-[0_18px_45px_rgba(8,42,85,0.16)] backdrop-blur-md sm:bottom-[108px] sm:right-[74px] sm:w-[250px]"
+            className="absolute bottom-[86px] right-[54px] z-30 w-fit max-w-[calc(100vw-120px)] rounded-full border border-white/75 bg-white/90 px-3 py-2 shadow-[0_12px_35px_rgba(15,23,42,0.10)] backdrop-blur-md sm:bottom-[108px] sm:right-[74px] sm:px-4 sm:py-2.5"
           >
-            <div className="absolute -bottom-2 right-7 h-5 w-5 rotate-45 border-b border-r border-white/70 bg-white/95" />
+            <div className="absolute -bottom-1 right-6 h-2.5 w-2.5 rotate-45 rounded-[2px] border-b border-r border-white/75 bg-white/90" />
 
-            <p className="text-[13px] font-semibold leading-snug text-[#082A55] sm:text-[15px]">
-              {bubbleMessages[bubbleIndex]}
+            <p className="inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[12px] font-semibold leading-none text-[#082A55] sm:text-[13px]">
+              <Sparkles className="h-3 w-3 shrink-0 text-[#C89235]" />
+              <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+                {bubbleMessages[bubbleIndex]}
+              </span>
             </p>
           </motion.div>
         )}

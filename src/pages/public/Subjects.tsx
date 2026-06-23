@@ -4,13 +4,10 @@ import {
   BookOpen,
   PenLine,
   Mic,
-  Calculator,
-  GraduationCap,
   School,
   Languages,
   ArrowRight,
   Brain,
-  FileText,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import SeoHelmet from "@/components/SeoHelmet";
@@ -73,51 +70,6 @@ const Subjects = () => {
       title: t("subjects.items.ielts.title"),
       body: t("subjects.items.ielts.body"),
     },
-    {
-      slug: "jlpt-preparation",
-      icon: Languages,
-      title: t("subjects.items.jlpt.title"),
-      body: t("subjects.items.jlpt.body"),
-    },
-    {
-      slug: "hsk-preparation",
-      icon: FileText,
-      title: t("subjects.items.hsk.title"),
-      body: t("subjects.items.hsk.body"),
-    },
-  ];
-
-  const academicPrograms: ProgramItem[] = [
-    {
-      slug: "english-foundation",
-      icon: GraduationCap,
-      title: t("subjects.items.foundation.title"),
-      body: t("subjects.items.foundation.body"),
-    },
-    {
-      slug: "speaking-writing",
-      icon: Mic,
-      title: t("subjects.items.speaking.title"),
-      body: t("subjects.items.speaking.body"),
-    },
-    {
-      slug: "math-support",
-      icon: Calculator,
-      title: t("subjects.items.math.title"),
-      body: t("subjects.items.math.body"),
-    },
-    {
-      slug: "japanese-lessons",
-      icon: Languages,
-      title: t("subjects.items.japanese.title"),
-      body: t("subjects.items.japanese.body"),
-    },
-    {
-      slug: "mandarin-lessons",
-      icon: Languages,
-      title: t("subjects.items.mandarin.title"),
-      body: t("subjects.items.mandarin.body"),
-    },
   ];
 
   const ProgramCard = ({
@@ -179,17 +131,19 @@ const Subjects = () => {
   };
 
   const ProgramSection = ({
+    id,
     label,
     title,
     description,
     items,
   }: {
+    id?: string;
     label: string;
     title: string;
     description: string;
     items: ProgramItem[];
   }) => (
-    <div className="mb-20 last:mb-0">
+    <div id={id} className="mb-20 scroll-mt-24 last:mb-0">
       <div className="mb-10 max-w-3xl">
         <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
           {label}
@@ -275,18 +229,13 @@ const seoDescription = t("subjects.seo.description");
 
           <div className="relative z-10 mx-auto max-w-[1280px]">
             <ProgramSection
+              id="assessment"
               label={t("subjects.sections.assessment.label")}
               title={t("subjects.sections.assessment.title")}
               description={t("subjects.sections.assessment.description")}
               items={assessmentPrograms}
             />
 
-            <ProgramSection
-              label={t("subjects.sections.academic.label")}
-              title={t("subjects.sections.academic.title")}
-              description={t("subjects.sections.academic.description")}
-              items={academicPrograms}
-            />
           </div>
         </section>
 

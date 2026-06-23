@@ -4,13 +4,14 @@
     "home": "首页",
     "whyLuna": "为什么选择 Luna",
     "careers": "加入我们",
-    "subjects": "课程项目",
+    "subjects": "私人课程",
     "tutors": "导师团队",
     "enquire": "联系我们",
     "login": "登录",
     "language": "English",
     "getStarted": "立即开始",
-    "arcade": "Arcade"
+    "arcade": "Arcade",
+    "services": "服务项目"
   },
   "landing": {
     "seo": {
@@ -82,32 +83,47 @@
     "programs": {
       "labelLine1": "我们帮助你",
       "labelLine2": "准备",
-      "titleLine1": "每一次考试。",
+      "titleLine1": "每一次测评。",
       "titleLine2": "每一个目标。",
-      "titleLine3": "每一个",
-      "highlight": "未来。",
+      "titleLine3": "每一步",
+      "highlight": "成长。",
       "items": {
         "map": {
           "title": "MAP",
           "sub": "成长测评"
         },
-        "toefl": {
-          "title": "TOEFL",
-          "sub": "iBT / Junior 备考"
-        },
         "wida": {
           "title": "WIDA",
-          "sub": "语言发展测评"
+          "sub": "语言发展"
         },
-        "writing": {
-          "title": "学术写作",
-          "sub": "思考、表达、进步。"
+        "cat4": {
+          "title": "CAT4",
+          "sub": "认知能力"
         },
-        "interview": {
+        "aeis": {
+          "title": "AEIS",
+          "sub": "新加坡入学考试"
+        },
+        "toefl": {
+          "title": "TOEFL",
+          "sub": "iBT / Junior"
+        },
+        "admissions": {
+          "title": "升学申请",
+          "sub": "择校与申请"
+        },
+        "interviews": {
           "title": "面试准备",
-          "sub": "自信表达自己。"
+          "sub": "表达与沟通"
+        },
+        "ielts": {
+          "title": "IELTS",
+          "sub": "学术英语考试"
         }
-      }
+      },
+      "label": "LUNA PATHWAYS",
+      "title": "国际课程与考试准备",
+      "description": "针对国际学校测评、英语能力考试和入学路径的系统化准备。"
     },
     "pathways": {
       "label": "全球升学路径",
@@ -251,26 +267,152 @@
         },
         "continue": "点击继续"
       }
+    },
+    "servicesPreview": {
+      "label": "LUNA 服务项目",
+      "titleLine1": "不只是",
+      "titleLine2": "课程辅导。",
+      "description": "从一对一课程到申请文书、家长面试、模拟面试和升学咨询，Luna 为家庭提供超越常规补习的支持。",
+      "button": "查看全部服务",
+      "items": {
+        "privateLessons": {
+          "title": "私人课程",
+          "desc": "个性化一对一学科辅导与学习支持。"
+        },
+        "essay": {
+          "title": "申请文书修改",
+          "desc": "优化申请文字的结构、语气和表达重点。"
+        },
+        "parentInterview": {
+          "title": "家长面试辅导",
+          "desc": "练习学校匹配度回答与清晰沟通。"
+        },
+        "mockInterview": {
+          "title": "模拟面试",
+          "desc": "接近真实申请场景的练习与反馈。"
+        },
+        "examPackage": {
+          "title": "入学考试套餐",
+          "desc": "围绕考试和时间线的结构化准备。"
+        },
+        "schoolConsulting": {
+          "title": "升学咨询",
+          "desc": "比较学校、申请路径和孩子匹配度。"
+        },
+        "consultation": {
+          "title": "教育咨询",
+          "desc": "梳理优先事项并明确下一步。"
+        }
+      }
     }
   },
   "footer": {
-    "description": "为新加坡、日本及全球国际学生提供个性化教育支持。",
-    "quickLinks": "快速导航",
-    "programmes": "课程项目",
-    "contact": "联系我们",
-    "copyright": "© 2026 Luna Education 版权所有。",
-    "locations": "新加坡 · 东京 · 中国 · 线上课程"
+    "brand": {
+      "description": "为新加坡、日本及全球国际学生提供个性化教育支持。",
+      "links": {
+        "home": "首页",
+        "whyLuna": "为什么选择 Luna",
+        "tutors": "导师团队",
+        "careers": "加入我们"
+      }
+    },
+    "columns": {
+      "aboutUs": "关于我们",
+      "programmes": "课程项目",
+      "assessmentPreparation": "备考项目",
+      "admissions": "升学申请",
+      "serviceSupport": "服务支持",
+      "additionalServices": "其他服务",
+      "testPrep": "备考",
+      "admissionsSupport": "升学申请支持",
+      "otherServices": "其他服务",
+      "contact": "联系方式"
+    },
+    "about": {
+      "aboutLuna": "关于 Luna",
+      "tutors": "导师团队",
+      "careers": "加入我们",
+      "contact": "联系我们"
+    },
+    "programs": {
+      "privateLessons": "私人课程",
+      "assessmentPreparation": "测评备考",
+      "map": "MAP 备考",
+      "wida": "WIDA 备考",
+      "cat4": "CAT4 备考",
+      "aeis": "AEIS 备考",
+      "toefl": "TOEFL 备考",
+      "ielts": "IELTS 备考",
+      "academicSupport": "学科学习支持"
+    },
+    "services": {
+      "applicationEssays": "申请文书",
+      "parentInterview": "家长面试",
+      "mockInterview": "模拟面试",
+      "examPackage": "考试套餐",
+      "entranceExamPackage": "入学考试套餐",
+      "schoolConsulting": "升学咨询",
+      "internationalSchools": "国际学校",
+      "consultation": "咨询课程",
+      "arcade": "学习游戏",
+      "terms": "服务条款",
+      "privacy": "隐私政策"
+    },
+    "contact": {
+      "wechat": "微信",
+      "whatsapp": "WhatsApp",
+      "email": "邮箱",
+      "linkedin": "LinkedIn"
+    },
+    "bottom": {
+      "copyright": "© 2026 Luna Education 版权所有",
+      "separator": "｜"
+    }
+  },
+  "academicSupport": {
+    "seo": {
+      "title": "学科学习支持 | 英语、数学、日语与中文 | Luna Education",
+      "description": "长期支持英语、数学、日语、中文、口语与写作、校内学习。"
+    },
+    "hero": {
+      "label": "学科学习支持",
+      "title": "学科学习支持",
+      "subtitle": "长期支持英语、数学、日语、中文、口语与写作、校内学习。"
+    },
+    "cards": {
+      "cta": "查看项目",
+      "englishFoundation": {
+        "title": "英语基础",
+        "body": "提升词汇、语法、阅读信心和国际学校课堂英语能力。"
+      },
+      "speakingWriting": {
+        "title": "口语与写作",
+        "body": "培养更清晰的口语表达、结构化写作和学术沟通能力。"
+      },
+      "mathSupport": {
+        "title": "数学支持",
+        "body": "加强数感、解题能力、校内数学基础和多步骤推理。"
+      },
+      "japaneseLessons": {
+        "title": "日语课程",
+        "body": "支持学校学习、日常生活、会话表达和系统化日语学习。"
+      },
+      "mandarinLessons": {
+        "title": "中文课程",
+        "body": "通过实用语言支持提升中文听说读写能力。"
+      }
+    }
   },
   "subjects": {
     "seo": {
-      "title": "LUNA课程项目 | 测评备考与学科学习支持",
-      "description": "了解 LUNA Studies 的课程项目，包括 MAP、WIDA、CAT4、AEIS、TOEFL、IELTS、JLPT、HSK、英语、数学、日语和中文学习支持。"
+      "title": "LUNA 课程项目 | 测评备考与学科学习支持",
+      "description": "了解 Luna Education 课程项目，包括测评备考、学科学习支持和长期学习成长规划。"
     },
     "hero": {
-      "label": "Luna 课程项目",
-      "titleLine1": "选择适合孩子的",
-      "titleLine2": "学习支持。",
-      "description": "从测评备考到长期学科学习支持，每一个 Luna 课程都围绕清晰目标、个性化指导和可追踪进步而设计。"
+      "label": "课程项目",
+      "titleLine1": "测评备考。",
+      "titleLine2": "学科学习。持续成长。",
+      "description": "围绕学生目标、学校要求和学习节奏，建立真正适合孩子的长期学习支持。"
     },
     "learnMore": "了解更多",
     "suitableFor": "适合学生：",
@@ -1097,7 +1239,7 @@
     }
   },
   "subjectDetail": {
-    "backToPrograms": "课程项目",
+    "backToPrograms": "私人课程",
     "enquireNow": "立即咨询",
     "howLunaHelps": "Luna 如何帮助",
     "programFocus": "课程重点",
@@ -1145,7 +1287,7 @@
     "ctaDescription": "联系我们，我们会根据孩子情况推荐合适的导师和学习方案。",
     "enquireAbout": "咨询 {{title}}",
     "notFoundTitle": "未找到该课程项目。",
-    "backToProgramsButton": "返回课程项目"
+    "backToProgramsButton": "返回私人课程"
   },
   "enquire": {
     "seo": {
@@ -1440,7 +1582,7 @@
     },
     "input": {
       "placeholder": "向 Chokina 询问 MAP、TOEFL、CAT4...",
-      "loading": "Chokina 正在回复..."
+      "loading": "思考中..."
     },
     "buttons": {
       "submitEnquiry": "提交咨询",
@@ -1478,7 +1620,9 @@
     },
     "buttons": {
       "viewProfile": "查看资料",
-      "book": "预约咨询"
+      "book": "预约咨询",
+      "bookWithTutor": "预约 {{name}} 的课程",
+      "backToTutors": "返回导师团队"
     },
     "hero": {
       "label": "导师团队",
@@ -2361,6 +2505,1110 @@
     "moreGames": {
       "title": "更多游戏",
       "wordDrive": "Word Drive"
+    }
+  },
+  "services": {
+    "seo": {
+      "title": "LUNA 服务项目 | 私人课程、申请支持与升学咨询",
+      "description": "了解 Luna Education 服务项目，包括私人课程、申请文书制作与修改、监护人面试对策、模拟面谈、考试套餐、升学咨询和咨询课程。"
+    },
+    "hero": {
+      "label": "Luna 服务项目",
+      "titleLine1": "陪伴孩子教育路径中的",
+      "titleLine2": "每一个关键阶段。",
+      "description": "从一对一课程到申请准备、面试对策和升学咨询，Luna 为家庭提供清晰、个性化、可执行的教育支持。",
+      "primaryButton": "查看服务项目",
+      "secondaryButton": "联系我们"
+    },
+    "intro": {
+      "label": "不只是补习",
+      "title": "从学习到申请的完整支持体系。",
+      "description": "Luna 支持学生与家庭完成学科辅导、测评备考、申请文书、面试准备、学校选择和升学规划。家庭可以从一个服务开始，也可以组合多个服务形成完整准备方案。"
+    },
+    "showcase": {
+      "label": "我们提供的支持",
+      "titleLine1": "为家庭选择适合的",
+      "titleLine2": "教育服务。",
+      "highlight": "Luna"
+    },
+    "learnMore": "了解更多",
+    "enquire": "咨询",
+    "privateLessonsButton": "查看私人课程",
+    "items": {
+      "privateLessons": {
+        "title": "私人课程",
+        "short": "一对一辅导",
+        "body": "针对学科、语言和测评备考的一对一个性化辅导。",
+        "points": [
+          "英语、数学、日语、中文和学术写作",
+          "MAP、WIDA、CAT4、AEIS、TOEFL、IELTS、JLPT 和 HSK 备考",
+          "导师匹配、课后反馈和学习进度追踪"
+        ]
+      },
+      "applicationEssay": {
+        "title": "申请文书制作与修改",
+        "short": "文书与修改",
+        "body": "支持学校申请文书、家长陈述、学生个人陈述和书面回答。",
+        "points": [
+          "优化结构、清晰度和学校匹配表达",
+          "修改语气、语法和最终呈现",
+          "提供专业指导，但不承诺录取结果"
+        ]
+      },
+      "parentInterview": {
+        "title": "面向监护人的面试对策课程",
+        "short": "家长面试",
+        "body": "帮助家长或监护人在学校面试中清楚表达孩子背景、家庭教育理念和择校目标。",
+        "points": [
+          "练习常见学校面试问题",
+          "优化回答结构、语气和重点",
+          "模拟问答并提供实际反馈"
+        ]
+      },
+      "mockScreening": {
+        "title": "模拟筛选与模拟面谈",
+        "short": "模拟练习",
+        "body": "为学生和家庭提供接近真实申请场景的模拟筛选和面谈练习。",
+        "points": [
+          "学生面谈与家长面谈练习",
+          "英语沟通或入学准备度检查",
+          "反馈优势、风险点和下一步方向"
+        ]
+      },
+      "examPackage": {
+        "title": "考试套餐",
+        "short": "备考套餐",
+        "body": "结合学科辅导、面试练习、文书支持和模拟筛选的结构化备考套餐。",
+        "points": [
+          "围绕申请时间线制定个性化计划",
+          "学科准备和测评练习",
+          "可加入面试与申请材料支持"
+        ]
+      },
+      "schoolConsulting": {
+        "title": "升学咨询",
+        "short": "学校规划",
+        "body": "帮助家庭比较学校选择、课程体系、孩子匹配度和申请时间线。",
+        "points": [
+          "学校选择和课程体系比较",
+          "分析孩子情况与家庭目标",
+          "规划申请时间线和准备步骤"
+        ]
+      },
+      "consultation": {
+        "title": "咨询课程",
+        "short": "家庭咨询",
+        "body": "适合还不确定方向的家庭，先通过一次集中咨询梳理现状、目标和下一步。",
+        "points": [
+          "了解孩子当前情况和家庭顾虑",
+          "明确学习或申请优先事项",
+          "给出实际可执行的下一步建议"
+        ]
+      }
+    },
+    "process": {
+      "label": "服务流程",
+      "title": "从咨询到行动，每一步都清楚。",
+      "description": "我们帮助家庭从不确定，走向清晰可执行的计划。",
+      "stepLabel": "步骤",
+      "steps": [
+        {
+          "title": "了解目标",
+          "text": "我们先了解孩子背景、学校情况和家庭关注重点。"
+        },
+        {
+          "title": "推荐服务",
+          "text": "根据情况推荐最适合的单项服务或组合方案。"
+        },
+        {
+          "title": "匹配支持",
+          "text": "根据目标匹配合适的导师、面试教练或顾问。"
+        },
+        {
+          "title": "追踪下一步",
+          "text": "家长可以持续了解进度、反馈和后续行动建议。"
+        }
+      ]
+    },
+    "cta": {
+      "label": "从 Luna 开始",
+      "title": "不确定哪项服务适合你的家庭？",
+      "description": "发送咨询给我们，我们会帮助你选择合适的支持方式。",
+      "button": "联系 Luna"
+    },
+    "shortLabels": {
+      "privateLessons": "私人课程",
+      "assessmentPreparation": "测评备考",
+      "academicSupport": "学科学习支持",
+      "applicationEssay": "申请文书",
+      "parentInterview": "家长面试",
+      "mockScreening": "模拟面试",
+      "examPackage": "入学考试套餐",
+      "schoolConsulting": "升学咨询",
+      "consultation": "咨询课程"
+    },
+    "detailPages": {
+      "essaySupport": {
+        "seo": {
+          "title": "申请文书制作与修改 | Luna Education",
+          "description": "为国际学校和海外学校申请提供文书规划、修改和书面表达支持。"
+        },
+        "hero": {
+          "label": "文书支持",
+          "title": "申请文书制作与修改",
+          "subtitle": "支持学校申请文书、学生陈述、家长陈述和书面回答。",
+          "cta": "咨询文书支持",
+          "secondary": "查看全部服务"
+        },
+        "heroHighlights": [
+          "规划适合学校的表达重点",
+          "优化结构与逻辑",
+          "保留学生自己的声音"
+        ],
+        "unique": {
+          "label": "修改前 / 修改后",
+          "title": "让表达更清楚，同时保留真实声音。",
+          "description": "我们帮助家庭把笼统的文字整理成更具体、更有重点的申请材料。",
+          "beforeLabel": "修改前",
+          "before": "我想进入这所学校，因为它很好，而且我喜欢学习新东西。",
+          "afterLabel": "修改后",
+          "after": "我被这所学校的项目式学习和国际化社区吸引，因为这与我通过提问、合作和反馈不断进步的学习方式相契合。",
+          "disclaimer": "示例仅用于说明。Luna 提供规划、修改和表达清晰度方面的指导，同时保留学生本人的作品和声音。我们不承诺录取结果。"
+        },
+        "cards": {
+          "label": "我们可以协助",
+          "title": "针对申请材料的重点写作支持。",
+          "items": [
+            {
+              "title": "文书规划",
+              "text": "先明确题目、读者和核心信息，再开始写作。"
+            },
+            {
+              "title": "结构与逻辑",
+              "text": "帮助内容从开头到结尾读起来更清楚、更连贯。"
+            },
+            {
+              "title": "修改与润色",
+              "text": "优化语法、语气、用词和最终可读性。"
+            },
+            {
+              "title": "申请材料检查",
+              "text": "检查书面回答是否一致，并能体现学校匹配度。"
+            }
+          ]
+        },
+        "process": {
+          "label": "流程",
+          "title": "清晰的文书准备路径。",
+          "steps": [
+            "了解学校与题目",
+            "规划表达重点",
+            "修改并完善",
+            "最终检查"
+          ]
+        },
+        "faqTitle": "文书支持常见问题",
+        "faq": [
+          {
+            "q": "你们会替学生写文书吗？",
+            "a": "不会。我们指导规划、结构、修改和表达清晰度，同时保留学生自己的声音。"
+          },
+          {
+            "q": "可以帮助家长写陈述吗？",
+            "a": "可以。我们帮助监护人整理想法，并清楚表达家庭教育理念。"
+          },
+          {
+            "q": "可以检查语法和语气吗？",
+            "a": "可以。我们会检查语法、语气、逻辑和可读性。"
+          },
+          {
+            "q": "你们保证录取吗？",
+            "a": "不保证。我们支持准备和写作质量，但录取决定由学校作出。"
+          }
+        ],
+        "cta": {
+          "title": "需要让申请文字更清楚吗？",
+          "text": "告诉我们学校、年级和申请材料要求，我们会建议合适的支持方式。",
+          "button": "咨询文书支持"
+        }
+      },
+      "parentInterview": {
+        "seo": {
+          "title": "家长面试辅导 | 国际学校申请 | Luna Education",
+          "description": "国际学校家长面试辅导，帮助监护人准备清晰回答、学校匹配表达和自信沟通。"
+        },
+        "hero": {
+          "label": "家长面试",
+          "title": "家长面试辅导",
+          "subtitle": "帮助监护人清楚表达家庭教育理念、学校匹配度和孩子背景。",
+          "cta": "准备家长面试",
+          "secondary": "查看全部服务"
+        },
+        "heroHighlights": [
+          "整理家庭故事",
+          "练习常见问题",
+          "获得实用反馈"
+        ],
+        "unique": {
+          "label": "学校为什么面试家长",
+          "title": "面试不只是考英语，也是了解家庭是否匹配。",
+          "description": "学校通常希望理解家庭期待、沟通方式、家庭支持和学校匹配度。",
+          "items": [
+            {
+              "title": "家庭期待",
+              "text": "清楚说明你希望学校如何支持孩子。"
+            },
+            {
+              "title": "孩子背景",
+              "text": "用具体例子介绍孩子的性格、优势和需要。"
+            },
+            {
+              "title": "学校匹配",
+              "text": "把家庭目标与学校理念、课程和环境连接起来。"
+            }
+          ]
+        },
+        "cards": {
+          "label": "辅导内容",
+          "title": "从准备到模拟问答。",
+          "items": [
+            {
+              "title": "回答结构",
+              "text": "学习用清楚、自然的结构回答问题。"
+            },
+            {
+              "title": "英文表达",
+              "text": "优化词汇、语气和面试中的表达方式。"
+            },
+            {
+              "title": "语气与自信",
+              "text": "练习平稳、真诚且有重点的沟通。"
+            },
+            {
+              "title": "模拟问答反馈",
+              "text": "通过模拟问题获得具体改进建议。"
+            }
+          ]
+        },
+        "process": {
+          "label": "面试时间线",
+          "title": "面试前、中、后都更有准备。",
+          "steps": [
+            "面试前：研究学校并整理家庭故事",
+            "面试中：清楚、平稳地回答",
+            "面试后：复盘表现与后续事项",
+            "下一步：针对弱项继续练习"
+          ]
+        },
+        "faqTitle": "家长面试常见问题",
+        "faq": [
+          {
+            "q": "父母双方都可以参加吗？",
+            "a": "可以。我们可以根据家庭情况安排一位或两位监护人一起练习。"
+          },
+          {
+            "q": "英语不是第一语言也可以吗？",
+            "a": "可以。我们会帮助整理英文表达，让回答更自然清楚。"
+          },
+          {
+            "q": "你们会提供背诵稿吗？",
+            "a": "我们会提供回答框架和表达建议，但鼓励真实、自然的回答。"
+          },
+          {
+            "q": "你们保证面试成功吗？",
+            "a": "不保证。我们提供准备、练习和反馈，但录取结果由学校决定。"
+          }
+        ],
+        "cta": {
+          "title": "想更从容地面对家长面试？",
+          "text": "把学校、面试语言和时间线告诉我们，我们会帮助你规划练习。",
+          "button": "咨询家长面试辅导"
+        }
+      },
+      "mockInterview": {
+        "seo": {
+          "title": "模拟面试与学校筛选准备 | Luna Education",
+          "description": "为申请国际学校的学生提供模拟面试、筛选练习、沟通训练、准备度检查和反馈。"
+        },
+        "hero": {
+          "label": "模拟练习",
+          "title": "模拟筛选与模拟面试",
+          "subtitle": "在学校申请前，为学生和家庭进行接近真实场景的模拟面试与筛选练习。",
+          "cta": "预约模拟面试",
+          "secondary": "查看全部服务"
+        },
+        "heroHighlights": [
+          "真实感练习",
+          "沟通与准备度检查",
+          "清晰反馈与下一步建议"
+        ],
+        "unique": {
+          "label": "模拟过程",
+          "title": "让孩子提前熟悉面试和筛选场景。",
+          "description": "模拟练习帮助学生理解流程、练习表达，并在正式申请前获得反馈。",
+          "items": [
+            {
+              "title": "进入场景",
+              "text": "熟悉面试开始、寒暄和基本沟通节奏。"
+            },
+            {
+              "title": "回答问题",
+              "text": "练习自我介绍、兴趣、学校动机和日常问题。"
+            },
+            {
+              "title": "完成活动",
+              "text": "根据年龄和目标进行英文、学习或互动任务。"
+            }
+          ]
+        },
+        "cards": {
+          "label": "筛选内容",
+          "title": "从表达到准备度的全面观察。",
+          "items": [
+            {
+              "title": "学生面试",
+              "text": "练习常见学生面试问题和自然回应。"
+            },
+            {
+              "title": "英文沟通",
+              "text": "观察听说表达、清晰度和互动能力。"
+            },
+            {
+              "title": "学术准备度",
+              "text": "根据目标学校和年级检查学习基础。"
+            },
+            {
+              "title": "自信与行为",
+              "text": "反馈参与度、专注度和面试表现。"
+            }
+          ]
+        },
+        "process": {
+          "label": "反馈报告",
+          "title": "模拟后知道下一步该做什么。",
+          "steps": [
+            "沟通表现",
+            "自信度",
+            "表达清晰度",
+            "学习准备度"
+          ]
+        },
+        "faqTitle": "模拟面试常见问题",
+        "faq": [
+          {
+            "q": "适合低龄孩子吗？",
+            "a": "可以。我们会根据年龄调整问题、活动和反馈方式。"
+          },
+          {
+            "q": "家长可以旁听吗？",
+            "a": "可根据学生年龄和目标安排。我们也可以提供家长反馈。"
+          },
+          {
+            "q": "课程是英文进行吗？",
+            "a": "通常可以用英文进行，也可以根据需要加入中文或日文说明。"
+          },
+          {
+            "q": "你们保证录取吗？",
+            "a": "不保证。模拟练习用于准备和反馈，学校决定录取结果。"
+          }
+        ],
+        "cta": {
+          "title": "想提前体验面试场景？",
+          "text": "告诉我们孩子年级、目标学校和时间线，我们会建议合适的模拟方式。",
+          "button": "预约模拟面试"
+        }
+      },
+      "examPackage": {
+        "seo": {
+          "title": "入学考试套餐 | MAP、WIDA、CAT4、AEIS 与考试准备 | Luna Education",
+          "description": "结构化入学考试准备套餐，结合测评分析、辅导、学习计划、模拟练习、进度追踪和申请支持。"
+        },
+        "hero": {
+          "label": "备考套餐",
+          "title": "入学考试套餐",
+          "subtitle": "为需要考试、辅导和申请协同支持的家庭提供结构化准备方案。",
+          "cta": "制定我的备考计划",
+          "secondary": "查看全部服务"
+        },
+        "heroHighlights": [
+          "诊断与学习计划",
+          "每周课程与练习",
+          "反馈与下一步追踪"
+        ],
+        "unique": {
+          "label": "考试路径",
+          "title": "一个计划可以整合多项准备。",
+          "description": "我们帮助家庭整理考试、课程、写作和面试准备之间的优先顺序。",
+          "items": [
+            {
+              "title": "MAP / WIDA / CAT4",
+              "text": "适合国际学校测评和入学准备。"
+            },
+            {
+              "title": "AEIS / TOEFL / IELTS",
+              "text": "适合英语能力、升学和海外路径准备。"
+            },
+            {
+              "title": "JLPT / HSK",
+              "text": "适合日语或中文目标的长期学习规划。"
+            }
+          ]
+        },
+        "cards": {
+          "label": "套餐可包含",
+          "title": "根据家庭目标组合不同支持。",
+          "items": [
+            {
+              "title": "学科辅导",
+              "text": "补足学习基础并配合考试目标。"
+            },
+            {
+              "title": "测评备考",
+              "text": "针对题型、时间管理和练习反馈。"
+            },
+            {
+              "title": "文书与面试",
+              "text": "可加入申请文书和模拟面试支持。"
+            },
+            {
+              "title": "时间线规划",
+              "text": "帮助家庭把考试、申请和课程安排连接起来。"
+            }
+          ]
+        },
+        "process": {
+          "label": "准备旅程",
+          "title": "从诊断到复盘的结构化路径。",
+          "steps": [
+            "诊断",
+            "规划",
+            "学习",
+            "练习",
+            "复盘"
+          ]
+        },
+        "faqTitle": "考试套餐常见问题",
+        "faq": [
+          {
+            "q": "套餐只能准备一个考试吗？",
+            "a": "不一定。我们可以根据时间线组合一个或多个准备目标。"
+          },
+          {
+            "q": "可以结合考试和面试准备吗？",
+            "a": "可以。许多家庭会把考试、文书和面试放在同一个计划中。"
+          },
+          {
+            "q": "需要多少节课？",
+            "a": "取决于目标、时间线和学生现有基础。我们会先评估再建议。"
+          },
+          {
+            "q": "你们保证分数提高吗？",
+            "a": "不保证。我们提供计划、练习和反馈，但分数受多种因素影响。"
+          }
+        ],
+        "cta": {
+          "title": "需要一个更清楚的备考路线吗？",
+          "text": "告诉我们目标考试、年级和截止日期，我们会帮助你规划下一步。",
+          "button": "咨询考试套餐"
+        }
+      },
+      "consultation": {
+        "seo": {
+          "title": "教育咨询 | 学习与择校规划建议 | Luna Education",
+          "description": "为需要梳理学习需求、学校选择、辅导重点和下一步的家庭提供教育咨询。"
+        },
+        "hero": {
+          "label": "教育咨询",
+          "title": "教育咨询",
+          "subtitle": "通过一次聚焦对话，明确孩子的需要和下一步行动。",
+          "cta": "预约咨询",
+          "secondary": "查看全部服务"
+        },
+        "heroHighlights": [
+          "梳理当前情况",
+          "明确优先事项",
+          "获得可执行建议"
+        ],
+        "unique": {
+          "label": "适合这些家庭",
+          "title": "当方向还不清楚时，先把问题说清楚。",
+          "description": "咨询适合还在比较学校、考试、课程或支持方式的家庭。",
+          "items": [
+            {
+              "title": "不确定选哪所学校",
+              "text": "比较课程、地点、文化和孩子匹配度。"
+            },
+            {
+              "title": "不确定准备哪个考试",
+              "text": "梳理目标路径和考试优先级。"
+            },
+            {
+              "title": "不确定需要什么支持",
+              "text": "判断学习、语言或申请准备中的关键问题。"
+            }
+          ]
+        },
+        "cards": {
+          "label": "我们会讨论",
+          "title": "把复杂问题整理成可行动的下一步。",
+          "items": [
+            {
+              "title": "当前学校情况",
+              "text": "了解孩子目前学习环境和挑战。"
+            },
+            {
+              "title": "学习优势与担忧",
+              "text": "识别优先需要支持的学习领域。"
+            },
+            {
+              "title": "语言与申请目标",
+              "text": "整理语言需求、申请方向和时间线。"
+            },
+            {
+              "title": "后续建议",
+              "text": "提出实际可执行的服务或学习建议。"
+            }
+          ]
+        },
+        "process": {
+          "label": "你会收到",
+          "title": "咨询后更清楚下一步。",
+          "steps": [
+            "实际方向",
+            "服务建议",
+            "学习优先级",
+            "跟进计划"
+          ]
+        },
+        "faqTitle": "教育咨询常见问题",
+        "faq": [
+          {
+            "q": "只适合新家庭吗？",
+            "a": "不是。新家庭和已有 Luna 家庭都可以预约咨询。"
+          },
+          {
+            "q": "可以同时讨论多个孩子吗？",
+            "a": "可以，但如果情况差异很大，我们可能建议分开安排。"
+          },
+          {
+            "q": "可以线上咨询吗？",
+            "a": "可以。我们可以根据家庭情况安排线上沟通。"
+          },
+          {
+            "q": "咨询是否保证录取？",
+            "a": "不保证。咨询提供分析、规划和建议，不承诺录取结果。"
+          }
+        ],
+        "cta": {
+          "title": "不确定从哪里开始？",
+          "text": "先和 Luna 聊一聊，我们会帮助你梳理孩子的学习与升学下一步。",
+          "button": "预约教育咨询"
+        }
+      },
+      "schoolConsulting": {
+        "seo": {
+          "title": "国际学校升学咨询 | 日本与新加坡学校申请 | Luna Education",
+          "description": "为探索日本和新加坡国际学校的家庭提供学校选择、申请规划、课程比较和准备支持。"
+        },
+        "hero": {
+          "label": "升学咨询",
+          "title": "国际学校升学咨询",
+          "subtitle": "帮助家庭比较学校、课程、地点、申请时间线和孩子匹配度。",
+          "cta": "预约升学咨询"
+        },
+        "regions": {
+          "label": "选择地区",
+          "title": "从目标地区开始比较学校。",
+          "japan": "日本国际学校",
+          "singapore": "新加坡国际学校",
+          "text": "查看学校列表，并了解 Luna 如何帮助家庭规划申请准备。"
+        },
+        "cards": {
+          "label": "我们帮助比较",
+          "title": "做选择前先看清关键因素。",
+          "items": [
+            {
+              "title": "课程体系",
+              "text": "比较美式、英式、IB 和其他国际课程路径。"
+            },
+            {
+              "title": "申请要求",
+              "text": "梳理材料、考试、面试和时间线。"
+            },
+            {
+              "title": "英文支持",
+              "text": "评估孩子是否需要语言或学科准备。"
+            },
+            {
+              "title": "地点与通勤",
+              "text": "考虑家庭生活、通勤和校区位置。"
+            },
+            {
+              "title": "学校文化",
+              "text": "比较学习氛围、社群和孩子适应度。"
+            },
+            {
+              "title": "长期路径",
+              "text": "考虑升学方向、课程衔接和未来计划。"
+            }
+          ]
+        },
+        "process": {
+          "label": "咨询流程",
+          "title": "从家庭目标到申请行动。",
+          "steps": [
+            "了解家庭目标",
+            "筛选学校名单",
+            "规划申请时间线",
+            "准备材料与面试"
+          ]
+        }
+      }
+    },
+    "schools": {
+      "japan": {
+        "seo": {
+          "title": "日本国际学校 | 学校介绍与申请指导 | Luna Education",
+          "description": "了解日本国际学校信息，并获得 Luna Education 的申请规划与准备支持。"
+        },
+        "title": "日本国际学校",
+        "intro": "浏览日本部分国际学校。Luna 帮助家庭比较学校匹配度、申请时间线和准备需求。",
+        "back": "返回升学咨询",
+        "button": "查看学校介绍"
+      },
+      "singapore": {
+        "seo": {
+          "title": "新加坡国际学校 | 学校介绍与申请指导 | Luna Education",
+          "description": "了解新加坡国际学校信息，并获得 Luna Education 的申请规划与准备支持。"
+        },
+        "title": "新加坡国际学校",
+        "intro": "浏览新加坡部分国际学校。Luna 帮助家庭比较课程、申请要求和准备度。",
+        "back": "返回升学咨询",
+        "button": "查看学校介绍"
+      },
+      "detail": {
+        "back": "返回学校列表",
+        "cta": "向 Luna 咨询这所学校",
+        "about": "学校简介",
+        "keyFacts": "关键信息",
+        "profile": "学校概览",
+        "related": "相关学校",
+        "relatedTitle": "同地区其他学校",
+        "placeholderSeo": "Luna Education 提供学校介绍与申请准备指导。",
+        "placeholderBio": "这是面向初步择校家庭的简要介绍。Luna 可以帮助比较申请要求、时间线和准备需求。",
+        "noBoarding": "请向学校确认",
+        "moreSoonTitle": "更多信息即将更新",
+        "moreSoonText": "该学校介绍正在完善中。家庭仍可联系 Luna 进行学校比较、申请规划和面试准备。"
+      },
+      "asij": {
+        "seo": {
+          "description": "The American School in Japan 学校介绍，包括申请、课程、关键信息和 Luna Education 申请准备指导。"
+        },
+        "profileTitle": "申请、课程与校园生活概览。",
+        "about": [
+          "The American School in Japan 是位于东京的男女同校私立走读学校，服务国际家庭。主校区位于调布，覆盖小学、初中和高中，早期学习中心与六本木相关。",
+          "学校采用美式课程路径，提供大学预备学习、AP 课程和美国高中毕业文凭，学生群体具有多元国际背景。",
+          "不同年级的申请要求有所不同，可能包括成绩单、教师推荐、学生文书、标准化测试信息和家庭联系方式。家庭应直接向学校确认最新要求。"
+        ],
+        "facts": [
+          [
+            "创校年份",
+            "1902"
+          ],
+          [
+            "课程",
+            "美式课程、AP、美国高中毕业文凭"
+          ],
+          [
+            "地点",
+            "调布，东京；早期学习中心位于六本木"
+          ],
+          [
+            "学生人数",
+            "超过 1,600 名学生"
+          ],
+          [
+            "国籍",
+            "50+ 国籍"
+          ],
+          [
+            "住宿",
+            "无寄宿 / 无寄宿家庭安排"
+          ],
+          [
+            "年龄范围",
+            "早期学习至 12 年级"
+          ],
+          [
+            "语言",
+            "英语为主要教学语言"
+          ]
+        ],
+        "sections": [
+          {
+            "title": "申请",
+            "items": [
+              "高中和初中申请通常可能包括成绩单、教师推荐、学生文书、标准化测试信息和联系方式。",
+              "小学申请可能包括成绩单、教师推荐、可用的标准化测试信息和联系方式。",
+              "幼儿园申请可能包括报告、教师推荐和联系方式。",
+              "申请时间和要求可能变化，家庭应直接向学校确认。"
+            ]
+          },
+          {
+            "title": "课程",
+            "items": [
+              "小学包括英语语言艺术、数学、社会研究、科学、体育、艺术、音乐、日语和数字公民教育。",
+              "初中包括人文、科学、数学、体育/健康、语言、艺术/制作和探索课程。",
+              "高中包括英语、社会研究、数学、科学、现代语言、体育、健康、视觉与表演艺术、创意/创新/设计、日本研究和 AP 课程。"
+            ]
+          },
+          {
+            "title": "校园生活与成果",
+            "items": [
+              "学校提供艺术、体育、服务和学生主导学习机会。",
+              "高中路径可包括 AP 课程、AP Capstone、IMPACT、GOA 和 SUPA 等选项。",
+              "校友网络规模较大，学校提供大学预备路径。"
+            ]
+          }
+        ]
+      }
+    },
+    "detailUi": {
+      "advisoryLabel": "Luna 咨询重点",
+      "advisoryTitle": "指导、准备和下一步",
+      "startLabel": "从 Luna 开始",
+      "scenarioLabel": "真实家庭场景",
+      "internationalSchoolsTitle": "国际学校",
+      "trustLabel": "为什么家庭信任 Luna",
+      "trustTitle": "把学习支持、升学申请和家长沟通连接起来。",
+      "trustSignals": [
+        "双语支持",
+        "熟悉学校申请逻辑",
+        "家长沟通",
+        "个性化匹配",
+        "课程与报告反馈"
+      ],
+      "deliverablesLabel": "你会收到什么",
+      "deliverablesTitle": "家庭可以实际使用的清晰材料。",
+      "testimonialsLabel": "来自家庭的反馈",
+      "testimonialsTitle": "来自家长和学生的真实感反馈。",
+      "deliverables": {
+        "essaySupport": [
+          { "title": "文书批注稿", "text": "针对结构、清晰度、语气和学校匹配度给出批注。" },
+          { "title": "修改清单", "text": "下一稿或提交前可以执行的修改步骤。" },
+          { "title": "最终润色建议", "text": "在保留学生声音的前提下优化语法、流畅度和可读性。" }
+        ],
+        "parentInterview": [
+          { "title": "面试反馈表", "text": "记录回答清晰度、例子、语气和学校匹配度。" },
+          { "title": "问题练习库", "text": "常见家长面试主题和练习问题。" },
+          { "title": "回答结构方案", "text": "帮助家长自然表达，而不是背稿。" }
+        ],
+        "mockInterview": [
+          { "title": "学生反馈评分表", "text": "反馈倾听、表达、信心和回答习惯。" },
+          { "title": "练习记录", "text": "学生可以理解并执行的适龄建议。" },
+          { "title": "下一步计划", "text": "正式面试前需要重点练习的方向。" }
+        ],
+        "examPackage": [
+          { "title": "申请准备路线图", "text": "把考试、申请和面试放进同一条时间线。" },
+          { "title": "测评分析报告", "text": "根据当前水平和目标要求整理技能重点。" },
+          { "title": "学习计划", "text": "每周学习重点、练习节奏和复盘节点。" }
+        ],
+        "schoolConsulting": [
+          { "title": "学校对比报告", "text": "系统比较课程、地点、申请要求和孩子匹配度。" },
+          { "title": "申请时间线", "text": "整理材料、测评和面试的关键准备窗口。" },
+          { "title": "准备度清单", "text": "检查学术、语言和家庭准备事项。" }
+        ],
+        "consultation": [
+          { "title": "优先级地图", "text": "清楚区分现在、下一步和稍后要处理的事项。" },
+          { "title": "建议记录", "text": "根据家庭情况给出学习或申请支持建议。" },
+          { "title": "第一步计划", "text": "咨询后可以马上执行的下一步。" }
+        ]
+      },
+      "scenarios": {
+        "essaySupport": {
+          "title": "适合需要梳理写作结构的学生。",
+          "text": "当学生有想法，但申请回答过于笼统、语气不合适或结构不清时，这项支持会更有帮助。",
+          "items": [
+            "申请文书或短回答题目",
+            "需要更清晰例子的家长陈述",
+            "提交学校前的最终检查"
+          ]
+        },
+        "parentInterview": {
+          "title": "适合正在申请国际学校的家庭。",
+          "text": "帮助家长在英文或双语环境下，更清楚地表达孩子特点、家庭价值观和学校匹配度。",
+          "items": [
+            "家长面试准备",
+            "学校匹配度回答练习",
+            "正式面试前建立信心"
+          ]
+        },
+        "mockInterview": {
+          "title": "适合需要准备面试的学生。",
+          "text": "帮助孩子在真实筛选前练习问候、倾听、回答和接受反馈。",
+          "items": [
+            "学生面试模拟",
+            "沟通表现与准备度反馈",
+            "适龄学校问题练习"
+          ]
+        },
+        "examPackage": {
+          "title": "适合同时管理多个截止日期的家庭。",
+          "text": "当考试准备、学校申请、文书和面试需要同步推进时，可以用一个计划统筹。",
+          "items": [
+            "MAP、WIDA、CAT4、AEIS 或语言考试",
+            "每周准备与复盘节奏",
+            "申请时间线协调"
+          ]
+        },
+        "consultation": {
+          "title": "适合需要明确第一步计划的家庭。",
+          "text": "当面前有多种路径，家庭需要判断优先事项时，咨询可以帮助先理清方向。",
+          "items": [
+            "学习需求与升学目标",
+            "服务建议",
+            "咨询后的实际下一步"
+          ]
+        }
+      },
+      "commonWritingIssues": "常见写作问题",
+      "writingIssuesTitle": "申请写作常卡住的地方。",
+      "writingIssuesDescription": "家庭通常很了解孩子，但申请文字仍需要更清晰的结构、更具体的例子和更合适的语气。",
+      "viewRegionGuide": "查看地区指南",
+      "howLunaHelps": "Luna 如何支持",
+      "schoolDecisionSupport": "围绕择校决定的准备支持。",
+      "noGuaranteeText": "家庭会获得指导、反馈和实际下一步建议，但不承诺录取结果。",
+      "consultingFaqTitle": "升学咨询常见问题",
+      "consultingCtaTitle": "需要帮助比较学校吗？",
+      "consultingCtaText": "告诉我们地区、时间线和孩子情况，Luna 可以帮助你清晰规划下一步。",
+      "directoryFilters": [
+        "东京",
+        "横滨",
+        "美式课程",
+        "英式课程",
+        "IB",
+        "小学阶段",
+        "中学阶段"
+      ],
+      "admissions": "申请要求",
+      "admissionsTitle": "需要确认的申请要求。",
+      "gradeLevel": "年级阶段",
+      "requiredDocuments": "所需材料",
+      "interview": "面试",
+      "assessment": "测评",
+      "notes": "备注",
+      "curriculum": "课程体系",
+      "curriculumTitle": "学术路径概览。",
+      "studentLife": "校园生活",
+      "studentLifeTitle": "领导力、课外活动与体育。",
+      "outcomes": "升学路径",
+      "outcomesTitle": "需要谨慎确认的路径与成果。",
+      "schoolFaqTitle": "学校资料常见问题。",
+      "howLunaCanHelp": "Luna 可以如何帮助",
+      "schoolHelpTitle": "围绕这所学校的申请准备。",
+      "viewProfile": "查看学校资料",
+      "profileComingSoon": "资料即将更新",
+      "schoolHelpItems": [
+        "申请规划",
+        "文书与家长面试支持",
+        "学术准备支持"
+      ],
+      "schoolHelpText": "Luna 提供准备、反馈和下一步建议。录取决定由学校作出。",
+      "consultingFaq": [
+        {
+          "q": "Luna 可以推荐学校吗？",
+          "a": "Luna 可以帮助家庭比较选项并准备问题，但最终择校应由家庭根据自身优先事项和学校官方信息决定。"
+        },
+        {
+          "q": "你们是否与学校直接合作？",
+          "a": "Luna 提供独立的准备和规划支持。除非特别说明，我们不暗示与学校有官方合作关系。"
+        },
+        {
+          "q": "可以帮助日本和新加坡择校吗？",
+          "a": "可以。我们帮助家庭比较两个地区的路径、申请时间线和准备需求。"
+        },
+        {
+          "q": "你们保证录取吗？",
+          "a": "不保证。我们支持规划和准备度，但录取决定由学校作出。"
+        }
+      ],
+      "curriculumOverview": "课程概览",
+      "curriculumOverviewText": "课程细节会因校区、年级和学年而变化。家庭应直接向学校确认当前课程路径。",
+      "curriculumOutcomes": "课程结果",
+      "admissionsFit": "申请匹配度",
+      "admissionsFitText": "按年级和时间确认申请要求",
+      "nextSteps": "下一步",
+      "nextStepsText": "规划材料、面试和准备度",
+      "schoolFaq": [
+        [
+          "这所学校需要面试吗？",
+          "面试要求会因年级和申请年份而变化。家庭应直接向学校确认。"
+        ],
+        [
+          "这所学校提供什么课程？",
+          "请查看课程标签，并直接向学校确认当前课程路径。"
+        ],
+        [
+          "学校是否提供住宿？",
+          "住宿安排因学校而异。请直接向学校确认当前选项。"
+        ],
+        [
+          "Luna 如何帮助申请准备？",
+          "Luna 可以支持学校研究、申请规划、文书准备、面试辅导、模拟面试和学术准备。"
+        ]
+      ],
+      "allLevels": "所有阶段",
+      "requirementsVary": "要求因学校和年级而异",
+      "varies": "视情况而定",
+      "contactLunaPlanning": "联系 Luna 规划学校研究和准备流程。",
+      "asijNoBoarding": "ASIJ 通常被理解为走读学校，不提供寄宿或寄宿家庭安排。",
+      "faqLabel": "常见问题",
+      "schoolConsultingPrefix": "升学咨询",
+      "asijStudentCount": "1,600+ 名学生",
+      "largeK12Community": "大型 K-12 学校社区",
+      "nurseryToSixthForm": "幼儿阶段至高中阶段",
+      "location": "地点",
+      "ageRange": "年龄范围",
+      "boarding": "寄宿",
+      "highSchool": "高中",
+      "middleSchool": "中学",
+      "elementary": "小学",
+      "kindergarten": "幼儿园",
+      "elementaryPrimary": "小学阶段",
+      "asijAdmissionDocsHigh": "成绩单、推荐信、学生文书和测评信息",
+      "asijAdmissionDocsMiddle": "成绩单、推荐信、学生文书和测评信息",
+      "asijAdmissionDocsElementary": "成绩单、推荐信，如有测评信息也可准备",
+      "asijAdmissionDocsKindergarten": "报告、教师推荐信和联系方式",
+      "likelyRequired": "通常需要",
+      "mayBeRequested": "可能需要",
+      "confirmCurrentRequirements": "请以学校当前要求为准。",
+      "prepareDocumentsEarly": "建议提前准备材料。",
+      "requirementsVaryByGrade": "要求会根据年级有所不同。",
+      "ageAppropriateReview": "适龄准备度评估",
+      "asijCurriculumElementary": "英语语言艺术、数学、社会研究、科学、体育、艺术、音乐、日语和数字公民素养。",
+      "asijCurriculumMiddle": "人文、科学、数学、体育与健康、语言、艺术制作和探索类课程。",
+      "asijCurriculumHigh": "英语、社会研究、数学、科学、现代语言、体育、健康、视觉与表演艺术、日本研究和 AP 课程。",
+      "leadership": "领导力",
+      "artsActivities": "艺术与活动",
+      "sports": "体育",
+      "asijLeadershipItems": [
+        "学生主导的学习机会",
+        "服务与社区项目",
+        "通过校内活动培养领导力"
+      ],
+      "genericLeadershipItems": [
+        "领导力机会因年龄和校区而异",
+        "家庭应向学校确认当前项目"
+      ],
+      "asijArtsItems": [
+        "视觉与表演艺术",
+        "创意、创新与设计机会",
+        "社团和学生活动"
+      ],
+      "genericArtsItems": [
+        "艺术、社团和活动因学校而异",
+        "建议了解当前课外活动选择"
+      ],
+      "asijSportsItems": [
+        "校队和体育参与",
+        "体育与健康课程",
+        "适龄体育发展路径"
+      ],
+      "genericSportsItems": [
+        "体育项目因校区而异",
+        "建议了解季节性队伍和设施"
+      ],
+      "universityPathways": "大学路径",
+      "apCourses": "AP 课程",
+      "alumniNetwork": "校友网络",
+      "diploma": "毕业文凭",
+      "asijUniversityPathways": "以美国课程体系为基础的大学准备路径",
+      "asijApCourses": "可能提供 AP 和 AP Capstone 课程选择",
+      "asijAlumniNetwork": "大型国际校友社区",
+      "asijDiploma": "美国高中文凭路径",
+      "pathwaysVary": "升学路径会因学校和课程体系而异",
+      "schoolDirectory": {
+        "asij": {
+          "curriculum": "美国课程、AP、美国高中文凭",
+          "ageRange": "幼儿阶段至 12 年级",
+          "note": "历史悠久的国际走读学校，主校区位于东京调布，并在六本木设有幼儿学习中心。"
+        },
+        "british-school-in-tokyo": {
+          "curriculum": "英国课程",
+          "ageRange": "幼儿阶段至高中阶段",
+          "note": "适合希望在东京选择英式学习路径的家庭。"
+        },
+        "nishimachi": {
+          "curriculum": "国际小学与中学阶段课程",
+          "ageRange": "幼儿园至 9 年级",
+          "note": "位于东京市中心，以双语和多元文化学习环境受到关注。"
+        },
+        "kist": {
+          "curriculum": "IB 连续课程",
+          "ageRange": "幼儿园至 12 年级",
+          "note": "面向东京家庭的 IB 课程国际学校。"
+        },
+        "yis": {
+          "curriculum": "IB 与国际课程",
+          "ageRange": "幼儿阶段至 12 年级",
+          "note": "位于横滨，提供较完整的国际课程和课外活动选择。"
+        },
+        "st-marys": {
+          "curriculum": "国际 / 美式路径",
+          "ageRange": "男校，K 至 12 年级",
+          "note": "以大学准备和学生发展活动为特色的男校国际学校。"
+        },
+        "seisen": {
+          "curriculum": "IB 与国际课程",
+          "ageRange": "女校，幼儿阶段至 12 年级",
+          "note": "注重学术与服务学习的女校国际学校。"
+        },
+        "phoenix-house": {
+          "curriculum": "英式课程",
+          "ageRange": "小学与中学阶段",
+          "note": "适合考虑英式学习路径家庭的较新国际学校选择。"
+        },
+        "uwcsea": {
+          "curriculum": "UWC / IB 路径",
+          "ageRange": "幼儿园至 12 年级",
+          "note": "大型国际学校，以学术、活动和服务学习闻名。"
+        },
+        "tanglin-trust": {
+          "curriculum": "英国课程、IGCSE、A Level / IB 选择",
+          "ageRange": "幼儿阶段至高中阶段",
+          "note": "历史悠久的英国国际学校，提供扎实的学术路径。"
+        },
+        "dover-court": {
+          "curriculum": "英国课程",
+          "ageRange": "幼儿阶段至中学",
+          "note": "提供学习支持和国际社区环境的英式学校选择。"
+        },
+        "sas": {
+          "curriculum": "美国课程",
+          "ageRange": "幼儿园至 12 年级",
+          "note": "大型美国课程学校，学术和活动项目选择广泛。"
+        },
+        "stamford-american": {
+          "curriculum": "美国 / IB 路径",
+          "ageRange": "幼儿阶段至 12 年级",
+          "note": "提供多种课程路径的国际学校选择。"
+        },
+        "canadian-international": {
+          "curriculum": "IB 路径",
+          "ageRange": "幼儿阶段至 12 年级",
+          "note": "具有加拿大教育背景并提供 IB 学习路径的国际学校。"
+        },
+        "australian-international": {
+          "curriculum": "澳洲 / IB 路径",
+          "ageRange": "婴幼儿阶段至 12 年级",
+          "note": "提供澳洲国际教育路径和多样课外活动。"
+        },
+        "dulwich": {
+          "curriculum": "英国课程、IGCSE、IB 文凭",
+          "ageRange": "幼儿阶段至 12 年级",
+          "note": "英式国际学校，拥有较完整的升学准备路径。"
+        }
+      }
     }
   }
 }
