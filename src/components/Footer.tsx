@@ -74,12 +74,12 @@ export default function Footer() {
   ].map(([label, path]) => ({ label, path }));
 
   const renderLinks = (links: FooterLink[]) => (
-    <ul className="space-y-3">
+    <ul className="space-y-2.5">
       {links.map((link) => (
         <li key={`${link.label}-${link.path}`}>
           <Link
             to={link.path}
-            className="text-sm leading-6 text-slate-300 transition hover:text-white"
+            className="inline-flex min-h-9 items-center text-sm leading-6 text-slate-300 transition hover:text-white"
           >
             {link.label}
           </Link>
@@ -92,7 +92,7 @@ export default function Footer() {
     <footer className="relative overflow-hidden bg-[#071b3a] text-white">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
 
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+      <div className="mx-auto max-w-7xl px-4 pb-28 pt-12 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-10">
           <nav aria-label={t("footer.columns.aboutUs")}>
             <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white">
@@ -176,7 +176,7 @@ export default function Footer() {
                     {t("footer.contact.email")}
                   </p>
 
-                  <p className="mt-1 whitespace-nowrap text-sm text-slate-200 transition group-hover:text-[#f6c65b]">
+                  <p className="mt-1 break-all text-sm text-slate-200 transition group-hover:text-[#f6c65b] sm:break-normal">
                     enquiries@lunastudies.com
                   </p>
                 </div>
@@ -204,16 +204,16 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-white/10 pt-6 text-sm text-slate-400">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
+        <div className="mt-10 border-t border-white/10 pt-6 text-sm leading-6 text-slate-400">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2 sm:gap-y-2">
             <span>{t("footer.bottom.copyright")}</span>
 
             {legalLinks.map((link) => (
               <span key={`${link.label}-${link.path}`} className="inline-flex items-center gap-x-2">
-                <span aria-hidden="true">{t("footer.bottom.separator")}</span>
+                <span aria-hidden="true" className="hidden sm:inline">{t("footer.bottom.separator")}</span>
                 <Link
                   to={link.path}
-                  className="transition hover:text-white"
+                  className="inline-flex min-h-9 items-center transition hover:text-white"
                 >
                   {link.label}
                 </Link>

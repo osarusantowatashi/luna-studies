@@ -190,7 +190,7 @@ export default function StudentLessons() {
     }, [futureLessons]);
 
     return (
-        <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-14">
+        <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-6 sm:px-6 sm:py-14">
             <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
 
             <div className="relative z-10 mx-auto max-w-[1350px] space-y-8">
@@ -198,7 +198,7 @@ export default function StudentLessons() {
                     initial={{ opacity: 0, y: 35 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55 }}
-                    className="relative overflow-hidden rounded-[3rem] bg-white/95 p-7 shadow-[0_28px_90px_rgba(66,56,120,0.13)] backdrop-blur-xl sm:p-10"
+                    className="relative overflow-hidden rounded-[2rem] bg-white/95 p-5 shadow-[0_28px_90px_rgba(66,56,120,0.13)] backdrop-blur-xl sm:rounded-[3rem] sm:p-10"
                 >
                     <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
                     <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
@@ -209,7 +209,7 @@ export default function StudentLessons() {
                             My Lessons
                         </p>
 
-                        <h1 className="mt-5 font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.8rem] lg:text-[5.6rem]">
+                        <h1 className="mt-5 font-poppins text-[2.35rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.7rem] sm:text-[4.8rem] sm:leading-[0.95] lg:text-[5.6rem]">
                             Your lessons.
                             <br />
                             Clearly planned.
@@ -231,8 +231,8 @@ export default function StudentLessons() {
                     <StatCard icon={<Clock size={22} />} title="Study Hours" value={totalHours} />
                 </div>
 
-                <div className="rounded-[2.5rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:p-7">
-                    <div className="mb-6 flex items-center justify-between">
+                <div className="rounded-[2rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-7">
+                    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
                                 Upcoming This Week
@@ -246,7 +246,7 @@ export default function StudentLessons() {
                         <button
                             type="button"
                             onClick={() => setShowAllLessons(true)}
-                            className="rounded-2xl bg-[#f6f1ff] px-5 py-3 text-sm font-black text-[#8d73ff] transition hover:bg-[#ebe1ff]"
+                            className="min-h-11 rounded-2xl bg-[#f6f1ff] px-5 py-3 text-sm font-black text-[#8d73ff] transition hover:bg-[#ebe1ff]"
                         >
                             View All Lessons
                         </button>
@@ -256,7 +256,7 @@ export default function StudentLessons() {
                         {sortedUpcoming.slice(0, 6).map((lesson) => (
                             <div
                                 key={lesson.id}
-                                className="rounded-[2rem] border border-primary/10 bg-[#fbfaff] p-5"
+                                className="rounded-[1.6rem] border border-primary/10 bg-[#fbfaff] p-5 sm:rounded-[2rem]"
                             >
                                 <StatusBadge status={lesson.status} />
 
@@ -282,7 +282,7 @@ export default function StudentLessons() {
                     </div>
                 </div>
 
-                <div className="rounded-[2.5rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:p-7">
+                <div className="rounded-[2rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-7">
                     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
@@ -588,7 +588,7 @@ function Modal({ children, onClose }: any) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.96 }}
                 transition={{ duration: 0.35 }}
-                className="relative max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-[2.5rem] bg-white p-6 shadow-[0_35px_110px_rgba(0,0,0,0.28)] sm:p-8"
+                className="relative max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-[0_35px_110px_rgba(0,0,0,0.28)] sm:rounded-[2.5rem] sm:p-8"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button

@@ -488,16 +488,16 @@ const AdminProgress = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7fb] px-4 py-8 text-[#10264d] sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-[1600px] space-y-6">
+    <div className="min-h-screen bg-[#f4f7fb] px-4 py-6 text-[#10264d] sm:px-6 sm:py-10">
+      <div className="mx-auto max-w-[1600px] space-y-5 sm:space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold sm:text-3xl">Student Progress Dashboard</h1>
-          <Button type="button" variant="outline" className="w-full rounded-2xl sm:w-auto" onClick={loadDemoData}>
+          <Button type="button" variant="outline" className="min-h-11 w-full rounded-2xl sm:w-auto" onClick={loadDemoData}>
             Load Demo Data
           </Button>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[480px_1fr]">
+        <div className="grid gap-5 lg:gap-6 xl:grid-cols-[minmax(360px,480px)_1fr]">
           <div className="space-y-6">
             <Card className="rounded-[18px] border-[#dfe7f5] bg-white p-5 shadow-sm">
               <h2 className="mb-4 text-xl font-bold">1. Lesson Input</h2>
@@ -648,7 +648,7 @@ const AdminProgress = () => {
               </div>
 
               <div className="mt-4 overflow-x-auto">
-                <table className="w-full text-center text-sm">
+                <table className="min-w-[520px] w-full text-center text-sm">
                   <tbody>
                     {lessons.length === 0 ? (
                       <tr>
@@ -753,7 +753,7 @@ const AdminProgress = () => {
               </div>
 
               <div className="mt-4 overflow-x-auto">
-                <table className="w-full text-center text-sm">
+                <table className="min-w-[520px] w-full text-center text-sm">
                   <tbody>
                     {availableTests.length === 0 ? (
                       <tr>

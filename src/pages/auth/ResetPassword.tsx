@@ -58,7 +58,7 @@ const ResetPassword = () => {
             <input
               type="password"
               autoComplete="new-password"
-              className="w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+              className="min-h-11 w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
               placeholder={t("resetPassword.placeholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -66,7 +66,7 @@ const ResetPassword = () => {
 
             <Button
               type="button"
-              className="h-12 w-full rounded-2xl"
+              className="min-h-11 w-full rounded-2xl py-3"
               onClick={handleUpdatePassword}
               disabled={loading}
             >

@@ -106,7 +106,7 @@ export default function SubjectDetail() {
 
             <div className="min-h-screen bg-background">
                 {/* HERO */}
-                <section className="relative overflow-hidden bg-[#fffdf8] px-4 pt-28 pb-20 sm:px-6 lg:px-8">
+                <section className="relative overflow-hidden bg-[#fffdf8] px-4 pb-14 pt-20 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,#fff1bd_0%,transparent_28%),radial-gradient(circle_at_20%_70%,#f0eaff_0%,transparent_30%)]" />
 
                     <div className="relative z-10 mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
@@ -117,7 +117,7 @@ export default function SubjectDetail() {
                             <div>
                                 <Link
                                     to={withLang("/subjects")}
-                                    className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-primary/55 shadow-[0_10px_30px_rgba(66,56,120,0.06)] transition hover:bg-white hover:text-[#8d73ff]"
+                                    className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-primary/55 shadow-[0_10px_30px_rgba(66,56,120,0.06)] transition hover:bg-white hover:text-[#8d73ff]"
                                 >
                                     <ArrowRight className="h-4 w-4 rotate-180" />
                                     {t("subjectDetail.backToPrograms")}
@@ -129,7 +129,7 @@ export default function SubjectDetail() {
                                 {content.badge}
                             </div>
 
-                            <h1 className="mt-6 font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.8rem]">
+                            <h1 className="mt-6 font-poppins text-[2.45rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.8rem] sm:text-[4.8rem] sm:leading-[0.95]">
                                 {title}
                             </h1>
 
@@ -139,20 +139,21 @@ export default function SubjectDetail() {
 
                             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                                 <Link
+                                    className="w-full sm:w-auto"
                                     to={`${withLang("/enquiry")}?subject=${encodeURIComponent(
                                         title
                                     )}#enquiry-form`}
                                 >
-                                    <Button className="h-13 rounded-2xl bg-primary px-7 text-sm font-bold">
+                                    <Button className="min-h-11 w-full rounded-2xl bg-primary px-7 py-3 text-sm font-bold sm:w-auto">
                                         {t("subjectDetail.enquireNow")}
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Button>
                                 </Link>
 
-                                <a href="#luna-approach">
+                                <a href="#luna-approach" className="w-full sm:w-auto">
                                     <Button
                                         variant="outline"
-                                        className="h-13 rounded-2xl px-7 text-sm font-bold"
+                                        className="min-h-11 w-full rounded-2xl px-7 py-3 text-sm font-bold sm:w-auto"
                                     >
                                         {t("subjectDetail.howLunaHelps")}
                                     </Button>
@@ -164,7 +165,7 @@ export default function SubjectDetail() {
                             initial={{ opacity: 0, y: 35, rotate: 2 }}
                             animate={{ opacity: 1, y: 0, rotate: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="rounded-[2.8rem] bg-white/90 p-7 shadow-[0_30px_90px_rgba(66,56,120,0.14)] backdrop-blur-xl"
+                            className="rounded-[2rem] bg-white/90 p-5 shadow-[0_30px_90px_rgba(66,56,120,0.14)] backdrop-blur-xl sm:rounded-[2.8rem] sm:p-7"
                         >
                             <div className="rounded-[2rem] bg-[#fbfaff] p-6">
                                 <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8d73ff]">
@@ -456,7 +457,7 @@ export default function SubjectDetail() {
                                 title
                             )}#enquiry-form`}
                         >
-                            <Button className="mt-8 h-13 rounded-2xl bg-primary px-8 font-bold">
+                            <Button className="mt-8 min-h-11 w-full rounded-2xl bg-primary px-8 py-3 font-bold sm:w-auto">
                                 {t("subjectDetail.enquireAbout", { title })}
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>

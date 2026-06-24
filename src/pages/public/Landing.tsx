@@ -1,14 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import {
   ArrowRight,
@@ -27,7 +19,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import SeoHelmet from "@/components/SeoHelmet";
 
 
@@ -122,16 +114,27 @@ const Landing = () => {
   const routeY = useTransform(pathwayProgress, [0, 0.3, 0.6, 1], [20, -30, 30, -10]);
 
   const { t } = useTranslation();
+  const heroDescription = t("landing.hero.description");
+  const heroDescriptionLines =
+    currentLang === "zh"
+      ? heroDescription.replace("，帮助", "。|帮助").split("|")
+      : currentLang === "ja"
+        ? heroDescription.replace("通して、", "通して、|").split("|")
+      : [heroDescription];
+  const heroDescriptionWidthClass =
+    currentLang === "ja"
+      ? "max-w-[42rem]"
+      : currentLang === "zh"
+        ? "max-w-2xl"
+        : "max-w-[46rem]";
+  const heroTitleLine2 = t("landing.hero.titleLine2");
+  const heroTitleSizeClass =
+    currentLang === "zh"
+      ? "text-[1.75rem] min-[390px]:text-[1.95rem] sm:text-[3.25rem] lg:text-[4rem] xl:text-[4.45rem]"
+      : currentLang === "ja"
+        ? "text-[1.45rem] min-[390px]:text-[1.65rem] sm:text-[2.8rem] lg:text-[3.45rem] xl:text-[3.95rem]"
+        : "text-[1.5rem] min-[390px]:text-[1.72rem] sm:text-[2.9rem] lg:text-[3.55rem] xl:text-[4.05rem]";
 
-  const { scrollYProgress } = useScroll();
-
-
-  const vocabData = [
-    { date: "May 18", words: 12 },
-    { date: "May 25", words: 18 },
-    { date: "Jun 01", words: 29 },
-    { date: "Jun 08", words: 42 },
-  ];
   const tutors = [
     {
       name: "Mimi",
@@ -183,339 +186,158 @@ const Landing = () => {
       <div className="min-h-screen bg-background">
 
         {/* HERO */}
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pt-20 pb-14 sm:px-6 lg:px-8 lg:pt-24 lg:pb-16">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,#fff1bd_0%,transparent_22%),radial-gradient(circle_at_82%_78%,#fff5e4_0%,transparent_28%),linear-gradient(180deg,#f8f6ff_0%,#fffdf8_100%)]" />
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pb-12 pt-16 sm:px-6 sm:pb-16 sm:pt-20 lg:px-8 lg:pb-16 lg:pt-12 xl:pt-14">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,#f0eaff_0%,transparent_30%),radial-gradient(circle_at_80%_18%,#fff1bd_0%,transparent_24%),linear-gradient(180deg,#f8f6ff_0%,#fffdf8_100%)]" />
+          <div className="pointer-events-none absolute -left-20 top-[26%] h-80 w-80 rounded-full bg-[#8d73ff]/8 blur-3xl" />
+          <div className="pointer-events-none absolute right-[4%] top-[17%] h-80 w-80 rounded-full bg-[#ffe89a]/32 blur-2xl shadow-[0_0_90px_rgba(255,217,100,0.16)] sm:h-[28rem] sm:w-[28rem]" />
 
-          <div className="relative z-10 mx-auto max-w-[1440px]">
-            <div className="grid min-h-[560px] items-start gap-8 pt-8 lg:grid-cols-[0.82fr_1.18fr]">      {/* LEFT */}
-              <div className="relative z-20 max-w-[620px]">
-                <p className="mb-6 flex items-center gap-2 text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
-                  <Sparkles className="h-5 w-5" />
+          <div className="relative z-10 mx-auto max-w-[1320px]">
+            <div className="relative flex min-h-0 flex-col items-center pt-6 text-center sm:pt-8 lg:min-h-[650px] lg:justify-center lg:pt-0">
+              <div className="pointer-events-none absolute left-1/2 top-[50%] hidden h-[590px] w-[590px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#8d73ff]/7 bg-white/20 shadow-[inset_0_0_90px_rgba(141,115,255,0.05)] backdrop-blur-sm lg:block" />
+              <div className="pointer-events-none absolute left-1/2 top-[46%] hidden h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ffe66d]/18 shadow-[0_0_55px_rgba(255,230,109,0.13)] lg:block" />
+
+              <svg
+                className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block"
+                viewBox="0 0 1320 620"
+                fill="none"
+                preserveAspectRatio="none"
+              >
+                <motion.path
+                  d="M128 405 C205 158, 470 86, 687 132 C884 174, 1016 290, 1114 482"
+                  stroke="#8d73ff"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeDasharray="10 16"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 0.14 }}
+                  transition={{ duration: 1.2, delay: 0.2 }}
+                />
+              </svg>
+
+              <motion.img
+                src="/stickers/plane.png"
+                alt="paper airplane"
+                className="pointer-events-none absolute left-[62%] top-[12%] z-20 hidden w-16 drop-shadow-xl lg:block xl:w-20"
+                animate={{ y: [0, -8, 0], x: [0, 12, 0], rotate: [-18, -12, -18] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              />
+
+              <div className="relative z-30 mx-auto max-w-[960px]">
+                <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff] shadow-[0_12px_35px_rgba(15,23,42,0.06)] backdrop-blur-md sm:text-sm">
+                  <Sparkles className="h-4 w-4" />
                   {t("landing.hero.label")}
                 </p>
 
-                <h1 className="font-poppins text-[2.65rem] font-black leading-[1.02] tracking-[-0.045em] text-primary sm:text-[4rem] lg:text-[5rem]">
-                  {t("landing.hero.titleLine1")}<br />
-                  {t("landing.hero.titleLine2")} <span className="text-[#8d73ff]">{t("landing.hero.titleHighlight")}</span><br />
-                  {t("landing.hero.titleLine3")}<span className="text-[#ffc928]">.</span>
+                <h1 className={`font-poppins font-black leading-[1.08] text-primary ${heroTitleSizeClass}`}>
+                  <span className="block whitespace-nowrap">
+                    {t("landing.hero.titleLine1")}
+                  </span>
+                  <span className="mt-2 block whitespace-nowrap text-[#8d73ff] sm:mt-3">
+                    {heroTitleLine2}
+                  </span>
                 </h1>
 
-                <p className="mt-7 max-w-lg text-base leading-8 text-primary/70 sm:text-lg">
-                  {t("landing.hero.description")}
+                <p className={`mx-auto mt-7 text-base leading-8 text-primary/68 sm:text-lg ${heroDescriptionWidthClass}`}>
+                  {heroDescriptionLines.map((line) => (
+                    <span key={line} className="block [&+&]:mt-2">
+                      {line}
+                    </span>
+                  ))}
                 </p>
 
-                <div className="mt-9 flex flex-wrap items-center gap-4">
-                  <Link to={withLang("/whyluna")}>
-                    <Button className="h-14 rounded-full bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.20)]">
+                <div className="mx-auto mt-8 grid max-w-md gap-3 sm:mt-9 sm:flex sm:max-w-none sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
+                  <Link to={withLang("/enquiry")} className="w-full sm:w-auto">
+                    <Button className="h-14 w-full rounded-full bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.20)] sm:w-auto">
                       {t("landing.hero.primaryButton")}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
 
-                  <Link to={withLang("/subjects")}>
+                  <Link to={withLang("/services")} className="w-full sm:w-auto">
                     <Button
                       variant="outline"
-                      className="h-14 rounded-full border-primary/15 bg-white/85 px-8 text-base text-primary shadow-sm backdrop-blur"
+                      className="h-14 w-full rounded-full border-primary/15 bg-white/85 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto"
                     >
                       {t("landing.hero.secondaryButton")}
                     </Button>
                   </Link>
                 </div>
-
-                <div className="mt-10 flex flex-wrap items-center gap-6">
-                  <div className="flex -space-x-3">
-                    {["/tutors/mimi_new.jpg", "/tutors/grace_new.jpg", "/tutors/francis_new.png", "/tutors/cj_new.png", "/tutors/christine_new.png"].map((src, i) => (
-                      <img
-                        key={i}
-                        src={src}
-                        alt="student"
-                        className="h-12 w-12 rounded-full border-4 border-white object-cover shadow-sm"
-                      />
-                    ))}
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-[#eee9ff] text-lg font-bold text-[#8d73ff]">
-                      +
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex gap-1 text-[#ffc928]">
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <Star key={n} className="h-4 w-4 fill-current" />
-                      ))}
-                    </div>
-                    <p className="mt-1 text-sm font-medium text-primary/70">
-                      {t("landing.hero.rating")}
-                    </p>
-                  </div>
-                </div>
               </div>
 
-              {/* RIGHT FLOATING DASHBOARD */}
-              <div className="relative w-full lg:min-h-[560px]">
-                {/* moon glow */}
-                <div className="pointer-events-none absolute right-0 top-0 h-56 w-56 rounded-full bg-[#ffe89a]/60 blur-sm shadow-[0_0_100px_rgba(255,217,100,0.35)] sm:h-72 sm:w-72" />
+              <div className="relative z-20 mt-10 grid w-full gap-3 min-[430px]:grid-cols-3 lg:absolute lg:inset-0 lg:mt-0 lg:block">
+                {[
+                  {
+                    icon: Users,
+                    value: "Global",
+                    label: "Online Support",
+                    accent: "bg-[linear-gradient(135deg,#9a82ff_0%,#7157e8_100%)]",
+                    surface: "bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(250,247,255,0.78)_100%)]",
+                    glow: "bg-[#8d73ff]/14",
+                    position: "lg:absolute lg:-left-[3%] lg:top-[17%] xl:left-[1%]",
+                    tilt: "lg:-rotate-[5deg]",
+                    light: true,
+                  },
+                  {
+                    icon: School,
+                    value: "K–12",
+                    label: "Grades Supported",
+                    accent: "bg-[linear-gradient(135deg,#ffe66d_0%,#ffc928_100%)]",
+                    surface: "bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(255,251,232,0.78)_100%)]",
+                    glow: "bg-[#ffc928]/16",
+                    position: "lg:absolute lg:-right-[3%] lg:top-[23%] xl:right-[1%]",
+                    tilt: "lg:rotate-[5deg]",
+                  },
+                  {
+                    icon: Compass,
+                    value: "100+",
+                    label: "School Pathways",
+                    accent: "bg-[linear-gradient(135deg,#c8ff78_0%,#9ee94c_100%)]",
+                    surface: "bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,255,239,0.82)_100%)]",
+                    glow: "bg-[#b8f36c]/18",
+                    position: "lg:absolute lg:bottom-[12%] lg:left-[1%] xl:left-[7%]",
+                    tilt: "lg:-rotate-[7deg]",
+                    primary: true,
+                  },
+                ].map((item, index) => {
+                  const CoverageIcon = item.icon;
 
-                <motion.img
-                  src="/stickers/plane.png"
-                  alt="paper airplane"
-                  className="pointer-events-none absolute left-[5%] top-0 z-20 hidden w-24 sm:block"
-                  animate={{ y: [0, -12, 0], x: [0, 10, 0], rotate: [0, 4, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                />
+                  return (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.5, delay: 0.25 + index * 0.12 }}
+                      whileHover={{ y: item.primary ? -6 : -3 }}
+                      className={`group relative w-full overflow-hidden rounded-[1.75rem] border border-white/85 px-4 py-3.5 text-left ring-1 ring-primary/[0.035] backdrop-blur-2xl transition ${item.surface} ${
+                        item.primary
+                          ? "shadow-[0_26px_70px_rgba(66,56,120,0.16)] lg:w-[250px] lg:px-4 lg:py-3.5 xl:w-[306px] xl:px-5 xl:py-4"
+                          : "shadow-[0_20px_50px_rgba(66,56,120,0.11)] lg:w-[238px] lg:px-4 lg:py-3.5 xl:w-[296px] xl:px-5 xl:py-4"
+                      } ${item.position} ${item.tilt}`}
+                    >
+                      <div className={`pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl ${item.glow}`} />
+                      <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-white/90" />
+                      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(255,255,255,0.72),transparent_34%)] opacity-80" />
 
-                <div className="relative z-30 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-                  {/* Writing Feedback */}
-                  <motion.div
-                    initial={false}
-
-                    animate={{ opacity: 1, y: 0 }}
-
-                    whileHover={{ y: -6 }}
-
-                    transition={{ duration: 0.25 }}
-
-
-                    className="rounded-[2rem] border border-white bg-white/90 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.14)] backdrop-blur-xl sm:col-span-2 sm:p-6 lg:col-span-3"  >
-                    <p className="text-sm font-black text-primary">{t("landing.dashboard.writingFeedback.title")}</p>
-                    <p className="mt-4 text-4xl font-black text-[#52bd7f] sm:mt-5 sm:text-5xl">
-                      8.5<span className="text-xl text-primary">/10</span>
-                    </p>
-                    <p className="mt-2 text-sm text-primary/70">{t("landing.dashboard.writingFeedback.comment")}</p>
-
-                    <div className="mt-6 space-y-4">
-                      {[
-                        [t("landing.dashboard.writingFeedback.items.ideas"), "86%"],
-                        [t("landing.dashboard.writingFeedback.items.structure"), "68%"],
-                        [t("landing.dashboard.writingFeedback.items.vocabulary"), "62%"],
-                        [t("landing.dashboard.writingFeedback.items.grammar"), "70%"],
-                      ].map(([label, width]) => (
-                        <div key={label} className="grid grid-cols-[1fr_90px] items-center gap-3">
-                          <p className="text-sm text-primary/65">✓ {label}</p>
-                          <div className="h-2 rounded-full bg-slate-100">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              whileInView={{ width }}
-                              viewport={{ once: false }}
-                              transition={{ duration: 0.8, delay: 0.2 }}
-                              className="h-2 rounded-full bg-[#52bd7f]"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-
-                  {/* Upcoming Lesson */}
-                  <motion.div
-                    initial={false}
-
-                    animate={{ opacity: 1, y: 0 }}
-
-                    whileHover={{ y: -6 }}
-
-                    transition={{ duration: 0.25 }}
-
-
-                    className="rounded-[1.8rem] border border-white bg-white/90 p-5 shadow-[0_18px_60px_rgba(66,56,120,0.12)] backdrop-blur-xl lg:col-span-3"
-                  >
-                    <p className="text-sm font-black text-primary">{t("landing.dashboard.upcomingLesson.title")}</p>
-                    <div className="mt-4 rounded-2xl bg-[#f3efff] p-4">
-                      <p className="font-bold text-primary">{t("landing.dashboard.upcomingLesson.lesson")}</p>
-                      <p className="mt-1 text-sm text-primary/55">{t("landing.dashboard.upcomingLesson.time")}</p>
-                    </div>
-                    <p className="mt-4 text-right text-sm font-bold text-[#8d73ff]">{t("landing.dashboard.upcomingLesson.action")}</p>
-                  </motion.div>
-
-                  {/* Vocabulary Growth */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: false, amount: 0.35 }}
-                    transition={{ duration: 0.7, delay: 0.2 }}
-                    className="rounded-[1.8rem] border border-white bg-white/90 p-5 shadow-[0_18px_60px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:col-span-2 lg:col-span-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-black text-primary">{t("landing.dashboard.vocabularyGrowth.title")}</p>
-
-                      <div className="rounded-xl bg-[#f6f2ff] px-3 py-1 text-xs font-bold text-[#8d73ff]">
-                        {t("landing.dashboard.vocabularyGrowth.badge")}
-                      </div>
-                    </div>
-
-                    <div className="mt-3 h-[105px] w-full">    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={vocabData}>
-
-                        <XAxis
-                          dataKey="date"
-                          tick={{ fontSize: 12, fill: "#64748b" }}
-                          axisLine={false}
-                          tickLine={false}
-                        />
-                        <YAxis hide />
-                        <Tooltip />
-                        <Line
-                          type="monotone"
-                          dataKey="words"
-                          stroke="#8d73ff"
-                          strokeWidth={4}
-                          dot={{ r: 5, fill: "#8d73ff", strokeWidth: 0 }}
-                          activeDot={{ r: 7, fill: "#8d73ff" }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                    </div>
-                  </motion.div>
-
-                  {/* MAP Score Progress */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: false, amount: 0.35 }}
-                    transition={{ duration: 0.7, delay: 0.3 }}
-                    className="rounded-[1.8rem] border border-white bg-white/90 p-5 shadow-[0_18px_60px_rgba(66,56,120,0.12)] backdrop-blur-xl lg:col-span-3"
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-black text-primary">
-                        {t("landing.dashboard.mapProgress.title")}
-                      </p>
-
-                      <div className="rounded-xl bg-[#f6f2ff] px-3 py-1 text-xs font-bold text-[#8d73ff]">
-                        {t("landing.dashboard.mapProgress.badge")}
-                      </div>
-                    </div>
-
-                    <div className="mt-5 space-y-5">
-
-                      {/* Reading */}
-                      <div>
-                        <div className="mb-2 flex items-end justify-between">
-                          <div>
-                            <p className="font-bold text-primary">{t("landing.dashboard.mapProgress.reading.title")}</p>
-                            <p className="text-xs text-primary/50">
-                              {t("landing.dashboard.mapProgress.reading.subtitle")}
-                            </p>
-                          </div>
-
-                          <p className="text-2xl font-black text-[#8d73ff]">
-                            78%
-                          </p>
-                        </div>
-
-                        <div className="h-3 rounded-full bg-[#eee9ff]">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: "78%" }}
-                            viewport={{ once: false }}
-                            transition={{ duration: 0.8 }}
-                            className="h-3 rounded-full bg-[#8d73ff]"
+                      <div className={`flex items-center ${item.primary ? "gap-4" : "gap-3.5"}`}>
+                        <div className={`relative flex shrink-0 items-center justify-center rounded-[1.35rem] shadow-[0_12px_26px_rgba(15,23,42,0.10),inset_0_1px_0_rgba(255,255,255,0.52)] ring-1 ring-white/45 transition group-hover:scale-[1.03] ${item.primary ? "h-[4.15rem] w-[4.15rem]" : "h-[3.65rem] w-[3.65rem]"} ${item.accent}`}>
+                          <div className="pointer-events-none absolute inset-1 rounded-[1.05rem] border border-white/20" />
+                          <CoverageIcon
+                            className={`relative ${item.primary ? "h-7 w-7" : "h-6 w-6"} ${item.light ? "text-white" : "text-primary"}`}
                           />
                         </div>
-                      </div>
 
-                      {/* Math */}
-                      <div>
-                        <div className="mb-2 flex items-end justify-between">
-                          <div>
-                            <p className="font-bold text-primary">{t("landing.dashboard.mapProgress.math.title")}</p>
-                            <p className="text-xs text-primary/50">
-                              {t("landing.dashboard.mapProgress.math.subtitle")}
-                            </p>
-                          </div>
-
-                          <p className="text-2xl font-black text-[#8d73ff]">
-                            72%
+                        <div className="relative min-w-0">
+                          <p className={`font-poppins font-black leading-none tracking-[-0.01em] text-primary ${item.primary ? "text-[2rem] xl:text-[2.15rem]" : "text-[1.65rem] xl:text-[1.8rem]"}`}>
+                            {item.value}
+                          </p>
+                          <p className={`mt-2 whitespace-nowrap leading-none text-primary/52 ${item.primary ? "text-sm font-semibold" : "text-sm font-medium"}`}>
+                            {item.label}
                           </p>
                         </div>
-
-                        <div className="h-3 rounded-full bg-[#eee9ff]">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: "72%" }}
-                            viewport={{ once: false }}
-                            transition={{ duration: 0.8, delay: 0.1 }}
-                            className="h-3 rounded-full bg-[#8d73ff]"
-                          />
-                        </div>
                       </div>
-
-                    </div>
-                  </motion.div>
-                  {/* Tutor Feedback */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: false, amount: 0.35 }}
-                    transition={{ duration: 0.7, delay: 0.4 }}
-                    className="rounded-[1.8rem] border border-white bg-white/90 p-5 shadow-[0_18px_60px_rgba(66,56,120,0.12)] backdrop-blur-xl lg:col-span-3"    >
-                    <p className="text-sm font-black text-primary">{t("landing.dashboard.tutorFeedback.title")}</p>
-                    <div className="mt-4 flex items-center gap-3">
-                      <img src="/tutors/francis_new.png" alt={t("landing.dashboard.tutorFeedback.imageAlt")} className="h-12 w-12 rounded-full object-cover" />
-                      <div>
-                        <p className="font-bold text-primary">{t("landing.dashboard.tutorFeedback.name")}</p>
-                        <p className="text-xs text-[#8d73ff]">{t("landing.dashboard.tutorFeedback.role")}</p>
-                      </div>
-                    </div>
-                    <p className="mt-4 text-sm leading-6 text-primary/65">
-                      {t("landing.dashboard.tutorFeedback.comment")}
-                    </p>
-                  </motion.div>
-
-                  {/* Weekly Goals */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: false, amount: 0.35 }}
-                    transition={{ duration: 0.7, delay: 0.5 }}
-                    className="rounded-[1.5rem] border border-white bg-white/90 p-5 shadow-[0_18px_60px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:col-span-2 lg:col-span-3"
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="font-black text-primary">
-                        {t("landing.dashboard.weeklyGoals.title")}
-                      </p>
-
-                      <span className="rounded-xl bg-[#fff6da] px-3 py-1 text-xs font-bold text-[#d4a100]">
-                        {t("landing.dashboard.weeklyGoals.badge")}
-                      </span>
-                    </div>
-
-                    <div className="mt-5 space-y-3">
-
-                      {[
-                        [t("landing.dashboard.weeklyGoals.items.readingHomework"), true],
-                        [t("landing.dashboard.weeklyGoals.items.vocabulary"), true],
-                        [t("landing.dashboard.weeklyGoals.items.speakingPractice"), false],
-                        [t("landing.dashboard.weeklyGoals.items.grammarReview"), true],
-                      ].map(([task, done], i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: false }}
-                          transition={{ delay: i * 0.08 }}
-                          className="flex items-center gap-3"
-                        >
-                          <div
-                            className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${done
-                              ? "bg-[#8d73ff] text-white"
-                              : "border border-slate-300 bg-white"
-                              }`}
-                          >
-                            {done ? "✓" : ""}
-                          </div>
-
-                          <p
-                            className={`text-sm ${done
-                              ? "text-primary/75"
-                              : "text-primary/45"
-                              }`}
-                          >
-                            {task}
-                          </p>
-                        </motion.div>
-                      ))}
-
-                    </div>
-                  </motion.div>
-                </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -524,7 +346,7 @@ const Landing = () => {
 
 
         {/* ASSESSMENT & ADMISSIONS PATHWAYS */}
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_82%_72%,#fff1bd_0%,transparent_25%),linear-gradient(180deg,#fffdf8_0%,#fbfaff_100%)]" />
 
           <motion.div
@@ -532,12 +354,12 @@ const Landing = () => {
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.65, ease: "easeOut" }}
-            className="relative z-10 mx-auto max-w-[1280px] overflow-hidden rounded-[2.4rem] border border-white/80 bg-white/90 px-5 py-7 shadow-[0_28px_90px_rgba(66,56,120,0.13)] backdrop-blur-xl sm:px-7 lg:grid lg:grid-cols-[1.15fr_2.35fr] lg:items-stretch lg:px-10 lg:py-9"
+            className="relative z-10 mx-auto max-w-[1280px] overflow-hidden rounded-[2rem] border border-white/75 bg-white/88 px-5 py-7 shadow-[0_24px_70px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:rounded-[2.4rem] sm:px-7 lg:grid lg:grid-cols-[1.18fr_2.55fr] lg:items-stretch lg:gap-12 lg:px-12 lg:py-9 xl:gap-16"
           >
-            <div className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full bg-[#ffe66d]/45 blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-20 right-[30%] h-56 w-56 rounded-full bg-[#8d73ff]/15 blur-2xl" />
+            <div className="pointer-events-none absolute left-12 top-10 h-32 w-32 rounded-full bg-[#ffe66d]/12 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-16 right-[30%] h-56 w-56 rounded-full bg-[#8d73ff]/10 blur-3xl" />
 
-            <div className="relative mb-7 border-b border-primary/10 pb-8 lg:mb-0 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-10">
+            <div className="relative mb-7 border-b border-primary/10 pb-8 lg:mb-0 lg:border-b-0 lg:border-r lg:border-primary/8 lg:pb-0 lg:pr-12 xl:pr-16">
               <motion.p
                 initial={{ opacity: 0, x: -18 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -553,61 +375,91 @@ const Landing = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false }}
                 transition={{ delay: 0.2 }}
-                className="mt-5 font-poppins text-[2.15rem] font-black leading-[1.04] tracking-[-0.045em] text-primary sm:text-[2.7rem] lg:text-[2.95rem]"
+                className="mt-5 font-poppins text-[1.85rem] font-black leading-[1.14] text-primary min-[390px]:text-[2rem] sm:text-[2.45rem] lg:text-[2.55rem]"
               >
-                {t("landing.programs.titleLine1")}<br />
-                {t("landing.programs.titleLine2")}<br />
-                {t("landing.programs.titleLine3")}{" "}
-                <span className="relative inline-block text-[#8d73ff]">
-                  {t("landing.programs.highlight")}
-                  <motion.span
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: false }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    className="absolute -bottom-0.5 left-1 right-1 h-2 origin-left rounded-full bg-[#ffc928]/45"
-                  />
-                </span>
+                {(currentLang === "zh"
+                  ? ["每一次测评", "每一个目标", "每一步成长"]
+                  : currentLang === "ja"
+                    ? ["一つひとつの試験に、", "明確な学習計画を"]
+                    : ["Every assessment,", "with a clearer path"]
+                ).map((line, index) => (
+                  <span
+                    key={line}
+                    className={`block ${currentLang === "zh" ? "whitespace-nowrap" : ""}`}
+                  >
+                    {line.includes("成长") ? (
+                      <>
+                        每一步<span className="relative inline-block text-[#8d73ff]">
+                          成长
+                          <motion.span
+                            initial={{ scaleX: 0 }}
+                            whileInView={{ scaleX: 1 }}
+                            viewport={{ once: false }}
+                            transition={{ delay: 0.5, duration: 0.6 }}
+                            className="absolute -bottom-0.5 left-0 right-0 h-2 origin-left rounded-full bg-[#ffc928]/45"
+                          />
+                        </span>
+                      </>
+                    ) : (
+                      line
+                    )}
+                  </span>
+                ))}
               </motion.h2>
             </div>
 
-            <div className="relative mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:mt-0 lg:grid-cols-5 lg:gap-3">
+            <div className="relative mt-7 grid grid-cols-1 gap-3 min-[390px]:grid-cols-2 sm:grid-cols-3 lg:mt-0 lg:grid-cols-5 lg:gap-3">
               {[
                 {
                   icon: BarChart3,
                   title: t("landing.programs.items.map.title"),
-                  sub: t("landing.programs.items.map.sub"),
+                  sub: currentLang === "zh" ? "成长测评" : currentLang === "ja" ? "学力成長測定" : "Growth Assessment",
                   bg: "bg-[#ffe66d]",
                   path: withLang("/subjects/map-preparation"),
+                  cardClass: "border-[#ffe66d]/24 bg-white/94 shadow-[0_14px_34px_rgba(66,56,120,0.07)]",
+                  iconClass: "h-[4.5rem] w-[4.5rem]",
+                  titleClass: "text-3xl",
                 },
                 {
                   icon: Users,
                   title: t("landing.programs.items.wida.title"),
-                  sub: t("landing.programs.items.wida.sub"),
+                  sub: currentLang === "zh" ? "语言发展" : currentLang === "ja" ? "言語発達" : "Language Development",
                   bg: "bg-[#b8f36c]",
                   path: withLang("/subjects/wida-preparation"),
+                  cardClass: "border-[#b8f36c]/22 bg-white/90 shadow-[0_14px_34px_rgba(66,56,120,0.065)]",
+                  iconClass: "h-[4.5rem] w-[4.5rem]",
+                  titleClass: "text-3xl",
                 },
                 {
                   icon: Target,
                   title: t("landing.programs.items.cat4.title"),
-                  sub: t("landing.programs.items.cat4.sub"),
+                  sub: currentLang === "zh" ? "认知能力" : currentLang === "ja" ? "認知能力" : "Cognitive Ability",
                   bg: "bg-[#ffc928]",
                   path: withLang("/subjects/cat4-preparation"),
+                  cardClass: "border-[#ffc928]/22 bg-[#fffdf8]/90 shadow-[0_14px_34px_rgba(66,56,120,0.065)]",
+                  iconClass: "h-[4.5rem] w-[4.5rem]",
+                  titleClass: "text-3xl",
                 },
                 {
-                  icon: School,
-                  title: t("landing.programs.items.admissions.title"),
-                  sub: t("landing.programs.items.admissions.sub"),
+                  icon: FileText,
+                  title: "TOEFL",
+                  sub: currentLang === "zh" ? "英语能力" : currentLang === "ja" ? "英語力" : "English Proficiency",
                   bg: "bg-[#f6f2ff]",
-                  path: withLang("/services/school-consulting"),
+                  path: withLang("/subjects/toefl-preparation"),
+                  cardClass: "border-[#8d73ff]/12 bg-white/90 shadow-[0_14px_34px_rgba(66,56,120,0.065)]",
+                  iconClass: "h-[4.5rem] w-[4.5rem]",
+                  titleClass: "text-3xl",
                 },
                 {
-                  icon: MessageCircle,
-                  title: t("landing.programs.items.interviews.title"),
-                  sub: t("landing.programs.items.interviews.sub"),
+                  icon: BookOpen,
+                  title: "IELTS",
+                  sub: currentLang === "zh" ? "学术英语" : currentLang === "ja" ? "アカデミック英語" : "Academic English",
                   bg: "bg-[#8d73ff]",
-                  path: withLang("/services/mock-interview"),
+                  path: withLang("/subjects/ielts-preparation"),
                   light: true,
+                  cardClass: "border-[#8d73ff]/16 bg-white/90 shadow-[0_14px_34px_rgba(66,56,120,0.065)]",
+                  iconClass: "h-[4.5rem] w-[4.5rem]",
+                  titleClass: "text-3xl",
                 },
               ].map((item, i) => (
                 <Link key={item.title} to={item.path}>
@@ -616,18 +468,18 @@ const Landing = () => {
                     whileInView={{ opacity: 1, y: 0, scale: 1 }}
                     viewport={{ once: false }}
                     transition={{ delay: 0.16 + i * 0.06, duration: 0.4 }}
-                    whileHover={{ y: -10, scale: 1.03, rotate: i % 2 === 0 ? -2 : 2 }}
-                    className="group relative flex h-full min-h-[190px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[1.8rem] border border-primary/8 bg-white/78 px-3 py-5 text-center shadow-[0_16px_45px_rgba(66,56,120,0.09)] transition hover:border-[#8d73ff]/25 hover:bg-white hover:shadow-[0_28px_70px_rgba(141,115,255,0.20)] sm:px-4 lg:min-h-[220px]"
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    className={`group relative flex h-full min-h-[148px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[1.5rem] border px-3 py-5 text-center backdrop-blur-xl transition hover:border-[#8d73ff]/22 hover:bg-white hover:shadow-[0_20px_48px_rgba(66,56,120,0.10)] sm:min-h-[178px] sm:px-4 lg:min-h-[210px] ${item.cardClass}`}
                   >
                     <motion.div
                       animate={{ y: [0, -4, 0] }}
                       transition={{ duration: 3 + i * 0.2, repeat: Infinity, ease: "easeInOut" }}
-                      className={`mb-5 flex h-20 w-20 items-center justify-center rounded-[1.8rem] ${item.bg} shadow-[0_18px_45px_rgba(15,23,42,0.13)] transition duration-300 group-hover:scale-110 group-hover:shadow-[0_22px_55px_rgba(141,115,255,0.20)]`}
+                      className={`mb-5 flex items-center justify-center rounded-[1.6rem] ${item.bg} shadow-[0_14px_34px_rgba(15,23,42,0.10)] transition duration-300 group-hover:scale-105 ${item.iconClass}`}
                     >
                       <item.icon className={`h-9 w-9 ${item.light ? "text-white" : "text-primary"}`} />
                     </motion.div>
 
-                    <p className="font-poppins text-3xl font-black leading-none text-primary">
+                    <p className={`font-poppins font-black leading-none text-primary ${item.titleClass}`}>
                       {item.title}
                     </p>
 
@@ -928,10 +780,22 @@ const Landing = () => {
                 {t("landing.whyPreview.label")}
               </p>
 
-              <h2 className="mt-5 font-poppins text-5xl font-black leading-tight text-primary sm:text-6xl">
-                {t("landing.whyPreview.titleLine1")}<br />
-                {t("landing.whyPreview.titleLine2")}<br />
-                {t("landing.whyPreview.titleLine3")}
+              <h2 className="mt-5 font-poppins text-[1.75rem] font-black leading-tight text-primary min-[375px]:text-[2rem] sm:text-[3.5rem] md:text-6xl lg:text-[3.25rem] xl:text-[3.45rem]">
+                {(currentLang === "zh"
+                  ? ["不只是上课", "而是一套", "为成长设计的学习系统"]
+                  : [
+                    t("landing.whyPreview.titleLine1"),
+                    t("landing.whyPreview.titleLine2"),
+                    t("landing.whyPreview.titleLine3"),
+                  ]
+                ).map((line, index) => (
+                  <span
+                    key={line}
+                    className={`block ${currentLang === "zh" && index === 2 ? "whitespace-nowrap" : ""}`}
+                  >
+                    {line}
+                  </span>
+                ))}
               </h2>
 
               <p className="mt-7 max-w-xl text-lg leading-8 text-primary/65">

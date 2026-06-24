@@ -84,7 +84,7 @@ const WhyLuna = () => {
 
       <div className="min-h-screen bg-background">
         {/* HERO */}
-        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pt-28 pb-20 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pb-14 pt-20 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_18%,#fff1bd_0%,transparent_28%),radial-gradient(circle_at_18%_70%,#f0eaff_0%,transparent_30%)]" />
 
           <motion.div
@@ -111,7 +111,7 @@ const WhyLuna = () => {
                 initial={{ opacity: 0, y: 35 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
-                className="font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.6rem] lg:text-[5.6rem]"
+                className="font-poppins text-[2.45rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.8rem] sm:text-[4.6rem] sm:leading-[0.95] lg:text-[5.6rem]"
               >
                 {t("whyLuna.hero.titleLine1")}<br />
                 {t("whyLuna.hero.titleLine2")}<br />
@@ -145,7 +145,7 @@ const WhyLuna = () => {
               </div>
 
               <Link to={withLang("/enquiry")}>
-                <Button className="mt-10 h-14 rounded-full bg-primary px-9 text-base shadow-[0_20px_55px_rgba(10,36,84,0.18)]">
+                <Button className="mt-10 h-14 w-full rounded-full bg-primary px-9 text-base shadow-[0_20px_55px_rgba(10,36,84,0.18)] sm:w-auto">
                   {t("whyLuna.buttons.enquire")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -159,7 +159,7 @@ const WhyLuna = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="rounded-[3rem] bg-white/90 p-6 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:p-8">
+              <div className="rounded-[2rem] bg-white/90 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:rounded-[3rem] sm:p-8">
                 <div className="mb-7 flex items-center justify-between">
                   <div>
                     <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff]">
@@ -240,7 +240,7 @@ const WhyLuna = () => {
           </div>
         </section>
         {/* HIGHLIGHTS + COMPARISON */}
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-24 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_80%_80%,#fff1bd_0%,transparent_26%)]" />
 
           <div className="relative z-10 mx-auto max-w-[1280px]">
@@ -250,7 +250,7 @@ const WhyLuna = () => {
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: false, amount: 0.35 }}
               transition={{ duration: 0.7 }}
-              className="rounded-[3rem] bg-white/90 p-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:p-8"
+              className="rounded-[2rem] bg-white/90 p-4 shadow-[0_25px_80px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:rounded-[3rem] sm:p-8"
             >
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {highlights.map((item, i) => (
@@ -275,7 +275,7 @@ const WhyLuna = () => {
             </motion.div>
 
             {/* COMPARISON */}
-            <div className="mt-24 text-center">
+            <div className="mt-16 text-center sm:mt-24">
               <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
                 {t("whyLuna.comparison.label")}
               </p>
@@ -294,13 +294,13 @@ const WhyLuna = () => {
                 viewport={{ once: false, amount: 0.35 }}
                 transition={{ duration: 0.7 }}
                 whileHover={{ y: -10, rotate: -3 }}
-                className="relative rounded-[3rem] bg-white/60 p-7 shadow-[0_18px_55px_rgba(66,56,120,0.06)] backdrop-blur-xl"
+                className="relative rounded-[2rem] bg-white/60 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.06)] backdrop-blur-xl sm:rounded-[3rem] sm:p-7"
               >
                 <div className="absolute -top-4 left-8 rounded-full bg-slate-200 px-5 py-2 text-xs font-black text-slate-500">
                   {t("whyLuna.comparison.typical.label")}
                 </div>
 
-                <h3 className="font-poppins text-3xl font-black text-slate-400">
+                <h3 className="font-poppins text-2xl font-black text-slate-400 sm:text-3xl">
                   {t("whyLuna.comparison.typical.titleLine1")}<br />
                   {t("whyLuna.comparison.typical.titleLine2")}
                 </h3>
@@ -336,13 +336,13 @@ const WhyLuna = () => {
                 viewport={{ once: false, amount: 0.35 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
                 whileHover={{ y: -10, rotate: 3 }}
-                className="relative rounded-[3rem] bg-white/95 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl"
+                className="relative rounded-[2rem] bg-white/95 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:rounded-[3rem] sm:p-7"
               >
                 <div className="absolute -top-4 left-8 rounded-full bg-[#8d73ff] px-5 py-2 text-xs font-black text-white">
                   {t("whyLuna.comparison.luna.label")}
                 </div>
 
-                <h3 className="font-poppins text-3xl font-black text-primary">
+                <h3 className="font-poppins text-2xl font-black text-primary sm:text-3xl">
                   {t("whyLuna.comparison.luna.titleLine1")}<br />
                   {t("whyLuna.comparison.luna.titleLine2")}
                 </h3>
@@ -751,7 +751,7 @@ const WhyLuna = () => {
           </div>
         </section>
         {/* FINAL CTA */}
-        <section className="relative overflow-hidden bg-[#0f172a] px-4 py-24 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#0f172a] px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
           {/* glow backgrounds */}
           <div className="absolute left-[-120px] top-[-100px] h-[320px] w-[320px] rounded-full bg-[#8d73ff]/30 blur-3xl" />
           <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-[#ffe66d]/20 blur-3xl" />
@@ -775,7 +775,7 @@ const WhyLuna = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, amount: 0.3 }}
               transition={{ duration: 0.7 }}
-              className="overflow-hidden rounded-[3rem] border border-white/10 bg-white/5 p-8 backdrop-blur-xl sm:p-12"
+              className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl sm:rounded-[3rem] sm:p-12"
             >
               <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.9fr]">
                 {/* LEFT */}
@@ -784,13 +784,13 @@ const WhyLuna = () => {
                     {t("whyLuna.cta.label")}
                   </p>
 
-                  <h2 className="mt-5 font-poppins text-4xl font-black leading-tight text-white sm:text-6xl">
+                  <h2 className="mt-5 font-poppins text-3xl font-black leading-tight text-white sm:text-6xl">
                     {t("whyLuna.cta.titleLine1")}<br />
                     {t("whyLuna.cta.titleLine2")}<br />
                     {t("whyLuna.cta.titleLine3")}
                   </h2>
 
-                  <p className="mt-7 max-w-2xl text-lg leading-8 text-white/70">
+                  <p className="mt-7 max-w-2xl text-base leading-8 text-white/70 sm:text-lg">
                     {t("whyLuna.cta.description")}
                   </p>
 
@@ -824,7 +824,7 @@ const WhyLuna = () => {
                   viewport={{ once: false, amount: 0.35 }}
                   transition={{ duration: 0.7 }}
                   whileHover={{ y: -10 }}
-                  className="relative rounded-[2.5rem] bg-white p-7 shadow-[0_35px_90px_rgba(0,0,0,0.30)]"
+                  className="relative rounded-[1.8rem] bg-white p-5 shadow-[0_35px_90px_rgba(0,0,0,0.30)] sm:rounded-[2.5rem] sm:p-7"
                 >
                   {/* glow */}
                   <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#ffe66d]/50 blur-2xl" />

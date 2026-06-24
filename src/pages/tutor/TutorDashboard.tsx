@@ -263,22 +263,22 @@ const TutorDashboard = () => {
     "practice";
 
   return (
-  <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-12">
+  <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-6 sm:px-6 sm:py-12">
     <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_28%)]" />
 
-    <div className="relative z-10 mx-auto max-w-[1350px] space-y-8">
+    <div className="relative z-10 mx-auto max-w-[1350px] space-y-6 sm:space-y-8">
       {/* HERO */}
       <motion.div
         initial={{ opacity: 0, y: 35 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="overflow-hidden rounded-[3rem] bg-white/90 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:p-10"
+        className="overflow-hidden rounded-[2rem] bg-white/90 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:rounded-[3rem] sm:p-10"
       >
         <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
           Tutor Dashboard
         </p>
 
-        <h1 className="mt-4 font-poppins text-4xl font-black leading-tight text-primary sm:text-6xl">
+        <h1 className="mt-4 font-poppins text-3xl font-black leading-tight text-primary min-[390px]:text-4xl sm:text-6xl">
           Student mistake<br />
           review center.
         </h1>
@@ -293,7 +293,7 @@ const TutorDashboard = () => {
         initial={{ opacity: 0, y: 35 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="rounded-[2.2rem] bg-white/90 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl"
+        className="rounded-[1.7rem] bg-white/90 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl sm:rounded-[2.2rem] sm:p-6"
       >
         <label className="mb-3 block text-sm font-black text-primary">
           Select Student
@@ -332,7 +332,7 @@ const TutorDashboard = () => {
                 viewport={{ once: false }}
                 transition={{ delay: i * 0.07 }}
                 whileHover={{ y: -8, rotate: i % 2 === 0 ? -1.5 : 1.5 }}
-                className="rounded-[2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl"
+                className="rounded-[1.6rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl sm:rounded-[2rem] sm:p-6"
               >
                 <p className="text-sm font-bold text-primary/45">{label}</p>
                 <p
@@ -352,9 +352,9 @@ const TutorDashboard = () => {
               initial={{ opacity: 0, x: -35 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false }}
-              className="rounded-[2.5rem] bg-white/95 p-7 shadow-[0_22px_65px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+              className="rounded-[1.8rem] bg-white/95 p-5 shadow-[0_22px_65px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-7"
             >
-              <h2 className="font-poppins text-3xl font-black text-primary">
+              <h2 className="font-poppins text-2xl font-black text-primary sm:text-3xl">
                 Weak Areas
               </h2>
 
@@ -390,9 +390,9 @@ const TutorDashboard = () => {
               initial={{ opacity: 0, x: 35 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false }}
-              className="rounded-[2.5rem] bg-white/95 p-7 shadow-[0_22px_65px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+              className="rounded-[1.8rem] bg-white/95 p-5 shadow-[0_22px_65px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-7"
             >
-              <h2 className="font-poppins text-3xl font-black text-primary">
+              <h2 className="font-poppins text-2xl font-black text-primary sm:text-3xl">
                 Tutor Feedback
               </h2>
 
@@ -403,7 +403,7 @@ const TutorDashboard = () => {
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <Button
                   variant="outline"
-                  className="rounded-2xl"
+                  className="min-h-11 rounded-2xl"
                   onClick={() =>
                     setFeedbackText(
                       `Please focus more on ${weakestSkill}. Review your mistakes carefully before moving to new questions.`
@@ -415,7 +415,7 @@ const TutorDashboard = () => {
 
                 <Button
                   variant="outline"
-                  className="rounded-2xl"
+                  className="min-h-11 rounded-2xl"
                   onClick={() =>
                     setFeedbackText(
                       "Good effort. Please continue practising regularly and review your incorrect answers before the next lesson."
@@ -434,7 +434,7 @@ const TutorDashboard = () => {
               />
 
               <Button
-                className="mt-4 h-13 w-full rounded-2xl bg-[#8d73ff] font-bold"
+                className="mt-4 min-h-11 w-full rounded-2xl bg-[#8d73ff] py-3 font-bold"
                 onClick={submitFeedback}
               >
                 Post Feedback
@@ -458,11 +458,11 @@ const TutorDashboard = () => {
             initial={{ opacity: 0, y: 35 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }}
-            className="rounded-[2.5rem] bg-white/95 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.10)] backdrop-blur-xl"
+            className="rounded-[1.8rem] bg-white/95 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-7"
           >
             <div className="mb-7 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
               <div>
-                <h2 className="font-poppins text-3xl font-black text-primary">
+                <h2 className="font-poppins text-2xl font-black text-primary sm:text-3xl">
                   Mistake List
                 </h2>
                 <p className="mt-2 text-sm text-primary/55">

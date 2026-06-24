@@ -260,7 +260,7 @@ export default function AdminLessons() {
   return (
 
 
-    <div className="min-h-screen bg-[#f7f9fc] px-4 py-8 sm:px-6 sm:py-10">
+    <div className="min-h-screen bg-[#f7f9fc] px-4 py-6 sm:px-6 sm:py-10">
       <div className="max-w-7xl mx-auto">
 
         <div className="mb-8 rounded-[2rem] border border-[#dbe5f0] bg-white p-5 sm:rounded-[32px] sm:p-10">
@@ -357,7 +357,7 @@ export default function AdminLessons() {
             <button
               type="button"
               onClick={() => setShowAddPackage(true)}
-              className="w-full rounded-2xl bg-[#0b234a] px-5 py-3 font-semibold text-white sm:w-auto"
+              className="min-h-11 w-full rounded-2xl bg-[#0b234a] px-5 py-3 font-semibold text-white sm:w-auto"
             >
               Add Package
             </button>
@@ -365,7 +365,7 @@ export default function AdminLessons() {
             <button
               type="button"
               onClick={() => setShowCompletedPackages(!showCompletedPackages)}
-              className="w-full rounded-2xl bg-[#0b234a] px-5 py-3 font-semibold text-white sm:w-auto"
+              className="min-h-11 w-full rounded-2xl bg-[#0b234a] px-5 py-3 font-semibold text-white sm:w-auto"
             >
               {showCompletedPackages ? "Hide Completed" : "Show Completed Packages"}
             </button>
@@ -693,12 +693,12 @@ export default function AdminLessons() {
 }
 function Modal({ children, onClose }: any) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="relative w-full max-w-lg rounded-[2rem] bg-white p-5 shadow-xl sm:rounded-[32px] sm:p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 sm:p-4">
+      <div className="relative max-h-[calc(100dvh-1.5rem)] w-full max-w-lg overflow-y-auto rounded-[1.6rem] bg-white p-5 shadow-xl sm:rounded-[32px] sm:p-8">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-5 top-5 text-slate-400 hover:text-slate-700"
+          className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-xl text-slate-500 hover:text-slate-700 sm:right-5 sm:top-5"
         >
           ×
         </button>

@@ -35,7 +35,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
-      <div className="mx-auto max-w-6xl space-y-8">
+      <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
             Admin
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
               <p className="mt-2 text-sm text-muted-foreground">
                 View all saved questions by grade and section.
               </p>
-              <Button type="button" className="mt-5 w-full rounded-2xl">
+              <Button type="button" className="mt-5 min-h-11 w-full rounded-2xl">
                 Open
               </Button>
             </Card>
@@ -84,7 +84,7 @@ const AdminDashboard = () => {
               <p className="mt-2 text-sm text-muted-foreground">
                 Generate English questions, Math practice, and learning games.
               </p>
-              <Button type="button" className="mt-5 w-full rounded-2xl">
+              <Button type="button" className="mt-5 min-h-11 w-full rounded-2xl">
                 Open
               </Button>
             </Card>
@@ -96,7 +96,7 @@ const AdminDashboard = () => {
               <p className="mt-2 text-sm text-muted-foreground">
                 Assign questions or unlock access for students.
               </p>
-              <Button type="button" className="mt-5 w-full rounded-2xl">
+              <Button type="button" className="mt-5 min-h-11 w-full rounded-2xl">
                 Open
               </Button>
             </Card>
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
               <p className="mt-2 text-sm text-muted-foreground">
                 Track lesson progress, test improvement, and learning performance.
               </p>
-              <Button type="button" className="mt-5 w-full rounded-2xl">
+              <Button type="button" className="mt-5 min-h-11 w-full rounded-2xl">
                 Open
               </Button>
             </Card>

@@ -55,26 +55,26 @@ const Enquire = () => {
       <div className="min-h-screen bg-background">
 
         {/* ENQUIRY HERO - CONCIERGE STYLE */}
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pt-24 pb-10 sm:px-6 lg:px-8">          <div className="absolute inset-0 bg-[linear-gradient(135deg,#fffdf8_0%,#f7f3ff_48%,#fff4c7_100%)]" />
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pb-10 pt-20 sm:px-6 sm:pt-24 lg:px-8">          <div className="absolute inset-0 bg-[linear-gradient(135deg,#fffdf8_0%,#f7f3ff_48%,#fff4c7_100%)]" />
 
           <div className="relative z-10 mx-auto grid max-w-[1180px] items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">            <motion.div
             initial={{ opacity: 0, x: -50, rotate: -2 }}
             animate={{ opacity: 1, x: 0, rotate: -1 }}
             transition={{ duration: 0.7 }}
-            className="relative rounded-[2.5rem] bg-white p-7 shadow-[0_24px_80px_rgba(66,56,120,0.12)] sm:p-9"            >
-            <div className="absolute -right-6 top-1/2 h-12 w-12 -translate-y-1/2 rounded-full bg-[#fbfaff]" />
-            <div className="absolute -left-6 top-1/2 h-12 w-12 -translate-y-1/2 rounded-full bg-[#fbfaff]" />
+            className="relative rounded-[1.8rem] bg-white p-5 shadow-[0_24px_80px_rgba(66,56,120,0.12)] sm:rounded-[2.5rem] sm:p-9"            >
+            <div className="absolute -right-6 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full bg-[#fbfaff] sm:block" />
+            <div className="absolute -left-6 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full bg-[#fbfaff] sm:block" />
 
             <p className="text-sm font-black uppercase tracking-[0.3em] text-[#8d73ff]">
               {t("enquire.hero.label")}
             </p>
 
-            <h1 className="mt-5 font-poppins text-[2.8rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4rem]">
+            <h1 className="mt-5 font-poppins text-[2.25rem] font-black leading-[1.05] tracking-[-0.025em] text-primary min-[390px]:text-[2.55rem] sm:text-[4rem] sm:leading-[0.95]">
               {t("enquire.hero.titleLine1")}<br />
               {t("enquire.hero.titleLine2")}
             </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-primary/60">
+            <p className="mt-6 max-w-2xl text-base leading-8 text-primary/60 sm:mt-7 sm:text-lg">
               {t("enquire.hero.description")}
             </p>
 
@@ -97,7 +97,7 @@ const Enquire = () => {
 
             <a
               href="#enquiry-form"
-              className="mt-10 inline-flex h-14 items-center rounded-full bg-primary px-8 text-base font-bold text-white"
+              className="mt-8 inline-flex h-14 w-full items-center justify-center rounded-full bg-primary px-8 text-base font-bold text-white sm:mt-10 sm:w-auto"
             >
               {t("enquire.hero.button")}
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -106,7 +106,7 @@ const Enquire = () => {
 
             {/* RIGHT TIMELINE */}
             <div className="relative">
-              <div className="absolute left-6 top-8 h-[82%] w-[3px] rounded-full bg-[#ddd5ff]" />
+              <div className="absolute left-5 top-8 h-[82%] w-[3px] rounded-full bg-[#ddd5ff] sm:left-6" />
 
               {[
                 [
@@ -137,9 +137,9 @@ const Enquire = () => {
                   viewport={{ once: false }}
                   transition={{ delay: i * 0.1 }}
                   whileHover={{ x: 10 }}
-                  className="relative mb-5 ml-16 rounded-[2rem] bg-white/90 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)]"
+                  className="relative mb-5 ml-12 rounded-[1.6rem] bg-white/90 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] sm:ml-16 sm:rounded-[2rem] sm:p-6"
                 >
-                  <div className="absolute -left-[58px] top-6 flex h-12 w-12 items-center justify-center rounded-full bg-[#8d73ff] text-sm font-black text-white">
+                  <div className="absolute -left-[46px] top-6 flex h-10 w-10 items-center justify-center rounded-full bg-[#8d73ff] text-xs font-black text-white sm:-left-[58px] sm:h-12 sm:w-12 sm:text-sm">
                     {num}
                   </div>
 
@@ -166,7 +166,7 @@ const Enquire = () => {
                 {t("enquire.process.label")}
               </p>
 
-              <h2 className="mt-4 font-poppins text-[2.7rem] font-black leading-[0.95] tracking-[-0.04em] text-primary sm:text-[4rem]">
+              <h2 className="mt-4 font-poppins text-[2.2rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.5rem] sm:text-[4rem] sm:leading-[0.95]">
                 {t("enquire.process.titleLine1")}<br />
                 {t("enquire.process.titleLine2")}
               </h2>

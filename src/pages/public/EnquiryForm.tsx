@@ -149,18 +149,18 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: false, amount: 0.25 }}
       transition={{ duration: 0.55 }}
-      className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-[2.2rem] bg-white/95 shadow-[0_28px_90px_rgba(66,56,120,0.14)] backdrop-blur-xl sm:rounded-[3rem]"
+      className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-[1.8rem] bg-white/95 shadow-[0_28px_90px_rgba(66,56,120,0.14)] backdrop-blur-xl sm:rounded-[3rem]"
     >
       <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[#fff1bd]/70 blur-2xl" />
       <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-[#f0eaff]/80 blur-2xl" />
 
       <div className="relative z-10 grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
         {/* LEFT INFO */}
-        <div className="relative overflow-hidden bg-[#fbfaff] p-7 sm:p-9 lg:p-10">
+        <div className="relative overflow-hidden bg-[#fbfaff] p-5 sm:p-9 lg:p-10">
           <motion.div
             animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-[#8d73ff] text-white shadow-[0_18px_40px_rgba(141,115,255,0.28)]"
+            className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-[1.3rem] bg-[#8d73ff] text-white shadow-[0_18px_40px_rgba(141,115,255,0.28)] sm:mb-8 sm:h-16 sm:w-16 sm:rounded-[1.5rem]"
           >
             <Sparkles className="h-7 w-7" />
           </motion.div>
@@ -169,7 +169,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
             {label("enquiryForm.label", "Start here")}
           </p>
 
-          <h2 className="mt-4 font-poppins text-3xl font-black leading-tight text-primary sm:text-4xl lg:text-5xl">
+          <h2 className="mt-4 font-poppins text-2xl font-black leading-tight text-primary sm:text-4xl lg:text-5xl">
             {subject
               ? `${label("enquiryForm.enquireAbout", "Enquire about")} ${subject}`
               : label("enquiryForm.bookTrial", "Book a trial lesson")}
@@ -219,7 +219,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
         </div>
 
         {/* FORM */}
-        <div className="p-7 sm:p-9 lg:p-10">
+        <div className="p-5 sm:p-9 lg:p-10">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <InputWrap icon={<UserRound className="h-5 w-5" />}>
@@ -280,7 +280,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
             </div>
 
             <div className="sm:col-span-2">
-              <div className="rounded-[1.6rem] border border-primary/10 bg-[#fbfaff] p-5 transition focus-within:border-[#8d73ff] focus-within:ring-4 focus-within:ring-[#8d73ff]/10">
+              <div className="rounded-[1.4rem] border border-primary/10 bg-[#fbfaff] p-4 transition focus-within:border-[#8d73ff] focus-within:ring-4 focus-within:ring-[#8d73ff]/10 sm:rounded-[1.6rem] sm:p-5">
                 <div className="mb-3 flex items-center gap-3 text-primary/45">
                   <MessageCircle className="h-5 w-5" />
                   <span className="text-sm font-bold">
@@ -300,7 +300,7 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
                         "What would you like help with?"
                       )
                   }
-                  className="min-h-[160px] w-full resize-none bg-transparent text-base leading-7 outline-none placeholder:text-primary/35"
+                  className="min-h-[140px] w-full resize-none bg-transparent text-base leading-7 outline-none placeholder:text-primary/35 sm:min-h-[160px]"
                   value={form.message}
                   onChange={(e) =>
                     setForm({
@@ -369,7 +369,7 @@ const InputWrap = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex items-center gap-3 rounded-[1.4rem] border border-primary/10 bg-[#fbfaff] px-5 py-4 transition focus-within:border-[#8d73ff] focus-within:ring-4 focus-within:ring-[#8d73ff]/10">
+    <div className="flex min-h-14 items-center gap-3 rounded-[1.3rem] border border-primary/10 bg-[#fbfaff] px-4 py-3.5 transition focus-within:border-[#8d73ff] focus-within:ring-4 focus-within:ring-[#8d73ff]/10 sm:rounded-[1.4rem] sm:px-5 sm:py-4">
       <div className="text-primary/40">{icon}</div>
       {children}
     </div>

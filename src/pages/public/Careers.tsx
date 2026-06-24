@@ -69,7 +69,7 @@ const Careers = () => {
                 <NavBar />
 
                 <main className="relative">
-                    <section className="relative overflow-hidden px-4 pt-28 pb-20 sm:px-6 lg:px-8">
+                    <section className="relative overflow-hidden px-4 pb-14 pt-20 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_20%,#f0eaff_0%,transparent_30%),radial-gradient(circle_at_84%_70%,#fff1bd_0%,transparent_30%),linear-gradient(180deg,#fffdf8_0%,#fbfaff_100%)]" />
 
                         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
@@ -82,24 +82,24 @@ const Careers = () => {
                                     {t("careers.hero.label")}
                                 </p>
 
-                                <h1 className="mt-6 max-w-3xl font-poppins text-[3rem] font-black leading-[1.05] text-primary sm:text-[4.5rem]">
+                                <h1 className="mt-6 max-w-3xl font-poppins text-[2.45rem] font-black leading-[1.08] text-primary min-[390px]:text-[2.8rem] sm:text-[4.5rem]">
                                     {t("careers.hero.title")}
                                 </h1>
 
-                                <p className="mt-6 max-w-2xl text-lg leading-8 text-primary/60">
+                                <p className="mt-6 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg">
                                     {t("careers.hero.description")}
                                 </p>
 
-                                <div className="mt-8 flex flex-wrap gap-4">
-                                    <a href="#openings">
-                                        <Button className="h-13 rounded-2xl px-6 shadow-elegant">
+                                <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap sm:gap-4">
+                                    <a href="#openings" className="w-full sm:w-auto">
+                                        <Button className="min-h-11 w-full rounded-2xl px-6 py-3 shadow-elegant sm:w-auto">
                                             {t("careers.hero.viewRoles")}
                                             <ArrowRight className="ml-2 h-5 w-5" />
                                         </Button>
                                     </a>
 
-                                    <a href="#openings">
-                                        <Button variant="outline" className="h-13 rounded-2xl px-6">
+                                    <a href="#openings" className="w-full sm:w-auto">
+                                        <Button variant="outline" className="min-h-11 w-full rounded-2xl px-6 py-3 sm:w-auto">
                                             {t("careers.hero.applyNow")}
                                         </Button>
                                     </a>
@@ -110,9 +110,9 @@ const Careers = () => {
                                 initial={{ opacity: 0, scale: 0.92, rotate: 2 }}
                                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                                 transition={{ delay: 0.15 }}
-                                className="rounded-[3rem] border border-white/70 bg-white/80 p-6 shadow-[0_35px_100px_rgba(66,56,120,0.14)] backdrop-blur-xl"
+                                className="rounded-[2rem] border border-white/70 bg-white/80 p-4 shadow-[0_35px_100px_rgba(66,56,120,0.14)] backdrop-blur-xl sm:rounded-[3rem] sm:p-6"
                             >
-                                <div className="rounded-[2.5rem] bg-[#082A55] p-8 text-white">
+                                <div className="rounded-[1.7rem] bg-[#082A55] p-6 text-white sm:rounded-[2.5rem] sm:p-8">
                                     <GraduationCap className="h-10 w-10 text-[#F6C65B]" />
 
                                     <h2 className="mt-8 text-3xl font-black">
@@ -299,7 +299,7 @@ const Careers = () => {
                             </p>
 
                             <a href="mailto:enquiries@lunastudies.com">
-                                <Button className="mt-8 h-13 rounded-2xl px-8 shadow-elegant">
+                                <Button className="mt-8 min-h-11 rounded-2xl px-8 py-3 shadow-elegant">
                                     {t("careers.cta.button")}
                                     <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>

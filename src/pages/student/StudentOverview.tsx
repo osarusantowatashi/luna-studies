@@ -207,11 +207,11 @@ const StudentOverview = () => {
   );
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-14">
+    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-6 sm:px-6 sm:py-14">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
 
       <div className="relative z-10 mx-auto max-w-[1200px] space-y-8">
-        <section className="relative overflow-hidden rounded-[3rem] border border-[#eee8ff] bg-white p-7 shadow-[0_35px_120px_rgba(66,56,120,0.10)] sm:p-10">
+        <section className="relative overflow-hidden rounded-[2rem] border border-[#eee8ff] bg-white p-5 shadow-[0_35px_120px_rgba(66,56,120,0.10)] sm:rounded-[3rem] sm:p-10">
           <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
           <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
 
@@ -222,7 +222,7 @@ const StudentOverview = () => {
                 Student Dashboard
               </p>
 
-              <h1 className="mt-5 font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.8rem] lg:text-[5.4rem]">
+              <h1 className="mt-5 font-poppins text-[2.35rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.7rem] sm:text-[4.8rem] sm:leading-[0.95] lg:text-[5.4rem]">
                 {loading ? (
                   <span className="block h-24 w-72 animate-pulse rounded-[2rem] bg-[#f6f1ff]" />
                 ) : (
@@ -242,7 +242,7 @@ const StudentOverview = () => {
 
             <motion.div
               whileHover={{ y: -8, rotate: 1.5 }}
-              className="relative rounded-[2.2rem] bg-[#fbfaff] p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)]"
+              className="relative rounded-[1.6rem] bg-[#fbfaff] p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] sm:rounded-[2.2rem] sm:p-6"
             >
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8d73ff]">
                 Today’s Goal

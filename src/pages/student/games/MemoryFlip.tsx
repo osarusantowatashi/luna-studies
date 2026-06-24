@@ -117,20 +117,20 @@ const getCardGridClass = (cardCount: number) => {
 
 const getCardSizeClass = (cardCount: number) => {
   if (cardCount <= 12) {
-    return "h-[128px] w-[128px] max-[390px]:h-[118px] max-[390px]:w-[118px] sm:h-[148px] sm:w-[148px] lg:h-[158px] lg:w-[158px]";
+    return "h-[92px] w-[92px] min-[390px]:h-[108px] min-[390px]:w-[108px] sm:h-[148px] sm:w-[148px] lg:h-[158px] lg:w-[158px]";
   }
 
   if (cardCount <= 20) {
-    return "h-[82px] w-[82px] min-[390px]:h-[92px] min-[390px]:w-[92px] sm:h-[116px] sm:w-[116px] lg:h-[124px] lg:w-[124px] xl:h-[132px] xl:w-[132px]";
+    return "h-[68px] w-[68px] min-[390px]:h-[82px] min-[390px]:w-[82px] sm:h-[116px] sm:w-[116px] lg:h-[124px] lg:w-[124px] xl:h-[132px] xl:w-[132px]";
   }
 
-  return "h-[72px] w-[72px] min-[390px]:h-[82px] min-[390px]:w-[82px] sm:h-[102px] sm:w-[102px] lg:h-[110px] lg:w-[110px] xl:h-[118px] xl:w-[118px]";
+  return "h-[62px] w-[62px] min-[390px]:h-[76px] min-[390px]:w-[76px] sm:h-[102px] sm:w-[102px] lg:h-[110px] lg:w-[110px] xl:h-[118px] xl:w-[118px]";
 };
 
 const getCardImageClass = (cardCount: number) => {
-  if (cardCount <= 12) return "h-[78px] w-[78px] sm:h-[92px] sm:w-[92px]";
-  if (cardCount <= 20) return "h-[48px] w-[48px] min-[390px]:h-[56px] min-[390px]:w-[56px] sm:h-[70px] sm:w-[70px] lg:h-[76px] lg:w-[76px]";
-  return "h-[38px] w-[38px] min-[390px]:h-[46px] min-[390px]:w-[46px] sm:h-[58px] sm:w-[58px] lg:h-[64px] lg:w-[64px]";
+  if (cardCount <= 12) return "h-[58px] w-[58px] min-[390px]:h-[68px] min-[390px]:w-[68px] sm:h-[92px] sm:w-[92px]";
+  if (cardCount <= 20) return "h-[40px] w-[40px] min-[390px]:h-[50px] min-[390px]:w-[50px] sm:h-[70px] sm:w-[70px] lg:h-[76px] lg:w-[76px]";
+  return "h-[34px] w-[34px] min-[390px]:h-[42px] min-[390px]:w-[42px] sm:h-[58px] sm:w-[58px] lg:h-[64px] lg:w-[64px]";
 };
 
 const getCardTextClass = (cardCount: number) => {

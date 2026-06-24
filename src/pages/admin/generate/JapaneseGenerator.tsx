@@ -20,14 +20,14 @@ export default function JapaneseGenerator() {
   const [prompt, setPrompt] = useState("");
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10 sm:px-6">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl space-y-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-accent">
             Language Generator
           </p>
 
-          <h1 className="mt-2 font-serif text-4xl text-primary sm:text-5xl">
+          <h1 className="mt-2 font-serif text-3xl text-primary sm:text-5xl">
             Japanese Question Generator
           </h1>
 
@@ -36,12 +36,12 @@ export default function JapaneseGenerator() {
           </p>
         </div>
 
-        <div className="rounded-[2rem] border bg-card p-6 shadow-soft">
+        <div className="rounded-[1.6rem] border bg-card p-5 shadow-soft sm:rounded-[2rem] sm:p-6">
           <div className="grid gap-4 md:grid-cols-3">
             <select
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
-              className="rounded-2xl border bg-background px-4 py-3 text-primary"
+              className="min-h-11 rounded-2xl border bg-background px-4 py-3 text-primary"
             >
               {grades.map((item) => (
                 <option key={item}>{item}</option>
@@ -51,7 +51,7 @@ export default function JapaneseGenerator() {
             <select
               value={skill}
               onChange={(e) => setSkill(e.target.value)}
-              className="rounded-2xl border bg-background px-4 py-3 text-primary"
+              className="min-h-11 rounded-2xl border bg-background px-4 py-3 text-primary"
             >
               {skills.map((item) => (
                 <option key={item}>{item}</option>
@@ -61,7 +61,7 @@ export default function JapaneseGenerator() {
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
-              className="rounded-2xl border bg-background px-4 py-3 text-primary"
+              className="min-h-11 rounded-2xl border bg-background px-4 py-3 text-primary"
             >
               {difficulties.map((item) => (
                 <option key={item}>{item}</option>
@@ -76,7 +76,7 @@ export default function JapaneseGenerator() {
             className="mt-5 min-h-32 w-full rounded-2xl border bg-background px-4 py-3 text-primary outline-none"
           />
 
-          <button className="mt-5 w-full rounded-2xl bg-primary px-6 py-4 font-bold text-primary-foreground transition hover:opacity-90">
+          <button className="mt-5 min-h-11 w-full rounded-2xl bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:opacity-90">
             Generate Japanese Questions
           </button>
         </div>

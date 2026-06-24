@@ -327,16 +327,16 @@ export default function TutorLessons() {
     : [];
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-14">
+    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-6 sm:px-6 sm:py-14">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
 
-      <div className="relative z-10 mx-auto max-w-[1350px] space-y-8">
+      <div className="relative z-10 mx-auto max-w-[1350px] space-y-6 sm:space-y-8">
         {/* HERO */}
         <motion.section
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: "easeOut" }}
-          className="relative overflow-hidden rounded-[3rem] bg-white/95 p-7 shadow-[0_28px_90px_rgba(66,56,120,0.13)] backdrop-blur-xl sm:p-10"
+          className="relative overflow-hidden rounded-[2rem] bg-white/95 p-5 shadow-[0_28px_90px_rgba(66,56,120,0.13)] backdrop-blur-xl sm:rounded-[3rem] sm:p-10"
         >
           <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
           <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
@@ -348,7 +348,7 @@ export default function TutorLessons() {
                 Tutor Lessons
               </p>
 
-              <h1 className="mt-5 font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.8rem] lg:text-[5.6rem]">
+              <h1 className="mt-5 font-poppins text-[2.65rem] font-black leading-[0.95] tracking-[-0.045em] text-primary min-[390px]:text-[3rem] sm:text-[4.8rem] lg:text-[5.6rem]">
                 Schedule.
                 <br />
                 Check off.
@@ -364,7 +364,7 @@ export default function TutorLessons() {
 
             <motion.div
               whileHover={{ y: -8, rotate: 1.5 }}
-              className="relative rounded-[2.2rem] bg-[#fbfaff] p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)]"
+              className="relative rounded-[1.6rem] bg-[#fbfaff] p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] sm:rounded-[2.2rem] sm:p-6"
             >
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8d73ff]">
                 Today’s control panel
@@ -412,7 +412,7 @@ export default function TutorLessons() {
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }}
-          className="sticky top-4 z-30 rounded-[2.2rem] bg-white/85 p-4 shadow-[0_20px_70px_rgba(66,56,120,0.12)] backdrop-blur-xl"
+          className="sticky top-3 z-30 rounded-[1.6rem] bg-white/90 p-3 shadow-[0_20px_70px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:top-4 sm:rounded-[2.2rem] sm:p-4"
         >
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -448,7 +448,7 @@ export default function TutorLessons() {
         </motion.div>
 
         {/* CALENDAR */}
-        <div className="rounded-[2.5rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:p-7">
+        <div className="rounded-[1.8rem] bg-white/95 p-4 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-7">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
@@ -712,7 +712,7 @@ export default function TutorLessons() {
                   type="time"
                   value={lessonTime}
                   onChange={(e) => setLessonTime(e.target.value)}
-                  className="h-13 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 text-base text-primary outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+                  className="min-h-11 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 py-3 text-base text-primary outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
                 />
               </div>
               <NumberInput
@@ -866,7 +866,7 @@ function StatCard({
       viewport={{ once: false }}
       transition={{ delay: index * 0.06 }}
       whileHover={{ y: -8, rotate: index % 2 === 0 ? -1.5 : 1.5 }}
-      className="rounded-[2.2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl"
+      className="rounded-[1.6rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:rounded-[2.2rem] sm:p-6"
     >
       <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff6da] text-primary">
         {icon}
@@ -874,7 +874,7 @@ function StatCard({
 
       <p className="mb-1 text-sm font-bold text-primary/50">{title}</p>
 
-      <h3 className="font-poppins text-4xl font-black text-primary">
+      <h3 className="font-poppins text-3xl font-black text-primary sm:text-4xl">
         {value}
       </h3>
     </motion.div>
@@ -951,13 +951,13 @@ function Modal({ children, onClose }: any) {
         animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
         exit={{ opacity: 0, y: 30, scale: 0.96 }}
         transition={{ duration: 0.35 }}
-        className="relative max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-[2.5rem] bg-white p-6 shadow-[0_35px_110px_rgba(0,0,0,0.28)] sm:p-8"
+        className="relative max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-[1.8rem] bg-white p-5 shadow-[0_35px_110px_rgba(0,0,0,0.28)] sm:rounded-[2.5rem] sm:p-8"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-5 top-5 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-[#f6f1ff] text-primary transition hover:scale-110 hover:bg-[#ebe1ff]"
+          className="absolute right-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-[#f6f1ff] text-primary transition hover:scale-110 hover:bg-[#ebe1ff] sm:right-5 sm:top-5"
         >
           <X className="h-5 w-5" />
         </button>
@@ -983,7 +983,7 @@ function ModalHeader({
         {label}
       </p>
 
-      <h2 className="mt-3 font-poppins text-3xl font-black leading-tight text-primary sm:text-4xl">
+      <h2 className="mt-3 font-poppins text-2xl font-black leading-tight text-primary sm:text-4xl">
         {title}
       </h2>
 
@@ -1000,7 +1000,7 @@ function SelectInput({ label, value, onChange, children }: any) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-13 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 text-base outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+        className="min-h-11 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 py-3 text-base outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
       >
         {children}
       </select>
@@ -1036,7 +1036,7 @@ function DateInput({ label, value, onChange }: any) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-13 w-full items-center justify-between rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 text-base font-bold text-primary outline-none transition hover:bg-[#f6f1ff] focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+        className="flex min-h-11 w-full items-center justify-between rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 py-3 text-base font-bold text-primary outline-none transition hover:bg-[#f6f1ff] focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
       >
         <span>{displayText}</span>
         <Calendar className="h-5 w-5 text-[#8d73ff]" />
@@ -1229,7 +1229,7 @@ function NumberInput({ label, placeholder, value, onChange }: any) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-13 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 text-base outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+        className="min-h-11 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-4 py-3 text-base outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
       />
     </div>
   );

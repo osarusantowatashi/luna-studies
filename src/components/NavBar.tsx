@@ -260,7 +260,7 @@ const NavBar = () => {
     }`;
 
   const mobileLinkClass = (active: boolean) =>
-    `block rounded-xl border px-4 py-3 text-sm font-semibold transition-colors ${
+    `block min-h-11 rounded-xl border px-4 py-3 text-sm font-semibold leading-5 transition-colors ${
       active
         ? "border-[#D4A12A]/35 bg-white text-[#082A55] shadow-sm"
         : "border-transparent bg-white/70 text-primary/70 hover:bg-white hover:text-[#082A55]"
@@ -284,7 +284,7 @@ const NavBar = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/88 backdrop-blur-xl">
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-[72px] sm:px-6">
         <Link
           to={
             isApp
@@ -303,7 +303,7 @@ const NavBar = () => {
             className="h-9 w-9 shrink-0 object-contain"
           />
 
-          <h1 className="truncate font-serif text-lg tracking-wide text-primary sm:text-xl">
+          <h1 className="max-w-[190px] truncate font-serif text-lg tracking-wide text-primary min-[390px]:max-w-none sm:text-xl">
             {brandName}
           </h1>
         </Link>
@@ -536,7 +536,8 @@ const NavBar = () => {
         <button
           type="button"
           onClick={() => setMobileOpen((prev) => !prev)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/10 bg-white shadow-[0_8px_24px_rgba(8,42,85,0.06)] md:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/10 bg-white shadow-[0_8px_24px_rgba(8,42,85,0.06)] md:hidden"
+          aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
         >
           {mobileOpen ? (
             <X className="h-5 w-5 text-primary" />
@@ -548,8 +549,8 @@ const NavBar = () => {
 
       {/* MOBILE MENU */}
       {mobileOpen && (
-        <div className="border-t border-primary/10 bg-white/96 px-4 py-4 shadow-lg backdrop-blur-xl md:hidden">
-          <div className="space-y-2.5">
+        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-primary/10 bg-white/96 px-4 py-4 shadow-lg backdrop-blur-xl md:hidden">
+          <div className="space-y-3">
             {isApp ? (
               links.map(([label, path]) => {
                 const active = isActive(path);
@@ -571,16 +572,18 @@ const NavBar = () => {
                   <p className="px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-primary/45">
                     {t("nav.services")}
                   </p>
-                  {serviceItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setMobileOpen(false)}
-                      className={dropdownItemClass(isItemActive(item.path))}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+                  <div className="grid gap-1">
+                    {serviceItems.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setMobileOpen(false)}
+                        className={`${dropdownItemClass(isItemActive(item.path))} min-h-11`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
 
                 {[
@@ -602,16 +605,18 @@ const NavBar = () => {
                     {t("nav.aboutUs")}
                   </p>
 
-                  {aboutLinks.map(([aboutLabel, aboutPath]) => (
-                    <Link
-                      key={aboutPath}
-                      to={aboutPath}
-                      onClick={() => setMobileOpen(false)}
-                      className={dropdownItemClass(location.pathname === aboutPath)}
-                    >
-                      {aboutLabel}
-                    </Link>
-                  ))}
+                  <div className="grid gap-1">
+                    {aboutLinks.map(([aboutLabel, aboutPath]) => (
+                      <Link
+                        key={aboutPath}
+                        to={aboutPath}
+                        onClick={() => setMobileOpen(false)}
+                        className={`${dropdownItemClass(location.pathname === aboutPath)} min-h-11`}
+                      >
+                        {aboutLabel}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
 
                 <Link
@@ -632,7 +637,7 @@ const NavBar = () => {
                 onChange={(e) =>
                   changeLanguage(e.target.value as "en" | "zh" | "ja")
                 }
-                className="w-full rounded-2xl border bg-card px-4 py-3 text-sm font-semibold text-primary"
+                className="min-h-11 w-full rounded-2xl border bg-card px-4 py-3 text-sm font-semibold text-primary"
               >
                 <option value="en">English</option>
                 <option value="zh">中文</option>

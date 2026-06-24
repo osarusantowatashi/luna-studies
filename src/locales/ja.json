@@ -19,14 +19,35 @@
       "description": "LUNA Studies (Luna Education) は、日本・シンガポール・オンラインの生徒向けに、MAP、WIDA、AEIS、TOEFL、英語教育、バイリンガル教育を提供しています。"
     },
     "hero": {
-      "label": "生徒の可能性を広げる",
-      "titleLine1": "世界へつながる",
-      "titleLine2": "英語",
-      "titleHighlight": "スキル",
-      "titleLine3": "を育てる",
-      "description": "個別最適化された学習、経験豊富な講師、国際的なプログラムを通じて、生徒が自信を持って成長できる環境を提供します。",
-      "primaryButton": "LUNAについて",
-      "secondaryButton": "コースを見る",
+      "label": "一人ひとりに合わせた学習サポート",
+      "titleLine1": "未来につながる英語力",
+      "titleLine2": "国際スクールへの学習ルート",
+      "titleHighlight": "",
+      "titleLine3": "そして国際的な進学への道。",
+      "description": "Lunaは、評価・試験対策、学科学習、進学サポートを通して、国際教育への道筋を支えます。",
+      "primaryButton": "まずは相談する",
+      "secondaryButton": "すべてのサービスを見る",
+      "pathwayTitle": "Luna 学習パスウェイ",
+      "pathwayAssessment": "評価・試験対策",
+      "pathwayAcademic": "学科学習サポート",
+      "pathwayAdmissions": "進学・出願サポート",
+      "coverage": {
+        "grade": {
+          "value": "K–12",
+          "subtitle": "対応学年",
+          "text": "幼児期から高校生まで"
+        },
+        "schools": {
+          "value": "100+",
+          "subtitle": "進学ルート支援",
+          "text": "インターナショナルスクールと出願サポート"
+        },
+        "global": {
+          "value": "Global",
+          "subtitle": "オンライン対応",
+          "text": "シンガポール・日本・海外家庭をサポート"
+        }
+      },
       "rating": "2,000名以上の生徒から平均 4.9/5 評価"
     },
     "dashboard": {
@@ -78,6 +99,28 @@
           "speakingPractice": "スピーキング練習を完了",
           "grammarReview": "文法修正を復習"
         }
+      }
+    },
+    "studentJourney": {
+      "diagnostic": {
+        "title": "学習診断",
+        "text": "現在の学習レベルを把握。"
+      },
+      "plan": {
+        "title": "学習プラン",
+        "text": "目標と優先順位を明確化。"
+      },
+      "lessons": {
+        "title": "週ごとのレッスン",
+        "text": "講師と連携した個別レッスン。"
+      },
+      "progress": {
+        "title": "進捗確認",
+        "text": "レッスン後に進捗を共有。"
+      },
+      "readiness": {
+        "title": "進学準備",
+        "text": "学校生活と将来に向けた自信を育成。"
       }
     },
     "programs": {

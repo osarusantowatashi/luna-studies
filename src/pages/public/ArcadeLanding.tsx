@@ -251,7 +251,7 @@ export default function ArcadeLanding() {
       />
 
       <main className="overflow-hidden bg-[#fffdf8]">
-        <section className="relative px-4 pb-16 pt-24 sm:px-6 lg:px-8">
+        <section className="relative px-4 pb-12 pt-20 sm:px-6 sm:pb-16 sm:pt-24 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_70%,#fff1bd_0%,transparent_30%)]" />
 
           <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_440px]">
@@ -260,7 +260,7 @@ export default function ArcadeLanding() {
                 <Sparkles className="h-4 w-4" />
                 {tr("hero.label")}
               </p>
-              <h1 className="mt-6 max-w-4xl font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[5rem]">
+              <h1 className="mt-6 max-w-4xl font-poppins text-[2.45rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.8rem] sm:text-[5rem] sm:leading-[0.95]">
                 {tr("hero.title")}
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg">
@@ -269,13 +269,13 @@ export default function ArcadeLanding() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <a
                   href="#demo"
-                  className="inline-flex h-13 items-center justify-center rounded-2xl bg-primary px-6 py-4 text-sm font-black text-white shadow-[0_15px_40px_rgba(8,42,85,0.18)]"
+                  className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-6 py-4 text-sm font-black text-white shadow-[0_15px_40px_rgba(8,42,85,0.18)]"
                 >
                   {tr("hero.playDemo")}
                 </a>
                 <Link
                   to={withLang("/enquiry")}
-                  className="inline-flex h-13 items-center justify-center rounded-2xl border border-primary/10 bg-white px-6 py-4 text-sm font-black text-primary"
+                  className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-primary/10 bg-white px-6 py-4 text-sm font-black text-primary"
                 >
                   {tr("hero.bookConsultation")}
                 </Link>
@@ -283,12 +283,12 @@ export default function ArcadeLanding() {
             </div>
 
             <div className="relative mx-auto w-full max-w-[420px]">
-              <div className="absolute inset-0 rounded-[3rem] bg-[#8d73ff]/20 blur-3xl" />
-              <div className="relative overflow-hidden rounded-[3rem] border border-white/60 bg-white/80 p-6 shadow-[0_30px_90px_rgba(66,56,120,0.18)]">
+              <div className="absolute inset-0 rounded-[2rem] bg-[#8d73ff]/20 blur-3xl sm:rounded-[3rem]" />
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/60 bg-white/80 p-4 shadow-[0_30px_90px_rgba(66,56,120,0.18)] sm:rounded-[3rem] sm:p-6">
                 <img
                   src="/mascot/hapiko-step-2.png"
                   alt={tr("hero.visualAlt")}
-                  className="mx-auto h-56 object-contain drop-shadow-[0_18px_40px_rgba(139,115,255,0.35)]"
+                  className="mx-auto h-44 object-contain drop-shadow-[0_18px_40px_rgba(139,115,255,0.35)] sm:h-56"
                 />
                 <div className="mt-4 rounded-[2rem] bg-[#071426] p-4 text-white">
                   <p className="mb-3 text-center text-[11px] font-black uppercase tracking-[0.18em] text-[#C4B5FD]">
@@ -313,14 +313,14 @@ export default function ArcadeLanding() {
         <section className="px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="max-w-3xl">
-              <h2 className="font-poppins text-4xl font-black text-primary">{tr("why.title")}</h2>
+              <h2 className="font-poppins text-3xl font-black leading-tight text-primary sm:text-4xl">{tr("why.title")}</h2>
               <p className="mt-4 text-base leading-8 text-primary/60">{tr("why.text")}</p>
             </div>
             <div className="mt-8 grid gap-5 md:grid-cols-3">
               {whyCards.map(({ title, icon: Icon }) => (
                 <div
                   key={title}
-                  className="rounded-[2rem] border border-[#eee8ff] bg-white p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)]"
+                  className="rounded-[1.6rem] border border-[#eee8ff] bg-white p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] sm:rounded-[2rem] sm:p-6"
                 >
                   <Icon className="h-9 w-9 text-[#8d73ff]" />
                   <h3 className="mt-5 text-xl font-black text-primary">{title}</h3>
@@ -337,7 +337,7 @@ export default function ArcadeLanding() {
               <p className="mt-3 text-base leading-8 text-primary/60">{tr("demo.subtitle")}</p>
             </div>
 
-            <div className="mb-5 overflow-hidden rounded-[2rem] border border-[#eee8ff] bg-white p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] sm:p-6">
+            <div className="mb-5 overflow-hidden rounded-[1.6rem] border border-[#eee8ff] bg-white p-4 shadow-[0_18px_55px_rgba(66,56,120,0.08)] sm:rounded-[2rem] sm:p-6">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                 <div className="max-w-xl">
                   <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8B5CF6]">
@@ -533,7 +533,7 @@ export default function ArcadeLanding() {
         </section>
 
         <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-5xl rounded-[3rem] bg-primary p-8 text-center text-white shadow-[0_25px_80px_rgba(8,42,85,0.22)] sm:p-12">
+          <div className="mx-auto max-w-5xl rounded-[2rem] bg-primary p-6 text-center text-white shadow-[0_25px_80px_rgba(8,42,85,0.22)] sm:rounded-[3rem] sm:p-12">
             <GraduationCap className="mx-auto h-12 w-12 text-[#F6C65B]" />
             <h2 className="mt-5 font-poppins text-4xl font-black">{tr("cta.title")}</h2>
             <p className="mx-auto mt-4 max-w-2xl leading-8 text-white/75">{tr("cta.description")}</p>

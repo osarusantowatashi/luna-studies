@@ -46,14 +46,14 @@ export default function MathQuestionBank() {
   }, [questions, gradeFilter, topicFilter, search]);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10 sm:px-6">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl space-y-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-accent">
             Math Bank
           </p>
 
-          <h1 className="mt-2 font-serif text-4xl text-primary sm:text-5xl">
+          <h1 className="mt-2 font-serif text-3xl text-primary sm:text-5xl">
             Math Question Bank
           </h1>
 
@@ -62,12 +62,12 @@ export default function MathQuestionBank() {
           </p>
         </div>
 
-        <div className="rounded-[2rem] border bg-card p-5 shadow-soft">
+        <div className="rounded-[1.6rem] border bg-card p-5 shadow-soft sm:rounded-[2rem]">
           <div className="grid gap-4 md:grid-cols-4">
             <select
               value={gradeFilter}
               onChange={(e) => setGradeFilter(e.target.value)}
-              className="rounded-2xl border bg-white px-4 py-3"
+              className="min-h-11 rounded-2xl border bg-white px-4 py-3"
             >
               {grades.map((grade) => (
                 <option key={grade}>{grade}</option>
@@ -77,7 +77,7 @@ export default function MathQuestionBank() {
             <select
               value={topicFilter}
               onChange={(e) => setTopicFilter(e.target.value)}
-              className="rounded-2xl border bg-white px-4 py-3"
+              className="min-h-11 rounded-2xl border bg-white px-4 py-3"
             >
               {topics.map((topic) => (
                 <option key={topic}>{topic}</option>
@@ -89,11 +89,11 @@ export default function MathQuestionBank() {
               placeholder="Search Math questions..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="rounded-2xl border bg-white px-4 py-3 md:col-span-2"
+              className="min-h-11 rounded-2xl border bg-white px-4 py-3 md:col-span-2"
             />
           </div>
 
-          <div className="mt-5 flex items-center justify-between">
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
               Showing {filteredQuestions.length} / {questions.length} questions
             </p>

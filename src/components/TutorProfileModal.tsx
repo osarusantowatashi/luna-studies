@@ -46,17 +46,18 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
   if (!tutor) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-3 py-4 backdrop-blur-sm sm:p-6">
-      <div className="relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-y-auto rounded-[1.6rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid md:max-h-[88vh] md:grid-cols-[0.42fr_0.58fr] md:rounded-[2rem]">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-3 py-3 backdrop-blur-sm sm:p-6">
+      <div className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-5xl flex-col overflow-y-auto rounded-[1.6rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid md:max-h-[88vh] md:grid-cols-[0.42fr_0.58fr] md:rounded-[2rem]">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 z-20 ml-auto mr-4 mt-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-soft transition hover:bg-secondary md:absolute md:right-5 md:top-5 md:m-0"
+          className="absolute right-3 top-3 z-20 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-soft transition hover:bg-secondary md:right-5 md:top-5 md:h-10 md:w-10"
+          aria-label="Close tutor profile"
         >
           <X className="h-5 w-5 text-primary" />
         </button>
 
         {/* LEFT */}
-        <div className="bg-[#fbfaf6] px-6 pb-8 pt-2 text-center sm:p-8 md:p-10">
+        <div className="bg-[#fbfaf6] px-5 pb-6 pt-5 text-center sm:p-8 md:p-10">
           <div
             className={`mx-auto mb-5 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.6rem] font-serif text-4xl text-primary shadow-soft sm:h-36 sm:w-36 sm:rounded-[2rem] sm:text-5xl ${
               tutor.name === "Siya" ? "bg-white" : "bg-secondary"
@@ -107,7 +108,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
             </div>
           </div>
 
-          <div className="sticky bottom-0 mt-7 bg-[#fbfaf6] pt-4 sm:mt-8">
+          <div className="sticky bottom-0 mt-7 bg-[#fbfaf6] pb-[env(safe-area-inset-bottom)] pt-4 sm:mt-8">
             <Link to={`/${i18n.language.startsWith("zh") ? "zh" : i18n.language.startsWith("ja") ? "ja" : "en"}/enquiry`} onClick={onClose}>
               <Button className="h-12 w-full rounded-xl bg-primary text-sm">
                 {t("tutorsPage.buttons.book")}

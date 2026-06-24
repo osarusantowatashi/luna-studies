@@ -19,14 +19,35 @@
       "description": "LUNA Studies (Luna Education) 为日本、新加坡及线上学生提供 MAP、WIDA、AEIS、TOEFL、英语与双语教育的一对一个性化辅导。"
     },
     "hero": {
-      "label": "赋能学生成长",
-      "titleLine1": "面向未来的",
-      "titleLine2": "英语",
-      "titleHighlight": "能力",
-      "titleLine3": "不止于课堂",
-      "description": "个性化学习、专业导师与国际化课程，帮助学生建立自信，并在更广阔的学习环境中持续进步。",
-      "primaryButton": "了解 LUNA",
-      "secondaryButton": "查看课程",
+      "label": "个性化学习路径",
+      "titleLine1": "面向未来的英语能力",
+      "titleLine2": "通往国际学校的学习路径",
+      "titleHighlight": "",
+      "titleLine3": "与国际升学路径。",
+      "description": "Luna 为学生提供测评备考、学科学习与升学申请支持，帮助孩子更清晰地走向国际教育路径。",
+      "primaryButton": "立即开始",
+      "secondaryButton": "查看所有服务项目",
+      "pathwayTitle": "Luna 学习路径",
+      "pathwayAssessment": "测评备考",
+      "pathwayAcademic": "学科学习支持",
+      "pathwayAdmissions": "升学申请指导",
+      "coverage": {
+        "grade": {
+          "value": "K–12",
+          "subtitle": "年级支持",
+          "text": "从幼儿园到高中"
+        },
+        "schools": {
+          "value": "100+",
+          "subtitle": "升学路径支持",
+          "text": "国际学校与升学申请支持"
+        },
+        "global": {
+          "value": "Global",
+          "subtitle": "在线支持",
+          "text": "服务新加坡、日本及海外家庭"
+        }
+      },
       "rating": "来自 2,000+ 学生的 4.9/5 评分"
     },
     "dashboard": {
@@ -78,6 +99,28 @@
           "speakingPractice": "完成口语练习",
           "grammarReview": "复习语法修改"
         }
+      }
+    },
+    "studentJourney": {
+      "diagnostic": {
+        "title": "学习测评",
+        "text": "了解学生当前水平。"
+      },
+      "plan": {
+        "title": "学习计划",
+        "text": "制定清晰目标和学习重点。"
+      },
+      "lessons": {
+        "title": "每周课程",
+        "text": "匹配合适导师，进行个性化课程。"
+      },
+      "progress": {
+        "title": "进步追踪",
+        "text": "课后持续反馈学习进展。"
+      },
+      "readiness": {
+        "title": "升学准备",
+        "text": "为学校学习和未来路径建立信心。"
       }
     },
     "programs": {

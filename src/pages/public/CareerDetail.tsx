@@ -313,11 +313,11 @@ const CareerDetail = () => {
             <div className="min-h-screen bg-[#fbfaff]">
                 <NavBar />
 
-                <main className="px-4 pt-28 pb-24 sm:px-6 lg:px-8">
+                <main className="px-4 pb-16 pt-20 sm:px-6 sm:pb-24 sm:pt-28 lg:px-8">
                     <div className="mx-auto mb-6 max-w-7xl">
                         <Link
                             to={`/${currentLang}/careers`}
-                            className="inline-flex items-center rounded-2xl border border-primary/10 bg-white px-5 py-3 text-sm font-black text-primary shadow-sm hover:bg-[#fbfaff]"
+                            className="inline-flex min-h-11 items-center rounded-2xl border border-primary/10 bg-white px-5 py-3 text-sm font-black text-primary shadow-sm hover:bg-[#fbfaff]"
                         >
                             ← {t("careers.detail.backToCareers")}
                         </Link>
@@ -326,7 +326,7 @@ const CareerDetail = () => {
                         <motion.div
                             initial={{ opacity: 0, y: 24 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="h-fit rounded-[3rem] bg-[#082A55] p-8 text-white shadow-[0_35px_100px_rgba(8,42,85,0.22)] sm:p-10"
+                            className="h-fit rounded-[2rem] bg-[#082A55] p-5 text-white shadow-[0_35px_100px_rgba(8,42,85,0.22)] sm:rounded-[3rem] sm:p-10"
                         >
                             <GraduationCap className="h-10 w-10 text-[#F6C65B]" />
 
@@ -342,7 +342,7 @@ const CareerDetail = () => {
 
                             <p className="mt-4 text-white/70">{job.mode}</p>
 
-                            <p className="mt-8 text-lg leading-8 text-white/75">
+                            <p className="mt-8 text-base leading-8 text-white/75 sm:text-lg">
                                 {job.about}
                             </p>
 
@@ -358,7 +358,7 @@ const CareerDetail = () => {
                             initial={{ opacity: 0, y: 24 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.08 }}
-                            className="rounded-[3rem] border border-[#E8D8B5] bg-white p-6 shadow-[0_25px_80px_rgba(66,56,120,0.12)] sm:p-8"
+                            className="rounded-[2rem] border border-[#E8D8B5] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.12)] sm:rounded-[3rem] sm:p-8"
                         >
                             <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
                                 <Sparkles className="h-4 w-4" />

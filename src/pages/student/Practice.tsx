@@ -276,7 +276,7 @@ const Practice = () => {
   if (loading) {
     return (
       <Shell>
-        <div className="mx-auto max-w-3xl rounded-[2.5rem] bg-white p-10 text-center shadow-[0_25px_80px_rgba(66,56,120,0.12)]">
+        <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-6 text-center shadow-[0_25px_80px_rgba(66,56,120,0.12)] sm:rounded-[2.5rem] sm:p-10">
           <div className="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-4 border-[#eee9ff] border-t-[#8d73ff]" />
           <p className="font-poppins text-xl font-black text-primary">
             Loading practice...
@@ -289,7 +289,7 @@ const Practice = () => {
   if (allowedGrades.length === 0) {
     return (
       <Shell>
-        <div className="mx-auto max-w-3xl rounded-[2.5rem] bg-white p-10 text-center shadow-[0_25px_80px_rgba(66,56,120,0.12)]">
+        <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-6 text-center shadow-[0_25px_80px_rgba(66,56,120,0.12)] sm:rounded-[2.5rem] sm:p-10">
           <h1 className="font-poppins text-3xl font-black text-primary">
             No Practice Access Yet
           </h1>
@@ -307,7 +307,7 @@ const Practice = () => {
       <Shell>
         <div className="mx-auto max-w-[1180px] space-y-8">
           {/* HERO */}
-          <section className="relative overflow-hidden rounded-[3rem] border border-[#eee8ff] bg-white p-7 shadow-[0_35px_120px_rgba(66,56,120,0.10)] sm:p-10">
+          <section className="relative overflow-hidden rounded-[2rem] border border-[#eee8ff] bg-white p-5 shadow-[0_35px_120px_rgba(66,56,120,0.10)] sm:rounded-[3rem] sm:p-10">
             <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
             <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
 
@@ -318,7 +318,7 @@ const Practice = () => {
                   Practice Studio
                 </p>
 
-                <h1 className="mt-5 font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.8rem] lg:text-[5.5rem]">
+                <h1 className="mt-5 font-poppins text-[2.35rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.7rem] sm:text-[4.8rem] sm:leading-[0.95] lg:text-[5.5rem]">
                   Choose.
                   <br />
                   Practise.
@@ -333,7 +333,7 @@ const Practice = () => {
 
               <motion.div
                 whileHover={{ y: -8, rotate: 1.5 }}
-                className="relative rounded-[2.2rem] bg-[#fbfaff] p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)]"
+                className="relative rounded-[1.6rem] bg-[#fbfaff] p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] sm:rounded-[2.2rem] sm:p-6"
               >
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8d73ff]">
                   Your Progress
@@ -375,7 +375,7 @@ const Practice = () => {
           {/* SETUP CARD */}
           <section
             data-guide="practice-actions"
-            className="rounded-[2.5rem] bg-white p-7 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:p-9"
+            className="rounded-[2rem] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.5rem] sm:p-9"
           >
             <div className="mb-8">
               <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
@@ -444,14 +444,14 @@ const Practice = () => {
     <Shell>
       <div className="mx-auto max-w-[900px] space-y-6">
         {/* TOP BAR */}
-        <section className="rounded-[2.5rem] bg-white p-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)]">
+        <section className="rounded-[2rem] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.5rem] sm:p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8d73ff]">
                 {selectedGrade} · {selectedDifficulty} · {selectedSkill}
               </p>
 
-              <h1 className="mt-3 font-poppins text-4xl font-black text-primary">
+              <h1 className="mt-3 font-poppins text-3xl font-black text-primary sm:text-4xl">
                 Practice
               </h1>
 
@@ -460,7 +460,7 @@ const Practice = () => {
               </p>
             </div>
 
-            <div className="min-w-[180px]">
+            <div className="w-full sm:min-w-[180px]">
               <div className="mb-2 flex justify-between text-xs font-bold text-primary/50">
                 <span>Session</span>
                 <span>{sessionProgress}%</span>
@@ -486,13 +486,13 @@ const Practice = () => {
             animate={{ opacity: 1, y: 0, rotate: 0 }}
             exit={{ opacity: 0, y: -20, rotate: 0.8 }}
             transition={{ duration: 0.35 }}
-            className="relative overflow-hidden rounded-[2.8rem] bg-white p-6 shadow-[0_30px_90px_rgba(66,56,120,0.13)] sm:p-8"
+            className="relative overflow-hidden rounded-[2rem] bg-white p-5 shadow-[0_30px_90px_rgba(66,56,120,0.13)] sm:rounded-[2.8rem] sm:p-8"
           >
             <div className="absolute -right-14 -top-14 h-44 w-44 rounded-full bg-[#f0eaff]" />
 
             <div className="relative z-10">
               {current?.passage && (
-                <div className="mb-7 max-h-[45vh] overflow-y-auto rounded-[2rem] bg-[#fbfaff] p-5">
+                <div className="mb-7 max-h-[45vh] overflow-y-auto rounded-[1.5rem] bg-[#fbfaff] p-4 sm:rounded-[2rem] sm:p-5">
                   <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff]">
                     Passage
                   </p>
@@ -644,7 +644,7 @@ const Practice = () => {
 
 const Shell = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-14">
+    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-6 sm:px-6 sm:py-14">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
       <div className="relative z-10">{children}</div>
     </div>

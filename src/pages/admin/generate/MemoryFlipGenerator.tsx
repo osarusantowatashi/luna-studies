@@ -232,14 +232,14 @@ export default function MemoryFlipGenerator() {
   }, [status, search]);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10 sm:px-6">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl space-y-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-accent">
             Memory Flip
           </p>
 
-          <h1 className="mt-2 font-serif text-4xl text-primary">
+          <h1 className="mt-2 font-serif text-3xl text-primary sm:text-4xl">
             Generate & Review
           </h1>
 
@@ -254,17 +254,17 @@ export default function MemoryFlipGenerator() {
           </div>
         )}
 
-        <div className="rounded-[2rem] border bg-card p-6 shadow-soft">
+        <div className="rounded-[1.6rem] border bg-card p-5 shadow-soft sm:rounded-[2rem] sm:p-6">
           <h2 className="text-xl font-bold text-primary">Generate Questions</h2>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-4">
-            <select value={languagePair} onChange={(e) => setLanguagePair(e.target.value)} className="rounded-2xl border bg-white px-4 py-3">
+            <select value={languagePair} onChange={(e) => setLanguagePair(e.target.value)} className="min-h-11 rounded-2xl border bg-white px-4 py-3">
               <option value="zh_en">中英 Chinese ↔ English</option>
               <option value="zh_ja">中日 Chinese ↔ Japanese</option>
               <option value="en_ja">英日 English ↔ Japanese</option>
             </select>
 
-            <select value={grade} onChange={(e) => setGrade(e.target.value)} className="rounded-2xl border bg-white px-4 py-3">
+            <select value={grade} onChange={(e) => setGrade(e.target.value)} className="min-h-11 rounded-2xl border bg-white px-4 py-3">
               <option>Grade 1</option>
               <option>Grade 2</option>
               <option>Grade 3</option>
@@ -273,7 +273,7 @@ export default function MemoryFlipGenerator() {
               <option>Grade 6</option>
             </select>
 
-            <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="rounded-2xl border bg-white px-4 py-3">
+            <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="min-h-11 rounded-2xl border bg-white px-4 py-3">
               <option>Easy</option>
               <option>Medium</option>
               <option>Hard</option>

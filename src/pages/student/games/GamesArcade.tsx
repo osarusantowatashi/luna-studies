@@ -71,12 +71,12 @@ const games = [
 
 export default function GamesArcade() {
   return (
-    <div className="min-h-screen overflow-hidden bg-white px-4 py-8 sm:px-6 sm:py-14">
+    <div className="min-h-screen overflow-hidden bg-white px-4 py-6 sm:px-6 sm:py-14">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
 
       <div className="relative z-10 mx-auto max-w-[1180px] space-y-0">
         {/* HERO */}
-        <section className="relative mb-10 overflow-hidden rounded-[3rem] border border-[#eee8ff] bg-white p-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:p-8">
+        <section className="relative mb-8 overflow-hidden rounded-[2rem] border border-[#eee8ff] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:mb-10 sm:rounded-[3rem] sm:p-8">
           <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
           <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
 
@@ -87,7 +87,7 @@ export default function GamesArcade() {
                 Luna Learning Arcade
               </p>
 
-              <h1 className="mt-4 font-poppins text-[2.8rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4rem] lg:text-[4.6rem]">
+              <h1 className="mt-4 font-poppins text-[2.35rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.7rem] sm:text-[4rem] sm:leading-[0.95] lg:text-[4.6rem]">
                 Play.
                 <br />
                 Practise.
@@ -105,7 +105,7 @@ export default function GamesArcade() {
 
 
         {/* GAME LIST */}
-        <section className="relative rounded-[2.8rem] bg-white px-6 pb-8 pt-8 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:px-8">
+        <section className="relative rounded-[2rem] bg-white px-4 pb-6 pt-6 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.8rem] sm:px-8 sm:pb-8 sm:pt-8">
           <div className="mb-8">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
               Choose a game
@@ -135,7 +135,7 @@ export default function GamesArcade() {
                       ? { y: -8, rotate: index % 2 === 0 ? -1.5 : 1.5 }
                       : {}
                   }
-                  className={`group h-full overflow-hidden rounded-[2.2rem] bg-white shadow-[0_18px_55px_rgba(66,56,120,0.08)] transition ${available ? "cursor-pointer" : "opacity-60"
+                  className={`group h-full overflow-hidden rounded-[1.7rem] bg-white shadow-[0_18px_55px_rgba(66,56,120,0.08)] transition sm:rounded-[2.2rem] ${available ? "cursor-pointer" : "opacity-60"
                     }`}
                 >
                   <div className="relative overflow-hidden">
@@ -144,13 +144,13 @@ export default function GamesArcade() {
                         <img
                           src={game.cover}
                           alt={game.title}
-                          className="h-[260px] w-full object-cover transition duration-500 group-hover:scale-105"
+                          className="h-[190px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[260px]"
                         />
 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                       </>
                     ) : (
-                      <div className="flex h-[260px] w-full items-center justify-center bg-[#f6f1ff]">
+                      <div className="flex h-[190px] w-full items-center justify-center bg-[#f6f1ff] sm:h-[260px]">
                         <div
                           className={`flex h-24 w-24 items-center justify-center rounded-[2rem] ${game.color}`}
                         >
@@ -171,7 +171,7 @@ export default function GamesArcade() {
                     </div>
                   </div>
 
-                  <div className="p-6">
+                  <div className="p-5 sm:p-6">
                     <h3 className="font-poppins text-2xl font-black text-primary">
                       {game.title}
                     </h3>

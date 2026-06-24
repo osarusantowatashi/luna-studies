@@ -5,10 +5,10 @@ export default function Page() {
     <main className="min-h-screen bg-[#fbf7ef] text-[#071b3a] overflow-hidden">
       {/* NAV */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#fbf7ef]/80 backdrop-blur-xl">
-        <nav className="mx-auto flex h-24 max-w-[1500px] items-center justify-between px-10">
+        <nav className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-4 lg:h-24 lg:px-10">
           <div className="flex items-center gap-3">
-            <img src="/lunalogo.png" className="h-12 w-12 object-contain" />
-            <span className="font-serif text-3xl tracking-tight">Luna Education</span>
+            <img src="/lunalogo.png" className="h-10 w-10 object-contain lg:h-12 lg:w-12" />
+            <span className="font-serif text-xl tracking-tight lg:text-3xl">Luna Education</span>
           </div>
 
           <div className="hidden items-center gap-14 text-sm font-medium md:flex">
@@ -18,9 +18,9 @@ export default function Page() {
             <a>Enquire</a>
           </div>
 
-          <div className="flex items-center gap-8">
-            <button className="text-sm font-medium">Sign in</button>
-            <button className="rounded-full bg-[#071b3a] px-8 py-4 text-white shadow-lg transition hover:-translate-y-0.5">
+          <div className="flex items-center gap-3 lg:gap-8">
+            <button className="hidden text-sm font-medium sm:block">Sign in</button>
+            <button className="min-h-11 rounded-full bg-[#071b3a] px-4 py-3 text-sm text-white shadow-lg transition hover:-translate-y-0.5 lg:px-8 lg:py-4">
               Get started <ArrowRight className="ml-3 inline h-4 w-4" />
             </button>
           </div>
@@ -28,50 +28,50 @@ export default function Page() {
       </header>
 
       {/* HERO */}
-      <section className="relative mx-auto max-w-[1500px] px-10 pt-40">
-        <div className="grid min-h-[760px] grid-cols-1 items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="relative mx-auto max-w-[1500px] px-4 pt-24 lg:px-10 lg:pt-40">
+        <div className="grid min-h-[auto] grid-cols-1 items-center gap-10 lg:min-h-[760px] lg:grid-cols-[0.9fr_1.1fr]">
           {/* LEFT TEXT */}
           <div className="relative z-20">
-            <h1 className="max-w-[720px] leading-[0.9] tracking-[-0.06em] text-[#061a39]">
+            <h1 className="max-w-[720px] leading-[0.95] tracking-[-0.04em] text-[#061a39] lg:leading-[0.9] lg:tracking-[-0.06em]">
   <span className="block overflow-hidden">
-    <span className="block animate-title-1 font-sans text-[102px] font-medium">
+    <span className="block animate-title-1 font-sans text-[3.2rem] font-medium min-[390px]:text-[3.7rem] lg:text-[102px]">
       Your future
     </span>
   </span>
 
-  <span className="mt-[-10px] block overflow-hidden">
-    <span className="block animate-title-2 font-sans text-[110px] italic font-light">
+  <span className="mt-[-4px] block overflow-hidden lg:mt-[-10px]">
+    <span className="block animate-title-2 font-sans text-[3.4rem] italic font-light min-[390px]:text-[3.9rem] lg:text-[110px]">
       seems to
     </span>
   </span>
 
-  <span className="mt-[-20px] block overflow-hidden">
-    <span className="block animate-title-3 font-sans text-[110px] italic font-light">
+  <span className="mt-[-8px] block overflow-hidden lg:mt-[-20px]">
+    <span className="block animate-title-3 font-sans text-[3.4rem] italic font-light min-[390px]:text-[3.9rem] lg:text-[110px]">
       be
     </span>
   </span>
 
-  <span className="mt-[-10px] block overflow-hidden">
-    <span className="block animate-title-4 font-serif text-[115px] italic text-[#caa24a]">
+  <span className="mt-[-4px] block overflow-hidden lg:mt-[-10px]">
+    <span className="block animate-title-4 font-serif text-[3.3rem] italic text-[#caa24a] min-[390px]:text-[3.8rem] lg:text-[115px]">
       travelling.
     </span>
   </span>
 </h1>
 
-            <div className="mt-3 h-[2px] w-[360px] bg-[#caa24a]" />
+            <div className="mt-4 h-[2px] w-40 bg-[#caa24a] lg:mt-3 lg:w-[360px]" />
 
-            <p className="mt-8 max-w-[480px] text-xl leading-9 text-[#071b3a]/90">
+            <p className="mt-7 max-w-[480px] text-base leading-8 text-[#071b3a]/90 lg:mt-8 lg:text-xl lg:leading-9">
               Premium 1-on-1 tutoring for international students.
               <br />
               Personalised. Global. Future-ready.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-5">
-              <button className="rounded-full bg-[#071b3a] px-9 py-4 text-white shadow-xl transition hover:-translate-y-1">
+              <button className="min-h-11 w-full rounded-full bg-[#071b3a] px-7 py-3 text-white shadow-xl transition hover:-translate-y-1 sm:w-auto lg:px-9 lg:py-4">
                 Enquire now
                 <ArrowRight className="ml-4 inline h-4 w-4" />
               </button>
-              <button className="rounded-full border border-[#071b3a]/40 bg-white/50 px-9 py-4 font-medium backdrop-blur transition hover:bg-white">
+              <button className="min-h-11 w-full rounded-full border border-[#071b3a]/40 bg-white/50 px-7 py-3 font-medium backdrop-blur transition hover:bg-white sm:w-auto lg:px-9 lg:py-4">
                 View Programs
               </button>
             </div>
@@ -94,7 +94,7 @@ export default function Page() {
             </div>
           </div>
 {/* RIGHT VISUAL */}
-<div className="relative h-[820px] overflow-visible">
+<div className="relative hidden h-[820px] overflow-visible lg:block">
   {/* MAIN ARCH COLLAGE */}
   <div className="absolute right-[30px] top-[-90px] h-[760px] w-[760px] overflow-hidden rounded-t-full rounded-br-[46px] rounded-bl-[18px] bg-[#dceaf8] shadow-[0_35px_100px_rgba(7,27,58,0.14)]">
     {/* Aquarium background */}
@@ -188,7 +188,7 @@ export default function Page() {
 </div>
 
         {/* FEATURE BAR */}
-        <div className="relative z-40 -mt-4 mb-16 rounded-3xl bg-white/80 px-12 py-9 shadow-xl backdrop-blur-xl">
+        <div className="relative z-40 mb-12 mt-12 rounded-2xl bg-white/80 px-5 py-6 shadow-xl backdrop-blur-xl lg:-mt-4 lg:mb-16 lg:rounded-3xl lg:px-12 lg:py-9">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             <Feature
               icon={<UserRound />}

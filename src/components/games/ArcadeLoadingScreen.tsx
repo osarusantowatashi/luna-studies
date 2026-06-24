@@ -41,25 +41,25 @@ export default function ArcadeLoadingScreen({
     <div
       role="status"
       aria-live="polite"
-      className={`flex flex-1 items-center justify-center rounded-[1.5rem] border p-6 ${
+      className={`flex flex-1 items-center justify-center rounded-[1.25rem] border p-4 sm:rounded-[1.5rem] sm:p-6 ${
         isLight
           ? "border-[#eee8ff] bg-[#faf8ff]/95"
           : "border-white/10 bg-[#071426]/95 backdrop-blur-xl"
       } ${className}`}
     >
-      <div className="w-full max-w-md rounded-[1.5rem] border border-[#22D3EE]/45 bg-[#24194A] p-6 text-center shadow-[0_0_35px_rgba(34,211,238,0.18)]">
-        <p className="text-xl font-black uppercase tracking-[0.18em] text-[#22D3EE] drop-shadow-[0_0_10px_rgba(34,211,238,0.65)]">
+      <div className="w-full max-w-md rounded-[1.25rem] border border-[#22D3EE]/45 bg-[#24194A] p-4 text-center shadow-[0_0_35px_rgba(34,211,238,0.18)] sm:rounded-[1.5rem] sm:p-6">
+        <p className="text-base font-black uppercase tracking-[0.16em] text-[#22D3EE] drop-shadow-[0_0_10px_rgba(34,211,238,0.65)] sm:text-xl sm:tracking-[0.18em]">
           {title}
         </p>
 
         {subtitle && (
-          <p className="mt-2 text-xs font-bold uppercase tracking-[0.14em] text-[#C4B5FD]">
+          <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#C4B5FD] sm:text-xs sm:tracking-[0.14em]">
             {subtitle}
           </p>
         )}
 
         <div className="mt-5 rounded-xl border-4 border-[#22D3EE] bg-[#2D2944] p-1 shadow-[0_0_18px_rgba(34,211,238,0.5)]">
-          <div className="h-8 overflow-hidden rounded-md bg-[#3A374B]">
+          <div className="h-6 overflow-hidden rounded-md bg-[#3A374B] sm:h-8">
             <div
               className="h-full rounded-md bg-[repeating-linear-gradient(135deg,#22D3EE_0px,#22D3EE_12px,transparent_12px,transparent_22px)] transition-all duration-150"
               style={{ width: `${progressValue}%` }}
@@ -67,7 +67,7 @@ export default function ArcadeLoadingScreen({
           </div>
         </div>
 
-        <p className="mt-5 text-4xl font-black tabular-nums text-[#22D3EE] drop-shadow-[0_0_10px_rgba(34,211,238,0.65)]">
+        <p className="mt-5 text-3xl font-black tabular-nums text-[#22D3EE] drop-shadow-[0_0_10px_rgba(34,211,238,0.65)] sm:text-4xl">
           {Math.round(progressValue)}%
         </p>
       </div>

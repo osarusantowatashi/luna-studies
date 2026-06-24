@@ -48,7 +48,7 @@ const Tutors = () => {
       <div className="min-h-screen bg-background">
 
         {/* HERO */}
-        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pt-28 pb-20 text-center sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pb-14 pt-20 text-center sm:px-6 sm:pb-20 sm:pt-28 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,#fff1bd_0%,transparent_28%),radial-gradient(circle_at_20%_70%,#f0eaff_0%,transparent_30%)]" />
 
           <div className="relative z-10 mx-auto max-w-5xl">
@@ -67,8 +67,8 @@ const Tutors = () => {
   ${isZh
                   ? "text-[2.8rem] leading-[1.15] tracking-[-0.015em] sm:text-[4.2rem]"
                   : isJa
-                    ? "text-[3rem] leading-[1.08] tracking-[-0.025em] sm:text-[4.4rem]"
-                    : "text-[3.2rem] leading-[0.95] tracking-[-0.045em] sm:text-[4.8rem]"
+                    ? "text-[2.55rem] leading-[1.08] tracking-[-0.02em] sm:text-[4.4rem]"
+                    : "text-[2.55rem] leading-[1.04] tracking-[-0.025em] min-[390px]:text-[2.9rem] sm:text-[4.8rem] sm:leading-[0.95]"
                 }`}
             >
               {label("tutorsPage.hero.title", "Meet Our Tutors")}
@@ -94,7 +94,7 @@ const Tutors = () => {
         </section>
 
         {/* TUTOR CARDS */}
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-20 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,#f0eaff_0%,transparent_25%),radial-gradient(circle_at_85%_80%,#fff1bd_0%,transparent_25%)]" />
 
           <div className="relative z-10 mx-auto max-w-[1280px]">
@@ -110,11 +110,11 @@ const Tutors = () => {
                   scale: 1.025,
                   rotate: i % 2 === 0 ? -2 : 2,
                 }}
-                className="group relative flex min-h-[520px] flex-col overflow-hidden rounded-[2rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl sm:rounded-[2.4rem] sm:p-6 lg:min-h-[560px]"        >
+                className="group relative flex min-h-0 flex-col overflow-hidden rounded-[1.8rem] bg-white/95 p-4 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl sm:min-h-[520px] sm:rounded-[2.4rem] sm:p-6 lg:min-h-[560px]"        >
                 <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[#f0eaff]" />
 
                 <div
-                  className={`relative z-10 aspect-square overflow-hidden rounded-[2rem] ${
+                  className={`relative z-10 aspect-[4/3] overflow-hidden rounded-[1.5rem] sm:aspect-square sm:rounded-[2rem] ${
                     tutor.name === "Siya" ? "bg-white" : "bg-[#f6f2ff]"
                   }`}
                 >
@@ -132,7 +132,7 @@ const Tutors = () => {
                 <div className="relative z-10 mt-6 flex flex-1 flex-col">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h2 className="font-poppins text-3xl font-black text-primary">
+                      <h2 className="font-poppins text-2xl font-black text-primary sm:text-3xl">
                         {tutor.name}
                       </h2>
 
@@ -182,7 +182,7 @@ const Tutors = () => {
                   <div className="mt-auto grid gap-3 pt-6 sm:grid-cols-1 lg:grid-cols-2">
                     <Button
                       asChild
-                      className="h-12 w-full rounded-2xl bg-primary px-4 text-sm font-bold"
+                      className="h-12 min-h-11 w-full rounded-2xl bg-primary px-4 text-sm font-bold"
                     >
                       <Link to={withLang(`/tutors/${tutor.slug}`)}>
                         <span className="truncate">
@@ -195,7 +195,7 @@ const Tutors = () => {
                     <Button
                       asChild
                       variant="outline"
-                      className="h-12 w-full rounded-2xl border-primary/10 bg-white px-4 text-sm font-bold text-primary"
+                      className="h-12 min-h-11 w-full rounded-2xl border-primary/10 bg-white px-4 text-sm font-bold text-primary"
                     >
                       <Link to={withLang("/enquiry")}>
                         <span className="truncate">

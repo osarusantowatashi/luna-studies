@@ -44,14 +44,14 @@ export default function JapaneseQuestionBank() {
   }, [questions, levelFilter, skillFilter, search]);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10 sm:px-6">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl space-y-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-accent">
             Language Bank
           </p>
 
-          <h1 className="mt-2 font-serif text-4xl text-primary sm:text-5xl">
+          <h1 className="mt-2 font-serif text-3xl text-primary sm:text-5xl">
             Japanese Question Bank
           </h1>
 
@@ -60,12 +60,12 @@ export default function JapaneseQuestionBank() {
           </p>
         </div>
 
-        <div className="rounded-[2rem] border bg-card p-5 shadow-soft">
+        <div className="rounded-[1.6rem] border bg-card p-5 shadow-soft sm:rounded-[2rem]">
           <div className="grid gap-4 md:grid-cols-4">
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="rounded-2xl border bg-white px-4 py-3"
+              className="min-h-11 rounded-2xl border bg-white px-4 py-3"
             >
               {levels.map((level) => (
                 <option key={level}>{level}</option>
@@ -75,7 +75,7 @@ export default function JapaneseQuestionBank() {
             <select
               value={skillFilter}
               onChange={(e) => setSkillFilter(e.target.value)}
-              className="rounded-2xl border bg-white px-4 py-3"
+              className="min-h-11 rounded-2xl border bg-white px-4 py-3"
             >
               {skills.map((skill) => (
                 <option key={skill}>{skill}</option>
@@ -87,16 +87,16 @@ export default function JapaneseQuestionBank() {
               placeholder="Search Japanese questions..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="rounded-2xl border bg-white px-4 py-3 md:col-span-2"
+              className="min-h-11 rounded-2xl border bg-white px-4 py-3 md:col-span-2"
             />
           </div>
 
-          <div className="mt-5 flex items-center justify-between">
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
               Showing {filteredQuestions.length} / {questions.length} questions
             </p>
 
-            <Button variant="outline" className="rounded-2xl">
+            <Button variant="outline" className="min-h-11 rounded-2xl">
               Refresh
             </Button>
           </div>

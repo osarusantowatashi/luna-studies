@@ -76,7 +76,7 @@ const MemoryFlipBank = () => {
                 Grade
               </label>
               <select
-                className="w-full rounded-2xl border bg-white px-4 py-3"
+                className="min-h-11 w-full rounded-2xl border bg-white px-4 py-3"
                 value={gradeFilter}
                 onChange={(e) => setGradeFilter(e.target.value)}
               >
@@ -91,7 +91,7 @@ const MemoryFlipBank = () => {
                 Difficulty
               </label>
               <select
-                className="w-full rounded-2xl border bg-white px-4 py-3"
+                className="min-h-11 w-full rounded-2xl border bg-white px-4 py-3"
                 value={difficultyFilter}
                 onChange={(e) => setDifficultyFilter(e.target.value)}
               >
@@ -106,7 +106,7 @@ const MemoryFlipBank = () => {
                 Language Pair
               </label>
               <select
-                className="w-full rounded-2xl border bg-white px-4 py-3"
+                className="min-h-11 w-full rounded-2xl border bg-white px-4 py-3"
                 value={languageFilter}
                 onChange={(e) => setLanguageFilter(e.target.value)}
               >
@@ -135,7 +135,7 @@ const MemoryFlipBank = () => {
         </div>
 
         {filteredItems.length === 0 ? (
-          <div className="rounded-[1.8rem] border bg-card p-10 text-center text-muted-foreground">
+          <div className="rounded-[1.6rem] border bg-card p-6 text-center text-muted-foreground sm:rounded-[1.8rem] sm:p-10">
             No Memory Flip sets found.
           </div>
         ) : (

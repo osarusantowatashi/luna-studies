@@ -28,17 +28,17 @@ const Values = () => {
       <NavBar />
 
       {/* HERO */}
-      <section className="bg-hero px-6 py-28 text-center">
+      <section className="bg-hero px-4 py-16 text-center sm:px-6 sm:py-24 lg:py-28">
         <div className="mx-auto max-w-4xl">
           <p className="mb-4 text-sm uppercase tracking-widest text-accent font-medium">
             Our Values
           </p>
 
-          <h1 className="font-serif text-5xl md:text-6xl text-primary leading-tight">
+          <h1 className="font-serif text-4xl leading-tight text-primary sm:text-5xl md:text-6xl">
             What we believe learning should be
           </h1>
 
-          <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-6 text-base leading-8 text-muted-foreground sm:text-lg sm:leading-relaxed">
             At Luna Education, we don’t believe in random practice or passive learning.
             We focus on clarity, structure, and real improvement.
           </p>
@@ -46,12 +46,12 @@ const Values = () => {
       </section>
 
       {/* VALUES GRID */}
-      <section className="container mx-auto px-6 py-24">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <section className="container mx-auto px-4 py-14 sm:px-6 sm:py-20 lg:py-24">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {values.map((value) => (
             <div
               key={value.title}
-              className="rounded-3xl border bg-card p-7 shadow-soft transition hover:-translate-y-2 hover:shadow-elegant"
+              className="rounded-2xl border bg-card p-5 shadow-soft transition hover:-translate-y-2 hover:shadow-elegant sm:rounded-3xl sm:p-7"
             >
               <h3 className="font-serif text-2xl text-primary">
                 {value.title}
@@ -66,13 +66,13 @@ const Values = () => {
       </section>
 
       {/* HOW IT SHOWS IN PRACTICE */}
-      <section className="bg-secondary/40 px-6 py-24">
+      <section className="bg-secondary/40 px-4 py-14 sm:px-6 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-sm uppercase tracking-widest text-accent font-medium mb-4">
             In Practice
           </p>
 
-          <h2 className="font-serif text-4xl text-primary mb-10">
+          <h2 className="mb-8 font-serif text-3xl text-primary sm:mb-10 sm:text-4xl">
             How these values shape every lesson
           </h2>
 
@@ -95,8 +95,8 @@ const Values = () => {
       </section>
 
       {/* CTA */}
-      <section className="container mx-auto px-6 py-24 text-center">
-        <h2 className="font-serif text-4xl text-primary mb-6">
+      <section className="container mx-auto px-4 py-14 text-center sm:px-6 sm:py-20 lg:py-24">
+        <h2 className="mb-6 font-serif text-3xl text-primary sm:text-4xl">
           Start your learning journey
         </h2>
 
@@ -105,7 +105,7 @@ const Values = () => {
         </p>
 
         <Link to="/#enquiry">
-          <Button size="lg" className="px-10 h-12 shadow-elegant">
+          <Button size="lg" className="min-h-11 w-full px-10 shadow-elegant sm:w-auto">
             Enquire now
           </Button>
         </Link>

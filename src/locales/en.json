@@ -19,14 +19,35 @@
       "description": "LUNA Studies (Luna Education) provides personalised tutoring for MAP, WIDA, AEIS, TOEFL, English and bilingual education for students in Japan, Singapore and online."
     },
     "hero": {
-      "label": "Empowering Students",
-      "titleLine1": "English skills",
-      "titleLine2": "for a",
-      "titleHighlight": "world",
-      "titleLine3": "beyond school",
-      "description": "Personalised learning, expert tutors, and global programs that help students build confidence and succeed anywhere.",
-      "primaryButton": "Discover Luna",
-      "secondaryButton": "View Programs",
+      "label": "Personalised Learning Pathways",
+      "titleLine1": "Future-ready English",
+      "titleLine2": "Global school pathways",
+      "titleHighlight": "",
+      "titleLine3": "and global pathways.",
+      "description": "Luna supports students with assessment preparation, academic learning, and admissions guidance for international school pathways.",
+      "primaryButton": "Start Learning",
+      "secondaryButton": "View All Services",
+      "pathwayTitle": "Luna Learning Pathway",
+      "pathwayAssessment": "Assessment Preparation",
+      "pathwayAcademic": "Academic Support",
+      "pathwayAdmissions": "Admissions Guidance",
+      "coverage": {
+        "grade": {
+          "value": "K–12",
+          "subtitle": "Grades Supported",
+          "text": "From early years to high school"
+        },
+        "schools": {
+          "value": "100+",
+          "subtitle": "School Pathways",
+          "text": "International school and admissions support"
+        },
+        "global": {
+          "value": "Global",
+          "subtitle": "Online Support",
+          "text": "Supporting families in Singapore, Japan and beyond"
+        }
+      },
       "rating": "4.9/5 from 2,000+ students"
     },
     "dashboard": {
@@ -78,6 +99,28 @@
           "speakingPractice": "Finish speaking practice",
           "grammarReview": "Review grammar corrections"
         }
+      }
+    },
+    "studentJourney": {
+      "diagnostic": {
+        "title": "Diagnostic Assessment",
+        "text": "Understand the student’s current level."
+      },
+      "plan": {
+        "title": "Learning Plan",
+        "text": "Set clear goals and priorities."
+      },
+      "lessons": {
+        "title": "Weekly Lessons",
+        "text": "Personalised lessons with matched tutors."
+      },
+      "progress": {
+        "title": "Progress Tracking",
+        "text": "Keep families updated after lessons."
+      },
+      "readiness": {
+        "title": "School Readiness",
+        "text": "Build confidence for school and beyond."
       }
     },
     "programs": {

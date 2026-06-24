@@ -128,11 +128,11 @@ const TutorMistakes = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-8 sm:px-6 sm:py-14">
+    <div className="min-h-screen overflow-hidden bg-[#fbfaff] px-4 py-6 sm:px-6 sm:py-14">
       {/* background glow */}
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
 
-      <div className="relative z-10 mx-auto max-w-6xl space-y-8">
+      <div className="relative z-10 mx-auto max-w-6xl space-y-6 sm:space-y-8">
 
         {/* HERO */}
         <motion.div
@@ -146,7 +146,7 @@ const TutorMistakes = () => {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="relative overflow-hidden rounded-[3rem] bg-white/92 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:p-10"
+          className="relative overflow-hidden rounded-[2rem] bg-white/92 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:rounded-[3rem] sm:p-10"
         >
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#f0eaff]" />
 
@@ -155,7 +155,7 @@ const TutorMistakes = () => {
               Tutor Review
             </p>
 
-            <h1 className="mt-4 font-poppins text-4xl font-black leading-[0.95] text-primary sm:text-6xl">
+            <h1 className="mt-4 font-poppins text-3xl font-black leading-[0.95] text-primary min-[390px]:text-4xl sm:text-6xl">
               Student
               <br />
               mistakes.
@@ -174,7 +174,7 @@ const TutorMistakes = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           whileHover={{ y: -4 }}
-          className="rounded-[2.2rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl"
+          className="rounded-[1.7rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:rounded-[2.2rem] sm:p-6"
         >
           <label className="text-sm font-semibold text-primary">
             Select Student
@@ -202,12 +202,12 @@ const TutorMistakes = () => {
         </motion.div>
 
         {/* FILTERS */}
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
           {["all", "24h", "7d", "30d"].map((f) => (
             <Button
               type="button"
               key={f}
-              className={`rounded-2xl px-6 font-bold transition-all duration-300 ${
+              className={`min-h-11 rounded-2xl px-5 font-bold transition-all duration-300 ${
                 timeFilter === f
                   ? "bg-[#8d73ff] text-white shadow-[0_12px_30px_rgba(141,115,255,0.35)]"
                   : "border-primary/10 bg-white text-primary hover:-translate-y-1 hover:bg-[#f6f1ff]"
@@ -228,7 +228,7 @@ const TutorMistakes = () => {
         {/* MISTAKES */}
         <div className="space-y-6">
           {paginated.length === 0 ? (
-            <div className="rounded-[2.2rem] bg-white/95 p-10 text-center shadow-[0_18px_55px_rgba(66,56,120,0.08)]">
+            <div className="rounded-[1.7rem] bg-white/95 p-6 text-center shadow-[0_18px_55px_rgba(66,56,120,0.08)] sm:rounded-[2.2rem] sm:p-10">
               <p className="text-sm leading-7 text-muted-foreground">
                 No mistakes found.
               </p>
@@ -258,7 +258,7 @@ const TutorMistakes = () => {
                     overflow-hidden
                     rounded-[2.2rem]
                     bg-white/95
-                    p-6
+                    p-5
                     shadow-[0_18px_55px_rgba(66,56,120,0.08)]
                     transition-all
                     duration-300
@@ -361,7 +361,7 @@ const TutorMistakes = () => {
             <Button
               type="button"
               variant="outline"
-              className="rounded-2xl border-primary/10 bg-white px-6 transition-all hover:-translate-y-1 hover:bg-[#f6f1ff]"
+              className="min-h-11 rounded-2xl border-primary/10 bg-white px-5 transition-all hover:-translate-y-1 hover:bg-[#f6f1ff] sm:px-6"
               disabled={page === 1}
               onClick={() => setPage(page - 1)}
             >
@@ -375,7 +375,7 @@ const TutorMistakes = () => {
             <Button
               type="button"
               variant="outline"
-              className="rounded-2xl border-primary/10 bg-white px-6 transition-all hover:-translate-y-1 hover:bg-[#f6f1ff]"
+              className="min-h-11 rounded-2xl border-primary/10 bg-white px-5 transition-all hover:-translate-y-1 hover:bg-[#f6f1ff] sm:px-6"
               disabled={page === totalPages}
               onClick={() => setPage(page + 1)}
             >

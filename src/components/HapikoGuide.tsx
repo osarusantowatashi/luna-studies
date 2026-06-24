@@ -66,6 +66,9 @@ const HapikoGuide = () => {
     const [show, setShow] = useState(false);
     const [stepIndex, setStepIndex] = useState(0);
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+    const [isMobileGuide, setIsMobileGuide] = useState(() =>
+        typeof window !== "undefined" ? window.innerWidth < 640 : false
+    );
 
     const step = steps[stepIndex];
 
@@ -106,6 +109,17 @@ const HapikoGuide = () => {
     
         checkGuide();
     }, [location.pathname]);
+
+    useEffect(() => {
+        const syncGuideViewport = () => {
+            setIsMobileGuide(window.innerWidth < 640);
+        };
+
+        syncGuideViewport();
+        window.addEventListener("resize", syncGuideViewport);
+
+        return () => window.removeEventListener("resize", syncGuideViewport);
+    }, []);
 
     useEffect(() => {
         const role = localStorage.getItem("role");
@@ -194,15 +208,15 @@ const HapikoGuide = () => {
                 )}
 
                 <motion.div
-                    className="pointer-events-auto fixed flex items-end gap-4"
+                    className="pointer-events-auto fixed inset-x-3 bottom-[max(1rem,env(safe-area-inset-bottom))] flex max-h-[calc(100dvh-2rem)] items-end justify-center gap-3 sm:inset-x-auto sm:max-h-none sm:justify-start sm:gap-4"
                     initial={{ opacity: 0, y: 18, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    style={step.position}
+                    style={isMobileGuide ? undefined : step.position}
                 >
                     <motion.img
                         src={step.image}
                         alt="Hapiko Guide"
-                        className="h-[260px] w-[260px] object-contain drop-shadow-[0_26px_42px_rgba(8,42,85,0.38)]"
+                        className="hidden h-[260px] w-[260px] object-contain drop-shadow-[0_26px_42px_rgba(8,42,85,0.38)] sm:block"
                         animate={{ y: [0, -6, 0] }}
                         transition={{
                             repeat: Infinity,
@@ -211,8 +225,8 @@ const HapikoGuide = () => {
                         }}
                     />
 
-                    <div className="relative mb-8 w-[330px] rounded-[28px] border border-white/70 bg-white/95 px-5 py-4 shadow-[0_24px_60px_rgba(8,42,85,0.22)] backdrop-blur-xl">
-                        <div className="absolute bottom-9 -left-3 h-6 w-6 rotate-45 rounded-[6px] bg-white/95" />
+                    <div className="relative w-full max-w-[340px] rounded-[24px] border border-white/70 bg-white/95 px-4 py-4 shadow-[0_24px_60px_rgba(8,42,85,0.22)] backdrop-blur-xl sm:mb-8 sm:w-[330px] sm:rounded-[28px] sm:px-5">
+                        <div className="absolute bottom-9 -left-3 hidden h-6 w-6 rotate-45 rounded-[6px] bg-white/95 sm:block" />
 
                         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#F6C65B]">
                             {step.title}
@@ -230,7 +244,7 @@ const HapikoGuide = () => {
                             <button
                                 type="button"
                                 onClick={skipForever}
-                                className="text-xs font-semibold text-slate-500 transition hover:text-[#082A55]"
+                                className="min-h-11 text-left text-xs font-semibold text-slate-500 transition hover:text-[#082A55]"
                             >
                                 Skip & Don’t show again
                             </button>
@@ -238,7 +252,7 @@ const HapikoGuide = () => {
                             <button
                                 type="button"
                                 onClick={next}
-                                className="rounded-full bg-[#082A55] px-5 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-[#123A70]"
+                                className="min-h-11 rounded-full bg-[#082A55] px-5 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-[#123A70]"
                             >
                                 {stepIndex === steps.length - 1 ? "Got it" : "Next"}
                             </button>

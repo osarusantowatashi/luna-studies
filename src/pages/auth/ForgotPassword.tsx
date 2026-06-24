@@ -58,7 +58,7 @@ const ForgotPassword = () => {
                             type="email"
                             inputMode="email"
                             autoComplete="email"
-                            className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+                            className="min-h-11 w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                             placeholder={t("forgotPassword.placeholder")}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -66,7 +66,7 @@ const ForgotPassword = () => {
 
                         <Button
                             type="button"
-                            className="h-12 w-full rounded-2xl text-sm sm:text-base"
+                            className="min-h-11 w-full rounded-2xl py-3 text-sm sm:text-base"
                             onClick={handleReset}
                             disabled={loading}
                         >

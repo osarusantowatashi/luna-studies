@@ -93,7 +93,7 @@ const Subjects = () => {
           scale: 1.025,
           rotate: index % 2 === 0 ? -2 : 2,
         }}
-        className="group relative flex min-h-[280px] flex-col overflow-hidden rounded-[2.4rem] bg-white/95 p-6 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl"
+        className="group relative flex min-h-[240px] flex-col overflow-hidden rounded-[1.8rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl sm:min-h-[280px] sm:rounded-[2.4rem] sm:p-6"
       >
         <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#f0eaff]" />
 
@@ -110,7 +110,7 @@ const Subjects = () => {
             <Icon className="h-7 w-7 text-white" />
           </motion.div>
 
-          <h3 className="font-poppins text-2xl font-black leading-tight text-primary">
+          <h3 className="font-poppins text-xl font-black leading-tight text-primary sm:text-2xl">
             {program.title}
           </h3>
 
@@ -149,7 +149,7 @@ const Subjects = () => {
           {label}
         </p>
 
-        <h2 className="mt-4 font-poppins text-4xl font-black tracking-[-0.035em] text-primary sm:text-5xl">
+        <h2 className="mt-4 font-poppins text-3xl font-black leading-tight tracking-[-0.02em] text-primary sm:text-5xl">
           {title}
         </h2>
 
@@ -189,7 +189,7 @@ const seoDescription = t("subjects.seo.description");
 
       <div className="min-h-screen bg-background">
         {/* HERO */}
-        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pt-28 pb-20 text-center sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pb-14 pt-20 text-center sm:px-6 sm:pb-20 sm:pt-28 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,#fff1bd_0%,transparent_28%),radial-gradient(circle_at_20%_70%,#f0eaff_0%,transparent_30%)]" />
 
           <div className="relative z-10 mx-auto max-w-5xl">
@@ -205,7 +205,7 @@ const seoDescription = t("subjects.seo.description");
               initial={{ opacity: 0, y: 35 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="mt-5 font-poppins text-[3.2rem] font-black leading-[0.95] tracking-[-0.045em] text-primary sm:text-[4.8rem]"
+              className="mt-5 font-poppins text-[2.45rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.8rem] sm:text-[4.8rem] sm:leading-[0.95]"
             >
               {t("subjects.hero.titleLine1")}
               <br />
@@ -224,7 +224,7 @@ const seoDescription = t("subjects.seo.description");
         </section>
 
         {/* PROGRAM CARDS */}
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-20 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,#f0eaff_0%,transparent_25%),radial-gradient(circle_at_85%_80%,#fff1bd_0%,transparent_25%)]" />
 
           <div className="relative z-10 mx-auto max-w-[1280px]">

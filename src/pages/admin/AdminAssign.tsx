@@ -253,11 +253,11 @@ const AdminAssign = () => {
     return (
       <div className="min-h-screen bg-background">
         <div className="px-4 py-8 sm:px-6 sm:py-16">
-          <div className="mx-auto max-w-4xl space-y-8">
+          <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">
             <Button
               type="button"
               variant="outline"
-              className="rounded-2xl"
+              className="min-h-11 rounded-2xl"
               onClick={() => setSelectedStudent(null)}
             >
               ← Back
@@ -284,7 +284,7 @@ const AdminAssign = () => {
                     key={grade}
                     type="button"
                     onClick={() => toggleGrade(grade)}
-                    className={`rounded-2xl border p-4 text-center text-sm transition ${
+                    className={`min-h-11 rounded-2xl border p-4 text-center text-sm transition ${
                       selectedGrades.includes(grade)
                         ? "bg-yellow-400 text-black"
                         : "bg-card hover:bg-secondary"
@@ -312,7 +312,7 @@ const AdminAssign = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="px-4 py-8 sm:px-6 sm:py-16">
-        <div className="mx-auto max-w-7xl space-y-10">
+        <div className="mx-auto max-w-7xl space-y-8 sm:space-y-10">
           <div>
             <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-accent">
               Admin Configure
@@ -331,7 +331,7 @@ const AdminAssign = () => {
           <div className="grid gap-3 sm:flex sm:flex-wrap">
             <Button
               type="button"
-              className="w-full rounded-2xl sm:w-auto"
+              className="min-h-11 w-full rounded-2xl sm:w-auto"
               variant={activeTab === "student" ? "default" : "outline"}
               onClick={() => setActiveTab("student")}
             >
@@ -340,7 +340,7 @@ const AdminAssign = () => {
 
             <Button
               type="button"
-              className="w-full rounded-2xl sm:w-auto"
+              className="min-h-11 w-full rounded-2xl sm:w-auto"
               variant={activeTab === "tutor" ? "default" : "outline"}
               onClick={() => setActiveTab("tutor")}
             >
@@ -349,7 +349,7 @@ const AdminAssign = () => {
 
             <Button
               type="button"
-              className="w-full rounded-2xl sm:w-auto"
+              className="min-h-11 w-full rounded-2xl sm:w-auto"
               variant={activeTab === "connect" ? "default" : "outline"}
               onClick={() => setActiveTab("connect")}
             >

@@ -471,31 +471,31 @@ const ProfessionalHero = ({
   advisoryLabel: string;
   advisoryTitle: string;
 }) => (
-  <section className="relative overflow-hidden bg-[#fffdf8] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+  <section className="relative overflow-hidden bg-[#fffdf8] px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
     <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,#fff1bd_0%,transparent_24%),radial-gradient(circle_at_12%_82%,#f1edff_0%,transparent_26%)]" />
     <div className="relative z-10 mx-auto grid max-w-[1180px] items-center gap-12 lg:grid-cols-[1.02fr_0.8fr]">
       <motion.div {...fadeIn}>
         <p className="text-xs font-black uppercase tracking-[0.26em] text-[#8d73ff]">
           {page.hero.label}
         </p>
-        <h1 className="mt-5 font-poppins text-4xl font-black leading-tight text-primary sm:text-6xl">
+        <h1 className="mt-5 font-poppins text-3xl font-black leading-tight text-primary min-[390px]:text-4xl sm:text-6xl">
           {page.hero.title}
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-primary/66">
+        <p className="mt-6 max-w-2xl text-base leading-8 text-primary/66 sm:text-lg">
           {page.hero.subtitle}
         </p>
-        <div className="mt-8 flex flex-wrap gap-4">
-          <Link to={enquiryUrl}>
-            <Button className="h-13 rounded-full bg-primary px-8 text-base shadow-[0_16px_36px_rgba(10,36,84,0.16)]">
+        <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap sm:gap-4">
+          <Link to={enquiryUrl} className="w-full sm:w-auto">
+            <Button className="min-h-11 w-full rounded-full bg-primary px-8 py-3 text-base shadow-[0_16px_36px_rgba(10,36,84,0.16)] sm:w-auto">
               {page.hero.cta}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
           {page.hero.secondary && (
-            <Link to={servicesUrl}>
+            <Link to={servicesUrl} className="w-full sm:w-auto">
               <Button
                 variant="outline"
-                className="h-13 rounded-full border-primary/15 bg-white px-8 text-base text-primary"
+                className="min-h-11 w-full rounded-full border-primary/15 bg-white px-8 py-3 text-base text-primary sm:w-auto"
               >
                 {page.hero.secondary}
               </Button>
@@ -1097,14 +1097,14 @@ export const SchoolConsultingPage = () => {
               <p className="text-xs font-black uppercase tracking-[0.26em] text-[#8d73ff]">
                 {page.hero.label}
               </p>
-              <h1 className="mt-5 font-poppins text-4xl font-black leading-tight text-primary sm:text-6xl">
+              <h1 className="mt-5 font-poppins text-3xl font-black leading-tight text-primary min-[390px]:text-4xl sm:text-6xl">
                 {page.hero.title}
               </h1>
-              <p className="mt-6 max-w-3xl text-lg leading-8 text-primary/66">
+              <p className="mt-6 max-w-3xl text-base leading-8 text-primary/66 sm:text-lg">
                 {page.hero.subtitle}
               </p>
               <Link to={enquiryUrl}>
-                <Button className="mt-8 h-13 rounded-full bg-primary px-8 text-base">
+                <Button className="mt-8 min-h-11 w-full rounded-full bg-primary px-8 py-3 text-base sm:w-auto">
                   {page.hero.cta}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -1298,10 +1298,10 @@ export const SchoolRegionPage = ({ region }: { region: Region }) => {
             <Link to={withLang("/services/school-consulting")} className="text-sm font-bold text-[#8d73ff]">
               {copy.back}
             </Link>
-            <h1 className="mt-6 font-poppins text-4xl font-black leading-tight text-primary sm:text-6xl">
+            <h1 className="mt-6 font-poppins text-3xl font-black leading-tight text-primary min-[390px]:text-4xl sm:text-6xl">
               {copy.title}
             </h1>
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-primary/66">{copy.intro}</p>
+            <p className="mt-5 max-w-3xl text-base leading-8 text-primary/66 sm:text-lg">{copy.intro}</p>
             <div className="mt-8 flex flex-wrap gap-2">
               {(ui.directoryFilters as string[]).map((filter) => (
                 <span
@@ -1467,7 +1467,7 @@ export const SchoolDetailPage = ({ region }: { region: Region }) => {
             </Link>
             <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
               <div>
-                <h1 className="font-poppins text-4xl font-black leading-tight text-primary sm:text-6xl">
+                <h1 className="font-poppins text-3xl font-black leading-tight text-primary min-[390px]:text-4xl sm:text-6xl">
                   {school.name}
                 </h1>
                 <p className="mt-4 text-lg text-primary/60">{school.location}</p>
@@ -1480,7 +1480,7 @@ export const SchoolDetailPage = ({ region }: { region: Region }) => {
                   ))}
                 </div>
                 <Link to={enquiryUrl}>
-                  <Button className="mt-8 h-13 rounded-full bg-primary px-8">
+                  <Button className="mt-8 min-h-11 w-full rounded-full bg-primary px-8 py-3 sm:w-auto">
                     {copy.cta}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
@@ -1618,7 +1618,7 @@ export const SchoolDetailPage = ({ region }: { region: Region }) => {
               ))}
             </div>
             <Link to={enquiryUrl}>
-              <Button className="mt-8 h-13 rounded-full bg-primary px-8">
+              <Button className="mt-8 min-h-11 w-full rounded-full bg-primary px-8 py-3 sm:w-auto">
                 {copy.cta}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>

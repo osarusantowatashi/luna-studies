@@ -313,10 +313,10 @@ const Services = () => {
       />
 
       <div className="min-h-screen bg-[#fbfaff]">
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pb-16 pt-20 sm:px-6 lg:px-8 lg:pb-20 lg:pt-24">
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pb-12 pt-16 sm:px-6 sm:pb-16 sm:pt-20 lg:px-8 lg:pb-20 lg:pt-24">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,#fff1bd_0%,transparent_24%),radial-gradient(circle_at_18%_78%,#f0eaff_0%,transparent_28%),linear-gradient(180deg,#f8f6ff_0%,#fffdf8_100%)]" />
 
-          <div className="relative z-10 mx-auto grid max-w-[1440px] items-center gap-12 pt-8 lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="relative z-10 mx-auto grid max-w-[1440px] items-center gap-10 pt-6 sm:gap-12 sm:pt-8 lg:grid-cols-[0.82fr_1.18fr]">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -328,7 +328,7 @@ const Services = () => {
                 {t("services.hero.label")}
               </p>
 
-              <h1 className="font-poppins text-[2.7rem] font-black leading-[1.02] tracking-[-0.035em] text-primary sm:text-[4rem] lg:text-[5rem]">
+              <h1 className="font-poppins text-[2.35rem] font-black leading-[1.06] tracking-[-0.025em] text-primary min-[390px]:text-[2.65rem] sm:text-[4rem] lg:text-[5rem]">
                 {t("services.hero.titleLine1")}<br />
                 <span className="text-[#8d73ff]">{t("services.hero.titleLine2")}</span>
                 <span className="text-[#ffc928]">.</span>
@@ -338,18 +338,18 @@ const Services = () => {
                 {t("services.hero.description")}
               </p>
 
-              <div className="mt-9 flex flex-wrap items-center gap-4">
-                <a href="#services-showcase">
-                  <Button className="h-14 rounded-full bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.20)]">
+              <div className="mt-8 grid gap-3 sm:mt-9 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
+                <a href="#services-showcase" className="w-full sm:w-auto">
+                  <Button className="h-14 w-full rounded-full bg-primary px-8 text-base shadow-[0_18px_45px_rgba(10,36,84,0.20)] sm:w-auto">
                     {t("services.hero.primaryButton")}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </a>
 
-                <Link to={withLang("/enquiry")}>
+                <Link to={withLang("/enquiry")} className="w-full sm:w-auto">
                   <Button
                     variant="outline"
-                    className="h-14 rounded-full border-primary/15 bg-white/85 px-8 text-base text-primary shadow-sm backdrop-blur"
+                    className="h-14 w-full rounded-full border-primary/15 bg-white/85 px-8 text-base text-primary shadow-sm backdrop-blur sm:w-auto"
                   >
                     {t("services.hero.secondaryButton")}
                   </Button>
@@ -357,7 +357,7 @@ const Services = () => {
               </div>
             </motion.div>
 
-            <div className="relative min-h-[560px]">
+            <div className="relative min-h-0 lg:min-h-[560px]">
               <div className="pointer-events-none absolute right-0 top-0 h-56 w-56 rounded-full bg-[#ffe89a]/60 blur-sm shadow-[0_0_100px_rgba(255,217,100,0.35)] sm:h-72 sm:w-72" />
               <motion.div
                 animate={{ y: [0, -14, 0], rotate: [-2, 2, -2] }}
@@ -416,7 +416,7 @@ const Services = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.35 }}
             transition={{ duration: 0.55 }}
-            className="relative z-10 mx-auto max-w-[1180px] rounded-[2.8rem] bg-white/88 p-7 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:p-10 lg:grid lg:grid-cols-[0.78fr_1.22fr] lg:items-center lg:gap-12"
+            className="relative z-10 mx-auto max-w-[1180px] rounded-[2rem] bg-white/88 p-5 shadow-[0_25px_80px_rgba(66,56,120,0.12)] backdrop-blur-xl sm:rounded-[2.8rem] sm:p-10 lg:grid lg:grid-cols-[0.78fr_1.22fr] lg:items-center lg:gap-12"
           >
             <div>
               <p className="text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">

@@ -57,7 +57,7 @@ const TutorDetail = () => {
       />
 
       <div className="min-h-screen bg-background">
-        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pb-20 pt-28 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-[#fffdf8] px-4 pb-14 pt-20 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,#fff1bd_0%,transparent_25%),radial-gradient(circle_at_18%_74%,#f0eaff_0%,transparent_28%)]" />
 
           <div className="relative z-10 mx-auto max-w-[1200px]">
@@ -80,7 +80,7 @@ const TutorDetail = () => {
                 <div className="absolute -bottom-5 right-8 h-36 w-36 rounded-full bg-[#ffc928]/18 blur-2xl" />
 
                 <div
-                  className={`relative mx-auto aspect-[4/5] max-w-[430px] overflow-hidden rounded-[2.2rem] border border-white/80 shadow-[0_28px_90px_rgba(66,56,120,0.16)] ${
+                  className={`relative mx-auto aspect-[4/5] max-w-[360px] overflow-hidden rounded-[1.8rem] border border-white/80 shadow-[0_28px_90px_rgba(66,56,120,0.16)] sm:max-w-[430px] sm:rounded-[2.2rem] ${
                     tutor.name === "Siya" ? "bg-white" : "bg-[#f6f2ff]"
                   }`}
                 >
@@ -105,7 +105,7 @@ const TutorDetail = () => {
                   {label("tutorsPage.popup.label", "Tutor Profile")}
                 </p>
 
-                <h1 className="mt-4 font-poppins text-[3rem] font-black leading-[0.98] tracking-[-0.045em] text-primary sm:text-[4.4rem]">
+                <h1 className="mt-4 font-poppins text-[2.5rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.8rem] sm:text-[4.4rem] sm:leading-[0.98]">
                   {tutor.name}
                 </h1>
 
@@ -139,7 +139,7 @@ const TutorDetail = () => {
                   </div>
                 </div>
 
-                <Button asChild className="mt-8 h-12 rounded-full bg-primary px-8 text-base">
+                <Button asChild className="mt-8 h-12 w-full rounded-full bg-primary px-8 text-base sm:w-auto">
                   <Link to={withLang("/enquiry")}>
                     {t("tutorsPage.buttons.bookWithTutor", { name: tutor.name })}
                   </Link>

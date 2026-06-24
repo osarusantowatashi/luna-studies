@@ -225,7 +225,7 @@ const Login = () => {
       <div className="min-h-screen overflow-hidden bg-[#fbfaff]">
         <NavBar />
 
-        <main className="relative px-4 pt-28 pb-20 sm:px-6 lg:px-8">
+        <main className="relative px-4 pb-14 pt-20 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_82%_78%,#fff1bd_0%,transparent_30%),linear-gradient(180deg,#fffdf8_0%,#fbfaff_100%)]" />
 
           <motion.div
@@ -248,7 +248,7 @@ const Login = () => {
                 {t("login.portal.label")}
               </motion.p>
 
-              <h1 className="mt-5 font-poppins text-[2.8rem] font-black leading-[1] text-primary sm:text-[4rem]">
+              <h1 className="mt-5 font-poppins text-[2.35rem] font-black leading-[1.06] text-primary min-[390px]:text-[2.65rem] sm:text-[4rem] sm:leading-[1]">
                 {t("login.portal.titleLine1")}<br />
 
                 {t("login.portal.titleLine2")}
@@ -259,7 +259,7 @@ const Login = () => {
               </p>
 
 
-              <div className="mt-6 grid grid-cols-3 gap-3 sm:mt-9 sm:max-w-xl sm:gap-4">
+              <div className="mt-6 grid grid-cols-1 gap-3 min-[390px]:grid-cols-3 sm:mt-9 sm:max-w-xl sm:gap-4">
                 {[
                   {
                     icon: BookOpen,
@@ -300,7 +300,7 @@ const Login = () => {
                 initial={{ opacity: 0, y: 35 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 }}
-                className="mt-9 rounded-[2rem] bg-white/80 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl"
+                className="mt-8 rounded-[1.6rem] bg-white/80 p-4 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:mt-9 sm:rounded-[2rem] sm:p-5"
               >
                 <div className="flex items-center gap-3">
                   <CheckCircle className="h-5 w-5 text-[#8d73ff]" />
@@ -318,7 +318,7 @@ const Login = () => {
               transition={{ duration: 0.75, delay: 0.15 }}
               className="relative"
             >
-              <div className="overflow-hidden rounded-[2.5rem] bg-white/95 shadow-[0_35px_100px_rgba(66,56,120,0.16)] backdrop-blur-xl sm:rounded-[3rem]">
+              <div className="overflow-hidden rounded-[1.8rem] bg-white/95 shadow-[0_35px_100px_rgba(66,56,120,0.16)] backdrop-blur-xl sm:rounded-[3rem]">
                 <div className="bg-[#fbfaff] p-5 sm:p-7">
                   <div className="grid grid-cols-2 rounded-[1.5rem] bg-white p-1 shadow-[0_10px_35px_rgba(66,56,120,0.07)]">
                     {[
@@ -328,7 +328,7 @@ const Login = () => {
                       <button
                         key={tab.key}
                         onClick={() => setMode(tab.key as "signin" | "signup")}
-                        className={`relative h-12 rounded-[1.2rem] text-sm font-black transition ${mode === tab.key
+                        className={`relative min-h-11 rounded-[1.2rem] text-sm font-black transition ${mode === tab.key
                           ? "text-white"
                           : "text-primary/55 hover:text-primary"
                           }`}

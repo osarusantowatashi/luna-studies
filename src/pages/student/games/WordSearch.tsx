@@ -1500,14 +1500,14 @@ export default function WordSearch({
 
             {demoMode && showDemoResult && (
               <div className="fixed inset-0 z-[190] flex items-center justify-center bg-black/70 px-4">
-                <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
-                  <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
+                <div className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:rounded-[2.5rem] sm:p-8">
+                  <Trophy className="mx-auto h-16 w-16 text-[#FACC15] sm:h-20 sm:w-20" />
 
                   <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#A7F3D0]">
                     Luna Arcade Demo
                   </p>
 
-                  <h2 className="mt-3 text-4xl font-black text-white">
+                  <h2 className="mt-3 text-3xl font-black text-white sm:text-4xl">
                     Great Job!
                   </h2>
 
@@ -1515,7 +1515,7 @@ export default function WordSearch({
                     You completed the Luna Arcade demo.
                   </p>
 
-                  <div className="mt-8 grid gap-3">
+                  <div className="mt-6 grid gap-3 sm:mt-8">
                     <button
                       onClick={() => {
                         setShowDemoResult(false);
@@ -1556,7 +1556,7 @@ export default function WordSearch({
 
             {finalFeedback && !finalResult && (
               <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#022C22]/62 px-4 backdrop-blur-sm">
-                <div className={`w-full max-w-sm rounded-[2rem] border-4 p-6 text-center shadow-[0_28px_90px_rgba(0,0,0,0.45)] ${finalFeedback.type === "correct"
+                <div className={`w-full max-w-sm rounded-[1.7rem] border-4 p-5 text-center shadow-[0_28px_90px_rgba(0,0,0,0.45)] sm:rounded-[2rem] sm:p-6 ${finalFeedback.type === "correct"
                   ? "border-emerald-200 bg-gradient-to-b from-emerald-400 to-emerald-600"
                   : "border-[#FDA4AF] bg-gradient-to-b from-[#FB7185] to-[#BE185D]"
                   }`}
@@ -1568,7 +1568,7 @@ export default function WordSearch({
                       <XCircle className="h-9 w-9 text-white" />
                     )}
                   </div>
-                  <h2 className="mt-4 text-3xl font-black text-white">
+                  <h2 className="mt-4 text-2xl font-black text-white sm:text-3xl">
                     {finalFeedback.type === "correct" ? "Correct!" : "Incorrect"}
                   </h2>
                   {finalFeedback.correctAnswer && (
@@ -1576,7 +1576,7 @@ export default function WordSearch({
                       <p className="mt-2 text-sm font-black uppercase tracking-[0.18em] text-white/80">
                         Correct answer
                       </p>
-                      <p className="mt-2 text-3xl font-black tracking-wide text-white">
+                      <p className="mt-2 break-words text-2xl font-black tracking-wide text-white sm:text-3xl">
                         {finalFeedback.correctAnswer}
                       </p>
                     </>
@@ -1600,7 +1600,7 @@ export default function WordSearch({
                       }}
                     />
                   ))}
-                <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-[2rem] border-4 border-[#A7F3D0] bg-gradient-to-b from-[#064E3B] via-[#0F766E] to-[#1D4ED8] p-1 text-center shadow-[0_34px_110px_rgba(15,118,110,0.55)] sm:rounded-[2.5rem]">
+                <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-[2rem] border-4 border-[#A7F3D0] bg-gradient-to-b from-[#064E3B] via-[#0F766E] to-[#1D4ED8] p-1 text-center shadow-[0_34px_110px_rgba(15,118,110,0.55)] sm:rounded-[2.5rem]">
                   <div className="relative rounded-[1.7rem] bg-[#022C22]/92 p-6 sm:rounded-[2.2rem] sm:p-8">
                     <div className={`relative mx-auto flex h-24 w-24 items-center justify-center rounded-full border-4 ${finalResult.passed ? "border-[#FDE68A] bg-[#FACC15]" : "border-[#FDA4AF] bg-[#FB7185]"} shadow-[0_18px_60px_rgba(250,204,21,0.35)]`}>
                       {finalResult.passed ? (

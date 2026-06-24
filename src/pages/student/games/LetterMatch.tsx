@@ -1268,7 +1268,7 @@ export default function LetterMatch({
               <button
                 type="button"
                 onClick={toggleFullscreen}
-                className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
+                className="absolute right-3 top-3 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white backdrop-blur-xl hover:bg-white/10"
                 title={fullscreenActive ? "Exit Fullscreen" : "Enter Fullscreen"}
               >
                 {fullscreenActive ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
@@ -1277,14 +1277,14 @@ export default function LetterMatch({
 
             {demoMode && showDemoResult && (
               <div className="fixed inset-0 z-[190] flex items-center justify-center bg-black/70 px-4">
-                <div className="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-[#0D1B2E] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
-                  <Trophy className="mx-auto h-20 w-20 text-[#FACC15]" />
+                <div className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0D1B2E] p-6 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:rounded-[2.5rem] sm:p-8">
+                  <Trophy className="mx-auto h-16 w-16 text-[#FACC15] sm:h-20 sm:w-20" />
 
                   <p className="mt-4 text-sm font-black uppercase tracking-[0.25em] text-[#C4B5FD]">
                     Luna Arcade Demo
                   </p>
 
-                  <h2 className="mt-3 text-4xl font-black text-white">
+                  <h2 className="mt-3 text-3xl font-black text-white sm:text-4xl">
                     Great Job!
                   </h2>
 
@@ -1292,7 +1292,7 @@ export default function LetterMatch({
                     You completed the Luna Arcade demo.
                   </p>
 
-                  <div className="mt-8 grid gap-3">
+                  <div className="mt-6 grid gap-3 sm:mt-8">
                     <button
                       onClick={async () => {
                         setShowDemoResult(false);
@@ -1344,7 +1344,7 @@ export default function LetterMatch({
                       }}
                     />
                   ))}
-                <div className="relative w-full max-w-lg rounded-[2rem] border-4 border-[#FDE68A] bg-gradient-to-b from-[#7C3AED] via-[#DB2777] to-[#FB923C] p-1 text-center shadow-[0_34px_110px_rgba(124,58,237,0.55)] sm:rounded-[2.5rem]">
+                <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-[2rem] border-4 border-[#FDE68A] bg-gradient-to-b from-[#7C3AED] via-[#DB2777] to-[#FB923C] p-1 text-center shadow-[0_34px_110px_rgba(124,58,237,0.55)] sm:rounded-[2.5rem]">
                   <div className="relative rounded-[1.7rem] bg-[#180B3D]/92 p-6 sm:rounded-[2.2rem] sm:p-8">
                     <div className={`relative mx-auto flex h-24 w-24 items-center justify-center rounded-full border-4 ${gameResult.passed ? "border-[#FDE68A] bg-[#FACC15]" : "border-[#FDA4AF] bg-[#FB7185]"} shadow-[0_18px_60px_rgba(250,204,21,0.4)]`}>
                       {gameResult.passed ? (
