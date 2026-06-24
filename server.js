@@ -2964,6 +2964,84 @@ app.post("/api/submit-career-application", async (req, res) => {
   }
 });
 
+app.post("/api/generate-flashcards", async (req, res) => {
+  try {
+    const {
+      words,
+      wordLanguage = "English",
+      helperLanguage = "Chinese",
+      difficulty = "Easy",
+    } = req.body;
+
+    if (!Array.isArray(words) || words.length === 0) {
+      return res.status(400).json({
+        error: "Words are required.",
+      });
+    }
+
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      input: `
+Create bilingual flashcards.
+
+Word language: ${wordLanguage}
+Helper language: ${helperLanguage}
+Difficulty: ${difficulty}
+
+Words:
+${words.join("\n")}
+
+For EACH word generate:
+
+- meaning
+- pronunciation
+- example sentence
+- memory hint
+- quiz question
+- 4 quiz options
+- answer
+
+Return ONLY valid JSON.
+
+{
+  "cards": [
+    {
+      "word": "sincere",
+      "meaning": "真诚的",
+      "pronunciation": "sin-SEER",
+      "example": "She gave me a sincere smile.",
+      "memoryHint": "Think of someone speaking from the heart.",
+      "quizQuestion": "What does sincere mean?",
+      "quizOptions": [
+        "真诚的",
+        "巨大的",
+        "借入",
+        "疲惫的"
+      ],
+      "answer": "真诚的"
+    }
+  ]
+}
+`,
+    });
+
+    const text = response.output_text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const parsed = JSON.parse(text);
+
+    return res.json(parsed);
+  } catch (err) {
+    console.error("FLASHCARD ERROR:", err);
+
+    return res.status(500).json({
+      error: err.message || "Failed to generate flashcards",
+    });
+  }
+});
+
 /* =========================
    START SERVER
 ========================= */
