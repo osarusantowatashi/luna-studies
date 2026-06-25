@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, Calculator, Gamepad2, ArrowRight, Languages } from "lucide-react";
+import { Calculator, ArrowRight, Languages, LibraryBig } from "lucide-react";
 
 export default function GenerateHome() {
   return (
@@ -15,7 +15,7 @@ export default function GenerateHome() {
           </h1>
 
           <p className="mt-3 max-w-3xl text-muted-foreground">
-            Generate language questions, Math practice, and learning games for students.
+            Generate language questions, Singapore Math questions, and game vocabulary from clearly separated systems.
           </p>
         </div>
 
@@ -26,29 +26,7 @@ export default function GenerateHome() {
 
           <div className="grid gap-5 md:grid-cols-2">
             <Link
-              to="/admin/generate/english"
-              className="group block min-h-11 rounded-[1.6rem] border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant sm:rounded-[2rem] sm:p-6"
-            >
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
-                <BookOpen className="h-7 w-7 text-accent" />
-              </div>
-
-              <h2 className="mt-5 text-xl font-bold text-primary sm:text-2xl">
-                English Question Generator
-              </h2>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                Generate reading, vocabulary, grammar, and comprehension questions.
-              </p>
-
-              <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
-                Open English Generator
-                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-              </div>
-            </Link>
-
-            <Link
-              to="/admin/generate/japanese"
+              to="/admin/generate/language"
               className="group block min-h-11 rounded-[1.6rem] border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant sm:rounded-[2rem] sm:p-6"
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
@@ -56,15 +34,15 @@ export default function GenerateHome() {
               </div>
 
               <h2 className="mt-5 text-xl font-bold text-primary sm:text-2xl">
-                Japanese Question Generator
+                Language Question Generator
               </h2>
 
               <p className="mt-2 text-sm text-muted-foreground">
-                Generate hiragana, katakana, vocabulary, grammar, and reading questions.
+                Generate one multilingual question record for English, Japanese, or Chinese learning.
               </p>
 
               <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
-                Open Japanese Generator
+                Open Language Generator
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </div>
             </Link>
@@ -90,7 +68,7 @@ export default function GenerateHome() {
               </h2>
 
               <p className="mt-2 text-sm text-muted-foreground">
-                Generate topic-based math questions by grade, skill, and difficulty.
+                Generate simple Singapore Math questions by grade, topic, and count.
               </p>
 
               <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
@@ -103,39 +81,40 @@ export default function GenerateHome() {
 
         <section className="space-y-4">
           <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            Games
+            Game Vocabulary
           </p>
 
           <div className="grid gap-5 md:grid-cols-2">
             <Link
-              to="/admin/generate/memory-flip"
+              to="/admin/generate/shared-vocabulary"
               className="group rounded-[2rem] border bg-card p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant"
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
-                <Gamepad2 className="h-7 w-7 text-accent" />
+                <LibraryBig className="h-7 w-7 text-accent" />
               </div>
 
               <h2 className="mt-5 text-2xl font-bold text-primary">
-                Memory Flip Generator
+                Game Shared Vocabulary
               </h2>
 
               <p className="mt-2 text-sm text-muted-foreground">
-                Generate bilingual memory matching games and vocabulary pairs.
+                Generate reusable vocabulary items for Memory Flip, Word Search, Letter Match, and future games.
               </p>
 
               <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
-                Open Memory Flip Generator
+                Open Vocabulary Inbox
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </div>
             </Link>
 
             <div className="rounded-[2rem] border border-dashed bg-card/60 p-6 opacity-70">
               <h2 className="text-2xl font-bold text-primary">
-                More Games
+                Game-specific generators retired
               </h2>
 
               <p className="mt-2 text-sm text-muted-foreground">
-                Future learning games can be added here.
+                Memory Flip, Word Search, Letter Match, and future games now reuse the
+                shared vocabulary library instead of generating duplicate game content.
               </p>
             </div>
           </div>

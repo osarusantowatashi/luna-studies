@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw, Wand2 } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -10,28 +10,9 @@ const statusLabel: Record<string, string> = {
   approved: "Approved",
   rejected: "Rejected",
 };
-const pairCountByDifficulty: Record<string, number> = {
-
-  Easy: 6,
-
-  Medium: 8,
-
-  Hard: 10,
-
-  Advanced: 12,
-
-};
-
 export default function MemoryFlipManager() {
-  const [grade, setGrade] = useState("Grade 1");
-  const [difficulty, setDifficulty] = useState("Easy");
-  const pairCount = pairCountByDifficulty[difficulty];
-  const [languagePair, setLanguagePair] = useState("zh_en");
-
-
   const [images, setImages] = useState<any[]>([]);
   const [status, setStatus] = useState("needs_review");
-  const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [keywordDrafts, setKeywordDrafts] = useState<Record<string, string>>({});
@@ -89,41 +70,6 @@ export default function MemoryFlipManager() {
       setErrorMsg(err.message || "Failed to load images.");
     } finally {
       setImageLoading(false);
-    }
-  };
-
-  const generate = async () => {
-    setLoading(true);
-    setErrorMsg("");
-
-    try {
-      const token = await getToken();
-
-      const res = await fetch(`${API_URL}/api/generate-game-questions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          gameType: "memory_flip",
-          examType: "English Foundation",
-          grade,
-          skill: "Vocabulary",
-          difficulty,
-          pairCount,
-          languagePair,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to generate.");
-
-      await loadImages();
-    } catch (err: any) {
-      setErrorMsg(err.message || "Failed to generate.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -236,15 +182,16 @@ export default function MemoryFlipManager() {
       <div className="mx-auto max-w-6xl space-y-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-accent">
-            Memory Flip
+            Shared Game Vocabulary
           </p>
 
           <h1 className="mt-2 font-serif text-3xl text-primary sm:text-4xl">
-            Generate & Review
+            Image Review
           </h1>
 
           <p className="mt-3 text-muted-foreground">
-            Generate Memory Flip pairs and review LUNA vocabulary images before approval.
+            Review reusable vocabulary images used by Memory Flip, Word Search, Letter Match,
+            and future games.
           </p>
         </div>
 
@@ -253,43 +200,6 @@ export default function MemoryFlipManager() {
             {errorMsg}
           </div>
         )}
-
-        <div className="rounded-[1.6rem] border bg-card p-5 shadow-soft sm:rounded-[2rem] sm:p-6">
-          <h2 className="text-xl font-bold text-primary">Generate Questions</h2>
-
-          <div className="mt-5 grid gap-4 sm:grid-cols-4">
-            <select value={languagePair} onChange={(e) => setLanguagePair(e.target.value)} className="min-h-11 rounded-2xl border bg-white px-4 py-3">
-              <option value="zh_en">中英 Chinese ↔ English</option>
-              <option value="zh_ja">中日 Chinese ↔ Japanese</option>
-              <option value="en_ja">英日 English ↔ Japanese</option>
-            </select>
-
-            <select value={grade} onChange={(e) => setGrade(e.target.value)} className="min-h-11 rounded-2xl border bg-white px-4 py-3">
-              <option>Grade 1</option>
-              <option>Grade 2</option>
-              <option>Grade 3</option>
-              <option>Grade 4</option>
-              <option>Grade 5</option>
-              <option>Grade 6</option>
-            </select>
-
-            <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="min-h-11 rounded-2xl border bg-white px-4 py-3">
-              <option>Easy</option>
-              <option>Medium</option>
-              <option>Hard</option>
-              <option>Advanced</option>
-            </select>
-
-            <div className="rounded-2xl border bg-secondary/60 px-4 py-3 text-sm font-bold text-primary">
-              {pairCount} pairs
-            </div>
-          </div>
-
-          <Button onClick={generate} disabled={loading} className="mt-5 h-12 w-full rounded-2xl">
-            <Wand2 className="mr-2 h-4 w-4" />
-            {loading ? "Generating..." : "Generate Memory Flip"}
-          </Button>
-        </div>
 
         <div className="rounded-[2rem] border bg-card p-6 shadow-soft">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

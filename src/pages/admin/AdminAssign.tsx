@@ -2,22 +2,30 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  buildEnglishAccessKey,
+  ENGLISH_PATHWAYS,
+  formatEnglishAccessLabel,
+  parseEnglishAccessKey,
+} from "@/lib/englishPathways";
 
-const GRADES = [
-  "Grade 1",
-  "Grade 2",
-  "Grade 3",
-  "Grade 4",
-  "Grade 5",
-  "Grade 6",
-  "Grade 7",
-  "Grade 8",
-  "Grade 9",
-  "Grade 10",
-  "Beginner",
-  "Intermediate",
-  "Advanced",
+const ACCESS_OPTIONS = [
+  {
+    group: "English Pathways",
+    items: ENGLISH_PATHWAYS.flatMap((pathway) =>
+      pathway.levels.map((level) => ({
+        key: buildEnglishAccessKey(pathway.key, level),
+        label: formatEnglishAccessLabel(pathway.key, level),
+        description: pathway.levelLabel,
+        target_language: "English",
+        pathway: pathway.key,
+        level,
+      }))
+    ),
+  },
 ];
+
+const ALL_ACCESS_OPTIONS = ACCESS_OPTIONS.flatMap((group) => group.items);
 
 const AdminAssign = () => {
   const [activeTab, setActiveTab] = useState<"student" | "tutor" | "connect">(
@@ -115,17 +123,33 @@ const AdminAssign = () => {
   const openAssign = async (student: any) => {
     setSelectedStudent(student);
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("student_grade_access")
-      .select("grade")
+      .select("grade, target_language, pathway, level")
       .eq("student_id", student.id);
+
+    if (error) {
+      const fallback = await supabase
+        .from("student_grade_access")
+        .select("grade")
+        .eq("student_id", student.id);
+
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) {
       alert("Failed to load student access");
       return;
     }
 
-    setSelectedGrades(data?.map((item) => item.grade) || []);
+    setSelectedGrades(
+      data?.flatMap((item: any) =>
+        item.target_language === "English" && item.pathway && item.level
+          ? buildEnglishAccessKey(item.pathway, item.level)
+          : []
+      ) || []
+    );
   };
 
   const toggleGrade = (grade: string) => {
@@ -150,10 +174,18 @@ const AdminAssign = () => {
     }
 
     if (selectedGrades.length > 0) {
-      const payload = selectedGrades.map((grade) => ({
-        student_id: selectedStudent.id,
-        grade,
-      }));
+      const payload = selectedGrades.map((grade) => {
+        const option = ALL_ACCESS_OPTIONS.find((item) => item.key === grade);
+        const parsed = parseEnglishAccessKey(grade);
+
+        return {
+          student_id: selectedStudent.id,
+          grade,
+          target_language: option?.target_language || parsed?.targetLanguage || "English",
+          pathway: option?.pathway || parsed?.pathway || "Legacy Grade",
+          level: option?.level || parsed?.level || grade,
+        };
+      });
 
       const { error: insertError } = await supabase
         .from("student_grade_access")
@@ -273,27 +305,41 @@ const AdminAssign = () => {
               </h1>
 
               <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-                Choose which grade levels this student can access.
+                Choose the grade levels and exam pathways this student can access.
               </p>
             </div>
 
             <Card className="space-y-6 rounded-[1.8rem] p-5 sm:p-6">
-              <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                {GRADES.map((grade) => (
-                  <button
-                    key={grade}
-                    type="button"
-                    onClick={() => toggleGrade(grade)}
-                    className={`min-h-11 rounded-2xl border p-4 text-center text-sm transition ${
-                      selectedGrades.includes(grade)
-                        ? "bg-yellow-400 text-black"
-                        : "bg-card hover:bg-secondary"
-                    }`}
-                  >
-                    {grade}
-                  </button>
-                ))}
-              </div>
+              {ACCESS_OPTIONS.map((group) => (
+                <section key={group.group} className="space-y-3">
+                  <div>
+                    <h2 className="text-lg font-bold text-primary">{group.group}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Assign exam-aware access such as MAP Grade 5, IELTS 5.5-6.0, or TOEFL Intermediate.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                    {group.items.map((item) => (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => toggleGrade(item.key)}
+                        className={`min-h-11 rounded-2xl border p-4 text-left text-sm transition ${
+                          selectedGrades.includes(item.key)
+                            ? "border-yellow-400 bg-yellow-100 text-primary"
+                            : "bg-card hover:bg-secondary"
+                        }`}
+                      >
+                        <span className="block font-bold">{item.label}</span>
+                        <span className="mt-1 block text-xs text-muted-foreground">
+                          {item.description}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              ))}
 
               <Button
                 type="button"

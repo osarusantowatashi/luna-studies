@@ -31,6 +31,10 @@ import {
   loadGameSession,
   saveGameSession,
 } from "@/lib/arcadeResume";
+import {
+  GameVocabularyItem,
+  loadGameVocabularyItems,
+} from "@/lib/gameVocabulary";
 
 type Pair = {
   pair_id?: number;
@@ -107,6 +111,50 @@ const getHighestDifficulty = (first?: string | null, second?: string | null) => 
     ? firstDifficulty
     : secondDifficulty;
 };
+
+const buildMemoryFlipPairsFromVocabulary = ({
+  items,
+  languagePair,
+  grade,
+}: {
+  items: GameVocabularyItem[];
+  languagePair: string;
+  grade: string;
+}) =>
+  items
+    .map((item, index): (Pair & { pairKey: string; questionSet: any }) | null => {
+      const en = String(item.en || "").trim();
+      const zh = String(item.zh || "").trim();
+      const ja = String(item.ja || "").trim();
+      const imageUrl = String(item.image_url || "").trim();
+      const imageKeyword = String(item.image_keyword || item.en || "").trim();
+
+      if (!en || !zh || !ja || !imageUrl) return null;
+
+      const [left, right] =
+        languagePair === "zh_ja"
+          ? [zh, ja]
+          : languagePair === "en_ja"
+            ? [en, ja]
+            : [en, zh];
+
+      return {
+        pair_id: index + 1,
+        left,
+        right,
+        vocab_word: en,
+        image_keyword: imageKeyword,
+        image_url: imageUrl,
+        pairKey: `${languagePair}_${grade}_${left}_${right}`,
+        questionSet: {
+          source: "shared_vocabulary",
+          id: item.id,
+          grade,
+          language_pair: languagePair,
+        },
+      };
+    })
+    .filter(Boolean) as (Pair & { pairKey: string; questionSet: any })[];
 
 const getCardGridClass = (cardCount: number) => {
   if (cardCount <= 12) return "grid-cols-3 sm:grid-cols-4";
@@ -597,8 +645,31 @@ export default function MemoryFlip({
 
   const findGameQuestion = async (
     selectedLanguagePair: string,
-    selectedGrade: string
+    selectedGrade: string,
+    minimumPairs = 1
   ) => {
+    if (!demoMode) {
+      const { items } = await loadGameVocabularyItems({
+        supabase,
+        grade: selectedGrade,
+      });
+      const sharedPairs = shuffle(
+        buildMemoryFlipPairsFromVocabulary({
+          items,
+          languagePair: selectedLanguagePair,
+          grade: selectedGrade,
+        })
+      );
+
+      if (sharedPairs.length >= minimumPairs) {
+        return {
+          pairs: sharedPairs,
+          usedGrade: selectedGrade,
+        };
+      }
+    }
+
+    // TODO: Temporary legacy fallback until shared vocabulary is fully approved live.
     const questionTable = demoMode ? "public_demo_questions" : "game_questions";
     const buildQuery = (language: string) =>
       supabase
@@ -685,6 +756,26 @@ export default function MemoryFlip({
 
     const questionTable = demoMode ? "public_demo_questions" : "game_questions";
     const queryGrade = demoMode ? "Grade 1" : grade;
+
+    if (!demoMode) {
+      const { items } = await loadGameVocabularyItems({
+        supabase,
+        grade: queryGrade,
+      });
+      const sharedPairs = buildMemoryFlipPairsFromVocabulary({
+        items,
+        languagePair,
+        grade: queryGrade,
+      });
+
+      if (sharedPairs.length > 0) {
+        setVocabularyPairCount(sharedPairs.length);
+        setVocabularyLoading(false);
+        return;
+      }
+    }
+
+    // TODO: Temporary legacy fallback until shared vocabulary is fully approved live.
     const buildQuery = (selectedLanguagePair: string) =>
       supabase
         .from(questionTable)
@@ -900,7 +991,8 @@ export default function MemoryFlip({
 
     const { pairs: rawPairs, usedGrade } = await findGameQuestion(
       selectedLanguagePair,
-      selectedGrade
+      selectedGrade,
+      selectedPairCount
     );
 
     if (!isCurrentLoad()) return;

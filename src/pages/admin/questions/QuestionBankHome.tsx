@@ -1,7 +1,34 @@
 import { Link } from "react-router-dom";
-import { BookOpen, Calculator, Gamepad2, ArrowRight } from "lucide-react";
+import { ArrowRight, Calculator, Languages, LibraryBig } from "lucide-react";
 
-const QuestionsBankHome = () => {
+const questionBankCards = [
+  {
+    title: "Language Questions",
+    description:
+      "Manage multilingual language-learning questions for English, Japanese and Chinese.",
+    href: "/admin/questions/language",
+    cta: "Open Language Questions",
+    icon: Languages,
+  },
+  {
+    title: "Math Questions",
+    description:
+      "Review saved Math questions by grade, topic, skill, and difficulty.",
+    href: "/admin/questions/math",
+    cta: "Open Math Questions",
+    icon: Calculator,
+  },
+  {
+    title: "Shared Vocabulary Library",
+    description:
+      "Manage approved reusable vocabulary that powers every learning game.",
+    href: "/admin/questions/games/memory-flip",
+    cta: "Open Shared Library",
+    icon: LibraryBig,
+  },
+];
+
+const QuestionBankHome = () => {
   return (
     <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl space-y-8 sm:space-y-10">
@@ -15,112 +42,43 @@ const QuestionsBankHome = () => {
           </h1>
 
           <p className="mt-3 max-w-3xl text-muted-foreground">
-            Review saved English questions, Math questions, and learning game content.
+            Manage language questions, Math questions, and shared game vocabulary from one clean content hub.
           </p>
         </div>
 
-        <section className="space-y-4">
-          <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            English
-          </p>
+        <div className="grid gap-5 md:grid-cols-3">
+          {questionBankCards.map((card) => {
+            const Icon = card.icon;
 
-          <div className="grid gap-5 md:grid-cols-2">
-            <Link
-              to="/admin/questions/english"
-              className="group block min-h-11 rounded-[1.6rem] border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant sm:rounded-[2rem] sm:p-6"
-            >
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
-                <BookOpen className="h-7 w-7 text-accent" />
-              </div>
+            return (
+              <Link
+                key={card.href}
+                to={card.href}
+                className="group block min-h-11 rounded-[1.6rem] border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant sm:rounded-[2rem] sm:p-6"
+              >
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
+                  <Icon className="h-7 w-7 text-accent" />
+                </div>
 
-              <h2 className="mt-5 text-xl font-bold text-primary sm:text-2xl">
-                English Question Bank
-              </h2>
+                <h2 className="mt-5 text-xl font-bold text-primary sm:text-2xl">
+                  {card.title}
+                </h2>
 
-              <p className="mt-2 text-sm text-muted-foreground">
-                Review saved reading, vocabulary, grammar, and comprehension questions.
-              </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {card.description}
+                </p>
 
-              <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
-                Open English Bank
-                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-              </div>
-            </Link>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            Math
-          </p>
-
-          <div className="grid gap-5 md:grid-cols-2">
-            <Link
-              to="/admin/questions/math"
-              className="group block min-h-11 rounded-[1.6rem] border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant sm:rounded-[2rem] sm:p-6"
-            >
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
-                <Calculator className="h-7 w-7 text-accent" />
-              </div>
-
-              <h2 className="mt-5 text-xl font-bold text-primary sm:text-2xl">
-                Math Question Bank
-              </h2>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                Review saved Math questions by grade, topic, skill, and difficulty.
-              </p>
-
-              <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
-                Open Math Bank
-                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-              </div>
-            </Link>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            Games
-          </p>
-
-          <div className="grid gap-5 md:grid-cols-2">
-            <Link
-              to="/admin/questions/games/memory-flip"
-              className="group block min-h-11 rounded-[1.6rem] border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant sm:rounded-[2rem] sm:p-6"
-            >
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
-                <Gamepad2 className="h-7 w-7 text-accent" />
-              </div>
-
-              <h2 className="mt-5 text-xl font-bold text-primary sm:text-2xl">
-                Memory Flip Bank
-              </h2>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                Review saved word pairs by grade, difficulty, and language pair.
-              </p>
-
-              <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
-                Open Memory Flip Bank
-                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-              </div>
-            </Link>
-
-            <div className="rounded-[2rem] border border-dashed bg-card/60 p-6 opacity-70">
-              <h2 className="text-2xl font-bold text-primary">
-                More Game Banks
-              </h2>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                Future game content can be reviewed here.
-              </p>
-            </div>
-          </div>
-        </section>
+                <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
+                  {card.cta}
+                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 };
 
-export default QuestionsBankHome;
+export default QuestionBankHome;

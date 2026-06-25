@@ -186,7 +186,7 @@ const Landing = () => {
       <div className="min-h-screen bg-background">
 
         {/* HERO */}
-        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pb-12 pt-16 sm:px-6 sm:pb-16 sm:pt-20 lg:px-8 lg:pb-16 lg:pt-12 xl:pt-14">
+        <section className="relative overflow-hidden bg-[#fbfaff] px-4 pb-32 pt-14 sm:px-6 sm:pb-32 sm:pt-20 md:pb-28 lg:px-8 lg:pb-16 lg:pt-12 xl:pt-14">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,#f0eaff_0%,transparent_30%),radial-gradient(circle_at_80%_18%,#fff1bd_0%,transparent_24%),linear-gradient(180deg,#f8f6ff_0%,#fffdf8_100%)]" />
           <div className="pointer-events-none absolute -left-20 top-[26%] h-80 w-80 rounded-full bg-[#8d73ff]/8 blur-3xl" />
           <div className="pointer-events-none absolute right-[4%] top-[17%] h-80 w-80 rounded-full bg-[#ffe89a]/32 blur-2xl shadow-[0_0_90px_rgba(255,217,100,0.16)] sm:h-[28rem] sm:w-[28rem]" />
@@ -262,9 +262,72 @@ const Landing = () => {
                     </Button>
                   </Link>
                 </div>
+
+                <div className="mx-auto mt-8 grid w-full max-w-sm gap-3 lg:hidden">
+                  {[
+                    {
+                      icon: Users,
+                      value: "Global",
+                      label: "Online Support",
+                      accent: "bg-[linear-gradient(135deg,#9a82ff_0%,#7157e8_100%)]",
+                      surface: "bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(250,247,255,0.78)_100%)]",
+                      glow: "bg-[#8d73ff]/14",
+                      light: true,
+                    },
+                    {
+                      icon: School,
+                      value: "K–12",
+                      label: "Grades Supported",
+                      accent: "bg-[linear-gradient(135deg,#ffe66d_0%,#ffc928_100%)]",
+                      surface: "bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(255,251,232,0.78)_100%)]",
+                      glow: "bg-[#ffc928]/16",
+                    },
+                    {
+                      icon: Compass,
+                      value: "100+",
+                      label: "School Pathways",
+                      accent: "bg-[linear-gradient(135deg,#c8ff78_0%,#9ee94c_100%)]",
+                      surface: "bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,255,239,0.82)_100%)]",
+                      glow: "bg-[#b8f36c]/18",
+                    },
+                  ].map((item, index) => {
+                    const CoverageIcon = item.icon;
+
+                    return (
+                      <motion.div
+                        key={item.label}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.42, delay: 0.18 + index * 0.08 }}
+                        className={`relative w-full max-w-full overflow-hidden rounded-[1.45rem] border border-white/85 px-4 py-3 text-left shadow-[0_16px_42px_rgba(66,56,120,0.10)] ring-1 ring-primary/[0.035] backdrop-blur-2xl ${item.surface}`}
+                      >
+                        <div className={`pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl ${item.glow}`} />
+                        <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-white/90" />
+
+                        <div className="relative flex items-center gap-3.5">
+                          <div className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] shadow-[0_12px_26px_rgba(15,23,42,0.10),inset_0_1px_0_rgba(255,255,255,0.52)] ring-1 ring-white/45 ${item.accent}`}>
+                            <div className="pointer-events-none absolute inset-1 rounded-[0.9rem] border border-white/20" />
+                            <CoverageIcon
+                              className={`relative h-5 w-5 ${item.light ? "text-white" : "text-primary"}`}
+                            />
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="font-poppins text-[1.45rem] font-black leading-none tracking-[-0.01em] text-primary">
+                              {item.value}
+                            </p>
+                            <p className="mt-2 whitespace-nowrap text-sm font-semibold leading-none text-primary/52">
+                              {item.label}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div className="relative z-20 mt-10 grid w-full gap-3 min-[430px]:grid-cols-3 lg:absolute lg:inset-0 lg:mt-0 lg:block">
+              <div className="hidden lg:absolute lg:inset-0 lg:z-20 lg:block">
                 {[
                   {
                     icon: Users,
@@ -308,7 +371,7 @@ const Landing = () => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.5, delay: 0.25 + index * 0.12 }}
                       whileHover={{ y: item.primary ? -6 : -3 }}
-                      className={`group relative w-full overflow-hidden rounded-[1.75rem] border border-white/85 px-4 py-3.5 text-left ring-1 ring-primary/[0.035] backdrop-blur-2xl transition ${item.surface} ${
+                      className={`group relative w-full max-w-full overflow-hidden rounded-[1.5rem] border border-white/85 px-4 py-3 text-left ring-1 ring-primary/[0.035] backdrop-blur-2xl transition sm:rounded-[1.75rem] sm:py-3.5 ${item.surface} ${
                         item.primary
                           ? "shadow-[0_26px_70px_rgba(66,56,120,0.16)] lg:w-[250px] lg:px-4 lg:py-3.5 xl:w-[306px] xl:px-5 xl:py-4"
                           : "shadow-[0_20px_50px_rgba(66,56,120,0.11)] lg:w-[238px] lg:px-4 lg:py-3.5 xl:w-[296px] xl:px-5 xl:py-4"
@@ -319,15 +382,15 @@ const Landing = () => {
                       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(255,255,255,0.72),transparent_34%)] opacity-80" />
 
                       <div className={`flex items-center ${item.primary ? "gap-4" : "gap-3.5"}`}>
-                        <div className={`relative flex shrink-0 items-center justify-center rounded-[1.35rem] shadow-[0_12px_26px_rgba(15,23,42,0.10),inset_0_1px_0_rgba(255,255,255,0.52)] ring-1 ring-white/45 transition group-hover:scale-[1.03] ${item.primary ? "h-[4.15rem] w-[4.15rem]" : "h-[3.65rem] w-[3.65rem]"} ${item.accent}`}>
+                        <div className={`relative flex shrink-0 items-center justify-center rounded-[1.15rem] shadow-[0_12px_26px_rgba(15,23,42,0.10),inset_0_1px_0_rgba(255,255,255,0.52)] ring-1 ring-white/45 transition group-hover:scale-[1.03] sm:rounded-[1.35rem] ${item.primary ? "h-14 w-14 lg:h-[4.15rem] lg:w-[4.15rem]" : "h-12 w-12 lg:h-[3.65rem] lg:w-[3.65rem]"} ${item.accent}`}>
                           <div className="pointer-events-none absolute inset-1 rounded-[1.05rem] border border-white/20" />
                           <CoverageIcon
-                            className={`relative ${item.primary ? "h-7 w-7" : "h-6 w-6"} ${item.light ? "text-white" : "text-primary"}`}
+                            className={`relative ${item.primary ? "h-6 w-6 lg:h-7 lg:w-7" : "h-5 w-5 lg:h-6 lg:w-6"} ${item.light ? "text-white" : "text-primary"}`}
                           />
                         </div>
 
                         <div className="relative min-w-0">
-                          <p className={`font-poppins font-black leading-none tracking-[-0.01em] text-primary ${item.primary ? "text-[2rem] xl:text-[2.15rem]" : "text-[1.65rem] xl:text-[1.8rem]"}`}>
+                          <p className={`font-poppins font-black leading-none tracking-[-0.01em] text-primary ${item.primary ? "text-[1.65rem] lg:text-[2rem] xl:text-[2.15rem]" : "text-[1.45rem] lg:text-[1.65rem] xl:text-[1.8rem]"}`}>
                             {item.value}
                           </p>
                           <p className={`mt-2 whitespace-nowrap leading-none text-primary/52 ${item.primary ? "text-sm font-semibold" : "text-sm font-medium"}`}>

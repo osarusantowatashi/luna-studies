@@ -4,6 +4,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import {
+  getStudentLessonPackageBalance,
+  insufficientPackageHoursMessage,
+  type LessonPackageBalance,
+  validateStudentPackageHours,
+} from "@/lib/lessonPackageHours";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -62,11 +68,46 @@ export default function TutorLessons() {
   const [lessonTime, setLessonTime] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [packageBalance, setPackageBalance] =
+    useState<LessonPackageBalance | null>(null);
+  const [packageBalanceLoading, setPackageBalanceLoading] = useState(false);
+  const [packageBalanceError, setPackageBalanceError] = useState("");
 
   useEffect(() => {
     fetchAssignedStudents();
     fetchLessons();
   }, []);
+
+  useEffect(() => {
+    if (!selectedStudentId || !showAdd) return;
+    fetchPackageBalance(selectedStudentId);
+  }, [selectedStudentId, showAdd]);
+
+  const fetchPackageBalance = async (studentId: string) => {
+    setPackageBalanceLoading(true);
+    setPackageBalanceError("");
+
+    try {
+      const balance = await getStudentLessonPackageBalance(studentId);
+      setPackageBalance(balance);
+    } catch (error: any) {
+      setPackageBalance(null);
+      setPackageBalanceError(
+        error.message || "Unable to load this student's package hours."
+      );
+    } finally {
+      setPackageBalanceLoading(false);
+    }
+  };
+
+  const openAddLessonDialog = async () => {
+    setShowAdd(true);
+    await fetchAssignedStudents();
+
+    if (selectedStudentId) {
+      fetchPackageBalance(selectedStudentId);
+    }
+  };
 
   const fetchAssignedStudents = async () => {
     const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -153,6 +194,26 @@ export default function TutorLessons() {
       return;
     }
 
+    const requestedHours = Number(hours);
+
+    try {
+      const validation = await validateStudentPackageHours(
+        selectedStudentId,
+        requestedHours
+      );
+
+      if (!validation.ok) {
+        setPackageBalance(validation.balance);
+        alert(insufficientPackageHoursMessage);
+        return;
+      }
+
+      setPackageBalance(validation.balance);
+    } catch (error: any) {
+      alert(error.message || "Unable to verify package hours.");
+      return;
+    }
+
     const { data: userData } = await supabase.auth.getUser();
     const tutor = userData.user;
     if (!tutor) return;
@@ -162,7 +223,7 @@ export default function TutorLessons() {
       student_id: selectedStudentId,
       lesson_date: lessonDate,
       lesson_time: lessonTime || null,
-      hours: Number(hours),
+      hours: requestedHours,
       lesson_contents: lessonContents.trim() || null,
       additional_remarks: additionalRemarks.trim() || null,
       status: "pending",
@@ -181,6 +242,7 @@ export default function TutorLessons() {
     setLessonContents("");
     setAdditionalRemarks("");
     fetchLessons();
+    fetchPackageBalance(selectedStudentId);
   };
 
   const checkOffLesson = async (lessonId: string, newStatus: LessonStatus) => {
@@ -437,7 +499,7 @@ export default function TutorLessons() {
 
             <button
               type="button"
-              onClick={() => setShowAdd(true)}
+              onClick={openAddLessonDialog}
               className="group flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 font-black text-white shadow-[0_18px_45px_rgba(10,36,84,0.20)] transition hover:-translate-y-1 sm:w-auto"
             >
               <Plus size={18} />
@@ -652,7 +714,10 @@ export default function TutorLessons() {
               <SelectInput
                 label="Student"
                 value={selectedStudentId}
-                onChange={setSelectedStudentId}
+                onChange={(value) => {
+                  setSelectedStudentId(value);
+                  if (value) fetchPackageBalance(value);
+                }}
               >
                 {students.length === 0 && (
                   <option value="">No assigned students</option>
@@ -665,6 +730,12 @@ export default function TutorLessons() {
                   </option>
                 ))}
               </SelectInput>
+
+              <PackageBalancePanel
+                balance={packageBalance}
+                loading={packageBalanceLoading}
+                error={packageBalanceError}
+              />
 
               <div>
                 <DateInput
@@ -934,6 +1005,80 @@ function InfoChip({
       {icon}
       {children}
     </span>
+  );
+}
+
+function PackageBalancePanel({
+  balance,
+  loading,
+  error,
+}: {
+  balance: LessonPackageBalance | null;
+  loading: boolean;
+  error: string;
+}) {
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-primary/10 bg-[#fbfaff] p-4 text-sm font-bold text-primary/55">
+        Loading package balance...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm font-bold text-orange-700">
+        {error}
+      </div>
+    );
+  }
+
+  if (!balance) return null;
+
+  const isBlocked = balance.remainingHours <= 0;
+
+  return (
+    <div
+      className={`rounded-2xl border p-4 ${
+        isBlocked
+          ? "border-red-200 bg-red-50"
+          : "border-[#8d73ff]/15 bg-[#f6f1ff]"
+      }`}
+    >
+      <div className="grid grid-cols-3 gap-2 text-center">
+        <BalanceMetric
+          label="Purchased"
+          value={`${balance.totalPackageHours.toFixed(1)}h`}
+        />
+        <BalanceMetric
+          label="Scheduled"
+          value={`${balance.allocatedLessonHours.toFixed(1)}h`}
+        />
+        <BalanceMetric
+          label="Available"
+          value={`${balance.remainingHours.toFixed(1)}h`}
+        />
+      </div>
+
+      {isBlocked && (
+        <p className="mt-3 text-sm font-bold text-red-700">
+          {insufficientPackageHoursMessage}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function BalanceMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl bg-white/80 px-2 py-2">
+      <p className="text-[10px] font-black uppercase tracking-[0.12em] text-primary/40">
+        {label}
+      </p>
+      <p className="mt-1 font-poppins text-lg font-black text-primary">
+        {value}
+      </p>
+    </div>
   );
 }
 

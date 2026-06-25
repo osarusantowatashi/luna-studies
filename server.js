@@ -777,6 +777,576 @@ const getOrCreateVocabImage = async (
   return saved.imageUrl;
 };
 
+const VALID_GAME_VOCAB_LANGUAGES = new Set(["en", "zh", "ja"]);
+const VALID_IMAGE_TYPES = new Set([
+  "object",
+  "animal",
+  "person",
+  "action",
+  "emotion",
+  "color",
+  "place",
+  "nature",
+  "food",
+  "transport",
+  "school_item",
+  "abstract_concept",
+]);
+
+const sanitizeGameVocabLanguages = (languages = []) => {
+  const cleanLanguages = Array.isArray(languages)
+    ? languages.filter((lang) => VALID_GAME_VOCAB_LANGUAGES.has(lang))
+    : [];
+
+  return cleanLanguages.length > 0 ? cleanLanguages : ["en", "zh", "ja"];
+};
+
+const cleanGameVocabItem = (item = {}) => {
+  const en = String(item.en || item.english || "").trim();
+  const zh = String(item.zh || item.chinese || "").trim();
+  const ja = String(item.ja || item.japanese || "").trim();
+  const imageKeyword = String(item.image_keyword || item.imageKeyword || en)
+    .trim()
+    .toLowerCase();
+  const imageType = String(item.image_type || item.imageType || "object")
+    .trim()
+    .toLowerCase();
+
+  if (!en || !zh || !ja || !imageKeyword) return null;
+
+  return {
+    en,
+    zh,
+    ja,
+    image_keyword: imageKeyword,
+    image_type: VALID_IMAGE_TYPES.has(imageType) ? imageType : "object",
+    metadata: typeof item.metadata === "object" && item.metadata ? item.metadata : {},
+  };
+};
+
+const findReusableVocabImage = async (vocabWord, imageKeyword) => {
+  const cleanVocabWord = getCoreVocab(vocabWord);
+  const cleanKeyword = getCoreVocab(imageKeyword || vocabWord);
+
+  if (!cleanVocabWord && !cleanKeyword) return null;
+
+  const lookup = async (column, value) => {
+    if (!value) return null;
+
+    const { data, error } = await supabaseAdmin
+      .from("vocab_images")
+      .select("id, image_url")
+      .eq(column, value)
+      .in("status", ["approved", "needs_review"])
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("VOCAB IMAGE REUSE LOOKUP ERROR:", error);
+      return null;
+    }
+
+    return data || null;
+  };
+
+  return (
+    (await lookup("vocab_word", cleanVocabWord)) ||
+    (await lookup("keyword", cleanKeyword))
+  );
+};
+
+const findVocabImageByUrl = async (imageUrl) => {
+  if (!imageUrl) return null;
+
+  const { data, error } = await supabaseAdmin
+    .from("vocab_images")
+    .select("id, image_url")
+    .eq("image_url", imageUrl)
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("VOCAB IMAGE URL LOOKUP ERROR:", error);
+    return null;
+  }
+
+  return data || null;
+};
+
+const toVocabularyPreview = (item = {}) => ({
+  id: item.id,
+  en: item.en || "",
+  zh: item.zh || "",
+  ja: item.ja || "",
+  image_keyword: item.image_keyword || "",
+  grade: item.grade || "",
+  category: item.category || "",
+  status: item.status || "",
+  image_url: item.image_url || "",
+  created_at: item.created_at || null,
+});
+
+const normalizeGameVocabKey = (value = "") =>
+  normalizeText(value).replace(/\s+/g, " ").trim();
+
+const compareGameVocabularyRows = (first, second) => {
+  const firstApproved = first.status === "approved" ? 0 : 1;
+  const secondApproved = second.status === "approved" ? 0 : 1;
+  if (firstApproved !== secondApproved) return firstApproved - secondApproved;
+
+  const firstImage = first.image_url ? 0 : 1;
+  const secondImage = second.image_url ? 0 : 1;
+  if (firstImage !== secondImage) return firstImage - secondImage;
+
+  const firstComplete = first.en && first.zh && first.ja ? 0 : 1;
+  const secondComplete = second.en && second.zh && second.ja ? 0 : 1;
+  if (firstComplete !== secondComplete) return firstComplete - secondComplete;
+
+  const firstTime = first.created_at ? new Date(first.created_at).getTime() : Number.MAX_SAFE_INTEGER;
+  const secondTime = second.created_at ? new Date(second.created_at).getTime() : Number.MAX_SAFE_INTEGER;
+  if (firstTime !== secondTime) return firstTime - secondTime;
+
+  const firstMetadata = Object.keys(first.metadata || {}).length > 0 ? 0 : 1;
+  const secondMetadata = Object.keys(second.metadata || {}).length > 0 ? 0 : 1;
+  return firstMetadata - secondMetadata;
+};
+
+const buildGameVocabularyDuplicateAudit = (items = []) => {
+  const activeItems = items.filter((item) => item.status !== "rejected");
+  const parent = new Map();
+
+  const find = (id) => {
+    if (parent.get(id) !== id) parent.set(id, find(parent.get(id)));
+    return parent.get(id);
+  };
+
+  const union = (left, right) => {
+    const leftRoot = find(left);
+    const rightRoot = find(right);
+    if (leftRoot !== rightRoot) parent.set(rightRoot, leftRoot);
+  };
+
+  activeItems.forEach((item) => parent.set(item.id, item.id));
+
+  const connectByKey = (keyGetter) => {
+    const groups = new Map();
+
+    for (const item of activeItems) {
+      const key = keyGetter(item);
+      if (!key) continue;
+      groups.set(key, [...(groups.get(key) || []), item]);
+    }
+
+    for (const group of groups.values()) {
+      if (group.length < 2) continue;
+      for (let index = 1; index < group.length; index += 1) {
+        union(group[0].id, group[index].id);
+      }
+    }
+  };
+
+  connectByKey((item) => normalizeGameVocabKey(item.en));
+  connectByKey((item) => normalizeGameVocabKey(item.image_keyword));
+
+  const components = new Map();
+
+  for (const item of activeItems) {
+    const root = find(item.id);
+    components.set(root, [...(components.get(root) || []), item]);
+  }
+
+  const duplicateGroups = [];
+
+  for (const componentItems of components.values()) {
+    if (componentItems.length < 2) continue;
+
+    const enKeys = new Map();
+    const keywordKeys = new Map();
+
+    for (const item of componentItems) {
+      const en = getCoreVocab(item.en);
+      const keyword = getCoreVocab(item.image_keyword);
+      if (en) enKeys.set(en, [...(enKeys.get(en) || []), item]);
+      if (keyword) keywordKeys.set(keyword, [...(keywordKeys.get(keyword) || []), item]);
+    }
+
+    const reasons = [];
+    const duplicateKeys = [];
+
+    for (const [key, group] of enKeys.entries()) {
+      if (group.length > 1) {
+        reasons.push("global_en_duplicate");
+        duplicateKeys.push(`en:${key}`);
+      }
+    }
+
+    for (const [key, group] of keywordKeys.entries()) {
+      if (group.length > 1) {
+        reasons.push("global_image_keyword_duplicate");
+        duplicateKeys.push(`image_keyword:${key}`);
+      }
+    }
+
+    if (reasons.length === 0) continue;
+
+    const sortedItems = [...componentItems].sort(compareGameVocabularyRows);
+    const keptItem = sortedItems[0];
+    const duplicateItems = sortedItems.slice(1);
+
+    duplicateGroups.push({
+      id: `duplicate-group-${duplicateGroups.length + 1}`,
+      reasons: Array.from(new Set(reasons)),
+      duplicate_keys: duplicateKeys,
+      kept_item: toVocabularyPreview(keptItem),
+      duplicate_items: duplicateItems.map(toVocabularyPreview),
+    });
+  }
+
+  return {
+    total_items_checked: items.length,
+    active_items_checked: activeItems.length,
+    duplicate_groups: duplicateGroups,
+    duplicate_groups_found: duplicateGroups.length,
+    duplicate_rows_to_reject: duplicateGroups.reduce(
+      (total, group) => total + group.duplicate_items.length,
+      0
+    ),
+    kept_rows: duplicateGroups.length,
+  };
+};
+
+const hasLatinText = (text = "") => /[A-Za-z]/.test(String(text));
+const hasKanaText = (text = "") => /[\u3040-\u30ff]/.test(String(text));
+const hasCjkText = (text = "") => /[\u3400-\u9fff]/.test(String(text));
+
+const detectMemoryFlipTextLanguage = (text = "", languagePair = "", position = "") => {
+  const value = String(text || "").trim();
+  if (!value) return null;
+
+  if (hasLatinText(value)) return "en";
+  if (hasKanaText(value)) return "ja";
+
+  if (hasCjkText(value)) {
+    if (languagePair === "zh_ja") {
+      return position === "right" ? "ja" : "zh";
+    }
+
+    if (languagePair === "en_ja") return "ja";
+
+    return "zh";
+  }
+
+  return null;
+};
+
+const assignBackfillLanguage = (candidate, lang, value) => {
+  const cleanValue = String(value || "").trim();
+  if (!lang || !cleanValue) return;
+
+  if (!candidate[lang]) {
+    candidate[lang] = cleanValue;
+    return;
+  }
+
+  if (normalizeText(candidate[lang]) !== normalizeText(cleanValue)) {
+    candidate.metadata.language_conflicts = [
+      ...(candidate.metadata.language_conflicts || []),
+      {
+        language: lang,
+        kept: candidate[lang],
+        ignored: cleanValue,
+      },
+    ];
+  }
+};
+
+const extractMemoryFlipCandidate = (row, pair) => {
+  const left = String(pair?.left || "").trim();
+  const right = String(pair?.right || "").trim();
+
+  if (!left || !right) return null;
+
+  const languagePair = String(row.language_pair || pair.language_pair || "").trim();
+  const vocabWord = String(pair.vocab_word || "").trim();
+  const imageKeyword = String(pair.image_keyword || vocabWord || left || right)
+    .trim()
+    .toLowerCase();
+  const imageType = String(pair.image_type || "object").trim().toLowerCase();
+
+  const candidate = {
+    en: "",
+    zh: "",
+    ja: "",
+    image_keyword: imageKeyword,
+    image_type: VALID_IMAGE_TYPES.has(imageType) ? imageType : "object",
+    image_url: String(pair.image_url || "").trim() || null,
+    vocab_image_id: null,
+    grade: row.grade || "Legacy",
+    difficulty: row.difficulty || null,
+    category: row.skill || row.exam_type || "Memory Flip",
+    status: "needs_review",
+    metadata: {
+      source: "memory_flip_backfill",
+      legacy_game_question_ids: [row.id],
+      legacy_language_pairs: languagePair ? [languagePair] : [],
+      legacy_pair_ids: pair.pair_id ? [pair.pair_id] : [],
+      legacy_exam_types: row.exam_type ? [row.exam_type] : [],
+      legacy_skills: row.skill ? [row.skill] : [],
+    },
+  };
+
+  if (vocabWord && hasLatinText(vocabWord)) {
+    assignBackfillLanguage(candidate, "en", vocabWord);
+  }
+
+  assignBackfillLanguage(
+    candidate,
+    detectMemoryFlipTextLanguage(left, languagePair, "left"),
+    left
+  );
+  assignBackfillLanguage(
+    candidate,
+    detectMemoryFlipTextLanguage(right, languagePair, "right"),
+    right
+  );
+
+  if (!candidate.en && imageKeyword && hasLatinText(imageKeyword)) {
+    assignBackfillLanguage(candidate, "en", imageKeyword);
+  }
+
+  if (!candidate.en && !candidate.zh && !candidate.ja) return null;
+
+  return candidate;
+};
+
+const mergeBackfillCandidates = (base, next) => {
+  for (const lang of ["en", "zh", "ja"]) {
+    if (!base[lang] && next[lang]) {
+      base[lang] = next[lang];
+    }
+  }
+
+  if (!base.image_url && next.image_url) {
+    base.image_url = next.image_url;
+  }
+
+  if (!base.vocab_image_id && next.vocab_image_id) {
+    base.vocab_image_id = next.vocab_image_id;
+  }
+
+  base.metadata.legacy_game_question_ids = Array.from(
+    new Set([
+      ...(base.metadata.legacy_game_question_ids || []),
+      ...(next.metadata.legacy_game_question_ids || []),
+    ])
+  );
+  base.metadata.legacy_language_pairs = Array.from(
+    new Set([
+      ...(base.metadata.legacy_language_pairs || []),
+      ...(next.metadata.legacy_language_pairs || []),
+    ])
+  );
+  base.metadata.legacy_pair_ids = Array.from(
+    new Set([
+      ...(base.metadata.legacy_pair_ids || []),
+      ...(next.metadata.legacy_pair_ids || []),
+    ])
+  );
+  base.metadata.legacy_exam_types = Array.from(
+    new Set([
+      ...(base.metadata.legacy_exam_types || []),
+      ...(next.metadata.legacy_exam_types || []),
+    ])
+  );
+  base.metadata.legacy_skills = Array.from(
+    new Set([
+      ...(base.metadata.legacy_skills || []),
+      ...(next.metadata.legacy_skills || []),
+    ])
+  );
+
+  return base;
+};
+
+const getBackfillCandidateKey = (candidate) =>
+  [
+    normalizeText(candidate.grade),
+    getCoreVocab(candidate.image_keyword),
+    getCoreVocab(candidate.en),
+    normalizeText(candidate.zh),
+    normalizeText(candidate.ja),
+  ]
+    .filter(Boolean)
+    .join("|");
+
+const findExistingGameVocabularyItem = (candidate, existingItems = []) => {
+  const candidateGrade = normalizeText(candidate.grade);
+  const candidateEn = getCoreVocab(candidate.en);
+  const candidateKeyword = getCoreVocab(candidate.image_keyword);
+  const candidateZh = normalizeText(candidate.zh);
+  const candidateJa = normalizeText(candidate.ja);
+
+  return (existingItems || []).find((item) => {
+    if (normalizeText(item.grade) !== candidateGrade) return false;
+
+    const itemEn = getCoreVocab(item.en);
+    const itemKeyword = getCoreVocab(item.image_keyword);
+    const itemZh = normalizeText(item.zh);
+    const itemJa = normalizeText(item.ja);
+
+    if (candidateEn && itemEn && candidateEn === itemEn) return true;
+
+    const keywordMatches =
+      candidateKeyword && itemKeyword && candidateKeyword === itemKeyword;
+    const zhMatches = candidateZh && itemZh && candidateZh === itemZh;
+    const jaMatches = candidateJa && itemJa && candidateJa === itemJa;
+
+    if (keywordMatches && (zhMatches || jaMatches || candidateEn === itemEn)) {
+      return true;
+    }
+
+    if (zhMatches && jaMatches) return true;
+
+    return false;
+  });
+};
+
+const getMissingGameVocabLanguages = (candidate) =>
+  ["en", "zh", "ja"].filter((lang) => !String(candidate[lang] || "").trim());
+
+const BACKFILL_AI_MAX_ITEMS_PER_BATCH = 150;
+const BACKFILL_AI_MAX_PROMPT_CHARS = 16000;
+
+const createDynamicBackfillAiBatches = (workItems) => {
+  const batches = [];
+  let current = [];
+  let currentChars = 0;
+
+  for (const workItem of workItems) {
+    const inputItem = {
+      id: workItem.migration_id,
+      image_keyword: workItem.candidate.image_keyword,
+      en: workItem.candidate.en || undefined,
+      zh: workItem.candidate.zh || undefined,
+      ja: workItem.candidate.ja || undefined,
+      missing_languages: workItem.missingLanguages,
+    };
+    const itemChars = JSON.stringify(inputItem).length;
+
+    if (
+      current.length > 0 &&
+      (current.length >= BACKFILL_AI_MAX_ITEMS_PER_BATCH ||
+        currentChars + itemChars > BACKFILL_AI_MAX_PROMPT_CHARS)
+    ) {
+      batches.push(current);
+      current = [];
+      currentChars = 0;
+    }
+
+    current.push(workItem);
+    currentChars += itemChars;
+  }
+
+  if (current.length > 0) batches.push(current);
+
+  return batches;
+};
+
+const fillMissingGameVocabLanguagesBatch = async (workItems) => {
+  const inputItems = workItems.map((workItem) => ({
+    id: workItem.migration_id,
+    image_keyword: workItem.candidate.image_keyword,
+    en: workItem.candidate.en || undefined,
+    zh: workItem.candidate.zh || undefined,
+    ja: workItem.candidate.ja || undefined,
+    missing_languages: workItem.missingLanguages,
+  }));
+
+  const prompt = `
+Fill ONLY the missing language fields for these reusable children's vocabulary items.
+
+Input JSON:
+${JSON.stringify(inputItems, null, 2)}
+
+Rules:
+- Return one result per input item.
+- Preserve every id exactly.
+- Return ONLY missing fields listed in missing_languages.
+- Do not return existing non-empty fields unless they are listed as missing.
+- English must be concise and lowercase unless normally capitalized.
+- Chinese must be Simplified Chinese.
+- Japanese must be natural, child-friendly Japanese.
+- Use image_keyword only as context.
+- Do not add explanations or markdown.
+
+Return ONLY valid JSON:
+{
+  "items": [
+    {
+      "id": "migration-id-1",
+      "ja": "りんご"
+    }
+  ]
+}
+`;
+
+  const response = await client.responses.create({
+    model: "gpt-4.1-mini",
+    input: prompt,
+  });
+
+  const text = response.output_text
+    .replace(/```json/g, "")
+    .replace(/```/g, "")
+    .trim();
+
+  let parsed;
+
+  try {
+    parsed = JSON.parse(text);
+  } catch (err) {
+    console.error("BACKFILL LANGUAGE BATCH JSON PARSE ERROR:", text);
+    throw new Error("AI returned invalid JSON for a backfill batch.");
+  }
+
+  const resultItems = Array.isArray(parsed.items) ? parsed.items : [];
+  const resultById = new Map(
+    resultItems.map((item) => [String(item.id || ""), item])
+  );
+
+  return workItems.map((workItem) => {
+    const result = resultById.get(workItem.migration_id) || {};
+    const candidate = {
+      ...workItem.candidate,
+      metadata: { ...(workItem.candidate.metadata || {}) },
+    };
+    const filledLanguages = [];
+
+    for (const lang of workItem.missingLanguages) {
+      const value = String(result[lang] || "").trim();
+
+      if (value) {
+        candidate[lang] = value;
+        filledLanguages.push(lang);
+      }
+    }
+
+    candidate.metadata.ai_filled_languages = Array.from(
+      new Set([
+        ...(candidate.metadata.ai_filled_languages || []),
+        ...filledLanguages,
+      ])
+    );
+
+    return {
+      ...workItem,
+      candidate,
+      filledLanguages,
+    };
+  });
+};
+
 const safeName = (text = "") =>
   text.replace(/\s+/g, "_").replace(/[^\w]/g, "");
 
@@ -847,44 +1417,55 @@ const passageRules = {
 
 const examRules = {
   MAP: `
-- US-style standardized test
-- Clear, student-friendly language
-- Focus on skills: main idea, inference, vocabulary in context
+- NWEA MAP Growth-aligned mock practice, not official copied material
+- Adaptive-assessment feel with clear, student-friendly language
+- Focus on reading, vocabulary, language usage, literature, or informational text
 - Distractors are plausible but fair
-- Passages are moderate length
 `,
 
   AEIS: `
-- Singapore English exam style
+- Singapore AEIS-style mock practice, not official copied material
 - Slightly more formal language
 - Grammar + comprehension focused
 - Vocabulary tends to be practical and school-based
 - Questions are more direct
 `,
 
+  "O-Level English": `
+- Singapore / Cambridge O-Level English-style mock practice, not official copied material
+- Formal school English, editing, comprehension, cloze, and composition-planning tasks
+- Questions should feel like secondary/O-Level preparation, not generic ESL practice
+`,
+
   TOEFL: `
+- TOEFL-style mock practice, not official copied material
 - Academic English
 - Formal tone
 - Passage often informational (science, history, social studies)
-- Questions test inference, detail, vocabulary in context
+- Reading, listening-transcript, or writing-planning tasks only
 - Distractors are subtle and tricky
 `,
 
   IELTS: `
+- IELTS-style mock practice, not official copied material
 - British English tone
 - Real-world topics
 - Slightly formal but accessible
 - Focus on comprehension and reasoning
+- Reading, listening-transcript, or writing-planning tasks only
 `,
 
   WIDA: `
-- Language learner focused
+- WIDA-style mock practice, not official copied material
+- English language development focused
 - Simplified instructions
 - Clear scaffolding
 - Emphasis on understanding rather than trickiness
+- Reading, listening, and writing domains only
 `,
 
   CAT4: `
+- CAT4-style mock practice, not official copied material
 - Logic and reasoning focus
 - Less language-heavy, more thinking-based
 - Abstract or pattern-based when possible
@@ -908,6 +1489,14 @@ const getPassageLength = (skill, grade) => {
   return "600-800 words"; // Grade 8+
 };
 const structureRules = {
+  Reading: {
+    needsPassage: true,
+    format: `
+- Reading question with a passage.
+- Ask about meaning, reasoning, structure, detail, inference, or author's purpose based on the selected pathway.
+`,
+  },
+
   Vocabulary: {
     needsPassage: true,
     format: `
@@ -959,14 +1548,114 @@ const structureRules = {
 `,
   },
 
-  "Math Problem Solving": {
+  "Language Usage": {
     needsPassage: false,
     format: `
-- Create math word problems or calculation questions.
-- Question should be clear and grade-appropriate.
-- Options should be plausible numerical answers.
+- Sentence-level language usage question.
+- Test grammar, conventions, punctuation, usage, sentence structure, or revision.
+- No passage.
 `,
   },
+
+  Literature: {
+    needsPassage: true,
+    format: `
+- Literature-style reading question.
+- Use a short literary passage, narrative excerpt, poem-like excerpt, or character/setting/theme analysis.
+`,
+  },
+
+  "Informational Text": {
+    needsPassage: true,
+    format: `
+- Informational text reading question.
+- Use nonfiction, data-rich, science, social studies, biography, or explanatory passage.
+`,
+  },
+
+  Writing: {
+    needsPassage: false,
+    format: `
+- Automatically graded writing-preparation question.
+- Use planning, organization, thesis, topic sentence, transition, sentence improvement, or revision tasks.
+- Do not require a free-response essay as the answer.
+`,
+  },
+
+  Listening: {
+    needsPassage: true,
+    format: `
+- Listening-style question using a transcript as the passage.
+- The passage should be clearly labeled as a transcript or dialogue.
+- Ask about main idea, detail, speaker purpose, inference, or organization.
+`,
+  },
+
+  Verbal: {
+    needsPassage: false,
+    format: `
+- CAT4 verbal battery style.
+- Use word relationships, analogies, classifications, verbal reasoning, or vocabulary logic.
+`,
+  },
+
+  Quantitative: {
+    needsPassage: false,
+    format: `
+- CAT4 quantitative battery style.
+- Use number patterns, mathematical relationships, sequence logic, or quantitative reasoning.
+`,
+  },
+
+  "Non-verbal": {
+    needsPassage: false,
+    format: `
+- CAT4 non-verbal battery style.
+- Use abstract pattern reasoning described textually with clear answer choices.
+`,
+  },
+
+  Spatial: {
+    needsPassage: false,
+    format: `
+- CAT4 spatial battery style.
+- Use rotation, folding, shape manipulation, or spatial reasoning described textually with answer choices.
+`,
+  },
+
+  Cloze: {
+    needsPassage: true,
+    format: `
+- Cloze-style question.
+- Provide a short passage or sentence set with one blank and four plausible choices.
+`,
+  },
+
+  "Reading Comprehension": {
+    needsPassage: true,
+    format: `
+- Reading comprehension question with a passage.
+- Test main idea, detail, inference, vocabulary in context, tone, or organization.
+`,
+  },
+
+  "Sentence Transformation": {
+    needsPassage: false,
+    format: `
+- Sentence transformation question.
+- Test rewriting while preserving meaning, grammar, connectors, voice, reported speech, or clauses.
+`,
+  },
+
+  "Composition Planning": {
+    needsPassage: false,
+    format: `
+- Composition-planning question.
+- Test outline choice, paragraph organization, thesis/topic sentence, supporting evidence, or transition logic.
+- Do not ask students to write a full composition.
+`,
+  },
+
 };
 
 const gradeRules = {
@@ -1009,15 +1698,1680 @@ const difficultyRules = {
 - Require subtle reasoning.
 - Distractors should be highly plausible.
 `,
+
+  "Below Grade": `
+- Keep content slightly below the selected grade while preserving pathway style.
+- Use more scaffolding and clearer distractors.
+`,
+
+  "On Grade": `
+- Match the selected grade or pathway level.
+- Use realistic exam-aligned vocabulary and reasoning.
+`,
+
+  "Above Grade": `
+- Push above the selected grade with stronger vocabulary and closer distractors.
+- Still remain age-appropriate and fair.
+`,
+
+  Foundation: `
+- Build core skills before full exam difficulty.
+- Use accessible language and clear reasoning.
+`,
+
+  "4.0-5.0": "- IELTS target band 4.0-5.0: accessible topics, clearer evidence, simpler distractors.",
+  "5.5-6.0": "- IELTS target band 5.5-6.0: moderate complexity and realistic distractors.",
+  "6.5-7.0": "- IELTS target band 6.5-7.0: stronger academic language and closer distractors.",
+  "7.5+": "- IELTS target band 7.5+: sophisticated language, subtle reasoning, and precise distinctions.",
 };
+
+const LEGACY_ENGLISH_PATHWAYS = new Set([
+  "MAP",
+  "WIDA",
+  "CAT4",
+  "AEIS",
+  "O-Level English",
+  "TOEFL",
+  "IELTS",
+]);
+
+const normalizePathwayText = (value = "") =>
+  String(value || "").trim().toLowerCase().replace(/[\s_-]+/g, " ");
+
+const detectLegacyEnglishPathway = (question = {}) => {
+  const source = normalizePathwayText(
+    [
+      question.pathway,
+      question.exam_type,
+      question.category,
+      question.skill,
+      question.skill_tag,
+      question.question_text,
+      question.prompt,
+    ]
+      .filter(Boolean)
+      .join(" ")
+  );
+
+  if (source.includes("o level") || source.includes("o-level")) return "O-Level English";
+  if (source.includes("ielts")) return "IELTS";
+  if (source.includes("toefl")) return "TOEFL";
+  if (source.includes("aeis")) return "AEIS";
+  if (source.includes("cat4") || source.includes("cat 4")) return "CAT4";
+  if (source.includes("wida")) return "WIDA";
+  if (source.includes("map")) return "MAP";
+
+  return null;
+};
+
+const parseGradeNumber = (value = "") => {
+  const match = String(value || "").match(/grade\s*(\d+)/i);
+  return match ? Number(match[1]) : null;
+};
+
+const mapGradeToWidaBand = (grade = "") => {
+  if (/^k|kindergarten/i.test(grade)) return "K-2";
+  const gradeNumber = parseGradeNumber(grade);
+  if (!gradeNumber) return null;
+  if (gradeNumber <= 2) return "K-2";
+  if (gradeNumber <= 5) return "3-5";
+  if (gradeNumber <= 8) return "6-8";
+  return "9-12";
+};
+
+const mapAeisLevel = (grade = "") => {
+  if (/primary/i.test(grade)) return "Primary";
+  if (/secondary/i.test(grade)) return "Secondary";
+  const gradeNumber = parseGradeNumber(grade);
+  if (!gradeNumber) return null;
+  return gradeNumber <= 6 ? "Primary" : "Secondary";
+};
+
+const mapToeflLevel = (difficulty = "", grade = "") => {
+  const source = normalizePathwayText(`${difficulty} ${grade}`);
+  if (source.includes("foundation") || source.includes("beginner") || source.includes("easy")) {
+    return "Foundation";
+  }
+  if (source.includes("advanced") || source.includes("hard")) return "Advanced";
+  if (source.includes("intermediate") || source.includes("medium")) return "Intermediate";
+  return null;
+};
+
+const mapIeltsBand = (difficulty = "", grade = "") => {
+  const source = normalizePathwayText(`${difficulty} ${grade}`);
+  if (/7\.5|advanced|hard/.test(source)) return "7.5+";
+  if (/6\.5|7\.0/.test(source)) return "6.5-7.0";
+  if (/5\.5|6\.0|intermediate|medium/.test(source)) return "5.5-6.0";
+  if (/4\.0|5\.0|foundation|beginner|easy/.test(source)) return "4.0-5.0";
+  return null;
+};
+
+const normalizeLegacySkill = (question = {}, pathway = "") => {
+  const skill = String(question.skill || question.skill_tag || "").trim();
+  const source = normalizePathwayText(skill);
+
+  if (!skill) return null;
+
+  if (pathway === "MAP") {
+    if (source.includes("grammar") || source.includes("usage")) return "Language Usage";
+    if (source.includes("literature")) return "Literature";
+    if (source.includes("informational")) return "Informational Text";
+    if (source.includes("vocab")) return "Vocabulary";
+    return "Reading";
+  }
+
+  if (pathway === "WIDA") {
+    if (source.includes("writing")) return "Writing";
+    if (source.includes("listening")) return "Listening";
+    return "Reading";
+  }
+
+  if (pathway === "CAT4") {
+    if (source.includes("quant")) return "Quantitative";
+    if (source.includes("non")) return "Non-verbal";
+    if (source.includes("spatial")) return "Spatial";
+    return "Verbal";
+  }
+
+  if (pathway === "AEIS" || pathway === "O-Level English") {
+    if (source.includes("cloze")) return "Cloze";
+    if (source.includes("transform")) return "Sentence Transformation";
+    if (source.includes("composition") || source.includes("writing")) return "Composition Planning";
+    if (source.includes("grammar")) return "Grammar";
+    if (source.includes("vocab")) return "Vocabulary";
+    return "Reading Comprehension";
+  }
+
+  if (pathway === "TOEFL" || pathway === "IELTS") {
+    if (source.includes("listening")) return "Listening";
+    if (source.includes("writing")) return "Writing";
+    return "Reading";
+  }
+
+  return skill;
+};
+
+const getLegacyEnglishDefaultCategory = (question = {}, skill = "") => {
+  const explicitCategory = String(question.category || "").trim();
+  if (explicitCategory) return explicitCategory;
+
+  const source = normalizePathwayText(skill || question.skill || question.skill_tag);
+
+  if (
+    source.includes("inference") ||
+    source.includes("main idea") ||
+    source.includes("detail") ||
+    source.includes("reading")
+  ) {
+    return "Reading Comprehension";
+  }
+
+  if (source.includes("vocab")) return "Vocabulary";
+  if (source.includes("grammar") || source.includes("usage")) return "Grammar";
+  if (source.includes("cloze")) return "Cloze";
+  if (source.includes("writing") || source.includes("composition")) return "Writing";
+
+  return question.exam_type || "English Practice";
+};
+
+const classifyLegacyEnglishQuestion = (question = {}) => {
+  const pathway = detectLegacyEnglishPathway(question);
+
+  if (!pathway || !LEGACY_ENGLISH_PATHWAYS.has(pathway)) {
+    return {
+      status: "unmapped",
+      reason: "No confident pathway found",
+      confidence: 0,
+    };
+  }
+
+  let level = null;
+  let pathwayVariant = null;
+
+  if (pathway === "MAP" || pathway === "CAT4") {
+    level = question.level || question.grade || null;
+  } else if (pathway === "WIDA") {
+    level = question.level || mapGradeToWidaBand(question.grade);
+  } else if (pathway === "AEIS") {
+    level = question.level || mapAeisLevel(question.grade);
+  } else if (pathway === "O-Level English") {
+    level = "O-Level";
+  } else if (pathway === "TOEFL") {
+    level = question.level || mapToeflLevel(question.difficulty, question.grade);
+  } else if (pathway === "IELTS") {
+    level = question.level || mapIeltsBand(question.difficulty, question.grade);
+    const source = normalizePathwayText(`${question.category || ""} ${question.exam_type || ""}`);
+    if (source.includes("general")) pathwayVariant = "General Training";
+    if (source.includes("academic")) pathwayVariant = "Academic";
+  }
+
+  const skill = normalizeLegacySkill(question, pathway);
+  const confident = Boolean(pathway && level && skill);
+
+  return {
+    status: confident ? "mapped" : "needs_review",
+    reason: confident ? "Deterministic rule match" : "Pathway found but level or skill is uncertain",
+    confidence: confident ? 0.92 : 0.55,
+    proposed: {
+      target_language: "English",
+      pathway,
+      level,
+      level_label:
+        pathway === "WIDA"
+          ? "Grade Band"
+          : pathway === "TOEFL"
+            ? "Level"
+            : pathway === "IELTS"
+              ? "Target Band"
+              : pathway === "AEIS" || pathway === "O-Level English"
+                ? "Level"
+                : "Grade",
+      pathway_variant: pathwayVariant,
+      variant_label: pathwayVariant ? "Module" : null,
+      skill,
+      category: getLegacyEnglishDefaultCategory(question, skill),
+      status: confident ? question.status || "approved" : "needs_review",
+    },
+  };
+};
+
+const buildLegacyPromptBackfill = (question = {}) => {
+  const questionText = question.question_text || question.prompt || question.question_en || "";
+  const optionA = question.option_a || question.option_a_en || "";
+  const optionB = question.option_b || question.option_b_en || "";
+  const optionC = question.option_c || question.option_c_en || "";
+  const optionD = question.option_d || question.option_d_en || "";
+  const explanation = question.explanation || question.explanation_en || "";
+
+  return {
+    question_text: questionText || null,
+    question_en: questionText || null,
+    option_a: optionA || null,
+    option_a_en: optionA || null,
+    option_b: optionB || null,
+    option_b_en: optionB || null,
+    option_c: optionC || null,
+    option_c_en: optionC || null,
+    option_d: optionD || null,
+    option_d_en: optionD || null,
+    explanation: explanation || null,
+    explanation_en: explanation || null,
+    correct_answer: question.correct_answer,
+    passage: question.passage || null,
+  };
+};
+
+const buildLegacyEnglishMigrationPreview = (question = {}, classification = {}) => {
+  const content = buildLegacyPromptBackfill(question);
+  const proposed = classification.proposed || {};
+
+  return {
+    old_question_text: question.question_text || question.prompt || "",
+    proposed_question_en: content.question_en || "",
+    proposed_options_en: {
+      option_a_en: content.option_a_en || "",
+      option_b_en: content.option_b_en || "",
+      option_c_en: content.option_c_en || "",
+      option_d_en: content.option_d_en || "",
+    },
+    correct_answer: content.correct_answer || "",
+    proposed_explanation_en: content.explanation_en || "",
+    passage: content.passage || null,
+    proposed_pathway: proposed.pathway || null,
+    proposed_level: proposed.level || null,
+    proposed_skill: proposed.skill || null,
+    proposed_category: proposed.category || null,
+    proposed_status: proposed.status || classification.status || "needs_review",
+  };
+};
+
+const fetchLegacyEnglishQuestionsForMigration = async () => {
+  const { data, error } = await supabaseAdmin
+    .from("questions")
+    .select("*")
+    .or("target_language.eq.English,target_language.is.null")
+    .limit(2000);
+
+  if (error) throw new Error(error.message);
+
+  return (data || []).filter(
+    (question) => !question.pathway || !question.level || question.pathway === "Legacy Grade"
+  );
+};
+
+const classifyLegacyEnglishQuestionsWithAi = async (items = []) => {
+  if (items.length === 0) return new Map();
+
+  const batches = [];
+  for (let index = 0; index < items.length; index += 40) {
+    batches.push(items.slice(index, index + 40));
+  }
+
+  const results = new Map();
+
+  for (const batch of batches) {
+    const prompt = `
+Classify legacy English learning questions into the new Luna pathway structure.
+
+Allowed pathways and levels:
+- MAP: Kindergarten, Grade 1-12
+- WIDA: K-2, 3-5, 6-8, 9-12
+- CAT4: Grade 1-12
+- AEIS: Primary, Secondary
+- O-Level English: O-Level
+- TOEFL: Foundation, Intermediate, Advanced
+- IELTS: 4.0-5.0, 5.5-6.0, 6.5-7.0, 7.5+
+
+Allowed skills:
+- MAP: Reading, Vocabulary, Language Usage, Literature, Informational Text
+- WIDA: Reading, Writing, Listening
+- CAT4: Verbal, Quantitative, Non-verbal, Spatial
+- AEIS/O-Level English: Grammar, Vocabulary, Cloze, Reading Comprehension, Sentence Transformation, Composition Planning
+- TOEFL/IELTS: Reading, Listening, Writing
+
+Rules:
+- Do NOT rewrite or regenerate questions.
+- Classify only.
+- If uncertain, use confidence below 0.75.
+- Do not invent official exam claims.
+
+Input:
+${JSON.stringify(
+  batch.map((item) => ({
+    id: item.id,
+    exam_type: item.exam_type,
+    grade: item.grade,
+    difficulty: item.difficulty,
+    skill: item.skill || item.skill_tag,
+    category: item.category,
+    question: item.question_en || item.question_text || item.prompt,
+  })),
+  null,
+  2
+)}
+
+Return ONLY JSON:
+{
+  "items": [
+    {
+      "id": "...",
+      "pathway": "MAP",
+      "level": "Grade 5",
+      "skill": "Reading",
+      "category": "MAP Reading",
+      "confidence": 0.82,
+      "reason": "..."
+    }
+  ]
+}
+`;
+
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      input: prompt,
+    });
+
+    const text = response.output_text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (err) {
+      console.error("LEGACY ENGLISH AI CLASSIFICATION JSON ERROR:", text);
+      continue;
+    }
+
+    for (const item of parsed.items || []) {
+      if (!item.id) continue;
+      results.set(String(item.id), item);
+    }
+  }
+
+  return results;
+};
+
+const mergeAiLegacyClassification = (question, deterministic, aiItem) => {
+  if (!aiItem) return deterministic;
+
+  const pathway = LEGACY_ENGLISH_PATHWAYS.has(aiItem.pathway) ? aiItem.pathway : null;
+  const level = String(aiItem.level || "").trim();
+  const skill = String(aiItem.skill || "").trim();
+  const confidence = Number(aiItem.confidence || 0);
+
+  if (!pathway || !level || !skill) return deterministic;
+
+  return {
+    status: confidence >= 0.75 ? "mapped" : "needs_review",
+    reason: aiItem.reason || "AI classification",
+    confidence,
+    proposed: {
+      target_language: "English",
+      pathway,
+      level,
+      level_label:
+        pathway === "WIDA"
+          ? "Grade Band"
+          : pathway === "TOEFL"
+            ? "Level"
+            : pathway === "IELTS"
+              ? "Target Band"
+              : pathway === "AEIS" || pathway === "O-Level English"
+                ? "Level"
+                : "Grade",
+      pathway_variant: null,
+      variant_label: null,
+      skill,
+      category: aiItem.category || getLegacyEnglishDefaultCategory(question, skill),
+      status: confidence >= 0.75 ? question.status || "approved" : "needs_review",
+    },
+  };
+};
+
+app.post("/api/admin/questions/legacy-english-migration/preview", requireAdmin, async (req, res) => {
+  try {
+    const { useAiClassification = false } = req.body || {};
+    const questions = await fetchLegacyEnglishQuestionsForMigration();
+    const deterministicResults = questions.map((question) => ({
+      question,
+      classification: classifyLegacyEnglishQuestion(question),
+    }));
+    const aiCandidates = deterministicResults
+      .filter((item) => item.classification.status !== "mapped")
+      .map((item) => item.question);
+    const aiResults = useAiClassification
+      ? await classifyLegacyEnglishQuestionsWithAi(aiCandidates)
+      : new Map();
+
+    const results = deterministicResults.map(({ question, classification }) => {
+      const finalClassification = mergeAiLegacyClassification(
+        question,
+        classification,
+        aiResults.get(question.id)
+      );
+
+      return {
+        id: question.id,
+        question_preview:
+          question.question_en ||
+          question.question_text ||
+          question.prompt ||
+          "",
+        exam_type: question.exam_type || null,
+        grade: question.grade || null,
+        difficulty: question.difficulty || null,
+        skill: question.skill || question.skill_tag || null,
+        current_status: question.status || "approved",
+        classification: finalClassification,
+        migration_preview: buildLegacyEnglishMigrationPreview(question, finalClassification),
+      };
+    });
+
+    const confidentlyMapped = results.filter((item) => item.classification.status === "mapped");
+    const needsReview = results.filter((item) => item.classification.status === "needs_review");
+    const unmapped = results.filter((item) => item.classification.status === "unmapped");
+
+    return res.json({
+      total_old_english_questions_found: questions.length,
+      confidently_mapped_count: confidentlyMapped.length,
+      needs_ai_or_review_count: needsReview.length,
+      cannot_map_count: unmapped.length,
+      ai_classification_used: Boolean(useAiClassification),
+      samples: results.slice(0, 30),
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to preview legacy English migration.",
+    });
+  }
+});
+
+app.post("/api/admin/questions/legacy-english-migration/apply", requireAdmin, async (req, res) => {
+  try {
+    const { applyNeedsReview = false, useAiClassification = false } = req.body || {};
+    const questions = await fetchLegacyEnglishQuestionsForMigration();
+    const deterministicResults = questions.map((question) => ({
+      question,
+      classification: classifyLegacyEnglishQuestion(question),
+    }));
+    const aiCandidates = deterministicResults
+      .filter((item) => item.classification.status !== "mapped")
+      .map((item) => item.question);
+    const aiResults = useAiClassification
+      ? await classifyLegacyEnglishQuestionsWithAi(aiCandidates)
+      : new Map();
+    const updates = [];
+    const skipped = [];
+
+    for (const { question, classification: deterministic } of deterministicResults) {
+      const classification = mergeAiLegacyClassification(
+        question,
+        deterministic,
+        aiResults.get(question.id)
+      );
+
+      if (classification.status === "unmapped") {
+        skipped.push({ id: question.id, reason: classification.reason });
+        continue;
+      }
+
+      if (classification.status === "needs_review" && !applyNeedsReview) {
+        skipped.push({ id: question.id, reason: classification.reason });
+        continue;
+      }
+
+      updates.push({
+        question,
+        classification,
+      });
+    }
+
+    const failed = [];
+    let updated = 0;
+
+    for (const item of updates) {
+      const payload = {
+        ...item.classification.proposed,
+        ...buildLegacyPromptBackfill(item.question),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabaseAdmin
+        .from("questions")
+        .update(payload)
+        .eq("id", item.question.id);
+
+      if (error) {
+        failed.push({ id: item.question.id, error: error.message });
+        continue;
+      }
+
+      updated += 1;
+    }
+
+    return res.json({
+      total_old_english_questions_found: questions.length,
+      updated_count: updated,
+      skipped_count: skipped.length,
+      failed_count: failed.length,
+      skipped: skipped.slice(0, 30),
+      failed,
+      ai_classification_used: Boolean(useAiClassification),
+      note: "Apply preserves existing question text, options, answer, explanation, and passage while updating classification fields.",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to apply legacy English migration.",
+    });
+  }
+});
 
 /* =========================
    OPENAI GENERATOR
 ========================= */
 
+app.post("/api/admin/game-vocabulary/generate", requireAdmin, async (req, res) => {
+  console.log("📚 SHARED GAME VOCABULARY ROUTE HIT");
+  console.log("BODY:", req.body);
+
+  let batchId = null;
+
+  try {
+    const {
+      grade = "Grade 1",
+      category = "",
+      topic = "",
+      count = 12,
+      itemCount,
+      targetLanguages = ["en", "zh", "ja"],
+      generateImages = true,
+    } = req.body;
+
+    const finalCategory = String(category || topic || "General").trim() || "General";
+    const requestedCount = Math.min(
+      50,
+      Math.max(1, Number(itemCount || count || 12))
+    );
+    const languages = sanitizeGameVocabLanguages(targetLanguages);
+
+    const { data: batch, error: batchError } = await supabaseAdmin
+      .from("game_vocabulary_generation_batches")
+      .insert({
+        grade,
+        category: finalCategory,
+        difficulty: null,
+        requested_count: requestedCount,
+        target_languages: languages,
+        generate_images: Boolean(generateImages),
+        status: "partial",
+        metadata: {
+          source: "admin_shared_generator",
+        },
+        created_by: req.user.id,
+      })
+      .select()
+      .single();
+
+    if (batchError) {
+      console.error("GAME VOCAB BATCH INSERT ERROR:", batchError);
+      return res.status(500).json({ error: batchError.message });
+    }
+
+    batchId = batch.id;
+
+    const { data: existingItems, error: existingError } = await supabaseAdmin
+      .from("game_vocabulary_items")
+      .select("id, en, zh, ja, image_keyword, grade, category, status")
+      .range(0, 19999);
+
+    if (existingError) {
+      throw new Error(existingError.message);
+    }
+
+    const existingEnglish = new Set();
+    const existingKeywords = new Set();
+    const existingChinese = new Set();
+    const existingJapanese = new Set();
+
+    for (const item of existingItems || []) {
+      const en = normalizeGameVocabKey(item.en);
+      const keyword = normalizeGameVocabKey(item.image_keyword);
+      const zh = normalizeGameVocabKey(item.zh);
+      const ja = normalizeGameVocabKey(item.ja);
+
+      if (en) existingEnglish.add(en);
+      if (keyword) existingKeywords.add(keyword);
+      if (zh) existingChinese.add(zh);
+      if (ja) existingJapanese.add(ja);
+    }
+
+    const existingEnglishText =
+      existingEnglish.size > 0
+        ? Array.from(existingEnglish)
+          .sort()
+          .slice(0, 500)
+          .map((word) => `- ${word}`)
+          .join("\n")
+        : "- None";
+
+    const existingKeywordText =
+      existingKeywords.size > 0
+        ? Array.from(existingKeywords)
+          .sort()
+          .slice(0, 500)
+          .map((word) => `- ${word}`)
+          .join("\n")
+        : "- None";
+
+    const generationPrompt = `
+Generate exactly ${requestedCount} reusable multilingual vocabulary library items for children's learning games.
+
+Grade:
+${grade}
+
+Grade rules:
+${getGradeVocabRule(grade)}
+
+Category / topic:
+${finalCategory}
+
+Languages:
+- English
+- Simplified Chinese
+- Japanese
+
+Do not generate any of these existing English words:
+${existingEnglishText}
+
+Do not generate any of these existing image keywords or concepts:
+${existingKeywordText}
+
+Rules:
+- Generate fresh vocabulary that does not already exist anywhere in the shared library.
+- Do not duplicate vocabulary across grades.
+- Each item must represent one reusable vocabulary concept.
+- Keep terms concise, child-friendly, and suitable for games.
+- English should be lowercase unless the word is normally capitalized.
+- Chinese must be Simplified Chinese.
+- Japanese should be natural for children.
+- image_keyword must be concise English.
+- image_type must be one of:
+object, animal, person, action, emotion, color, place, nature, food, transport, school_item, abstract_concept
+- Prefer concrete visual words when possible.
+- Do not include explanations or markdown.
+
+Return ONLY valid JSON:
+{
+  "items": [
+    {
+      "en": "apple",
+      "zh": "苹果",
+      "ja": "りんご",
+      "image_keyword": "apple",
+      "image_type": "food",
+      "metadata": {
+        "notes": "optional short note"
+      }
+    }
+  ]
+}
+`;
+
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      input: generationPrompt,
+    });
+
+    const text = response.output_text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    let parsed;
+
+    try {
+      parsed = JSON.parse(text);
+    } catch (err) {
+      console.error("SHARED GAME VOCAB JSON PARSE ERROR:", text);
+      throw new Error("Generator returned invalid JSON.");
+    }
+
+    const rawItems = Array.isArray(parsed.items) ? parsed.items : [];
+    const cleanItems = [];
+    const seenEnglish = new Set();
+    const seenKeywords = new Set();
+    const seenChinese = new Set();
+    const seenJapanese = new Set();
+    const skippedDuplicates = [];
+
+    const recordDuplicate = (item, reason) => {
+      skippedDuplicates.push({
+        en: item?.en || "",
+        image_keyword: item?.image_keyword || "",
+        reason,
+      });
+    };
+
+    for (const rawItem of rawItems) {
+      const item = cleanGameVocabItem(rawItem);
+      if (!item) continue;
+
+      const coreEn = normalizeGameVocabKey(item.en);
+      const coreKeyword = normalizeGameVocabKey(item.image_keyword);
+      const coreZh = normalizeGameVocabKey(item.zh);
+      const coreJa = normalizeGameVocabKey(item.ja);
+
+      if (!coreEn) continue;
+
+      if (existingEnglish.has(coreEn)) {
+        recordDuplicate(item, "existing_en");
+        continue;
+      }
+
+      if (coreKeyword && existingKeywords.has(coreKeyword)) {
+        recordDuplicate(item, "existing_image_keyword");
+        continue;
+      }
+
+      if (coreZh && existingChinese.has(coreZh)) {
+        recordDuplicate(item, "existing_zh");
+        continue;
+      }
+
+      if (coreJa && existingJapanese.has(coreJa)) {
+        recordDuplicate(item, "existing_ja");
+        continue;
+      }
+
+      if (seenEnglish.has(coreEn)) {
+        recordDuplicate(item, "batch_en");
+        continue;
+      }
+
+      if (coreKeyword && seenKeywords.has(coreKeyword)) {
+        recordDuplicate(item, "batch_image_keyword");
+        continue;
+      }
+
+      if (coreZh && seenChinese.has(coreZh)) {
+        recordDuplicate(item, "batch_zh");
+        continue;
+      }
+
+      if (coreJa && seenJapanese.has(coreJa)) {
+        recordDuplicate(item, "batch_ja");
+        continue;
+      }
+
+      seenEnglish.add(coreEn);
+      if (coreKeyword) seenKeywords.add(coreKeyword);
+      if (coreZh) seenChinese.add(coreZh);
+      if (coreJa) seenJapanese.add(coreJa);
+      cleanItems.push(item);
+
+      if (cleanItems.length >= requestedCount) break;
+    }
+
+    const savedItems = [];
+
+    for (const item of cleanItems) {
+      let imageUrl = null;
+      let vocabImageId = null;
+
+      const reusableImage = await findReusableVocabImage(item.en, item.image_keyword);
+
+      if (reusableImage?.image_url) {
+        imageUrl = reusableImage.image_url;
+        vocabImageId = reusableImage.id;
+      } else if (generateImages) {
+        imageUrl = await getOrCreateVocabImage(
+          item.en,
+          item.image_keyword,
+          item.image_type,
+          item.zh,
+          item.en,
+          "zh_en"
+        );
+
+        const imageRecord = await findVocabImageByUrl(imageUrl);
+        vocabImageId = imageRecord?.id || null;
+      }
+
+      const payload = {
+        image_keyword: item.image_keyword,
+        image_type: item.image_type,
+        image_url: imageUrl,
+        vocab_image_id: vocabImageId,
+        en: item.en,
+        zh: item.zh,
+        ja: item.ja,
+        grade,
+        difficulty: null,
+        category: finalCategory,
+        status: imageUrl ? "needs_review" : "needs_review",
+        metadata: {
+          ...item.metadata,
+          target_languages: languages,
+          generation_batch_id: batchId,
+        },
+        created_by: req.user.id,
+      };
+
+      const { data, error } = await supabaseAdmin
+        .from("game_vocabulary_items")
+        .insert(payload)
+        .select()
+        .single();
+
+      if (error) throw new Error(error.message);
+      savedItems.push(data);
+    }
+
+    const existingConflictCount = skippedDuplicates.filter((item) =>
+      String(item.reason || "").startsWith("existing_")
+    ).length;
+
+    const finalStatus =
+      savedItems.length >= requestedCount
+        ? "completed"
+        : savedItems.length > 0
+          ? "partial"
+          : skippedDuplicates.length > 0
+            ? "completed"
+            : "failed";
+
+    await supabaseAdmin
+      .from("game_vocabulary_generation_batches")
+      .update({
+        status: finalStatus,
+        generated_item_ids: savedItems.map((item) => item.id),
+        metadata: {
+          source: "admin_shared_generator",
+          accepted_count: savedItems.length,
+          requested_count: requestedCount,
+          raw_count: rawItems.length,
+          skipped_duplicate_count: skippedDuplicates.length,
+          skipped_duplicates: skippedDuplicates,
+          existing_conflict_count: existingConflictCount,
+          duplicate_scope: "global",
+        },
+      })
+      .eq("id", batchId);
+
+    if (savedItems.length === 0 && skippedDuplicates.length === 0) {
+      return res.status(500).json({
+        error: "No valid vocabulary items were generated. Please try a different category.",
+        batchId,
+      });
+    }
+
+    return res.json({
+      success: true,
+      batchId,
+      requested_count: requestedCount,
+      generated_count: cleanItems.length,
+      inserted_count: savedItems.length,
+      skipped_duplicate_count: skippedDuplicates.length,
+      skipped_duplicates: skippedDuplicates,
+      existing_conflict_count: existingConflictCount,
+      items: savedItems,
+    });
+  } catch (err) {
+    console.error("SHARED GAME VOCAB ERROR:", err);
+
+    if (batchId) {
+      await supabaseAdmin
+        .from("game_vocabulary_generation_batches")
+        .update({
+          status: "failed",
+          error_message: err.message || "Shared vocabulary generation failed.",
+        })
+        .eq("id", batchId);
+    }
+
+    return res.status(500).json({
+      error: err.message || "Failed to generate shared game vocabulary.",
+      batchId,
+    });
+  }
+});
+
+app.post("/api/admin/game-vocabulary/duplicates", requireAdmin, async (req, res) => {
+  try {
+    const { apply = false } = req.body || {};
+
+    if (apply) {
+      return res.status(400).json({
+        error:
+          "Bulk duplicate cleanup is disabled. Review each duplicate group and reject selected items manually.",
+      });
+    }
+
+    const { data: items, error } = await supabaseAdmin
+      .from("game_vocabulary_items")
+      .select("id, en, zh, ja, image_keyword, grade, category, status, image_url, metadata, created_at")
+      .range(0, 19999);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    const audit = buildGameVocabularyDuplicateAudit(items || []);
+    return res.json({
+      success: true,
+      applied: false,
+      total_items_checked: audit.total_items_checked,
+      active_items_checked: audit.active_items_checked,
+      duplicate_groups_found: audit.duplicate_groups_found,
+      duplicate_rows_to_reject: audit.duplicate_rows_to_reject,
+      duplicate_rows_marked_rejected: 0,
+      duplicate_rows_deleted: 0,
+      kept_rows: audit.kept_rows,
+      duplicate_groups: audit.duplicate_groups,
+    });
+  } catch (err) {
+    console.error("GAME VOCAB DUPLICATE AUDIT ERROR:", err);
+    return res.status(500).json({
+      error: err.message || "Failed to audit shared vocabulary duplicates.",
+    });
+  }
+});
+
+app.get("/api/admin/game-vocabulary/items", requireAdmin, async (req, res) => {
+  try {
+    const page = Math.max(1, Number(req.query.page || 1));
+    const pageSize = Math.min(100, Math.max(25, Number(req.query.pageSize || 25)));
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    const status = String(req.query.status || "approved");
+    const grade = String(req.query.grade || "All");
+    const category = String(req.query.category || "All");
+    const search = String(req.query.search || "").trim();
+
+    let query = supabaseAdmin
+      .from("game_vocabulary_items")
+      .select("id, en, zh, ja, image_keyword, image_type, image_url, grade, category, status, metadata, created_at, updated_at", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (status !== "All") query = query.eq("status", status);
+    if (grade !== "All") query = query.eq("grade", grade);
+    if (category !== "All") query = query.eq("category", category);
+
+    if (search) {
+      const cleanSearch = search.replace(/[%_,]/g, " ").trim();
+      if (cleanSearch) {
+        query = query.or(
+          `en.ilike.%${cleanSearch}%,zh.ilike.%${cleanSearch}%,ja.ilike.%${cleanSearch}%,image_keyword.ilike.%${cleanSearch}%`
+        );
+      }
+    }
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({
+      items: data || [],
+      page,
+      pageSize,
+      total: count || 0,
+      totalPages: Math.max(1, Math.ceil((count || 0) / pageSize)),
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to load shared vocabulary items.",
+    });
+  }
+});
+
+app.patch("/api/admin/game-vocabulary/items/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const allowed = ["en", "zh", "ja", "image_keyword", "grade", "category", "status"];
+    const payload = {};
+
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) {
+        payload[key] = req.body[key];
+      }
+    }
+
+    if (Object.keys(payload).length === 0) {
+      return res.status(400).json({ error: "No editable fields provided." });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("game_vocabulary_items")
+      .update(payload)
+      .eq("id", id)
+      .select("id, en, zh, ja, image_keyword, image_type, image_url, grade, category, status, metadata, created_at, updated_at")
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({ item: data });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to update shared vocabulary item.",
+    });
+  }
+});
+
+app.post("/api/admin/game-vocabulary/items/:id/mark-duplicate", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { duplicateOf, reason = "manual_duplicate" } = req.body || {};
+
+    if (!duplicateOf || duplicateOf === id) {
+      return res.status(400).json({ error: "A different kept item id is required." });
+    }
+
+    const { data: existing, error: fetchError } = await supabaseAdmin
+      .from("game_vocabulary_items")
+      .select("id, metadata")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (fetchError || !existing) {
+      return res.status(404).json({ error: "Duplicate item not found." });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("game_vocabulary_items")
+      .update({
+        status: "rejected",
+        metadata: {
+          ...(existing.metadata || {}),
+          duplicate_of: duplicateOf,
+          duplicate_reason: reason,
+          duplicate_action: "marked_rejected",
+          duplicate_checked_at: new Date().toISOString(),
+          duplicate_checked_by: req.user.id,
+        },
+      })
+      .eq("id", id)
+      .select("id, en, zh, ja, image_keyword, image_type, image_url, grade, category, status, metadata, created_at, updated_at")
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({ item: data });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || "Failed to mark duplicate item.",
+    });
+  }
+});
+
+app.post("/api/admin/game-vocabulary/backfill-from-memory-flip", requireAdmin, async (req, res) => {
+  console.log("♻️ MEMORY FLIP BACKFILL ROUTE HIT");
+  console.log("BODY:", req.body);
+
+  let batchId = null;
+
+  try {
+    const {
+      dryRun = true,
+      preview,
+      generateImages = false,
+      grade,
+      difficulty,
+      languagePair,
+    } = req.body || {};
+
+    const isDryRun = preview === true ? true : Boolean(dryRun);
+    const shouldGenerateImages = Boolean(generateImages);
+
+    let query = supabaseAdmin
+      .from("game_questions")
+      .select("id, exam_type, grade, skill, difficulty, language_pair, question_data, created_at")
+      .eq("game_type", "memory_flip")
+      .order("created_at", { ascending: true })
+      .range(0, 4999);
+
+    if (grade) query = query.eq("grade", grade);
+    if (difficulty) query = query.eq("difficulty", difficulty);
+    if (languagePair) query = query.eq("language_pair", languagePair);
+
+    const { data: gameRows, error: gameRowsError } = await query;
+
+    if (gameRowsError) {
+      return res.status(500).json({ error: gameRowsError.message });
+    }
+
+    const candidatesByKey = new Map();
+    let totalPairsScanned = 0;
+
+    for (const row of gameRows || []) {
+      const pairs = Array.isArray(row.question_data?.pairs)
+        ? row.question_data.pairs
+        : [];
+
+      for (const pair of pairs) {
+        totalPairsScanned += 1;
+
+        const candidate = extractMemoryFlipCandidate(row, pair);
+        if (!candidate) continue;
+
+        const key = getBackfillCandidateKey(candidate);
+        if (!key) continue;
+
+        if (candidatesByKey.has(key)) {
+          mergeBackfillCandidates(candidatesByKey.get(key), candidate);
+        } else {
+          candidatesByKey.set(key, candidate);
+        }
+      }
+    }
+
+    const candidates = Array.from(candidatesByKey.values());
+
+    const { data: existingItems, error: existingError } = await supabaseAdmin
+      .from("game_vocabulary_items")
+      .select("*");
+
+    if (existingError) {
+      return res.status(500).json({ error: existingError.message });
+    }
+
+    const candidatePlans = candidates.map((candidate, index) => {
+      const existing = findExistingGameVocabularyItem(candidate, existingItems || []);
+      const missingLanguages = ["en", "zh", "ja"].filter(
+        (lang) => !String(candidate[lang] || "").trim()
+      );
+      const existingMissingLanguages = existing
+        ? ["zh", "ja"].filter((lang) => !String(existing[lang] || "").trim())
+        : [];
+      const canUpdateExisting =
+        Boolean(existing) &&
+        (existingMissingLanguages.length > 0 ||
+          (!existing.image_url && candidate.image_url) ||
+          (!existing.vocab_image_id && candidate.vocab_image_id));
+
+      return {
+        migration_id: `memory-flip-${index + 1}`,
+        candidate,
+        existing,
+        missingLanguages,
+        canUpdateExisting,
+      };
+    });
+
+    const summary = {
+      dry_run: isDryRun,
+      total_pairs_scanned: totalPairsScanned,
+      unique_items_detected: candidates.length,
+      items_already_in_shared_library: candidatePlans.filter((plan) => plan.existing).length,
+      items_to_insert: candidatePlans.filter((plan) => !plan.existing).length,
+      items_to_update: candidatePlans.filter((plan) => plan.canUpdateExisting).length,
+      missing_en_count: candidatePlans.filter((plan) => plan.missingLanguages.includes("en")).length,
+      missing_zh_count: candidatePlans.filter((plan) => plan.missingLanguages.includes("zh")).length,
+      missing_ja_count: candidatePlans.filter((plan) => plan.missingLanguages.includes("ja")).length,
+      images_reused_count: candidatePlans.filter((plan) => Boolean(plan.candidate.image_url)).length,
+      images_missing_count: candidatePlans.filter((plan) => !plan.candidate.image_url).length,
+      inserted_count: 0,
+      updated_count: 0,
+      skipped_count: 0,
+      ai_filled_count: 0,
+      ai_batch_count: 0,
+      completed_ai_batch_count: 0,
+      failed_ai_batch_count: 0,
+      failed_ai_batch_ids: [],
+      progress: [],
+      generated_images_count: 0,
+    };
+
+    if (isDryRun) {
+      return res.json({
+        success: true,
+        dryRun: true,
+        summary,
+        items: candidates.slice(0, 80).map((candidate) => ({
+          ...candidate,
+          existing_shared_item_id:
+            findExistingGameVocabularyItem(candidate, existingItems || [])?.id || null,
+        })),
+      });
+    }
+
+    const { data: batch, error: batchError } = await supabaseAdmin
+      .from("game_vocabulary_generation_batches")
+      .insert({
+        grade: grade || "Mixed",
+        category: "Memory Flip Backfill",
+        difficulty: difficulty || "Mixed",
+        requested_count: candidates.length,
+        target_languages: ["en", "zh", "ja"],
+        generate_images: shouldGenerateImages,
+        status: "partial",
+        metadata: {
+          source: "memory_flip_backfill",
+          dry_run: false,
+          language_pair_filter: languagePair || null,
+          scanned_game_question_count: (gameRows || []).length,
+          preview_summary: summary,
+        },
+        created_by: req.user.id,
+      })
+      .select()
+      .single();
+
+    if (batchError) {
+      return res.status(500).json({ error: batchError.message });
+    }
+
+    batchId = batch.id;
+
+    const savedItems = [];
+    const refreshedExistingItems = [...(existingItems || [])];
+    const importWorkItems = candidatePlans
+      .filter((plan) => !plan.existing || plan.canUpdateExisting)
+      .map((plan) => ({
+        ...plan,
+        candidate: {
+          ...plan.candidate,
+          metadata: { ...(plan.candidate.metadata || {}) },
+        },
+      }));
+    const aiWorkItems = importWorkItems.filter(
+      (workItem) => workItem.missingLanguages.length > 0
+    );
+    const noAiWorkItems = importWorkItems.filter(
+      (workItem) => workItem.missingLanguages.length === 0
+    );
+    const aiBatches = createDynamicBackfillAiBatches(aiWorkItems);
+
+    summary.ai_batch_count = aiBatches.length;
+
+    const persistProgress = async () => {
+      await supabaseAdmin
+        .from("game_vocabulary_generation_batches")
+        .update({
+          metadata: {
+            source: "memory_flip_backfill",
+            dry_run: false,
+            language_pair_filter: languagePair || null,
+            scanned_game_question_count: (gameRows || []).length,
+            progress: summary.progress,
+            partial_summary: summary,
+          },
+        })
+        .eq("id", batchId);
+    };
+
+    const writeBackfillItemsBatch = async (workItems, batchLabel) => {
+      const insertPayloads = [];
+      const updatePayloads = [];
+
+      for (const workItem of workItems) {
+        const candidate = {
+          ...workItem.candidate,
+          metadata: { ...(workItem.candidate.metadata || {}) },
+        };
+        const unresolvedLanguages = getMissingGameVocabLanguages(candidate);
+
+        if (!candidate.en || unresolvedLanguages.length > 0) {
+          summary.skipped_count += 1;
+          continue;
+        }
+
+        let imageUrl = candidate.image_url || null;
+        let vocabImageId = candidate.vocab_image_id || null;
+
+        if (imageUrl) {
+          const imageRecord = await findVocabImageByUrl(imageUrl);
+          vocabImageId = imageRecord?.id || vocabImageId || null;
+        } else {
+          const reusableImage = await findReusableVocabImage(
+            candidate.en,
+            candidate.image_keyword
+          );
+
+          if (reusableImage?.image_url) {
+            imageUrl = reusableImage.image_url;
+            vocabImageId = reusableImage.id;
+            summary.images_reused_count += 1;
+          } else if (shouldGenerateImages) {
+            imageUrl = await getOrCreateVocabImage(
+              candidate.en,
+              candidate.image_keyword,
+              candidate.image_type,
+              candidate.zh,
+              candidate.en,
+              "zh_en"
+            );
+
+            const imageRecord = await findVocabImageByUrl(imageUrl);
+            vocabImageId = imageRecord?.id || null;
+
+            if (imageUrl) summary.generated_images_count += 1;
+          }
+        }
+
+        const existing =
+          workItem.existing ||
+          findExistingGameVocabularyItem(candidate, refreshedExistingItems);
+        const memoryFlipMetadata = {
+          game_question_ids: Array.from(
+            new Set(candidate.metadata.legacy_game_question_ids || [])
+          ),
+          language_pairs: Array.from(
+            new Set(candidate.metadata.legacy_language_pairs || [])
+          ),
+        };
+
+        if (existing?.id) {
+          updatePayloads.push({
+            id: existing.id,
+            image_keyword: existing.image_keyword || candidate.image_keyword,
+            image_type: existing.image_type || candidate.image_type || "object",
+            image_url: existing.image_url || imageUrl,
+            vocab_image_id: existing.vocab_image_id || vocabImageId,
+            en: existing.en || candidate.en,
+            zh: existing.zh || candidate.zh || null,
+            ja: existing.ja || candidate.ja || null,
+            grade: existing.grade || candidate.grade || "Legacy",
+            difficulty: existing.difficulty || candidate.difficulty,
+            category: existing.category || candidate.category || "Memory Flip",
+            status: existing.status || "needs_review",
+            metadata: {
+              ...(existing.metadata || {}),
+              backfilled_from_memory_flip: true,
+              backfill_batch_id: batchId,
+              backfill_batch_label: batchLabel,
+              legacy_memory_flip: {
+                ...(existing.metadata?.legacy_memory_flip || {}),
+                game_question_ids: Array.from(
+                  new Set([
+                    ...(existing.metadata?.legacy_memory_flip?.game_question_ids || []),
+                    ...memoryFlipMetadata.game_question_ids,
+                  ])
+                ),
+                language_pairs: Array.from(
+                  new Set([
+                    ...(existing.metadata?.legacy_memory_flip?.language_pairs || []),
+                    ...memoryFlipMetadata.language_pairs,
+                  ])
+                ),
+              },
+            },
+            created_by: existing.created_by || req.user.id,
+          });
+
+          continue;
+        }
+
+        insertPayloads.push({
+          image_keyword: candidate.image_keyword || getCoreVocab(candidate.en),
+          image_type: candidate.image_type || "object",
+          image_url: imageUrl,
+          vocab_image_id: vocabImageId,
+          en: candidate.en,
+          zh: candidate.zh || null,
+          ja: candidate.ja || null,
+          grade: candidate.grade || "Legacy",
+          difficulty: candidate.difficulty,
+          category: candidate.category || "Memory Flip",
+          status: "needs_review",
+          metadata: {
+            ...(candidate.metadata || {}),
+            backfilled_from_memory_flip: true,
+            backfill_batch_id: batchId,
+            backfill_batch_label: batchLabel,
+            legacy_memory_flip: memoryFlipMetadata,
+          },
+          created_by: req.user.id,
+        });
+      }
+
+      if (updatePayloads.length > 0) {
+        const { data, error } = await supabaseAdmin
+          .from("game_vocabulary_items")
+          .upsert(updatePayloads, { onConflict: "id" })
+          .select();
+
+        if (error) throw new Error(error.message);
+
+        summary.updated_count += data?.length || 0;
+        savedItems.push(...(data || []));
+
+        for (const item of data || []) {
+          const index = refreshedExistingItems.findIndex((row) => row.id === item.id);
+          if (index >= 0) refreshedExistingItems[index] = item;
+          else refreshedExistingItems.push(item);
+        }
+      }
+
+      if (insertPayloads.length > 0) {
+        const { data, error } = await supabaseAdmin
+          .from("game_vocabulary_items")
+          .insert(insertPayloads)
+          .select();
+
+        if (error) throw new Error(error.message);
+
+        summary.inserted_count += data?.length || 0;
+        savedItems.push(...(data || []));
+        refreshedExistingItems.push(...(data || []));
+      }
+
+      return {
+        inserted_count: insertPayloads.length,
+        updated_count: updatePayloads.length,
+      };
+    };
+
+    if (noAiWorkItems.length > 0) {
+      const progressEntry = {
+        batch_id: "no-ai",
+        item_count: noAiWorkItems.length,
+        status: "writing",
+      };
+      summary.progress.push(progressEntry);
+
+      const result = await writeBackfillItemsBatch(noAiWorkItems, "no-ai");
+
+      progressEntry.status = "completed";
+      progressEntry.inserted_count = result.inserted_count;
+      progressEntry.updated_count = result.updated_count;
+      await persistProgress();
+    }
+
+    for (let index = 0; index < aiBatches.length; index += 1) {
+      const batchNumber = index + 1;
+      const aiBatch = aiBatches[index];
+      const progressEntry = {
+        batch_id: `ai-${batchNumber}`,
+        batch_number: batchNumber,
+        total_batches: aiBatches.length,
+        item_count: aiBatch.length,
+        status: "running",
+      };
+
+      summary.progress.push(progressEntry);
+
+      try {
+        const filledBatch = await fillMissingGameVocabLanguagesBatch(aiBatch);
+        const filledFieldCount = filledBatch.reduce(
+          (total, item) => total + item.filledLanguages.length,
+          0
+        );
+
+        summary.ai_filled_count += filledFieldCount;
+        progressEntry.filled_count = filledFieldCount;
+
+        const result = await writeBackfillItemsBatch(
+          filledBatch,
+          progressEntry.batch_id
+        );
+
+        progressEntry.status = "completed";
+        progressEntry.inserted_count = result.inserted_count;
+        progressEntry.updated_count = result.updated_count;
+        summary.completed_ai_batch_count += 1;
+      } catch (batchError) {
+        console.error("MEMORY FLIP BACKFILL AI BATCH ERROR:", batchError);
+
+        progressEntry.status = "failed";
+        progressEntry.error_message =
+          batchError.message || "Backfill AI batch failed.";
+        summary.failed_ai_batch_count += 1;
+        summary.failed_ai_batch_ids.push(progressEntry.batch_id);
+        summary.skipped_count += aiBatch.length;
+      }
+
+      await persistProgress();
+    }
+
+    const completedOrExistingCount =
+      summary.inserted_count +
+      summary.updated_count +
+      summary.items_already_in_shared_library;
+    const finalStatus =
+      summary.failed_ai_batch_count > 0 || summary.skipped_count > 0
+        ? completedOrExistingCount > 0
+          ? "partial"
+          : "failed"
+        : "completed";
+
+    await supabaseAdmin
+      .from("game_vocabulary_generation_batches")
+      .update({
+        status: finalStatus,
+        generated_item_ids: savedItems.map((item) => item.id),
+        metadata: {
+          source: "memory_flip_backfill",
+          final_summary: summary,
+          scanned_game_question_count: (gameRows || []).length,
+          language_pair_filter: languagePair || null,
+        },
+      })
+      .eq("id", batchId);
+
+    return res.json({
+      success: true,
+      dryRun: false,
+      batchId,
+      summary,
+      items: savedItems.slice(0, 80),
+    });
+  } catch (err) {
+    console.error("MEMORY FLIP BACKFILL ERROR:", err);
+
+    if (batchId) {
+      await supabaseAdmin
+        .from("game_vocabulary_generation_batches")
+        .update({
+          status: "failed",
+          error_message: err.message || "Memory Flip backfill failed.",
+        })
+        .eq("id", batchId);
+    }
+
+    return res.status(500).json({
+      error: err.message || "Failed to backfill Memory Flip content.",
+      batchId,
+    });
+  }
+});
+
+app.post("/api/admin/game-vocabulary/approve-memory-flip-backfill", requireAdmin, async (req, res) => {
+  try {
+    const { data: reviewItems, error: reviewError } = await supabaseAdmin
+      .from("game_vocabulary_items")
+      .select("id, status, metadata")
+      .eq("status", "needs_review")
+      .range(0, 9999);
+
+    if (reviewError) {
+      return res.status(500).json({ error: reviewError.message });
+    }
+
+    const targetIds = (reviewItems || [])
+      .filter((item) => {
+        const metadata = item.metadata || {};
+        return (
+          metadata.source === "memory_flip_backfill" ||
+          metadata.backfilled_from_memory_flip === true
+        );
+      })
+      .map((item) => item.id);
+
+    const chunkSize = 250;
+    let approvedCount = 0;
+
+    for (let index = 0; index < targetIds.length; index += chunkSize) {
+      const ids = targetIds.slice(index, index + chunkSize);
+      const { data, error } = await supabaseAdmin
+        .from("game_vocabulary_items")
+        .update({ status: "approved" })
+        .in("id", ids)
+        .select("id");
+
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      approvedCount += data?.length || 0;
+    }
+
+    const { data: allItems, error: allItemsError } = await supabaseAdmin
+      .from("game_vocabulary_items")
+      .select("id, status, metadata")
+      .range(0, 19999);
+
+    if (allItemsError) {
+      return res.status(500).json({ error: allItemsError.message });
+    }
+
+    const verificationItems = allItems || [];
+    const approvedBackfilledCount = verificationItems.filter((item) => {
+      const metadata = item.metadata || {};
+      return (
+        item.status === "approved" &&
+        (metadata.source === "memory_flip_backfill" ||
+          metadata.backfilled_from_memory_flip === true)
+      );
+    }).length;
+
+    return res.json({
+      success: true,
+      targeted_count: targetIds.length,
+      approved_count: approvedCount,
+      verification: {
+        total_shared_items: verificationItems.length,
+        approved_count: verificationItems.filter((item) => item.status === "approved").length,
+        needs_review_count: verificationItems.filter((item) => item.status === "needs_review").length,
+        rejected_count: verificationItems.filter((item) => item.status === "rejected").length,
+        approved_backfilled_count: approvedBackfilledCount,
+      },
+    });
+  } catch (err) {
+    console.error("APPROVE MEMORY FLIP BACKFILL ERROR:", err);
+    return res.status(500).json({
+      error: err.message || "Failed to approve Memory Flip backfilled vocabulary.",
+    });
+  }
+});
+
 app.post("/api/generate-game-questions", requireAdmin, async (req, res) => {
   console.log("🎮 GAME QUESTION ROUTE HIT");
   console.log("BODY:", req.body);
+
+  return res.status(410).json({
+    error:
+      "Game-specific vocabulary generation has been retired. Use the Shared Vocabulary Library generator instead.",
+    redirect: "/admin/generate/shared-vocabulary",
+  });
 
   try {
     const {
@@ -1703,9 +4057,39 @@ app.post("/api/generate-questions", requireAdmin, async (req, res) => {
       grade,
       skill,
       difficulty,
+      category = "",
       questionCount,
       extraPrompt,
+      targetLanguage: targetLanguageInput,
+      target_language: targetLanguageSnake,
+      pathway,
+      level,
+      pathwayVariant,
+      levelLabel = "Grade / Level",
+      variantLabel,
+      skillLabel = "Skill / Question Type",
+      difficultyLabel = "Difficulty",
     } = req.body;
+
+    const targetLanguage = targetLanguageInput || targetLanguageSnake || "English";
+
+    const targetLanguageFocusRules = {
+      English: `
+- Target-language goal: teach and assess English.
+- Focus areas may include vocabulary, grammar, reading, writing, sentence structure, school English, and exam preparation when selected.
+- Generate English, Chinese, and Japanese prompt versions of the same English-learning task.
+`,
+      Japanese: `
+- Target-language goal: teach and assess Japanese.
+- Focus areas may include JLPT-style learning, hiragana, katakana, kanji, vocabulary, grammar, particles, reading, and sentence patterns.
+- Generate English, Chinese, and Japanese prompt versions of the same Japanese-learning task.
+`,
+      Chinese: `
+- Target-language goal: teach and assess Chinese.
+- Focus areas may include Chinese vocabulary, pinyin, characters, reading, sentence structure, and HSK-style learning when selected.
+- Generate English, Chinese, and Japanese prompt versions of the same Chinese-learning task.
+`,
+    };
 
     const examples = getExampleFile(examType, grade, skill);
     const selectedStructure = structureRules[skill] || {
@@ -1763,11 +4147,28 @@ You are a professional exam question writer.
 
 
 SELECTED SETTINGS:
-Exam Type: ${examType}
-Grade / Level: ${grade}
-Skill / Question Type: ${skill}
-Difficulty: ${difficulty}
+Exam / Pathway: ${pathway || examType}
+${levelLabel}: ${level || grade}
+${pathwayVariant ? `${variantLabel || "Variant"}: ${pathwayVariant}` : ""}
+${skillLabel}: ${skill}
+Category / Topic: ${category || "General"}
+${difficulty ? `${difficultyLabel || "Difficulty"}: ${difficulty}` : "Difficulty / Band: Not used for this pathway"}
 Number of questions: ${questionCount}
+Target language being learned: ${targetLanguage}
+
+LANGUAGE RULES:
+${targetLanguageFocusRules[targetLanguage] || targetLanguageFocusRules.English}
+- The target language determines the learning content, grammar scope, vocabulary scope, exam style, and skill type.
+- Use the selected category/topic as the content theme when it is provided.
+- Generate ONE logical question per item, but include prompt versions in English, Chinese, and Japanese.
+- question_en, question_zh, and question_ja must ask the SAME question.
+- option_a/b/c/d en/zh/ja fields must represent the SAME answer choices across prompt languages.
+- explanation_en, explanation_zh, and explanation_ja must explain the SAME reasoning.
+- For reading skills, the passage should normally be in ${targetLanguage}; do not create three separate passages unless the skill specifically requires translation.
+- Do not reduce the task to simple word-pair translation unless Skill = Vocabulary and that is appropriate for the selected grade.
+- Do not silently switch the target language. A ${targetLanguage} question must remain a ${targetLanguage} learning question.
+- If the selected pathway is TOEFL, IELTS, or WIDA, do not generate Speaking tasks. This bank is for automatically graded Reading, Listening transcript, and Writing preparation only.
+- Generate realistic mock questions aligned with the selected pathway. Do not copy or reproduce official copyrighted exam questions.
 
 STYLE EXAMPLES FROM FILE:
 ${examples || "No example file found. Use realistic exam style."}
@@ -1836,13 +4237,25 @@ Return ONLY valid JSON array in this exact format:
 [
   {
     "passage": "... or null",
-    "question_text": "...",
-    "option_a": "...",
-    "option_b": "...",
-    "option_c": "...",
-    "option_d": "...",
+    "question_en": "...",
+    "question_zh": "...",
+    "question_ja": "...",
+    "option_a_en": "...",
+    "option_a_zh": "...",
+    "option_a_ja": "...",
+    "option_b_en": "...",
+    "option_b_zh": "...",
+    "option_b_ja": "...",
+    "option_c_en": "...",
+    "option_c_zh": "...",
+    "option_c_ja": "...",
+    "option_d_en": "...",
+    "option_d_zh": "...",
+    "option_d_ja": "...",
     "correct_answer": "option_a",
-    "explanation": "..."
+    "explanation_en": "...",
+    "explanation_zh": "...",
+    "explanation_ja": "..."
   }
 ]
 `;

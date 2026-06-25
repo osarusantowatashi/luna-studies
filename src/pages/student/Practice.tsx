@@ -14,37 +14,74 @@ import {
   Trophy,
   XCircle,
 } from "lucide-react";
+import {
+  buildEnglishAccessKey,
+  getEnglishPathway,
+  parseEnglishAccessKey,
+} from "@/lib/englishPathways";
 
 const DAILY_GOAL = 30;
 
 const DIFFICULTIES = ["Easy", "Medium", "Hard", "Advanced"];
 
-const SKILLS = [
-  "Mix",
-  "Vocabulary",
-  "Reading Comprehension",
-  "Main Idea",
-  "Inference",
-  "Detail Questions",
-  "Grammar",
-  "Math Problem Solving",
-];
+const TARGET_LANGUAGES = ["English", "Japanese", "Chinese"];
+
+const PROMPT_LANGUAGES = ["English", "Japanese", "Chinese"];
+
+const SKILLS_BY_LANGUAGE: Record<string, string[]> = {
+  English: [
+    "Mix",
+    "Vocabulary",
+    "Reading Comprehension",
+    "Main Idea",
+    "Inference",
+    "Detail Questions",
+    "Grammar",
+  ],
+  Japanese: ["Mix", "Hiragana", "Katakana", "Vocabulary", "Grammar", "Reading", "Sentence Writing"],
+  Chinese: ["Mix", "Pinyin", "Characters", "Vocabulary", "Grammar", "Reading", "Sentence Writing"],
+};
+
+type PracticeAccess = {
+  key: string;
+  targetLanguage: string;
+  pathway: string;
+  level: string;
+  label: string;
+};
 
 const shuffleArray = (array: any[]) => {
   return [...array].sort(() => Math.random() - 0.5);
 };
 
+const languageSuffix = (language: string) =>
+  language === "Chinese" ? "zh" : language === "Japanese" ? "ja" : "en";
+
+const localizedField = (q: any, base: string, language: string) => {
+  if (!q) return "";
+
+  const suffix = languageSuffix(language);
+
+  return q[`${base}_${suffix}`] || q[base] || q[`${base}_en`] || "";
+};
+
 const Practice = () => {
   const [allowedGrades, setAllowedGrades] = useState<string[]>([]);
+  const [accessOptions, setAccessOptions] = useState<PracticeAccess[]>([]);
   const [canViewAnswers, setCanViewAnswers] = useState(false);
 
   const [selectedGrade, setSelectedGrade] = useState("");
+  const [selectedPathway, setSelectedPathway] = useState("Legacy Grade");
+  const [selectedPathwayVariant, setSelectedPathwayVariant] = useState("All");
   const [selectedDifficulty, setSelectedDifficulty] = useState("Medium");
   const [selectedSkill, setSelectedSkill] = useState("Mix");
+  const [selectedTargetLanguage, setSelectedTargetLanguage] = useState("English");
+  const [selectedPromptLanguage, setSelectedPromptLanguage] = useState("English");
 
   const [questions, setQuestions] = useState<any[]>([]);
   const [started, setStarted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [practiceNotice, setPracticeNotice] = useState("");
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState("");
@@ -85,10 +122,20 @@ const Practice = () => {
 
       setCanViewAnswers(profileData?.can_view_answers === true);
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("student_grade_access")
-        .select("grade")
+        .select("grade, target_language, pathway, level")
         .eq("student_id", user.id);
+
+      if (error) {
+        const fallback = await supabase
+          .from("student_grade_access")
+          .select("grade")
+          .eq("student_id", user.id);
+
+        data = fallback.data;
+        error = fallback.error;
+      }
 
       if (error) {
         console.error(error);
@@ -96,10 +143,41 @@ const Practice = () => {
         return;
       }
 
-      const grades = data?.map((item) => item.grade) || [];
-      setAllowedGrades(grades);
+      const mappedAccess: PracticeAccess[] = (data || []).map((item: any) => {
+        const parsed = parseEnglishAccessKey(item.grade || "");
+        const pathway = item.pathway || parsed?.pathway || "Legacy Grade";
+        const level = item.level || parsed?.level || item.grade;
+        const targetLanguage = item.target_language || parsed?.targetLanguage || "English";
 
-      if (grades.length > 0) setSelectedGrade(grades[0]);
+        return {
+          key:
+            targetLanguage === "English" && pathway !== "Legacy Grade"
+              ? buildEnglishAccessKey(pathway, level)
+              : item.grade,
+          targetLanguage,
+          pathway,
+          level,
+          label: pathway === "Legacy Grade" ? level : `${pathway} ${level}`,
+        };
+      });
+      const grades = mappedAccess
+        .filter((item) => item.targetLanguage !== "English" || item.pathway !== "Legacy Grade")
+        .map((item) => item.level)
+        .filter(Boolean);
+      setAllowedGrades(grades);
+      setAccessOptions(mappedAccess);
+
+      if (mappedAccess.length > 0) {
+        const firstEnglishPathway =
+          mappedAccess.find((item) => item.targetLanguage === "English" && item.pathway !== "Legacy Grade") ||
+          mappedAccess.find((item) => item.targetLanguage !== "English");
+
+        if (firstEnglishPathway) {
+          setSelectedTargetLanguage(firstEnglishPathway.targetLanguage || "English");
+          setSelectedPathway(firstEnglishPathway.pathway || "");
+          setSelectedGrade(firstEnglishPathway.level || firstEnglishPathway.label);
+        }
+      }
 
       await fetchStats(user.id);
 
@@ -109,20 +187,127 @@ const Practice = () => {
     fetchAccess();
   }, []);
 
-  const getCorrectAnswerText = (q: any) => {
+  useEffect(() => {
+    const englishPathway = getEnglishPathway(selectedPathway);
+    const skills =
+      selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+        ? ["Mix", ...englishPathway.skills]
+        : SKILLS_BY_LANGUAGE[selectedTargetLanguage] || SKILLS_BY_LANGUAGE.English;
+
+    if (!skills.includes(selectedSkill)) {
+      setSelectedSkill("Mix");
+    }
+  }, [selectedPathway, selectedSkill, selectedTargetLanguage]);
+
+  const englishAccessOptions = useMemo(
+    () => accessOptions.filter((item) => item.targetLanguage === "English" && item.pathway !== "Legacy Grade"),
+    [accessOptions]
+  );
+
+  const availableTargetLanguages = useMemo(() => {
+    const languages = Array.from(
+      new Set(
+        accessOptions
+          .filter((item) => item.targetLanguage !== "English")
+          .map((item) => item.targetLanguage)
+          .filter(Boolean)
+      )
+    );
+
+    if (englishAccessOptions.length > 0) languages.unshift("English");
+
+    return languages;
+  }, [accessOptions, englishAccessOptions]);
+
+  const availableEnglishPathways = useMemo(() => {
+    const pathways = Array.from(new Set(englishAccessOptions.map((item) => item.pathway || "Legacy Grade")));
+    return pathways;
+  }, [englishAccessOptions]);
+
+  const availableEnglishLevels = useMemo(
+    () =>
+      englishAccessOptions
+        .filter((item) => (item.pathway || "Legacy Grade") === selectedPathway)
+        .map((item) => item.level)
+        .filter(Boolean),
+    [englishAccessOptions, selectedPathway]
+  );
+
+  const englishPathwayConfig = getEnglishPathway(selectedPathway);
+  const practiceSkillOptions =
+    selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+      ? ["Mix", ...englishPathwayConfig.skills]
+      : SKILLS_BY_LANGUAGE[selectedTargetLanguage] || SKILLS_BY_LANGUAGE.English;
+  const practiceDifficultyOptions =
+    selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+      ? englishPathwayConfig.difficulties || []
+      : DIFFICULTIES;
+  const practiceVariantOptions =
+    selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+      ? englishPathwayConfig.variants || []
+      : [];
+
+  useEffect(() => {
+    if (selectedTargetLanguage !== "English") return;
+
+    if (availableEnglishPathways.length === 0) {
+      setSelectedPathway("");
+      setSelectedGrade("");
+      return;
+    }
+
+    if (!availableEnglishPathways.includes(selectedPathway)) {
+      setSelectedPathway(availableEnglishPathways[0]);
+      return;
+    }
+
+    if (availableEnglishLevels.length > 0 && !availableEnglishLevels.includes(selectedGrade)) {
+      setSelectedGrade(availableEnglishLevels[0]);
+    }
+
+    if (
+      practiceDifficultyOptions.length > 0 &&
+      !practiceDifficultyOptions.includes(selectedDifficulty)
+    ) {
+      setSelectedDifficulty(practiceDifficultyOptions[0]);
+    }
+
+    if (
+      practiceVariantOptions.length > 0 &&
+      selectedPathwayVariant !== "All" &&
+      !practiceVariantOptions.includes(selectedPathwayVariant)
+    ) {
+      setSelectedPathwayVariant("All");
+    }
+  }, [
+    availableEnglishLevels,
+    availableEnglishPathways,
+    practiceDifficultyOptions,
+    selectedDifficulty,
+    selectedGrade,
+    selectedPathway,
+    selectedPathwayVariant,
+    selectedTargetLanguage,
+    practiceVariantOptions,
+  ]);
+
+  const getCorrectAnswerText = (q: any, language = selectedPromptLanguage) => {
     if (!q) return "";
 
-    if (q.correct_answer === "option_a") return q.option_a;
-    if (q.correct_answer === "option_b") return q.option_b;
-    if (q.correct_answer === "option_c") return q.option_c;
-    if (q.correct_answer === "option_d") return q.option_d;
+    if (q.correct_answer === "option_a") return localizedField(q, "option_a", language);
+    if (q.correct_answer === "option_b") return localizedField(q, "option_b", language);
+    if (q.correct_answer === "option_c") return localizedField(q, "option_c", language);
+    if (q.correct_answer === "option_d") return localizedField(q, "option_d", language);
 
     return q.correct_answer;
   };
 
   const current = questions[currentIndex];
 
-  const correctText = useMemo(() => getCorrectAnswerText(current), [current]);
+  const correctText = useMemo(
+    () => getCorrectAnswerText(current, selectedPromptLanguage),
+    [current, selectedPromptLanguage]
+  );
 
   const isCorrect = selected === correctText;
 
@@ -137,8 +322,10 @@ const Practice = () => {
       : Math.round(((currentIndex + 1) / questions.length) * 100);
 
   const startPractice = async () => {
-    if (!selectedGrade) {
-      alert("Please select a grade.");
+    setPracticeNotice("");
+
+    if (!selectedGrade || (selectedTargetLanguage === "English" && !selectedPathway)) {
+      setPracticeNotice("Please select an assigned pathway before starting practice.");
       return;
     }
 
@@ -165,19 +352,62 @@ const Practice = () => {
     let query = supabase
       .from("questions")
       .select("*")
-      .eq("grade", selectedGrade)
-      .eq("difficulty", selectedDifficulty)
       .limit(200);
+
+    query =
+      selectedTargetLanguage === "English"
+        ? query.or("target_language.eq.English,target_language.is.null")
+        : query.eq("target_language", selectedTargetLanguage);
+
+    if (selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade") {
+      query = query.eq("pathway", selectedPathway).eq("level", selectedGrade);
+
+      if (selectedDifficulty && practiceDifficultyOptions.length > 0) {
+        query = query.eq("difficulty", selectedDifficulty);
+      }
+
+      if (selectedPathwayVariant !== "All" && practiceVariantOptions.length > 0) {
+        query = query.eq("pathway_variant", selectedPathwayVariant);
+      }
+    } else {
+      query = query.eq("grade", selectedGrade).eq("difficulty", selectedDifficulty);
+    }
 
     if (selectedSkill !== "Mix") {
       query = query.eq("skill", selectedSkill);
     }
 
-    const { data, error } = await query;
+    let { data, error } = await query;
+
+    if (
+      selectedTargetLanguage === "English" &&
+      selectedPathway !== "Legacy Grade" &&
+      (error || !data || data.length === 0)
+    ) {
+      let fallbackQuery = supabase
+        .from("questions")
+        .select("*")
+        .or("target_language.eq.English,target_language.is.null")
+        .eq("exam_type", selectedPathway)
+        .eq("grade", selectedGrade)
+        .limit(200);
+
+      if (selectedDifficulty && practiceDifficultyOptions.length > 0) {
+        fallbackQuery = fallbackQuery.eq("difficulty", selectedDifficulty);
+      }
+
+      if (selectedSkill !== "Mix") {
+        fallbackQuery = fallbackQuery.eq("skill", selectedSkill);
+      }
+
+      const fallback = await fallbackQuery;
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) {
       console.error(error);
-      alert("Failed to load questions.");
+      setPracticeNotice("Failed to load questions. Please try again.");
       setLoading(false);
       return;
     }
@@ -189,7 +419,9 @@ const Practice = () => {
     const randomQuestions = shuffleArray(availableQuestions).slice(0, 20);
 
     if (randomQuestions.length === 0) {
-      alert("No new questions available. You can reset progress to practise again.");
+      setPracticeNotice(
+        `No new ${selectedTargetLanguage} questions available for this setup. You can reset progress or choose another pathway, level, skill, or difficulty.`
+      );
       setQuestions([]);
       setStarted(false);
       setLoading(false);
@@ -200,6 +432,7 @@ const Practice = () => {
     setCurrentIndex(0);
     setSelected("");
     setShowFeedback(false);
+    setPracticeNotice("");
     setStarted(true);
     setLoading(false);
   };
@@ -327,7 +560,8 @@ const Practice = () => {
                 </h1>
 
                 <p className="mt-6 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg">
-                  Select your grade, difficulty, and skill focus. Luna will give you a fresh practice set matched to your access.
+                  Select your learning language, assigned pathway, prompt language, and skill focus.
+                  Luna will give you a fresh practice set matched to your access.
                 </p>
               </div>
 
@@ -391,28 +625,105 @@ const Practice = () => {
               </p>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
               <SelectInput
-                label="Grade"
+                label="Learn"
+                value={selectedTargetLanguage}
+                onChange={(value) => {
+                  setSelectedTargetLanguage(value);
+
+                  if (value === "English") {
+                    const nextPathway = availableEnglishPathways[0] || "";
+                    const nextLevel =
+                      englishAccessOptions.find((item) => item.pathway === nextPathway)?.level ||
+                      "";
+
+                    setSelectedPathway(nextPathway);
+                    setSelectedGrade(nextLevel);
+                    setSelectedPathwayVariant("All");
+                  }
+                }}
+                options={availableTargetLanguages}
+              />
+
+              {selectedTargetLanguage === "English" && (
+                <SelectInput
+                  label="Pathway"
+                  value={selectedPathway}
+                  onChange={(value) => {
+                    const nextLevel =
+                      englishAccessOptions.find((item) => item.pathway === value)?.level ||
+                      selectedGrade;
+
+                    setSelectedPathway(value);
+                    setSelectedGrade(nextLevel);
+                    setSelectedPathwayVariant("All");
+                  }}
+                  options={availableEnglishPathways}
+                />
+              )}
+
+              <SelectInput
+                label={
+                  selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+                    ? englishPathwayConfig.levelLabel
+                    : "Grade"
+                }
                 value={selectedGrade}
                 onChange={setSelectedGrade}
-                options={allowedGrades}
+                options={
+                  selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+                    ? availableEnglishLevels
+                    : allowedGrades
+                }
               />
 
               <SelectInput
-                label="Difficulty"
-                value={selectedDifficulty}
-                onChange={setSelectedDifficulty}
-                options={DIFFICULTIES}
+                label="Prompt Language"
+                value={selectedPromptLanguage}
+                onChange={setSelectedPromptLanguage}
+                options={PROMPT_LANGUAGES}
               />
 
+              {practiceVariantOptions.length > 0 && (
+                <SelectInput
+                  label={englishPathwayConfig.variantLabel || "Variant"}
+                  value={selectedPathwayVariant}
+                  onChange={setSelectedPathwayVariant}
+                  options={["All", ...practiceVariantOptions]}
+                />
+              )}
+
+              {practiceDifficultyOptions.length > 0 && (
+                <SelectInput
+                  label={
+                    selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+                      ? englishPathwayConfig.difficultyLabel || "Difficulty"
+                      : "Difficulty"
+                  }
+                  value={selectedDifficulty}
+                  onChange={setSelectedDifficulty}
+                  options={practiceDifficultyOptions}
+                />
+              )}
+
               <SelectInput
-                label="Question Type"
+                label={
+                  selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+                    ? englishPathwayConfig.skillLabel
+                    : "Question Type"
+                }
                 value={selectedSkill}
                 onChange={setSelectedSkill}
-                options={SKILLS}
+                options={practiceSkillOptions}
               />
             </div>
+
+            {practiceNotice && (
+              <div className="mt-6 rounded-2xl border border-[#eee8ff] bg-[#fbfaff] px-4 py-3 text-sm font-semibold leading-6 text-primary/65">
+                {practiceNotice}
+              </div>
+            )}
 
             <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_auto]">
               <Button
@@ -448,7 +759,7 @@ const Practice = () => {
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8d73ff]">
-                {selectedGrade} · {selectedDifficulty} · {selectedSkill}
+                Learning {selectedTargetLanguage} · Prompt in {selectedPromptLanguage}
               </p>
 
               <h1 className="mt-3 font-poppins text-3xl font-black text-primary sm:text-4xl">
@@ -456,7 +767,10 @@ const Practice = () => {
               </h1>
 
               <p className="mt-2 text-primary/55">
-                Question {currentIndex + 1} / {questions.length}
+                {selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+                  ? `${selectedPathway} · ${selectedGrade}`
+                  : selectedGrade}
+                {selectedDifficulty ? ` · ${selectedDifficulty}` : ""} · {selectedSkill} · Question {currentIndex + 1} / {questions.length}
               </p>
             </div>
 
@@ -504,7 +818,14 @@ const Practice = () => {
               )}
 
               <div className="mb-5 flex flex-wrap gap-2 text-xs">
-                {[current.exam_type, current.grade, current.skill, current.difficulty].map(
+                {[
+                  current.target_language || selectedTargetLanguage,
+                  `Prompt: ${selectedPromptLanguage}`,
+                  current.exam_type,
+                  current.grade,
+                  current.skill,
+                  current.difficulty,
+                ].map(
                   (tag) =>
                     tag && (
                       <span
@@ -518,11 +839,16 @@ const Practice = () => {
               </div>
 
               <p className="mb-6 text-lg font-black leading-8 text-primary sm:text-xl">
-                {current.question_text}
+                {localizedField(current, "question", selectedPromptLanguage) || current.question_text}
               </p>
 
               <div className="space-y-3">
-                {[current.option_a, current.option_b, current.option_c, current.option_d].map(
+                {[
+                  localizedField(current, "option_a", selectedPromptLanguage),
+                  localizedField(current, "option_b", selectedPromptLanguage),
+                  localizedField(current, "option_c", selectedPromptLanguage),
+                  localizedField(current, "option_d", selectedPromptLanguage),
+                ].map(
                   (opt, i) => {
                     const isSelected = selected === opt;
                     const isCorrectOption = opt === correctText;
@@ -607,9 +933,10 @@ const Practice = () => {
                     </p>
                   )}
 
-                  {canViewAnswers && current.explanation && (
+                  {canViewAnswers &&
+                    (localizedField(current, "explanation", selectedPromptLanguage) || current.explanation) && (
                     <p className="mt-3 text-sm leading-6">
-                      {current.explanation}
+                      {localizedField(current, "explanation", selectedPromptLanguage) || current.explanation}
                     </p>
                   )}
                 </div>

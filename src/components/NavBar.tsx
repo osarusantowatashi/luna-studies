@@ -120,6 +120,17 @@ const NavBar = () => {
   }, []);
 
   useEffect(() => {
+    if (!mobileOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileOpen]);
+
+  useEffect(() => {
     if (isApp) {
       i18n.changeLanguage("en");
       return;
@@ -189,7 +200,6 @@ const NavBar = () => {
             [t("nav.subjects"), withLang("/subjects")],
             [t("nav.tutors"), withLang("/tutors")],
             [t("nav.arcade"), withLang("/arcade")],
-            [t("nav.enquire"), withLang("/enquiry")],
           ];
 
   const aboutLinks = [
@@ -418,13 +428,6 @@ const NavBar = () => {
                   )}
                 </AnimatePresence>
               </div>
-
-              <Link
-                to={withLang("/enquiry")}
-                className={navItemClass(isActive(withLang("/enquiry")))}
-              >
-                {t("nav.enquire")}
-              </Link>
             </>
           )}
         </nav>
@@ -548,141 +551,147 @@ const NavBar = () => {
       </div>
 
       {/* MOBILE MENU */}
-      {mobileOpen && (
-        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-primary/10 bg-white/96 px-4 py-4 shadow-lg backdrop-blur-xl md:hidden">
-          <div className="space-y-3">
-            {isApp ? (
-              links.map(([label, path]) => {
-                const active = isActive(path);
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-[1000] bg-[#fbfaff] md:hidden"
+          >
+            <div className="flex h-[100dvh] flex-col overflow-hidden pt-[max(0.75rem,env(safe-area-inset-top))]">
+              <div className="flex items-center justify-between border-b border-primary/10 bg-white/90 px-4 py-3 backdrop-blur-xl">
+                <Link
+                  to={isApp ? "/studentoverview" : withLang("/")}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-w-0 items-center gap-2.5"
+                >
+                  <img src="/lunalogo.png" className="h-9 w-9 shrink-0 object-contain" />
+                  <span className="truncate font-serif text-lg text-primary">
+                    {brandName}
+                  </span>
+                </Link>
 
-                return (
-                  <Link
-                    key={path}
-                    to={path}
-                    onClick={() => setMobileOpen(false)}
-                    className={mobileLinkClass(active)}
-                  >
-                    {label}
-                  </Link>
-                );
-              })
-            ) : (
-              <>
-                <div className={mobileSectionClass(servicesActive)}>
-                  <p className="px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-primary/45">
-                    {t("nav.services")}
-                  </p>
-                  <div className="grid gap-1">
-                    {serviceItems.map((item) => (
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary shadow-sm"
+                  aria-label="Close navigation menu"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto px-4 py-5">
+                {isApp ? (
+                  <div className="grid gap-2">
+                    {links.map(([label, path]) => (
                       <Link
-                        key={item.path}
-                        to={item.path}
+                        key={path}
+                        to={path}
                         onClick={() => setMobileOpen(false)}
-                        className={`${dropdownItemClass(isItemActive(item.path))} min-h-11`}
+                        className={mobileLinkClass(isActive(path))}
+                      >
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-5">
+                    <section className="rounded-[1.6rem] border border-primary/10 bg-white/86 p-3 shadow-[0_18px_50px_rgba(8,42,85,0.07)]">
+                      <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-primary/42">
+                        {t("nav.services")}
+                      </p>
+                      <div className="grid gap-1">
+                        {serviceItems.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            onClick={() => setMobileOpen(false)}
+                            className={`flex min-h-11 items-center rounded-2xl px-3 py-2.5 text-sm font-semibold leading-5 transition ${
+                              isItemActive(item.path)
+                                ? "bg-[#fff8e7] text-[#082A55]"
+                                : "text-[#082A55]/72 hover:bg-[#f8f6ff] hover:text-[#082A55]"
+                            }`}
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </section>
+
+                    <section className="grid gap-2">
+                      {[
+                        [t("nav.tutors"), withLang("/tutors")],
+                        [t("nav.arcade"), withLang("/arcade")],
+                        [t("nav.whyLuna"), withLang("/whyluna")],
+                        [t("nav.careers"), withLang("/careers")],
+                      ].map(([label, path]) => (
+                        <Link
+                          key={path}
+                          to={path}
+                          onClick={() => setMobileOpen(false)}
+                          className={mobileLinkClass(isActive(path))}
+                        >
+                          {label}
+                        </Link>
+                      ))}
+                    </section>
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t border-primary/10 bg-white/92 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur-xl">
+                {!isApp && (
+                  <div className="mb-3 grid grid-cols-3 gap-2 rounded-2xl bg-[#f8f6ff] p-1">
+                    {languageOptions.map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() => changeLanguage(item.value)}
+                        className={`min-h-10 rounded-xl text-sm font-bold transition ${
+                          item.value === currentLang
+                            ? "bg-white text-[#082A55] shadow-sm"
+                            : "text-primary/55"
+                        }`}
                       >
                         {item.label}
-                      </Link>
+                      </button>
                     ))}
                   </div>
-                </div>
+                )}
 
-                {[
-                  [t("nav.tutors"), withLang("/tutors")],
-                  [t("nav.arcade"), withLang("/arcade")],
-                ].map(([label, path]) => (
-                  <Link
-                    key={path}
-                    to={path}
-                    onClick={() => setMobileOpen(false)}
-                    className={mobileLinkClass(isActive(path))}
-                  >
-                    {label}
-                  </Link>
-                ))}
-
-                <div className={mobileSectionClass(aboutActive)}>
-                  <p className="px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-primary/45">
-                    {t("nav.aboutUs")}
-                  </p>
-
-                  <div className="grid gap-1">
-                    {aboutLinks.map(([aboutLabel, aboutPath]) => (
-                      <Link
-                        key={aboutPath}
-                        to={aboutPath}
-                        onClick={() => setMobileOpen(false)}
-                        className={`${dropdownItemClass(location.pathname === aboutPath)} min-h-11`}
-                      >
-                        {aboutLabel}
-                      </Link>
-                    ))}
+                {role ? (
+                  <div className="grid gap-3">
+                    <div className="rounded-2xl border bg-card px-4 py-3">
+                      <p className="text-sm font-semibold text-primary">{name}</p>
+                      <p className="text-xs capitalize text-muted-foreground">{role}</p>
+                    </div>
+                    <Button variant="outline" className="h-12 w-full rounded-2xl" onClick={logout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </Button>
                   </div>
-                </div>
-
-                <Link
-                  to={withLang("/enquiry")}
-                  onClick={() => setMobileOpen(false)}
-                  className={mobileLinkClass(isActive(withLang("/enquiry")))}
-                >
-                  {t("nav.enquire")}
-                </Link>
-              </>
-            )}
-          </div>
-
-          <div className="mt-4 grid gap-3">
-            {!isApp && (
-              <select
-                value={currentLang}
-                onChange={(e) =>
-                  changeLanguage(e.target.value as "en" | "zh" | "ja")
-                }
-                className="min-h-11 w-full rounded-2xl border bg-card px-4 py-3 text-sm font-semibold text-primary"
-              >
-                <option value="en">English</option>
-                <option value="zh">中文</option>
-                <option value="ja">日本語</option>
-              </select>
-            )}
-
-            {role ? (
-              <>
-                <div className="rounded-2xl border bg-card px-4 py-3">
-                  <p className="text-sm font-semibold text-primary">
-                    {name}
-                  </p>
-                  <p className="text-xs capitalize text-muted-foreground">
-                    {role}
-                  </p>
-                </div>
-
-                <Button
-                  variant="outline"
-                  className="h-12 w-full rounded-2xl"
-                  onClick={logout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link to={withLang("/login")} onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="h-12 w-full rounded-2xl">
-                    {t("nav.login")}
-                  </Button>
-                </Link>
-
-                <Link to={withLang("/enquiry")} onClick={() => setMobileOpen(false)}>
-                  <Button className="h-12 w-full rounded-2xl shadow-elegant">
-                    {t("nav.getStarted")}
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+                ) : (
+                  <div className="grid gap-3">
+                    <Link to={withLang("/enquiry")} onClick={() => setMobileOpen(false)}>
+                      <Button className="h-12 w-full rounded-2xl shadow-elegant">
+                        {t("nav.getStarted")}
+                      </Button>
+                    </Link>
+                    <Link to={withLang("/login")} onClick={() => setMobileOpen(false)}>
+                      <Button variant="outline" className="h-12 w-full rounded-2xl">
+                        {t("nav.login")}
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

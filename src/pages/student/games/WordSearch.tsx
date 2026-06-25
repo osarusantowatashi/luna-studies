@@ -30,6 +30,10 @@ import {
   loadGameSession,
   saveGameSession,
 } from "@/lib/arcadeResume";
+import {
+  GameVocabularyItem,
+  loadGameVocabularyItems,
+} from "@/lib/gameVocabulary";
 
 type Pair = {
   left?: string;
@@ -170,6 +174,28 @@ const getEnglishWordFromPair = (pair: Pair) =>
   [pair.vocab_word, pair.left, pair.right]
     .map((value) => cleanEnglishWord(String(value || "")))
     .find((word) => word.length >= 3 && word.length <= 12) || "";
+
+const buildWordSearchEntriesFromVocabulary = (items: GameVocabularyItem[]) =>
+  items
+    .map((item) => {
+      const word = cleanEnglishWord(String(item.en || ""));
+      const imageUrl = String(item.image_url || "").trim();
+
+      if (!word || !imageUrl) return null;
+
+      return {
+        word,
+        imageUrl,
+        lookupValues: [item.image_keyword, item.en, item.zh, item.ja]
+          .map((value) => String(value || "").trim())
+          .filter(Boolean),
+      };
+    })
+    .filter(Boolean) as Array<{
+      word: string;
+      imageUrl: string;
+      lookupValues: string[];
+    }>;
 
 const cellId = (row: number, col: number) => `${row}-${col}`;
 
@@ -745,6 +771,41 @@ export default function WordSearch({
     const loadWords = async () => {
       setVocabularyLoading(true);
 
+      if (!demoMode) {
+        const { items } = await loadGameVocabularyItems({
+          supabase,
+          grade,
+        });
+        const maxWordLength = Math.max(...difficulties.map((item) => item.maxLength));
+        const minWordLength = Math.min(...difficulties.map((item) => item.minLength));
+        const sharedEntries = buildWordSearchEntriesFromVocabulary(items).filter(
+          (entry) =>
+            entry.word.length >= minWordLength &&
+            entry.word.length <= maxWordLength
+        );
+        const sharedWords = Array.from(
+          new Set(sharedEntries.map((entry) => entry.word))
+        );
+
+        if (sharedWords.length >= Math.max(...difficulties.map((item) => item.words))) {
+          const nextWordImageMap: Record<string, string> = {};
+
+          sharedEntries.forEach((entry) => {
+            if (!nextWordImageMap[entry.word] && entry.imageUrl) {
+              nextWordImageMap[entry.word] = entry.imageUrl;
+            }
+          });
+
+          if (!active) return;
+
+          setAvailableWords(sharedWords);
+          setWordImageMap(nextWordImageMap);
+          setVocabularyLoading(false);
+          return;
+        }
+      }
+
+      // TODO: Temporary legacy fallback until shared vocabulary is fully approved live.
       const questionTable = demoMode ? "public_demo_questions" : "game_questions";
       const queryGrade = demoMode ? "Grade 1" : grade;
       let query = supabase

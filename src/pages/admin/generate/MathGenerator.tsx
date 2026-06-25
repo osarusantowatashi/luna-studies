@@ -1,29 +1,11 @@
 import { useState } from "react";
 
-const exams = ["Singapore Math", "UK Curriculum", "MAP", "CAT4", "Math Foundation"];
-
 const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
 
-const skills = [
-  "Number",
-  "Addition & Subtraction",
-  "Multiplication & Division",
-  "Fractions",
-  "Decimals",
-  "Geometry",
-  "Measurement",
-  "Word Problems",
-  "Data Handling",
-  "Patterns",
-];
-
-const difficulties = ["Easy", "Medium", "Hard"];
-
 export default function MathGenerator() {
-  const [exam, setExam] = useState("Singapore Math");
-  const [grade, setGrade] = useState("Grade 5");
-  const [skill, setSkill] = useState("Word Problems");
-  const [difficulty, setDifficulty] = useState("Medium");
+  const [grade, setGrade] = useState("Grade 1");
+  const [topic, setTopic] = useState("");
+  const [count, setCount] = useState("10");
   const [prompt, setPrompt] = useState("");
 
   return (
@@ -39,22 +21,13 @@ export default function MathGenerator() {
           </h1>
 
           <p className="mt-3 max-w-3xl text-muted-foreground">
-            Generate topic-based math questions by curriculum, grade, skill, and difficulty.
+            Generate simple Singapore Math questions by grade, topic, and count.
+            Curriculum-specific material can be added later when source topics are ready.
           </p>
         </div>
 
         <div className="rounded-[1.6rem] border bg-card p-5 shadow-soft sm:rounded-[2rem] sm:p-6">
-          <div className="grid gap-4 md:grid-cols-4">
-            <select
-              value={exam}
-              onChange={(e) => setExam(e.target.value)}
-              className="min-h-11 rounded-2xl border bg-background px-4 py-3 text-primary"
-            >
-              {exams.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
-
+          <div className="grid gap-4 md:grid-cols-[180px_1fr_180px]">
             <select
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
@@ -65,31 +38,29 @@ export default function MathGenerator() {
               ))}
             </select>
 
-            <select
-              value={skill}
-              onChange={(e) => setSkill(e.target.value)}
+            <input
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="Topic, e.g. fractions, bar models, multiplication"
               className="min-h-11 rounded-2xl border bg-background px-4 py-3 text-primary"
-            >
-              {skills.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
+            />
 
             <select
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
+              value={count}
+              onChange={(e) => setCount(e.target.value)}
               className="min-h-11 rounded-2xl border bg-background px-4 py-3 text-primary"
             >
-              {difficulties.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
+              <option value="5">5 questions</option>
+              <option value="10">10 questions</option>
+              <option value="15">15 questions</option>
+              <option value="20">20 questions</option>
             </select>
           </div>
 
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Optional prompt, e.g. make it Singapore Math style, include bar model questions, or focus on fractions word problems..."
+            placeholder="Optional notes, e.g. Singapore Math style, include bar model questions, focus on word problems..."
             className="mt-5 min-h-32 w-full rounded-2xl border bg-background px-4 py-3 text-primary outline-none"
           />
 

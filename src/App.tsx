@@ -35,18 +35,16 @@ const AdminLessons = lazy(() => import("./pages/admin/AdminLessons"));
 const AdminProgress = lazy(() => import("./pages/admin/AdminProgress"));
 
 const GenerateHome = lazy(() => import("./pages/admin/generate/GenerateHome"));
-const EnglishGenerator = lazy(() => import("./pages/admin/generate/EnglishGenerator"));
-const MemoryFlipGenerator = lazy(() => import("./pages/admin/generate/MemoryFlipGenerator"));
-const JapaneseGenerator = lazy(() => import("./pages/admin/generate/JapaneseGenerator"));
+const LanguageQuestionGenerator = lazy(() => import("./pages/admin/generate/LanguageQuestionGenerator"));
+const SharedVocabularyGenerator = lazy(() => import("./pages/admin/generate/SharedVocabularyGenerator"));
 const MathGenerator = lazy(() => import("./pages/admin/generate/MathGenerator"));
 
 const GameManagement = lazy(() => import("./pages/admin/games/GameManagement"));
 const MemoryFlipManager = lazy(() => import("./pages/admin/games/MemoryFlipManager"));
 
 const QuestionBankHome = lazy(() => import("./pages/admin/questions/QuestionBankHome"));
-const EnglishQuestionBank = lazy(() => import("./pages/admin/questions/EnglishQuestionBank"));
 const MemoryFlipBank = lazy(() => import("./pages/admin/questions/MemoryFlipBank"));
-const JapaneseQuestionBank = lazy(() => import("./pages/admin/questions/JapaneseQuestionBank"));
+const LanguageQuestionBank = lazy(() => import("./pages/admin/questions/LanguageQuestionBank"));
 const MathQuestionBank = lazy(() => import("./pages/admin/questions/MathQuestionBank"));
 
 const TutorDashboard = lazy(() => import("./pages/tutor/TutorDashboard"));
@@ -241,13 +239,15 @@ const App = () => {
           {/* Admin Generate */}
           <Route path="/generate" element={<AdminPage><GenerateHome /></AdminPage>} />
           <Route path="/admin/generate" element={<AdminPage><GenerateHome /></AdminPage>} />
-          <Route path="/admin/generate/english" element={<AdminPage><EnglishGenerator /></AdminPage>} />
-          <Route path="/admin/generate/memory-flip" element={<AdminPage><MemoryFlipGenerator /></AdminPage>} />
-          <Route path="/admin/generate/japanese" element={<AdminPage><JapaneseGenerator /></AdminPage>} />
+          <Route path="/admin/generate/language" element={<AdminPage><LanguageQuestionGenerator /></AdminPage>} />
+          <Route path="/admin/generate/english" element={<Navigate to="/admin/generate/language" replace />} />
+          <Route path="/admin/generate/shared-vocabulary" element={<AdminPage><SharedVocabularyGenerator /></AdminPage>} />
+          <Route path="/admin/generate/memory-flip" element={<Navigate to="/admin/generate/shared-vocabulary" replace />} />
+          <Route path="/admin/generate/japanese" element={<Navigate to="/admin/generate/language" replace />} />
+          <Route path="/admin/generate/chinese" element={<Navigate to="/admin/generate/language" replace />} />
           <Route path="/admin/generate/math" element={<AdminPage><MathGenerator /></AdminPage>} />
 
-          <Route path="/generate-games" element={<Navigate to="/admin/generate/memory-flip" replace />} />
-          <Route path="/admin/generate/math" element={<Navigate to="/admin/generate" replace />} />
+          <Route path="/generate-games" element={<Navigate to="/admin/generate/shared-vocabulary" replace />} />
 
           {/* Admin Games */}
           <Route path="/admin/games" element={<AdminPage><GameManagement /></AdminPage>} />
@@ -255,9 +255,11 @@ const App = () => {
 
           {/* Admin Question Banks */}
           <Route path="/admin/questions" element={<AdminPage><QuestionBankHome /></AdminPage>} />
-          <Route path="/admin/questions/english" element={<AdminPage><EnglishQuestionBank /></AdminPage>} />
+          <Route path="/admin/questions/language" element={<AdminPage><LanguageQuestionBank /></AdminPage>} />
+          <Route path="/admin/questions/english" element={<Navigate to="/admin/questions/language" replace />} />
           <Route path="/admin/questions/games/memory-flip" element={<AdminPage><MemoryFlipBank /></AdminPage>} />
-          <Route path="/admin/questions/japanese" element={<AdminPage><JapaneseQuestionBank /></AdminPage>} />
+          <Route path="/admin/questions/japanese" element={<Navigate to="/admin/questions/language" replace />} />
+          <Route path="/admin/questions/chinese" element={<Navigate to="/admin/questions/language" replace />} />
           <Route path="/admin/questions/math" element={<AdminPage><MathQuestionBank /></AdminPage>} />
 
           {/* Tutor */}

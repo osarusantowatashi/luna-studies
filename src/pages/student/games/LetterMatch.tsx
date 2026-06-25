@@ -30,6 +30,10 @@ import {
   saveGameSession,
 } from "@/lib/arcadeResume";
 import { supabase } from "@/lib/supabase";
+import {
+  GameVocabularyItem,
+  loadGameVocabularyItems,
+} from "@/lib/gameVocabulary";
 
 type Pair = {
   left?: string;
@@ -132,6 +136,24 @@ const getEnglishWordFromPair = (pair: Pair) =>
   [pair.right, pair.vocab_word, pair.left]
     .map((value) => cleanEnglishWord(String(value || "")))
     .find((word) => word.length >= 3 && word.length <= 10) || "";
+
+const buildLetterMatchItemsFromVocabulary = (items: GameVocabularyItem[]) =>
+  items
+    .map((item): VocabItem | null => {
+      const word = cleanEnglishWord(String(item.en || ""));
+      const imageUrl = String(item.image_url || "").trim();
+      const imageKeyword = String(item.image_keyword || item.en || "").trim();
+
+      if (word.length < 3 || word.length > 10 || !imageUrl) return null;
+
+      return {
+        id: `shared-${item.id}`,
+        word,
+        imageUrl,
+        imageKeyword,
+      };
+    })
+    .filter(Boolean) as VocabItem[];
 
 const getDifficultyConfig = (difficulty: DifficultyKey) =>
   difficulties.find((item) => item.key === difficulty) || difficulties[0];
@@ -489,6 +511,21 @@ export default function LetterMatch({
     setVocabularyLoading(true);
     setErrorMsg("");
 
+    if (!demoMode) {
+      const { items } = await loadGameVocabularyItems({
+        supabase,
+        grade,
+      });
+      const sharedVocabulary = buildLetterMatchItemsFromVocabulary(items);
+
+      if (sharedVocabulary.length >= 3) {
+        setVocabulary(sharedVocabulary);
+        setVocabularyLoading(false);
+        return;
+      }
+    }
+
+    // TODO: Temporary legacy fallback until shared vocabulary is fully approved live.
     const questionTable = demoMode ? "public_demo_questions" : "game_questions";
     let query = supabase
       .from(questionTable)

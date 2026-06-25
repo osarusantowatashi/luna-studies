@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Gamepad2, Images, ArrowRight } from "lucide-react";
+import { Images, LibraryBig, ArrowRight } from "lucide-react";
 
 export default function GameManagement() {
   return (
@@ -15,29 +15,29 @@ export default function GameManagement() {
           </h1>
 
           <p className="mt-3 max-w-2xl text-muted-foreground">
-            Generate learning games, review vocabulary images, and manage game content for students.
+            Manage the shared vocabulary and image library that powers all student games.
           </p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
           <Link
-            to="/admin/games/memory-flip"
+            to="/admin/questions/games/memory-flip"
             className="group block min-h-11 rounded-[1.6rem] border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant sm:rounded-[2rem] sm:p-6"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
-              <Gamepad2 className="h-7 w-7 text-accent" />
+              <LibraryBig className="h-7 w-7 text-accent" />
             </div>
 
             <h2 className="mt-5 text-xl font-bold text-primary sm:text-2xl">
-              Memory Flip
+              Shared Vocabulary Library
             </h2>
 
             <p className="mt-2 text-sm text-muted-foreground">
-              Generate bilingual memory matching games and manage vocabulary image quality.
+              Manage approved reusable multilingual vocabulary for every game.
             </p>
 
             <div className="mt-5 flex items-center gap-2 text-sm font-bold text-primary">
-              Open Memory Flip
+              Open Shared Library
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </div>
           </Link>
@@ -52,7 +52,7 @@ export default function GameManagement() {
             </h2>
 
             <p className="mt-2 text-sm text-muted-foreground">
-              Future games can be added here, using the same shared LUNA vocabulary image library.
+              Memory Flip, Word Search, Letter Match, and future games all consume the same vocabulary source.
             </p>
           </div>
         </div>
