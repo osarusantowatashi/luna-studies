@@ -272,9 +272,17 @@ const App = () => {
           <Route path="/games" element={<StudentPage><GamesArcade /></StudentPage>} />
           <Route path="/flashcards" element={<StudentPage><FlashcardGame /></StudentPage>} />
           <Route path="/flashcard-decks" element={<SavedFlashcardDecks />} />
-          
+
           <Route
             path="/memory-flip"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "student"]}>
+                <MemoryFlip />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/flashcard-decks"
             element={
               <ProtectedRoute allowedRoles={["admin", "student"]}>
                 <MemoryFlip />
