@@ -21,6 +21,10 @@ const GRADES = [
 ];
 
 const DIFFICULTIES = ["Easy", "Medium", "Hard", "Advanced"];
+const PROMPT_LANGUAGES = ["English", "Chinese", "Japanese"] as const;
+
+const languageSuffix = (language: string) =>
+  language === "Chinese" ? "zh" : language === "Japanese" ? "ja" : "en";
 
 const LANGUAGE_CONFIG = {
   English: {
@@ -71,7 +75,7 @@ const toInsertPayload = (q: any, targetLanguage: TargetLanguage, category: strin
   variant_label: q.variant_label || null,
   difficulty_label: q.difficulty_label || null,
   category: category || null,
-  status: "approved",
+  status: "needs_review",
   passage: q.passage || null,
   question_text: q.question_en || q.question_text,
   question_en: q.question_en || q.question_text,
@@ -117,6 +121,10 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
   const [extraPrompt, setExtraPrompt] = useState("");
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<any | null>(null);
+  const [draft, setDraft] = useState<any | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
 
   const title = fixedTargetLanguage
@@ -163,10 +171,160 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
     [targetLanguage]
   );
 
+  const buildPayload = (q: any) => {
+    if (q.type === "reading" && Array.isArray(q.questions)) {
+      return q.questions.map((subQ: any) =>
+        toInsertPayload(
+          {
+            ...subQ,
+            exam_type: q.exam_type,
+            grade: q.grade,
+            skill: q.skill,
+            difficulty: q.difficulty,
+            pathway: q.pathway,
+            level: q.level,
+            level_label: q.level_label,
+            pathway_variant: q.pathway_variant,
+            variant_label: q.variant_label,
+            difficulty_label: q.difficulty_label,
+            passage: q.passage,
+          },
+          targetLanguage,
+          category
+        )
+      );
+    }
+
+    return [toInsertPayload(q, targetLanguage, category)];
+  };
+
+  const loadReviewQueue = async () => {
+    setReviewLoading(true);
+    setErrorMsg("");
+
+    let query = supabase
+      .from("questions")
+      .select("*")
+      .eq("status", "needs_review")
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    query =
+      targetLanguage === "English"
+        ? query.or("target_language.eq.English,target_language.is.null")
+        : query.eq("target_language", targetLanguage);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error(error);
+      setErrorMsg(error.message);
+      setQuestions([]);
+    } else {
+      setQuestions(data || []);
+    }
+
+    setReviewLoading(false);
+  };
+
+  useEffect(() => {
+    loadReviewQueue();
+  }, [targetLanguage]);
+
+  const formatTags = (q: any) =>
+    [
+      q.pathway || q.exam_type || targetLanguage,
+      q.level || q.grade,
+      q.pathway_variant,
+      q.skill,
+      q.category,
+    ].filter(Boolean);
+
+  const updateReviewStatus = async (questionId: string, status: "approved" | "rejected") => {
+    const { error } = await supabase
+      .from("questions")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", questionId);
+
+    if (error) {
+      console.error("REVIEW UPDATE ERROR:", error);
+      setErrorMsg(`Failed to mark question ${status}: ${error.message}`);
+      return;
+    }
+
+    setQuestions((current) => current.filter((item) => item.id !== questionId));
+    if (editingQuestion?.id === questionId) {
+      setEditingQuestion(null);
+      setDraft(null);
+    }
+  };
+
+  const openEdit = (question: any) => {
+    setEditingQuestion(question);
+    setDraft({ ...question });
+  };
+
+  const updateDraft = (field: string, value: string) => {
+    setDraft((current: any) => ({ ...(current || {}), [field]: value }));
+  };
+
+  const saveDraft = async () => {
+    if (!editingQuestion || !draft) return;
+
+    setSavingDraft(true);
+
+    const payload = {
+      question_text: draft.question_en || draft.question_text || null,
+      question_en: draft.question_en || null,
+      question_zh: draft.question_zh || null,
+      question_ja: draft.question_ja || null,
+      option_a: draft.option_a_en || draft.option_a || null,
+      option_b: draft.option_b_en || draft.option_b || null,
+      option_c: draft.option_c_en || draft.option_c || null,
+      option_d: draft.option_d_en || draft.option_d || null,
+      option_a_en: draft.option_a_en || null,
+      option_a_zh: draft.option_a_zh || null,
+      option_a_ja: draft.option_a_ja || null,
+      option_b_en: draft.option_b_en || null,
+      option_b_zh: draft.option_b_zh || null,
+      option_b_ja: draft.option_b_ja || null,
+      option_c_en: draft.option_c_en || null,
+      option_c_zh: draft.option_c_zh || null,
+      option_c_ja: draft.option_c_ja || null,
+      option_d_en: draft.option_d_en || null,
+      option_d_zh: draft.option_d_zh || null,
+      option_d_ja: draft.option_d_ja || null,
+      explanation: draft.explanation_en || draft.explanation || null,
+      explanation_en: draft.explanation_en || null,
+      explanation_zh: draft.explanation_zh || null,
+      explanation_ja: draft.explanation_ja || null,
+      category: draft.category || null,
+      passage: draft.passage || null,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from("questions")
+      .update(payload)
+      .eq("id", editingQuestion.id)
+      .select("*")
+      .single();
+
+    setSavingDraft(false);
+
+    if (error) {
+      setErrorMsg(`Failed to save edits: ${error.message}`);
+      return;
+    }
+
+    setQuestions((current) => current.map((item) => (item.id === data.id ? data : item)));
+    setEditingQuestion(null);
+    setDraft(null);
+  };
+
   const handleGenerate = async () => {
     setLoading(true);
     setErrorMsg("");
-    setQuestions([]);
 
     try {
       const {
@@ -267,65 +425,28 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
             ]
           : [];
 
-      setQuestions(categorised);
+      const payload = categorised.flatMap(buildPayload);
+
+      if (payload.length === 0) {
+        throw new Error("No valid questions were generated.");
+      }
+
+      const { data: savedQuestions, error: saveError } = await supabase
+        .from("questions")
+        .insert(payload)
+        .select("*");
+
+      if (saveError) {
+        throw new Error(`Generated questions could not be saved: ${saveError.message}`);
+      }
+
+      setQuestions((current) => [...(savedQuestions || []), ...current]);
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || "Failed to generate questions.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const buildPayload = (q: any) => {
-    if (q.type === "reading" && Array.isArray(q.questions)) {
-      return q.questions.map((subQ: any) =>
-        toInsertPayload(
-          {
-            ...subQ,
-            exam_type: q.exam_type,
-            grade: q.grade,
-            skill: q.skill,
-            difficulty: q.difficulty,
-            pathway: q.pathway,
-            level: q.level,
-            level_label: q.level_label,
-            pathway_variant: q.pathway_variant,
-            variant_label: q.variant_label,
-            difficulty_label: q.difficulty_label,
-            passage: q.passage,
-          },
-          targetLanguage,
-          category
-        )
-      );
-    }
-
-    return [toInsertPayload(q, targetLanguage, category)];
-  };
-
-  const saveQuestion = async (q: any) => {
-    const { error } = await supabase.from("questions").insert(buildPayload(q));
-
-    if (error) {
-      console.error("SAVE ERROR:", error);
-      alert("Failed to save question: " + error.message);
-      return;
-    }
-
-    alert("Saved to database!");
-  };
-
-  const saveAllQuestions = async () => {
-    const cleaned = questions.flatMap(buildPayload);
-    const { error } = await supabase.from("questions").insert(cleaned);
-
-    if (error) {
-      console.error("SAVE ERROR:", error);
-      alert("Failed to save questions: " + error.message);
-      return;
-    }
-
-    alert(`${cleaned.length} questions saved to database!`);
   };
 
   const getCorrectAnswerText = (q: any) => {
@@ -510,11 +631,28 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
 
         {questions.length > 0 && (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-muted-foreground">Generated {questions.length} question groups</p>
+            <div>
+              <p className="font-semibold text-primary">Review Queue</p>
+              <p className="text-sm text-muted-foreground">
+                {questions.length} questions waiting for approval. Approved items move to the Language Question Bank.
+              </p>
+            </div>
 
-            <Button type="button" className="w-full rounded-2xl sm:w-auto" onClick={saveAllQuestions}>
-              Save All Questions
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full rounded-2xl sm:w-auto"
+              onClick={loadReviewQueue}
+              disabled={reviewLoading}
+            >
+              {reviewLoading ? "Refreshing..." : "Refresh Queue"}
             </Button>
+          </div>
+        )}
+
+        {!reviewLoading && questions.length === 0 && (
+          <div className="rounded-[1.8rem] border bg-card p-8 text-center text-muted-foreground shadow-soft">
+            No {targetLanguage} questions waiting for review.
           </div>
         )}
 
@@ -524,8 +662,15 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
               return (
                 <div key={q.id} className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:p-6">
                   <div className="mb-4 flex flex-wrap gap-2 text-xs font-bold text-primary/60">
-                    <span className="rounded-full bg-secondary px-3 py-1">Learning {targetLanguage}</span>
+                    {formatTags(q).map((tag) => (
+                      <span key={tag} className="rounded-full bg-secondary px-3 py-1">
+                        {tag}
+                      </span>
+                    ))}
                     <span className="rounded-full bg-secondary px-3 py-1">EN / ZH / JA prompts</span>
+                    <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">
+                      {q.status || "needs_review"}
+                    </span>
                   </div>
 
                   <p className="mb-4 text-sm text-muted-foreground">Passage:</p>
@@ -554,9 +699,31 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                     </div>
                   ))}
 
-                  <Button type="button" className="mt-2 w-full rounded-2xl sm:w-auto" onClick={() => saveQuestion(q)}>
-                    Approve & Save
-                  </Button>
+                  <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full rounded-2xl sm:w-auto"
+                      onClick={() => openEdit(q)}
+                    >
+                      View / Edit
+                    </Button>
+                    <Button
+                      type="button"
+                      className="w-full rounded-2xl sm:w-auto"
+                      onClick={() => updateReviewStatus(q.id, "approved")}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full rounded-2xl border-red-200 text-red-700 sm:w-auto"
+                      onClick={() => updateReviewStatus(q.id, "rejected")}
+                    >
+                      Reject
+                    </Button>
+                  </div>
                 </div>
               );
             }
@@ -564,8 +731,15 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
             return (
               <div key={q.id || i} className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:p-6">
                 <div className="mb-4 flex flex-wrap gap-2 text-xs font-bold text-primary/60">
-                  <span className="rounded-full bg-secondary px-3 py-1">Learning {targetLanguage}</span>
+                  {formatTags(q).map((tag) => (
+                    <span key={tag} className="rounded-full bg-secondary px-3 py-1">
+                      {tag}
+                    </span>
+                  ))}
                   <span className="rounded-full bg-secondary px-3 py-1">EN / ZH / JA prompts</span>
+                  <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">
+                    {q.status || "needs_review"}
+                  </span>
                 </div>
 
                 {q.passage && (
@@ -589,14 +763,158 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                 <p className="mt-4 text-sm text-green-700">Correct: {getCorrectAnswerText(q)}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{q.explanation_en || q.explanation}</p>
 
-                <Button type="button" className="mt-4 w-full rounded-2xl sm:w-auto" onClick={() => saveQuestion(q)}>
-                  Approve & Save
-                </Button>
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full rounded-2xl sm:w-auto"
+                    onClick={() => openEdit(q)}
+                  >
+                    View / Edit
+                  </Button>
+                  <Button
+                    type="button"
+                    className="w-full rounded-2xl sm:w-auto"
+                    onClick={() => updateReviewStatus(q.id, "approved")}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full rounded-2xl border-red-200 text-red-700 sm:w-auto"
+                    onClick={() => updateReviewStatus(q.id, "rejected")}
+                  >
+                    Reject
+                  </Button>
+                </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      {editingQuestion && draft && (
+        <div className="fixed inset-0 z-50 bg-primary/30 backdrop-blur-sm">
+          <div className="ml-auto flex h-full w-full max-w-3xl flex-col overflow-y-auto bg-white shadow-elegant">
+            <div className="sticky top-0 z-10 border-b bg-white/95 p-5 backdrop-blur">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-accent">
+                    Review Question
+                  </p>
+                  <h2 className="mt-2 text-2xl font-bold text-primary">
+                    {formatTags(draft).join(" · ") || "Language Question"}
+                  </h2>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="rounded-2xl"
+                  onClick={() => {
+                    setEditingQuestion(null);
+                    setDraft(null);
+                  }}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-6 p-5">
+              <input
+                value={draft.category || ""}
+                onChange={(e) => updateDraft("category", e.target.value)}
+                placeholder="Category"
+                className="min-h-11 w-full rounded-2xl border bg-white px-4 py-3"
+              />
+
+              {draft.passage !== null && draft.passage !== undefined && (
+                <section className="rounded-[1.5rem] border bg-[#fbfaff] p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+                    Passage
+                  </p>
+                  <textarea
+                    value={draft.passage || ""}
+                    onChange={(e) => updateDraft("passage", e.target.value)}
+                    className="mt-2 min-h-28 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
+                  />
+                </section>
+              )}
+
+              {PROMPT_LANGUAGES.map((language) => {
+                const suffix = languageSuffix(language);
+
+                return (
+                  <section key={language} className="rounded-[1.5rem] border bg-[#fbfaff] p-4">
+                    <h3 className="mb-4 text-lg font-bold text-primary">{language}</h3>
+
+                    <label className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                      Question
+                    </label>
+                    <textarea
+                      value={draft[`question_${suffix}`] || ""}
+                      onChange={(e) => updateDraft(`question_${suffix}`, e.target.value)}
+                      className="mt-2 min-h-24 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
+                    />
+
+                    <div className="mt-4 grid gap-3 md:grid-cols-2">
+                      {["a", "b", "c", "d"].map((option) => (
+                        <label
+                          key={option}
+                          className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
+                        >
+                          Option {option.toUpperCase()}
+                          <input
+                            value={draft[`option_${option}_${suffix}`] || ""}
+                            onChange={(e) => updateDraft(`option_${option}_${suffix}`, e.target.value)}
+                            className="mt-2 min-h-11 w-full rounded-2xl border bg-white px-4 py-3 text-sm normal-case tracking-normal text-primary"
+                          />
+                        </label>
+                      ))}
+                    </div>
+
+                    <label className="mt-4 block text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                      Explanation
+                    </label>
+                    <textarea
+                      value={draft[`explanation_${suffix}`] || ""}
+                      onChange={(e) => updateDraft(`explanation_${suffix}`, e.target.value)}
+                      className="mt-2 min-h-24 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
+                    />
+                  </section>
+                );
+              })}
+            </div>
+
+            <div className="sticky bottom-0 border-t bg-white/95 p-5 backdrop-blur">
+              <div className="grid gap-2 sm:grid-cols-3">
+                <Button
+                  variant="outline"
+                  className="h-12 rounded-2xl"
+                  onClick={saveDraft}
+                  disabled={savingDraft}
+                >
+                  {savingDraft ? "Saving..." : "Save Edits"}
+                </Button>
+                <Button
+                  className="h-12 rounded-2xl"
+                  onClick={() => updateReviewStatus(editingQuestion.id, "approved")}
+                >
+                  Approve
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-12 rounded-2xl border-red-200 text-red-700"
+                  onClick={() => updateReviewStatus(editingQuestion.id, "rejected")}
+                >
+                  Reject
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

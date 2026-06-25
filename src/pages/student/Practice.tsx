@@ -352,6 +352,7 @@ const Practice = () => {
     let query = supabase
       .from("questions")
       .select("*")
+      .eq("status", "approved")
       .limit(200);
 
     query =
@@ -388,6 +389,7 @@ const Practice = () => {
         .from("questions")
         .select("*")
         .or("target_language.eq.English,target_language.is.null")
+        .eq("status", "approved")
         .eq("exam_type", selectedPathway)
         .eq("grade", selectedGrade)
         .limit(200);
@@ -767,10 +769,19 @@ const Practice = () => {
               </h1>
 
               <p className="mt-2 text-primary/55">
-                {selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
-                  ? `${selectedPathway} · ${selectedGrade}`
-                  : selectedGrade}
-                {selectedDifficulty ? ` · ${selectedDifficulty}` : ""} · {selectedSkill} · Question {currentIndex + 1} / {questions.length}
+                {[
+                  selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+                    ? selectedPathway
+                    : selectedTargetLanguage,
+                  selectedGrade,
+                  current?.pathway_variant,
+                  selectedDifficulty,
+                  selectedSkill,
+                  current?.category,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}{" "}
+                · Question {currentIndex + 1} / {questions.length}
               </p>
             </div>
 

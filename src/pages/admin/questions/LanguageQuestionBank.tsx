@@ -40,6 +40,15 @@ const formatDate = (value?: string) => {
   }).format(new Date(value));
 };
 
+const formatQuestionTags = (q: any) =>
+  [
+    q.pathway || q.exam_type || q.target_language,
+    q.level || q.grade,
+    q.pathway_variant,
+    q.skill,
+    q.category,
+  ].filter(Boolean);
+
 const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English" }: LanguageQuestionBankProps) => {
   const [targetLanguage, setTargetLanguage] = useState<TargetLanguage>(initialTargetLanguage);
   const [questions, setQuestions] = useState<any[]>([]);
@@ -48,7 +57,7 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
   const [gradeFilter, setGradeFilter] = useState("All");
   const [skillFilter, setSkillFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("approved");
   const [previewPromptLanguage, setPreviewPromptLanguage] = useState("English");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -590,6 +599,16 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
                 <p className="mt-1 text-xs text-muted-foreground">
                   Updated {formatDate(q.updated_at || q.created_at)}
                 </p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {formatQuestionTags(q).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-primary/60"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <p className="font-semibold text-primary/75">{q.target_language || "English"}</p>
@@ -625,6 +644,17 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
                   <p className="font-bold text-primary">{q.grade || "-"}</p>
                   <p className="text-xs text-muted-foreground">{q.skill || "-"} · {q.status || "approved"}</p>
                 </div>
+              </div>
+
+              <div className="mb-3 flex flex-wrap gap-1.5">
+                {formatQuestionTags(q).map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-primary/60"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
 
               <p className="text-sm font-semibold leading-6 text-primary">
