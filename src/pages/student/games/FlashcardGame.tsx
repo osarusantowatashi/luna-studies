@@ -566,6 +566,41 @@ const [saveMsg, setSaveMsg] = useState("");
                   </p>
                 </div>
               </motion.div>
+              {cards.length > 0 && (
+  <section className="rounded-[2rem] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.8rem] sm:p-6">
+    <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+      <Sparkles className="h-4 w-4" />
+      Save Deck
+    </p>
+
+    <h2 className="mt-3 font-poppins text-2xl font-black text-primary">
+      Keep this deck for later.
+    </h2>
+
+    <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+      <input
+        value={deckName}
+        onChange={(e) => setDeckName(e.target.value)}
+        placeholder="Name this deck, e.g. IELTS Week 1"
+        className="h-13 flex-1 rounded-2xl border border-[#eee8ff] bg-[#faf8ff] px-5 font-bold text-primary outline-none transition focus:border-[#8d73ff]"
+      />
+
+      <Button
+        onClick={saveDeck}
+        disabled={saving}
+        className="h-13 rounded-2xl bg-primary px-7 font-black text-white hover:bg-[#123A70]"
+      >
+        {saving ? "Saving..." : "Save Deck"}
+      </Button>
+    </div>
+
+    {saveMsg && (
+      <p className="mt-3 rounded-2xl bg-green-100 px-4 py-3 text-sm font-black text-green-700">
+        {saveMsg}
+      </p>
+    )}
+  </section>
+)}
             </div>
           </section>
         )}
