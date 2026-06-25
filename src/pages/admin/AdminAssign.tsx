@@ -3,29 +3,10 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  buildEnglishAccessKey,
-  ENGLISH_PATHWAYS,
-  formatEnglishAccessLabel,
-  parseEnglishAccessKey,
-} from "@/lib/englishPathways";
-
-const ACCESS_OPTIONS = [
-  {
-    group: "English Pathways",
-    items: ENGLISH_PATHWAYS.flatMap((pathway) =>
-      pathway.levels.map((level) => ({
-        key: buildEnglishAccessKey(pathway.key, level),
-        label: formatEnglishAccessLabel(pathway.key, level),
-        description: pathway.levelLabel,
-        target_language: "English",
-        pathway: pathway.key,
-        level,
-      }))
-    ),
-  },
-];
-
-const ALL_ACCESS_OPTIONS = ACCESS_OPTIONS.flatMap((group) => group.items);
+  ALL_LANGUAGE_ACCESS_OPTIONS,
+  LANGUAGE_ACCESS_OPTIONS,
+  parseLanguageAccessKey,
+} from "@/lib/languagePathways";
 
 const AdminAssign = () => {
   const [activeTab, setActiveTab] = useState<"student" | "tutor" | "connect">(
@@ -145,8 +126,8 @@ const AdminAssign = () => {
 
     setSelectedGrades(
       data?.flatMap((item: any) =>
-        item.target_language === "English" && item.pathway && item.level
-          ? buildEnglishAccessKey(item.pathway, item.level)
+        item.target_language && item.pathway && item.level
+          ? `${item.target_language}::${item.pathway}::${item.level}`
           : []
       ) || []
     );
@@ -175,14 +156,14 @@ const AdminAssign = () => {
 
     if (selectedGrades.length > 0) {
       const payload = selectedGrades.map((grade) => {
-        const option = ALL_ACCESS_OPTIONS.find((item) => item.key === grade);
-        const parsed = parseEnglishAccessKey(grade);
+        const option = ALL_LANGUAGE_ACCESS_OPTIONS.find((item) => item.key === grade);
+        const parsed = parseLanguageAccessKey(grade);
 
         return {
           student_id: selectedStudent.id,
           grade,
           target_language: option?.target_language || parsed?.targetLanguage || "English",
-          pathway: option?.pathway || parsed?.pathway || "Legacy Grade",
+          pathway: option?.pathway || parsed?.pathway || null,
           level: option?.level || parsed?.level || grade,
         };
       });
@@ -305,17 +286,17 @@ const AdminAssign = () => {
               </h1>
 
               <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-                Choose the grade levels and exam pathways this student can access.
+                Choose the language pathways and levels this student can access.
               </p>
             </div>
 
             <Card className="space-y-6 rounded-[1.8rem] p-5 sm:p-6">
-              {ACCESS_OPTIONS.map((group) => (
+              {LANGUAGE_ACCESS_OPTIONS.map((group) => (
                 <section key={group.group} className="space-y-3">
                   <div>
                     <h2 className="text-lg font-bold text-primary">{group.group}</h2>
                     <p className="text-sm text-muted-foreground">
-                      Assign exam-aware access such as MAP Grade 5, IELTS 5.5-6.0, or TOEFL Intermediate.
+                      {group.description}
                     </p>
                   </div>
 

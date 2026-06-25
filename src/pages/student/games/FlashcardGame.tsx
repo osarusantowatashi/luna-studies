@@ -13,6 +13,13 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { apiUrl } from "@/lib/api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Flashcard = {
   word: string;
@@ -302,35 +309,26 @@ setWrongCards((prev) => {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            <select
+            <LunaSelect
               value={wordLanguage}
-              onChange={(e) => setWordLanguage(e.target.value)}
-              className="min-h-12 rounded-2xl border border-[#eee8ff] bg-white px-4 py-3 font-bold text-primary outline-none"
-            >
-              {languageOptions.map((lang) => (
-                <option key={lang}>{lang}</option>
-              ))}
-            </select>
+              onChange={setWordLanguage}
+              options={languageOptions}
+              placeholder="Word language"
+            />
 
-            <select
+            <LunaSelect
               value={helperLanguage}
-              onChange={(e) => setHelperLanguage(e.target.value)}
-              className="min-h-12 rounded-2xl border border-[#eee8ff] bg-white px-4 py-3 font-bold text-primary outline-none"
-            >
-              {languageOptions.map((lang) => (
-                <option key={lang}>{lang}</option>
-              ))}
-            </select>
+              onChange={setHelperLanguage}
+              options={languageOptions}
+              placeholder="Helper language"
+            />
 
-            <select
+            <LunaSelect
               value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
-              className="min-h-12 rounded-2xl border border-[#eee8ff] bg-white px-4 py-3 font-bold text-primary outline-none"
-            >
-              {difficultyOptions.map((level) => (
-                <option key={level}>{level}</option>
-              ))}
-            </select>
+              onChange={setDifficulty}
+              options={difficultyOptions}
+              placeholder="Difficulty"
+            />
           </div>
 
           <textarea
@@ -654,3 +652,33 @@ setWrongCards((prev) => {
     </div>
   );
 }
+
+const LunaSelect = ({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+  placeholder: string;
+}) => (
+  <Select value={value} onValueChange={onChange}>
+    <SelectTrigger className="min-h-12 rounded-2xl border-[#eee8ff] bg-white px-4 py-3 font-bold text-primary shadow-sm transition focus:ring-4 focus:ring-[#8d73ff]/10">
+      <SelectValue placeholder={placeholder} />
+    </SelectTrigger>
+
+    <SelectContent className="z-[10000] rounded-2xl border-primary/10 bg-white p-2 shadow-[0_22px_70px_rgba(66,56,120,0.16)]">
+      {options.map((item) => (
+        <SelectItem
+          key={item}
+          value={item}
+          className="rounded-xl py-3 pl-9 pr-3 text-sm font-semibold text-primary focus:bg-[#f6f1ff] focus:text-primary"
+        >
+          {item}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+);

@@ -35,6 +35,13 @@ import {
   GameVocabularyItem,
   loadGameVocabularyItems,
 } from "@/lib/gameVocabulary";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Pair = {
   pair_id?: number;
@@ -1900,28 +1907,40 @@ export default function MemoryFlip({
                         Difficulty
                       </p>
 
-                      <select
+                      <Select
                         value={difficulty}
-                        onChange={(event) => setDifficulty(event.target.value)}
-                        className={`h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none ${isLight
-                          ? "border-[#eee8ff] bg-white text-primary"
-                          : "border-white/10 bg-[#0D1B2E] text-white"
-                          }`}
+                        onValueChange={setDifficulty}
                       >
-                        {["Easy", "Medium", "Hard", "Advanced"].map((item) => {
-                          const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
-                          const locked =
-                            difficultyOrder.indexOf(item) >
-                            difficultyOrder.indexOf(unlockedDifficulty);
+                        <SelectTrigger
+                          className={`h-12 w-full rounded-2xl px-4 text-sm font-black shadow-sm transition focus:ring-4 focus:ring-[#8d73ff]/10 ${isLight
+                            ? "border-[#eee8ff] bg-white text-primary"
+                            : "border-white/10 bg-[#0D1B2E] text-white"
+                            }`}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
 
-                          return (
-                            <option key={item} value={item} disabled={locked}>
-                              {item} · {getPairCountByDifficulty(item)} pairs
-                              {locked ? " · Locked" : ""}
-                            </option>
-                          );
-                        })}
-                      </select>
+                        <SelectContent className="z-[10000] rounded-2xl border-primary/10 bg-white p-2 shadow-[0_22px_70px_rgba(66,56,120,0.16)]">
+                          {["Easy", "Medium", "Hard", "Advanced"].map((item) => {
+                            const difficultyOrder = ["Easy", "Medium", "Hard", "Advanced"];
+                            const locked =
+                              difficultyOrder.indexOf(item) >
+                              difficultyOrder.indexOf(unlockedDifficulty);
+
+                            return (
+                              <SelectItem
+                                key={item}
+                                value={item}
+                                disabled={locked}
+                                className="rounded-xl py-3 pl-9 pr-3 text-sm font-semibold text-primary focus:bg-[#f6f1ff] focus:text-primary"
+                              >
+                                {item} · {getPairCountByDifficulty(item)} pairs
+                                {locked ? " · Locked" : ""}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="mt-6 hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">

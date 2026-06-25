@@ -52,7 +52,7 @@ export const ENGLISH_PATHWAYS: EnglishPathwayConfig[] = [
   {
     key: "WIDA",
     levelLabel: "Grade Band",
-    levels: ["K-2", "3-5", "6-8", "9-12"],
+    levels: ["K", "Grades 1-2", "Grades 3-5", "Grades 6-8", "Grades 9-12"],
     skillLabel: "Domain",
     skills: ["Reading", "Writing", "Academic Vocabulary", "Grammar"],
     difficultyLabel: "Language Level",

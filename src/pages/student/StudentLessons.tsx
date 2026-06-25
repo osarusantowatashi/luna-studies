@@ -40,6 +40,7 @@ export default function StudentLessons() {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [showAllLessons, setShowAllLessons] = useState(false);
+    const [lessonError, setLessonError] = useState("");
 
     useEffect(() => {
         fetchLessons();
@@ -57,7 +58,7 @@ export default function StudentLessons() {
             .order("lesson_date", { ascending: true });
 
         if (error) {
-            alert(error.message);
+            setLessonError(error.message);
             return;
         }
 
@@ -230,6 +231,12 @@ export default function StudentLessons() {
                     <StatCard icon={<CheckCircle2 size={22} />} title="Completed" value={completedLessons.length} />
                     <StatCard icon={<Clock size={22} />} title="Study Hours" value={totalHours} />
                 </div>
+
+                {lessonError && (
+                    <div className="rounded-[1.6rem] border border-red-100 bg-red-50 p-5 text-sm font-semibold leading-6 text-red-700 shadow-[0_12px_35px_rgba(127,29,29,0.08)]">
+                        {lessonError}
+                    </div>
+                )}
 
                 <div className="rounded-[2rem] bg-white/95 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.08)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-7">
                     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

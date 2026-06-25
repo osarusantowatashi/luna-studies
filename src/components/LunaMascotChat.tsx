@@ -92,6 +92,7 @@ const LunaMascotChat = () => {
   const [leadGrade, setLeadGrade] = useState("");
   const [leadGoal, setLeadGoal] = useState("");
   const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [leadFormNotice, setLeadFormNotice] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -258,10 +259,11 @@ const LunaMascotChat = () => {
 
   const submitLeadForm = async () => {
     if (!leadName.trim() || !leadContact.trim()) {
-      alert(t("chat.lead.alert"))
+      setLeadFormNotice(t("chat.lead.alert"));
       return;
     }
 
+    setLeadFormNotice("");
     setLeadSubmitting(true);
 
     try {
@@ -293,6 +295,7 @@ const LunaMascotChat = () => {
       setLeadContact("");
       setLeadGrade("");
       setLeadGoal("");
+      setLeadFormNotice("");
 
       setMessages((prev) => [
         ...prev,
@@ -411,14 +414,20 @@ const LunaMascotChat = () => {
                   <div className="space-y-2">
                     <input
                       value={leadName}
-                      onChange={(e) => setLeadName(e.target.value)}
+                      onChange={(e) => {
+                        setLeadName(e.target.value);
+                        setLeadFormNotice("");
+                      }}
                       placeholder={t("chat.lead.name")}
                       className="w-full rounded-xl bg-slate-100 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
                     />
 
                     <input
                       value={leadContact}
-                      onChange={(e) => setLeadContact(e.target.value)}
+                      onChange={(e) => {
+                        setLeadContact(e.target.value);
+                        setLeadFormNotice("");
+                      }}
                       placeholder={t("chat.lead.contact")}
                       className="w-full rounded-xl bg-slate-100 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#F6C65B]"
                     />
@@ -448,12 +457,21 @@ const LunaMascotChat = () => {
                     </button>
 
                     <button
-                      onClick={() => setShowLeadForm(false)}
+                      onClick={() => {
+                        setShowLeadForm(false);
+                        setLeadFormNotice("");
+                      }}
                       className="min-h-11 rounded-full border border-[#E8D8B5] px-4 py-2 text-xs text-slate-500 transition hover:bg-[#FAF8F3]"
                     >
                       {t("chat.lead.cancel")}
                     </button>
                   </div>
+
+                  {leadFormNotice && (
+                    <p className="mt-3 rounded-xl border border-[#F6C65B]/35 bg-[#FFF8E8] px-3 py-2 text-xs font-semibold leading-5 text-[#7A5416]">
+                      {leadFormNotice}
+                    </p>
+                  )}
                 </div>
               )}
 

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { apiUrl } from "@/lib/api";
+import { getEnglishPathway } from "@/lib/englishPathways";
+import { NON_ENGLISH_LANGUAGE_PATHWAYS } from "@/lib/languagePathways";
 
 const TARGET_LANGUAGES = ["English", "Japanese", "Chinese"] as const;
 const PROMPT_LANGUAGES = ["English", "Chinese", "Japanese"] as const;
@@ -55,6 +57,7 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
   const [selectedQuestion, setSelectedQuestion] = useState<any | null>(null);
   const [draft, setDraft] = useState<any | null>(null);
   const [gradeFilter, setGradeFilter] = useState("All");
+  const [pathwayFilter, setPathwayFilter] = useState("All");
   const [skillFilter, setSkillFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("approved");
@@ -72,7 +75,7 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
 
   useEffect(() => {
     setPage(0);
-  }, [categoryFilter, gradeFilter, pageSize, search, skillFilter, statusFilter, targetLanguage]);
+  }, [categoryFilter, gradeFilter, pageSize, pathwayFilter, search, skillFilter, statusFilter, targetLanguage]);
 
   const fetchQuestions = async () => {
     setLoading(true);
@@ -94,7 +97,8 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
         ? query.or("target_language.eq.English,target_language.is.null")
         : query.eq("target_language", targetLanguage);
 
-    if (gradeFilter !== "All") query = query.eq("grade", gradeFilter);
+    if (gradeFilter !== "All") query = query.eq("level", gradeFilter);
+    if (pathwayFilter !== "All") query = query.eq("pathway", pathwayFilter);
     if (skillFilter !== "All") query = query.eq("skill", skillFilter);
     if (categoryFilter.trim()) query = query.ilike("category", `%${categoryFilter.trim()}%`);
     if (statusFilter !== "All") query = query.eq("status", statusFilter);
@@ -133,16 +137,42 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
 
   useEffect(() => {
     fetchQuestions();
-  }, [categoryFilter, gradeFilter, page, pageSize, search, skillFilter, statusFilter, targetLanguage]);
+  }, [categoryFilter, gradeFilter, page, pageSize, pathwayFilter, search, skillFilter, statusFilter, targetLanguage]);
 
-  const grades = useMemo(
-    () => ["All", ...Array.from(new Set(questions.map((q) => q.grade).filter(Boolean))).sort()],
-    [questions]
-  );
+  const pathwayOptions = useMemo(() => {
+    if (targetLanguage === "English") {
+      return ["All", ...Array.from(new Set(questions.map((q) => q.pathway || q.exam_type).filter(Boolean))).sort()];
+    }
+
+    const fixedPathway =
+      targetLanguage === "Japanese"
+        ? NON_ENGLISH_LANGUAGE_PATHWAYS.Japanese.pathway
+        : NON_ENGLISH_LANGUAGE_PATHWAYS.Chinese.pathway;
+
+    return ["All", fixedPathway];
+  }, [questions, targetLanguage]);
+
+  const levelOptions = useMemo(() => {
+    if (targetLanguage === "Japanese") return ["All", ...NON_ENGLISH_LANGUAGE_PATHWAYS.Japanese.levels];
+    if (targetLanguage === "Chinese") return ["All", ...NON_ENGLISH_LANGUAGE_PATHWAYS.Chinese.levels];
+
+    const selectedPathway = pathwayFilter !== "All" ? pathwayFilter : questions[0]?.pathway;
+    const config = selectedPathway ? getEnglishPathway(selectedPathway) : null;
+
+    if (config) return ["All", ...config.levels];
+
+    return ["All", ...Array.from(new Set(questions.map((q) => q.level || q.grade).filter(Boolean))).sort()];
+  }, [pathwayFilter, questions, targetLanguage]);
 
   const skills = useMemo(
-    () => ["All", ...Array.from(new Set(questions.map((q) => q.skill).filter(Boolean))).sort()],
-    [questions]
+    () => {
+      if (targetLanguage === "Japanese") return ["All", ...NON_ENGLISH_LANGUAGE_PATHWAYS.Japanese.skills];
+      if (targetLanguage === "Chinese") return ["All", ...NON_ENGLISH_LANGUAGE_PATHWAYS.Chinese.skills];
+      if (pathwayFilter !== "All") return ["All", ...getEnglishPathway(pathwayFilter).skills];
+
+      return ["All", ...Array.from(new Set(questions.map((q) => q.skill).filter(Boolean))).sort()];
+    },
+    [pathwayFilter, questions, targetLanguage]
   );
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
@@ -323,14 +353,24 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
         </div>
 
         <div className="rounded-[1.6rem] border bg-card p-4 shadow-soft sm:p-5">
-          <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-7">
+            <select
+              value={pathwayFilter}
+              onChange={(e) => setPathwayFilter(e.target.value)}
+              className="min-h-11 rounded-2xl border bg-white px-4 py-3"
+            >
+              {pathwayOptions.map((pathway) => (
+                <option key={pathway}>{pathway}</option>
+              ))}
+            </select>
+
             <select
               value={gradeFilter}
               onChange={(e) => setGradeFilter(e.target.value)}
               className="min-h-11 rounded-2xl border bg-white px-4 py-3"
             >
-              {grades.map((grade) => (
-                <option key={grade}>{grade}</option>
+              {levelOptions.map((level) => (
+                <option key={level}>{level}</option>
               ))}
             </select>
 
@@ -706,7 +746,9 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
                     Question Detail
                   </p>
                   <h2 className="mt-2 text-2xl font-bold text-primary">
-                    {draft.target_language || targetLanguage} · {draft.grade || "-"}
+                    {[draft.target_language || targetLanguage, draft.pathway, draft.level || draft.grade]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </h2>
                 </div>
 

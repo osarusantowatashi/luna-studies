@@ -1447,6 +1447,20 @@ const examRules = {
 - Less language-heavy, more thinking-based
 - Abstract or pattern-based when possible
 `,
+
+  JLPT: `
+- JLPT-aligned Japanese micro-practice, not official copied material
+- Focus on vocabulary, grammar, kanji, reading, and sentence patterns
+- Match the selected N-level from N5 to N1
+- No listening or speaking tasks in Phase 1
+`,
+
+  HSK: `
+- HSK-aligned Chinese micro-practice, not official copied material
+- Focus on vocabulary, grammar, characters, reading, and sentence structure
+- Match the selected HSK level from HSK 1 to HSK 6
+- No listening or speaking tasks in Phase 1
+`,
 };
 const structureRules = {
   Reading: {
@@ -1557,6 +1571,42 @@ const structureRules = {
 `,
   },
 
+  Kanji: {
+    needsPassage: false,
+    format: `
+- Kanji recognition or usage micro-practice.
+- Test reading, meaning, appropriate usage, or matching kanji to context.
+- No separate passage.
+`,
+  },
+
+  "Sentence Patterns": {
+    needsPassage: false,
+    format: `
+- Japanese sentence pattern micro-practice.
+- Test grammar pattern meaning, correct sentence completion, or natural usage.
+- No separate passage.
+`,
+  },
+
+  Characters: {
+    needsPassage: false,
+    format: `
+- Chinese character recognition or usage micro-practice.
+- Test meaning, reading, form, or correct usage in a short sentence.
+- No separate passage.
+`,
+  },
+
+  "Sentence Structure": {
+    needsPassage: false,
+    format: `
+- Chinese sentence structure micro-practice.
+- Test word order, sentence completion, grammar structure, or natural expression.
+- No separate passage.
+`,
+  },
+
   "Verbal Reasoning": {
     needsPassage: false,
     format: `
@@ -1639,6 +1689,17 @@ const gradeRules = {
   Beginner: "- Very simple language and direct questions.",
   Intermediate: "- Moderate language and some reasoning.",
   Advanced: "- Complex language, subtle reasoning, and strong distractors.",
+  N5: "- JLPT N5 level. Basic kana, simple kanji, everyday vocabulary, and very simple sentence patterns.",
+  N4: "- JLPT N4 level. Basic daily-life grammar, common kanji, and short reading.",
+  N3: "- JLPT N3 level. Intermediate grammar, more kanji, and short practical reading.",
+  N2: "- JLPT N2 level. Upper-intermediate grammar, nuanced vocabulary, and more abstract reading.",
+  N1: "- JLPT N1 level. Advanced vocabulary, complex grammar, and sophisticated reading.",
+  "HSK 1": "- HSK 1 level. Very basic Chinese vocabulary, characters, and simple sentence patterns.",
+  "HSK 2": "- HSK 2 level. Basic daily communication, common words, and simple grammar.",
+  "HSK 3": "- HSK 3 level. Lower-intermediate vocabulary, characters, and sentence structure.",
+  "HSK 4": "- HSK 4 level. Intermediate vocabulary, reading, and grammar usage.",
+  "HSK 5": "- HSK 5 level. Upper-intermediate vocabulary, longer sentences, and stronger reading.",
+  "HSK 6": "- HSK 6 level. Advanced Chinese vocabulary, grammar, and reading comprehension.",
 };
 
 const difficultyRules = {
@@ -1737,13 +1798,13 @@ const parseGradeNumber = (value = "") => {
 };
 
 const mapGradeToWidaBand = (grade = "") => {
-  if (/^k|kindergarten/i.test(grade)) return "K-2";
+  if (/^k|kindergarten/i.test(grade)) return "K";
   const gradeNumber = parseGradeNumber(grade);
   if (!gradeNumber) return null;
-  if (gradeNumber <= 2) return "K-2";
-  if (gradeNumber <= 5) return "3-5";
-  if (gradeNumber <= 8) return "6-8";
-  return "9-12";
+  if (gradeNumber <= 2) return "Grades 1-2";
+  if (gradeNumber <= 5) return "Grades 3-5";
+  if (gradeNumber <= 8) return "Grades 6-8";
+  return "Grades 9-12";
 };
 
 const mapAeisLevel = (grade = "") => {
@@ -1984,7 +2045,7 @@ Classify legacy English learning questions into the new Luna pathway structure.
 
 Allowed pathways and levels:
 - MAP: Kindergarten, Grade 1-12
-- WIDA: K-2, 3-5, 6-8, 9-12
+- WIDA: K, Grades 1-2, Grades 3-5, Grades 6-8, Grades 9-12
 - CAT4: Grade 1-12
 - AEIS: Primary, Secondary
 - O-Level English: O-Level

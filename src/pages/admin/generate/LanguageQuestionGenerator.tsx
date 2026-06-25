@@ -3,24 +3,8 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { apiUrl } from "@/lib/api";
 import { ENGLISH_PATHWAY_KEYS, getEnglishPathway } from "@/lib/englishPathways";
+import { NON_ENGLISH_LANGUAGE_PATHWAYS } from "@/lib/languagePathways";
 
-const GRADES = [
-  "Grade 1",
-  "Grade 2",
-  "Grade 3",
-  "Grade 4",
-  "Grade 5",
-  "Grade 6",
-  "Grade 7",
-  "Grade 8",
-  "Grade 9",
-  "Grade 10",
-  "Beginner",
-  "Intermediate",
-  "Advanced",
-];
-
-const DIFFICULTIES = ["Easy", "Medium", "Hard", "Advanced"];
 const PROMPT_LANGUAGES = ["English", "Chinese", "Japanese"] as const;
 
 const languageSuffix = (language: string) =>
@@ -38,21 +22,19 @@ const LANGUAGE_CONFIG = {
   },
   Japanese: {
     label: "Japanese",
-    examTypes: ["Japanese", "JLPT Foundation", "Japanese Foundation"],
-    skills: ["Hiragana", "Katakana", "Vocabulary", "Grammar", "Reading", "Sentence Writing"],
-    defaultExam: "Japanese",
-    defaultGrade: "Beginner",
-    focus:
-      "JLPT-style learning, hiragana, katakana, kanji, vocabulary, grammar, particles, reading, and sentence patterns.",
+    examTypes: ["JLPT"],
+    skills: NON_ENGLISH_LANGUAGE_PATHWAYS.Japanese.skills,
+    defaultExam: "JLPT",
+    defaultGrade: "N5",
+    focus: NON_ENGLISH_LANGUAGE_PATHWAYS.Japanese.focus,
   },
   Chinese: {
     label: "Chinese",
-    examTypes: ["Chinese", "Mandarin Foundation", "Chinese Foundation"],
-    skills: ["Pinyin", "Characters", "Vocabulary", "Grammar", "Reading", "Sentence Writing"],
-    defaultExam: "Chinese",
-    defaultGrade: "Beginner",
-    focus:
-      "Chinese vocabulary, pinyin, characters, reading, sentence structure, and HSK-style learning when selected.",
+    examTypes: ["HSK"],
+    skills: NON_ENGLISH_LANGUAGE_PATHWAYS.Chinese.skills,
+    defaultExam: "HSK",
+    defaultGrade: "HSK 1",
+    focus: NON_ENGLISH_LANGUAGE_PATHWAYS.Chinese.focus,
   },
 } as const;
 
@@ -124,6 +106,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
   const [reviewLoading, setReviewLoading] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<any | null>(null);
+  const [previewEditing, setPreviewEditing] = useState(false);
   const [draft, setDraft] = useState<any | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -131,19 +114,25 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
     ? `${config.label} Question Generator`
     : "Language Question Generator";
   const englishPathway = getEnglishPathway(examType);
+  const nonEnglishPathway =
+    targetLanguage === "Japanese"
+      ? NON_ENGLISH_LANGUAGE_PATHWAYS.Japanese
+      : targetLanguage === "Chinese"
+        ? NON_ENGLISH_LANGUAGE_PATHWAYS.Chinese
+        : null;
   const activeSkills = targetLanguage === "English" ? englishPathway.skills : config.skills;
-  const activeLevels = targetLanguage === "English" ? englishPathway.levels : GRADES;
+  const activeLevels = targetLanguage === "English" ? englishPathway.levels : nonEnglishPathway?.levels || [];
   const activeDifficultyOptions =
     targetLanguage === "English"
       ? englishPathway.difficulties || []
-      : DIFFICULTIES;
+      : [];
   const activeVariants = targetLanguage === "English" ? englishPathway.variants || [] : [];
 
   useEffect(() => {
     setExamType(config.defaultExam);
     setGrade(config.defaultGrade);
     setSkill(config.skills[0]);
-    setDifficulty(targetLanguage === "English" ? getEnglishPathway(config.defaultExam).difficulties?.[0] || "" : "Medium");
+    setDifficulty(targetLanguage === "English" ? getEnglishPathway(config.defaultExam).difficulties?.[0] || "" : "");
     setPathwayVariant("");
   }, [targetLanguage]);
 
@@ -262,6 +251,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
   const openEdit = (question: any) => {
     setEditingQuestion(question);
     setDraft({ ...question });
+    setPreviewEditing(false);
   };
 
   const updateDraft = (field: string, value: string) => {
@@ -350,12 +340,12 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
           questionCount,
           extraPrompt,
           targetLanguage,
-          pathway: targetLanguage === "English" ? examType : undefined,
-          level: targetLanguage === "English" ? grade : undefined,
+          pathway: examType,
+          level: grade,
           pathwayVariant: targetLanguage === "English" ? pathwayVariant : undefined,
-          levelLabel: targetLanguage === "English" ? englishPathway.levelLabel : "Grade / Level",
+          levelLabel: targetLanguage === "English" ? englishPathway.levelLabel : nonEnglishPathway?.levelLabel || "Level",
           variantLabel: targetLanguage === "English" ? englishPathway.variantLabel || null : null,
-          skillLabel: targetLanguage === "English" ? englishPathway.skillLabel : "Skill",
+          skillLabel: targetLanguage === "English" ? englishPathway.skillLabel : nonEnglishPathway?.skillLabel || "Skill",
           difficultyLabel:
             targetLanguage === "English" ? englishPathway.difficultyLabel || null : "Difficulty",
         }),
@@ -395,9 +385,9 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
             skill,
             difficulty,
             target_language: targetLanguage,
-            pathway: targetLanguage === "English" ? examType : undefined,
-            level: targetLanguage === "English" ? grade : undefined,
-            level_label: targetLanguage === "English" ? englishPathway.levelLabel : undefined,
+            pathway: examType,
+            level: grade,
+            level_label: targetLanguage === "English" ? englishPathway.levelLabel : nonEnglishPathway?.levelLabel,
             pathway_variant: targetLanguage === "English" ? pathwayVariant || null : undefined,
             variant_label: targetLanguage === "English" ? englishPathway.variantLabel || null : undefined,
             difficulty_label:
@@ -413,9 +403,9 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                 skill,
                 difficulty,
                 target_language: targetLanguage,
-                pathway: targetLanguage === "English" ? examType : undefined,
-                level: targetLanguage === "English" ? grade : undefined,
-                level_label: targetLanguage === "English" ? englishPathway.levelLabel : undefined,
+                pathway: examType,
+                level: grade,
+                level_label: targetLanguage === "English" ? englishPathway.levelLabel : nonEnglishPathway?.levelLabel,
                 pathway_variant: targetLanguage === "English" ? pathwayVariant || null : undefined,
                 variant_label: targetLanguage === "English" ? englishPathway.variantLabel || null : undefined,
                 difficulty_label:
@@ -706,7 +696,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                       className="w-full rounded-2xl sm:w-auto"
                       onClick={() => openEdit(q)}
                     >
-                      View / Edit
+                      Preview
                     </Button>
                     <Button
                       type="button"
@@ -770,7 +760,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                     className="w-full rounded-2xl sm:w-auto"
                     onClick={() => openEdit(q)}
                   >
-                    View / Edit
+                    Preview
                   </Button>
                   <Button
                     type="button"
@@ -814,6 +804,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                   onClick={() => {
                     setEditingQuestion(null);
                     setDraft(null);
+                    setPreviewEditing(false);
                   }}
                 >
                   Close
@@ -826,6 +817,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                 value={draft.category || ""}
                 onChange={(e) => updateDraft("category", e.target.value)}
                 placeholder="Category"
+                readOnly={!previewEditing}
                 className="min-h-11 w-full rounded-2xl border bg-white px-4 py-3"
               />
 
@@ -837,6 +829,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                   <textarea
                     value={draft.passage || ""}
                     onChange={(e) => updateDraft("passage", e.target.value)}
+                    readOnly={!previewEditing}
                     className="mt-2 min-h-28 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
                   />
                 </section>
@@ -855,6 +848,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                     <textarea
                       value={draft[`question_${suffix}`] || ""}
                       onChange={(e) => updateDraft(`question_${suffix}`, e.target.value)}
+                      readOnly={!previewEditing}
                       className="mt-2 min-h-24 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
                     />
 
@@ -868,6 +862,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                           <input
                             value={draft[`option_${option}_${suffix}`] || ""}
                             onChange={(e) => updateDraft(`option_${option}_${suffix}`, e.target.value)}
+                            readOnly={!previewEditing}
                             className="mt-2 min-h-11 w-full rounded-2xl border bg-white px-4 py-3 text-sm normal-case tracking-normal text-primary"
                           />
                         </label>
@@ -880,6 +875,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                     <textarea
                       value={draft[`explanation_${suffix}`] || ""}
                       onChange={(e) => updateDraft(`explanation_${suffix}`, e.target.value)}
+                      readOnly={!previewEditing}
                       className="mt-2 min-h-24 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
                     />
                   </section>
@@ -892,10 +888,10 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                 <Button
                   variant="outline"
                   className="h-12 rounded-2xl"
-                  onClick={saveDraft}
+                  onClick={previewEditing ? saveDraft : () => setPreviewEditing(true)}
                   disabled={savingDraft}
                 >
-                  {savingDraft ? "Saving..." : "Save Edits"}
+                  {savingDraft ? "Saving..." : previewEditing ? "Save Edits" : "Edit"}
                 </Button>
                 <Button
                   className="h-12 rounded-2xl"

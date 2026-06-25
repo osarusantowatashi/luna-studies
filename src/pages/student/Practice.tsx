@@ -1,6 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -17,29 +35,42 @@ import {
 import {
   buildEnglishAccessKey,
   getEnglishPathway,
-  parseEnglishAccessKey,
 } from "@/lib/englishPathways";
+import {
+  buildLanguageAccessKey,
+  NON_ENGLISH_LANGUAGE_PATHWAYS,
+  parseLanguageAccessKey,
+} from "@/lib/languagePathways";
 
 const DAILY_GOAL = 30;
-
-const DIFFICULTIES = ["Easy", "Medium", "Hard", "Advanced"];
 
 const TARGET_LANGUAGES = ["English", "Japanese", "Chinese"];
 
 const PROMPT_LANGUAGES = ["English", "Japanese", "Chinese"];
 
+const PASSAGE_TEXT_SIZE_KEY = "luna-practice-passage-text-size";
+
+const PASSAGE_TEXT_CLASSES = {
+  Small: {
+    passage: "text-base leading-8",
+    question: "text-lg leading-8",
+  },
+  Normal: {
+    passage: "text-lg leading-9",
+    question: "text-xl leading-9",
+  },
+  Large: {
+    passage: "text-xl leading-10",
+    question: "text-2xl leading-10",
+  },
+} as const;
+
+type PassageTextSize = keyof typeof PASSAGE_TEXT_CLASSES;
+
 const SKILLS_BY_LANGUAGE: Record<string, string[]> = {
-  English: [
-    "Mix",
-    "Vocabulary",
-    "Reading Comprehension",
-    "Main Idea",
-    "Inference",
-    "Detail Questions",
-    "Grammar",
-  ],
-  Japanese: ["Mix", "Hiragana", "Katakana", "Vocabulary", "Grammar", "Reading", "Sentence Writing"],
-  Chinese: ["Mix", "Pinyin", "Characters", "Vocabulary", "Grammar", "Reading", "Sentence Writing"],
+  English: ["Mix"],
+  Japanese: ["Mix", ...NON_ENGLISH_LANGUAGE_PATHWAYS.Japanese.skills],
+  Chinese: ["Mix", ...NON_ENGLISH_LANGUAGE_PATHWAYS.Chinese.skills],
 };
 
 type PracticeAccess = {
@@ -65,6 +96,18 @@ const localizedField = (q: any, base: string, language: string) => {
   return q[`${base}_${suffix}`] || q[base] || q[`${base}_en`] || "";
 };
 
+const sortByOrder = (items: string[], order: string[]) => {
+  const orderMap = new Map(order.map((item, index) => [item, index]));
+
+  return [...items].sort((a, b) => {
+    const aIndex = orderMap.has(a) ? orderMap.get(a)! : Number.MAX_SAFE_INTEGER;
+    const bIndex = orderMap.has(b) ? orderMap.get(b)! : Number.MAX_SAFE_INTEGER;
+
+    if (aIndex !== bIndex) return aIndex - bIndex;
+    return a.localeCompare(b);
+  });
+};
+
 const Practice = () => {
   const [allowedGrades, setAllowedGrades] = useState<string[]>([]);
   const [accessOptions, setAccessOptions] = useState<PracticeAccess[]>([]);
@@ -82,6 +125,17 @@ const Practice = () => {
   const [started, setStarted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [practiceNotice, setPracticeNotice] = useState("");
+  const [questionNotice, setQuestionNotice] = useState("");
+  const [startBlockedReason, setStartBlockedReason] = useState("");
+  const [passageTextSize, setPassageTextSize] = useState<PassageTextSize>(() => {
+    if (typeof window === "undefined") return "Normal";
+
+    const saved = window.localStorage.getItem(PASSAGE_TEXT_SIZE_KEY);
+
+    return saved === "Small" || saved === "Normal" || saved === "Large"
+      ? saved
+      : "Normal";
+  });
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState("");
@@ -89,6 +143,10 @@ const Practice = () => {
 
   const [attemptedCount, setAttemptedCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+
+  useEffect(() => {
+    window.localStorage.setItem(PASSAGE_TEXT_SIZE_KEY, passageTextSize);
+  }, [passageTextSize]);
 
   const fetchStats = async (userId: string) => {
     const { data } = await supabase
@@ -144,7 +202,7 @@ const Practice = () => {
       }
 
       const mappedAccess: PracticeAccess[] = (data || []).map((item: any) => {
-        const parsed = parseEnglishAccessKey(item.grade || "");
+        const parsed = parseLanguageAccessKey(item.grade || "");
         const pathway = item.pathway || parsed?.pathway || "Legacy Grade";
         const level = item.level || parsed?.level || item.grade;
         const targetLanguage = item.target_language || parsed?.targetLanguage || "English";
@@ -153,7 +211,7 @@ const Practice = () => {
           key:
             targetLanguage === "English" && pathway !== "Legacy Grade"
               ? buildEnglishAccessKey(pathway, level)
-              : item.grade,
+              : buildLanguageAccessKey(targetLanguage as any, pathway, level),
           targetLanguage,
           pathway,
           level,
@@ -204,6 +262,14 @@ const Practice = () => {
     [accessOptions]
   );
 
+  const selectedLanguageAccessOptions = useMemo(
+    () =>
+      accessOptions.filter(
+        (item) => item.targetLanguage === selectedTargetLanguage && item.pathway !== "Legacy Grade"
+      ),
+    [accessOptions, selectedTargetLanguage]
+  );
+
   const availableTargetLanguages = useMemo(() => {
     const languages = Array.from(
       new Set(
@@ -221,19 +287,52 @@ const Practice = () => {
 
   const availableEnglishPathways = useMemo(() => {
     const pathways = Array.from(new Set(englishAccessOptions.map((item) => item.pathway || "Legacy Grade")));
-    return pathways;
+    const order = [
+      "MAP",
+      "WIDA",
+      "CAT4",
+      "AEIS",
+      "O-Level English",
+      "TOEFL",
+      "IELTS",
+    ];
+    return sortByOrder(pathways, order);
   }, [englishAccessOptions]);
+
+  const availablePathways = useMemo(
+    () => {
+      const pathways = Array.from(new Set(selectedLanguageAccessOptions.map((item) => item.pathway).filter(Boolean)));
+      const order =
+        selectedTargetLanguage === "Japanese"
+          ? ["JLPT"]
+          : selectedTargetLanguage === "Chinese"
+            ? ["HSK"]
+            : availableEnglishPathways;
+
+      return sortByOrder(pathways, order);
+    },
+    [availableEnglishPathways, selectedLanguageAccessOptions, selectedTargetLanguage]
+  );
 
   const availableEnglishLevels = useMemo(
     () =>
-      englishAccessOptions
+      sortByOrder(
+        englishAccessOptions
         .filter((item) => (item.pathway || "Legacy Grade") === selectedPathway)
         .map((item) => item.level)
         .filter(Boolean),
+        getEnglishPathway(selectedPathway).levels
+      ),
     [englishAccessOptions, selectedPathway]
   );
 
   const englishPathwayConfig = getEnglishPathway(selectedPathway);
+  const nonEnglishPathwayConfig =
+    selectedTargetLanguage === "Japanese"
+      ? NON_ENGLISH_LANGUAGE_PATHWAYS.Japanese
+      : selectedTargetLanguage === "Chinese"
+        ? NON_ENGLISH_LANGUAGE_PATHWAYS.Chinese
+        : null;
   const practiceSkillOptions =
     selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
       ? ["Mix", ...englishPathwayConfig.skills]
@@ -241,14 +340,56 @@ const Practice = () => {
   const practiceDifficultyOptions =
     selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
       ? englishPathwayConfig.difficulties || []
-      : DIFFICULTIES;
+      : [];
   const practiceVariantOptions =
     selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
       ? englishPathwayConfig.variants || []
       : [];
+  const selectedLevelOptions =
+    selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
+      ? availableEnglishLevels
+      : sortByOrder(
+          selectedLanguageAccessOptions
+            .filter((item) => item.pathway === selectedPathway)
+            .map((item) => item.level)
+            .filter(Boolean),
+          nonEnglishPathwayConfig?.levels || []
+        );
 
   useEffect(() => {
-    if (selectedTargetLanguage !== "English") return;
+    setStartBlockedReason("");
+    setPracticeNotice("");
+  }, [
+    selectedTargetLanguage,
+    selectedPathway,
+    selectedGrade,
+    selectedPathwayVariant,
+    selectedDifficulty,
+    selectedSkill,
+    selectedPromptLanguage,
+  ]);
+
+  useEffect(() => {
+    if (selectedTargetLanguage !== "English") {
+      const firstPathway = availablePathways[0] || "";
+      const currentPathway = availablePathways.includes(selectedPathway) ? selectedPathway : firstPathway;
+      const levels = selectedLanguageAccessOptions
+        .filter((item) => item.pathway === currentPathway)
+        .map((item) => item.level)
+        .filter(Boolean);
+
+      if (currentPathway !== selectedPathway) {
+        setSelectedPathway(currentPathway);
+      }
+
+      if (levels.length > 0 && !levels.includes(selectedGrade)) {
+        setSelectedGrade(levels[0]);
+      }
+
+      setSelectedDifficulty("");
+      setSelectedPathwayVariant("All");
+      return;
+    }
 
     if (availableEnglishPathways.length === 0) {
       setSelectedPathway("");
@@ -282,9 +423,11 @@ const Practice = () => {
   }, [
     availableEnglishLevels,
     availableEnglishPathways,
+    availablePathways,
     practiceDifficultyOptions,
     selectedDifficulty,
     selectedGrade,
+    selectedLanguageAccessOptions,
     selectedPathway,
     selectedPathwayVariant,
     selectedTargetLanguage,
@@ -304,6 +447,13 @@ const Practice = () => {
 
   const current = questions[currentIndex];
 
+  const currentQuestionText =
+    localizedField(current, "question", selectedPromptLanguage) || current?.question_text || "";
+
+  const textSizeClasses = PASSAGE_TEXT_CLASSES[passageTextSize];
+  const showTextSizeControl =
+    Boolean(current?.passage) || currentQuestionText.length > 160;
+
   const correctText = useMemo(
     () => getCorrectAnswerText(current, selectedPromptLanguage),
     [current, selectedPromptLanguage]
@@ -321,34 +471,7 @@ const Practice = () => {
       ? 0
       : Math.round(((currentIndex + 1) / questions.length) * 100);
 
-  const startPractice = async () => {
-    setPracticeNotice("");
-
-    if (!selectedGrade || (selectedTargetLanguage === "English" && !selectedPathway)) {
-      setPracticeNotice("Please select an assigned pathway before starting practice.");
-      return;
-    }
-
-    setLoading(true);
-
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData.user;
-
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
-    const { data: correctAttempts } = await supabase
-      .from("attempts")
-      .select("question_id")
-      .eq("user_id", user.id)
-      .eq("is_correct", true);
-
-    const completedCorrectIds = new Set(
-      (correctAttempts || []).map((a) => a.question_id)
-    );
-
+  const fetchMatchingQuestionsForSetup = async () => {
     let query = supabase
       .from("questions")
       .select("*")
@@ -360,14 +483,22 @@ const Practice = () => {
         ? query.or("target_language.eq.English,target_language.is.null")
         : query.eq("target_language", selectedTargetLanguage);
 
-    if (selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade") {
+    if (selectedPathway && selectedPathway !== "Legacy Grade") {
       query = query.eq("pathway", selectedPathway).eq("level", selectedGrade);
 
-      if (selectedDifficulty && practiceDifficultyOptions.length > 0) {
+      if (
+        selectedTargetLanguage === "English" &&
+        selectedDifficulty &&
+        practiceDifficultyOptions.length > 0
+      ) {
         query = query.eq("difficulty", selectedDifficulty);
       }
 
-      if (selectedPathwayVariant !== "All" && practiceVariantOptions.length > 0) {
+      if (
+        selectedTargetLanguage === "English" &&
+        selectedPathwayVariant !== "All" &&
+        practiceVariantOptions.length > 0
+      ) {
         query = query.eq("pathway_variant", selectedPathwayVariant);
       }
     } else {
@@ -407,9 +538,59 @@ const Practice = () => {
       error = fallback.error;
     }
 
+    return { data: data || [], error };
+  };
+
+  const fetchCompletedCorrectIds = async (userId: string, questionIds: string[]) => {
+    if (questionIds.length === 0) return new Set<string>();
+
+    const { data, error } = await supabase
+      .from("attempts")
+      .select("question_id")
+      .eq("user_id", userId)
+      .eq("is_correct", true)
+      .in("question_id", questionIds);
+
+    if (error) throw error;
+
+    return new Set((data || []).map((attempt) => attempt.question_id));
+  };
+
+  const startPractice = async () => {
+    setPracticeNotice("");
+
+    if (!selectedGrade || (selectedTargetLanguage === "English" && !selectedPathway)) {
+      setPracticeNotice("Please select an assigned pathway before starting practice.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
+
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await fetchMatchingQuestionsForSetup();
+
     if (error) {
       console.error(error);
       setPracticeNotice("Failed to load questions. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    const questionIds = (data || []).map((question) => question.id).filter(Boolean);
+    let completedCorrectIds = new Set<string>();
+
+    try {
+      completedCorrectIds = await fetchCompletedCorrectIds(user.id, questionIds);
+    } catch (attemptError) {
+      console.error(attemptError);
+      setPracticeNotice("Failed to load your practice progress. Please try again.");
       setLoading(false);
       return;
     }
@@ -421,9 +602,13 @@ const Practice = () => {
     const randomQuestions = shuffleArray(availableQuestions).slice(0, 20);
 
     if (randomQuestions.length === 0) {
+      const reason =
+        "No practice questions available yet. Try another pathway, level, or skill — or ask your tutor/admin to assign more practice.";
+
       setPracticeNotice(
-        `No new ${selectedTargetLanguage} questions available for this setup. You can reset progress or choose another pathway, level, skill, or difficulty.`
+        reason
       );
+      setStartBlockedReason(reason);
       setQuestions([]);
       setStarted(false);
       setLoading(false);
@@ -435,29 +620,59 @@ const Practice = () => {
     setSelected("");
     setShowFeedback(false);
     setPracticeNotice("");
+    setStartBlockedReason("");
     setStarted(true);
     setLoading(false);
   };
 
   const resetProgress = async () => {
-    if (!confirm("Reset all practice records? Correct questions will appear again.")) {
-      return;
-    }
-
     const { data: userData } = await supabase.auth.getUser();
     const user = userData.user;
 
     if (!user) return;
 
+    setLoading(true);
+
+    const { data: matchingQuestions, error: questionsError } =
+      await fetchMatchingQuestionsForSetup();
+
+    if (questionsError) {
+      console.error(questionsError);
+      setPracticeNotice("We could not find this practice setup. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    const questionIds = (matchingQuestions || [])
+      .map((question) => question.id)
+      .filter(Boolean);
+
+    if (questionIds.length === 0) {
+      setPracticeNotice("No approved questions match this practice setup yet.");
+      setStartBlockedReason("No approved questions match this practice setup yet.");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase
       .from("attempts")
       .delete()
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .in("question_id", questionIds);
 
     if (error) {
-      alert("Failed to reset progress.");
       console.error(error);
+      setPracticeNotice("We could not reset your practice progress. Please try again.");
+      setLoading(false);
       return;
+    }
+
+    let remainingCompletedCorrectIds = new Set<string>();
+
+    try {
+      remainingCompletedCorrectIds = await fetchCompletedCorrectIds(user.id, questionIds);
+    } catch (attemptError) {
+      console.error(attemptError);
     }
 
     setQuestions([]);
@@ -465,18 +680,32 @@ const Practice = () => {
     setCurrentIndex(0);
     setSelected("");
     setShowFeedback(false);
-    setAttemptedCount(0);
-    setCorrectCount(0);
+    await fetchStats(user.id);
 
-    alert("Practice progress reset.");
+    const availableAfterReset = matchingQuestions.filter(
+      (question) => !remainingCompletedCorrectIds.has(question.id)
+    );
+
+    if (availableAfterReset.length > 0) {
+      setPracticeNotice("Practice progress has been reset. Correct questions may appear again.");
+      setStartBlockedReason("");
+    } else {
+      const reason =
+        "No practice questions are available after reset. Please try another setup or ask your tutor/admin to assign more practice.";
+      setPracticeNotice(reason);
+      setStartBlockedReason(reason);
+    }
+
+    setLoading(false);
   };
 
   const handleSubmit = () => {
     if (!selected) {
-      alert("Please select an answer.");
+      setQuestionNotice("Please choose an answer before submitting.");
       return;
     }
 
+    setQuestionNotice("");
     setShowFeedback(true);
   };
 
@@ -501,7 +730,7 @@ const Practice = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      alert("Practice completed!");
+      setPracticeNotice("Practice completed. Nice work.");
       setStarted(false);
       setQuestions([]);
       setCurrentIndex(0);
@@ -530,7 +759,7 @@ const Practice = () => {
           </h1>
 
           <p className="mt-3 text-primary/60">
-            Your account does not have any grade access yet. Please contact admin.
+            Your account does not have any assigned language pathway access yet. Please contact admin.
           </p>
         </div>
       </Shell>
@@ -634,34 +863,42 @@ const Practice = () => {
                 onChange={(value) => {
                   setSelectedTargetLanguage(value);
 
-                  if (value === "English") {
-                    const nextPathway = availableEnglishPathways[0] || "";
-                    const nextLevel =
-                      englishAccessOptions.find((item) => item.pathway === nextPathway)?.level ||
-                      "";
+                  const nextAccessOptions = accessOptions.filter(
+                    (item) => item.targetLanguage === value && item.pathway !== "Legacy Grade"
+                  );
+                  const nextPathway =
+                    value === "English"
+                      ? availableEnglishPathways[0] || ""
+                      : nextAccessOptions[0]?.pathway || "";
+                  const nextLevel =
+                    value === "English"
+                      ? englishAccessOptions.find((item) => item.pathway === nextPathway)?.level || ""
+                      : nextAccessOptions.find((item) => item.pathway === nextPathway)?.level || "";
 
+                  if (nextPathway) {
                     setSelectedPathway(nextPathway);
                     setSelectedGrade(nextLevel);
                     setSelectedPathwayVariant("All");
+                    setSelectedDifficulty("");
                   }
                 }}
                 options={availableTargetLanguages}
               />
 
-              {selectedTargetLanguage === "English" && (
+              {selectedPathway && selectedPathway !== "Legacy Grade" && (
                 <SelectInput
                   label="Pathway"
                   value={selectedPathway}
                   onChange={(value) => {
                     const nextLevel =
-                      englishAccessOptions.find((item) => item.pathway === value)?.level ||
+                      selectedLanguageAccessOptions.find((item) => item.pathway === value)?.level ||
                       selectedGrade;
 
                     setSelectedPathway(value);
                     setSelectedGrade(nextLevel);
                     setSelectedPathwayVariant("All");
                   }}
-                  options={availableEnglishPathways}
+                  options={availablePathways}
                 />
               )}
 
@@ -669,15 +906,11 @@ const Practice = () => {
                 label={
                   selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
                     ? englishPathwayConfig.levelLabel
-                    : "Grade"
+                    : nonEnglishPathwayConfig?.levelLabel || "Level"
                 }
                 value={selectedGrade}
                 onChange={setSelectedGrade}
-                options={
-                  selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
-                    ? availableEnglishLevels
-                    : allowedGrades
-                }
+                options={selectedLevelOptions}
               />
 
               <SelectInput
@@ -713,7 +946,7 @@ const Practice = () => {
                 label={
                   selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
                     ? englishPathwayConfig.skillLabel
-                    : "Question Type"
+                    : nonEnglishPathwayConfig?.skillLabel || "Question Type"
                 }
                 value={selectedSkill}
                 onChange={setSelectedSkill}
@@ -732,20 +965,47 @@ const Practice = () => {
                 type="button"
                 className="group h-14 w-full rounded-2xl bg-primary text-base font-black shadow-[0_18px_45px_rgba(10,36,84,0.20)]"
                 onClick={startPractice}
+                disabled={Boolean(startBlockedReason)}
               >
                 Start Practice
                 <ArrowRight className="ml-2 h-5 w-5 transition group-hover:translate-x-1" />
               </Button>
 
-              <Button
-                type="button"
-                variant="outline"
-                className="h-14 w-full rounded-2xl border-primary/10 bg-white px-7 font-black text-primary transition hover:-translate-y-1 hover:bg-[#f6f1ff]"
-                onClick={resetProgress}
-              >
-                <RotateCcw className="mr-2 h-5 w-5" />
-                Reset Progress
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-14 w-full rounded-2xl border-primary/10 bg-white px-7 font-black text-primary transition hover:-translate-y-1 hover:bg-[#f6f1ff]"
+                  >
+                    <RotateCcw className="mr-2 h-5 w-5" />
+                    Reset Progress
+                  </Button>
+                </AlertDialogTrigger>
+
+                <AlertDialogContent className="mx-4 max-w-md rounded-[2rem] border-white/80 bg-white p-6 shadow-[0_30px_90px_rgba(10,36,84,0.25)]">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="font-poppins text-2xl font-black text-primary">
+                      Reset practice progress?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm leading-7 text-primary/60">
+                      This will clear your saved answers for this practice setup. Correct questions may appear again.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+
+                  <AlertDialogFooter className="gap-2 sm:gap-3 sm:space-x-0">
+                    <AlertDialogCancel className="h-12 rounded-2xl">
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      className="h-12 rounded-2xl bg-primary px-6 font-black text-primary-foreground"
+                      onClick={resetProgress}
+                    >
+                      Reset Progress
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </section>
         </div>
@@ -813,20 +1073,45 @@ const Practice = () => {
             transition={{ duration: 0.35 }}
             className="relative overflow-hidden rounded-[2rem] bg-white p-5 shadow-[0_30px_90px_rgba(66,56,120,0.13)] sm:rounded-[2.8rem] sm:p-8"
           >
-            <div className="absolute -right-14 -top-14 h-44 w-44 rounded-full bg-[#f0eaff]" />
+	            <div className="absolute -right-14 -top-14 h-44 w-44 rounded-full bg-[#f0eaff]" />
 
-            <div className="relative z-10">
-              {current?.passage && (
-                <div className="mb-7 max-h-[45vh] overflow-y-auto rounded-[1.5rem] bg-[#fbfaff] p-4 sm:rounded-[2rem] sm:p-5">
-                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff]">
-                    Passage
-                  </p>
+	            <div className="relative z-10">
+	              {showTextSizeControl && (
+	                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[1.35rem] border border-[#eee8ff] bg-[#fbfaff] px-4 py-3">
+	                  <p className="text-xs font-black uppercase tracking-[0.18em] text-primary/45">
+	                    Reading size
+	                  </p>
 
-                  <p className="whitespace-pre-line text-sm leading-7 text-primary/60">
-                    {current.passage}
-                  </p>
-                </div>
-              )}
+	                  <div className="flex rounded-full bg-white p-1 shadow-[0_10px_28px_rgba(66,56,120,0.08)]">
+	                    {(["Small", "Normal", "Large"] as PassageTextSize[]).map((size) => (
+	                      <button
+	                        key={size}
+	                        type="button"
+	                        onClick={() => setPassageTextSize(size)}
+	                        className={`min-h-10 rounded-full px-4 text-sm font-black transition ${
+	                          passageTextSize === size
+	                            ? "bg-primary text-white shadow-[0_10px_24px_rgba(10,36,84,0.18)]"
+	                            : "text-primary/55 hover:bg-[#f6f1ff] hover:text-primary"
+	                        }`}
+	                      >
+	                        {size === "Small" ? "A-" : size === "Normal" ? "A" : "A+"}
+	                      </button>
+	                    ))}
+	                  </div>
+	                </div>
+	              )}
+
+	              {current?.passage && (
+	                <div className="mb-7 max-h-[45vh] overflow-y-auto rounded-[1.5rem] bg-[#fbfaff] p-4 sm:rounded-[2rem] sm:p-5">
+	                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+	                    Passage
+	                  </p>
+
+	                  <p className={`whitespace-pre-line text-primary/70 ${textSizeClasses.passage}`}>
+	                    {current.passage}
+	                  </p>
+	                </div>
+	              )}
 
               <div className="mb-5 flex flex-wrap gap-2 text-xs">
                 {[
@@ -849,9 +1134,9 @@ const Practice = () => {
                 )}
               </div>
 
-              <p className="mb-6 text-lg font-black leading-8 text-primary sm:text-xl">
-                {localizedField(current, "question", selectedPromptLanguage) || current.question_text}
-              </p>
+	              <p className={`mb-6 font-black text-primary ${textSizeClasses.question}`}>
+	                {currentQuestionText}
+	              </p>
 
               <div className="space-y-3">
                 {[
@@ -897,7 +1182,11 @@ const Practice = () => {
                         type="button"
                         key={i}
                         whileTap={{ scale: 0.99 }}
-                        onClick={() => !showFeedback && setSelected(opt)}
+                        onClick={() => {
+                          if (showFeedback) return;
+                          setSelected(opt);
+                          setQuestionNotice("");
+                        }}
                         className={buttonClass}
                       >
                         <span className="mr-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white font-black text-[#8d73ff]">
@@ -912,6 +1201,12 @@ const Practice = () => {
             </div>
           </motion.section>
         </AnimatePresence>
+
+        {questionNotice && (
+          <div className="rounded-2xl border border-[#eee8ff] bg-white px-5 py-4 text-sm font-bold leading-6 text-primary/65 shadow-[0_12px_35px_rgba(66,56,120,0.07)]">
+            {questionNotice}
+          </div>
+        )}
 
         {/* FEEDBACK */}
         <AnimatePresence>
@@ -1044,23 +1339,35 @@ const SelectInput = ({
   onChange: (v: string) => void;
   options: string[];
 }) => {
+  const safeOptions = options.filter(Boolean);
+
   return (
     <div>
       <label className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-primary/45">
         {label}
       </label>
 
-      <select
-        className="h-14 w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-5 text-base outline-none transition focus:border-[#8d73ff] focus:ring-4 focus:ring-[#8d73ff]/10"
+      <Select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onValueChange={onChange}
+        disabled={safeOptions.length === 0}
       >
-        {options.map((item) => (
-          <option key={item} value={item}>
-            {item}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className="h-14 rounded-2xl border-primary/10 bg-[#fbfaff] px-5 text-base font-bold text-primary shadow-none transition focus:ring-4 focus:ring-[#8d73ff]/10">
+          <SelectValue placeholder={`Select ${label}`} />
+        </SelectTrigger>
+
+        <SelectContent className="z-[10000] rounded-2xl border-primary/10 bg-white p-2 shadow-[0_22px_70px_rgba(66,56,120,0.16)]">
+          {safeOptions.map((item) => (
+            <SelectItem
+              key={item}
+              value={item}
+              className="rounded-xl py-3 pl-9 pr-3 text-sm font-semibold text-primary focus:bg-[#f6f1ff] focus:text-primary"
+            >
+              {item}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 };
