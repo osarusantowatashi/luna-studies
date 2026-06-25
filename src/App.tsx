@@ -1,6 +1,5 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-
 import Landing from "./pages/public/Landing";
 import Services from "./pages/public/Services";
 import AcademicSupport from "./pages/public/AcademicSupport";
@@ -58,6 +57,8 @@ const MemoryFlip = lazy(() => import("./pages/student/games/MemoryFlip"));
 const WordSearch = lazy(() => import("./pages/student/games/WordSearch"));
 const LetterMatch = lazy(() => import("./pages/student/games/LetterMatch"));
 const Mistakes = lazy(() => import("./pages/student/Mistakes"));
+const FlashcardGame = lazy(() => import("./pages/student/games/FlashcardGame"));
+const SavedFlashcardDecks = lazy(() => import("./pages/student/games/SavedFlashcardDecks"));
 
 const Page = lazy(() => import("./pages/shared/Page"));
 const NotFound = lazy(() => import("./pages/shared/NotFound"));
@@ -271,10 +272,19 @@ const App = () => {
           <Route path="/student/lessons" element={<StudentPage><StudentLessons /></StudentPage>} />
           <Route path="/practice" element={<StudentPage><Practice /></StudentPage>} />
           <Route path="/games" element={<StudentPage><GamesArcade /></StudentPage>} />
-
+          <Route path="/flashcards" element={<StudentPage><FlashcardGame /></StudentPage>} />
+          <Route path="/flashcard-decks" element={<SavedFlashcardDecks />} />
 
           <Route
             path="/memory-flip"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "student"]}>
+                <MemoryFlip />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/flashcard-decks"
             element={
               <ProtectedRoute allowedRoles={["admin", "student"]}>
                 <MemoryFlip />
@@ -290,7 +300,14 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
+ <Route
+            path="/flashcards"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "student"]}>
+                <FlashcardGame />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/word-match" element={<Navigate to="/letter-match" replace />} />
 
           <Route
