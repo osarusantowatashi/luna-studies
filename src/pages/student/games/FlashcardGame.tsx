@@ -355,6 +355,11 @@ setWrongCards((prev) => {
           </Button>
         </section>
 
+        {cards.length > 0 && (
+  <div className="mt-5 rounded-[1.5rem] bg-[#f6f1ff] p-4">
+    <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+      Save Deck
+    </p>
 
     <div className="mt-3 flex flex-col gap-3 sm:flex-row">
       <input
