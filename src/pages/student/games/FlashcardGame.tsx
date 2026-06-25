@@ -164,8 +164,13 @@ useEffect(() => {
     if (!currentCard) return;
 
     if (type === "forgot" || type === "unsure") {
-      setWrongCards((prev) => [...prev, currentCard]);
-    }
+setWrongCards((prev) => {
+  const alreadyExists = prev.some((card) => card.word === currentCard.word);
+
+  if (alreadyExists) return prev;
+
+  return [...prev, currentCard];
+});    }
 
     nextCard();
   };
@@ -176,8 +181,16 @@ useEffect(() => {
     setShowQuizResult(true);
 
     if (selectedAnswer !== currentCard.answer) {
-      setWrongCards((prev) => [...prev, currentCard]);
-    }
+  setWrongCards((prev) => {
+    const alreadyExists = prev.some(
+      (card) => card.word === currentCard.word
+    );
+
+    if (alreadyExists) return prev;
+
+    return [...prev, currentCard];
+  });
+}
   };
 
   const saveDeck = async () => {
@@ -342,11 +355,6 @@ useEffect(() => {
           </Button>
         </section>
 
-        {cards.length > 0 && (
-  <div className="mt-5 rounded-[1.5rem] bg-[#f6f1ff] p-4">
-    <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
-      Save Deck
-    </p>
 
     <div className="mt-3 flex flex-col gap-3 sm:flex-row">
       <input
