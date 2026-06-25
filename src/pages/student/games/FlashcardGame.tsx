@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 import {
   ArrowRight,
   Brain,
@@ -51,6 +52,9 @@ export default function FlashcardGame() {
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [showQuizResult, setShowQuizResult] = useState(false);
 
+  const [deckName, setDeckName] = useState("");
+const [saving, setSaving] = useState(false);
+const [saveMsg, setSaveMsg] = useState("");
   const words = useMemo(
     () =>
       wordsText
@@ -141,6 +145,50 @@ export default function FlashcardGame() {
       setWrongCards((prev) => [...prev, currentCard]);
     }
   };
+
+  const saveDeck = async () => {
+  if (!deckName.trim()) {
+    setErrorMsg("Please name your deck before saving.");
+    return;
+  }
+
+  if (cards.length === 0) {
+    setErrorMsg("Please generate flashcards first.");
+    return;
+  }
+
+  setSaving(true);
+  setErrorMsg("");
+  setSaveMsg("");
+
+  try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      throw new Error("Please log in before saving your deck.");
+    }
+
+    const { error } = await supabase.from("flashcard_decks").insert({
+      user_id: user.id,
+      deck_name: deckName.trim(),
+      word_language: wordLanguage,
+      helper_language: helperLanguage,
+      difficulty,
+      cards,
+    });
+
+    if (error) throw error;
+
+    setSaveMsg("Deck saved successfully.");
+  } catch (err: any) {
+    setErrorMsg(err.message || "Failed to save deck.");
+  } finally {
+    setSaving(false);
+  }
+};
 
   const restartWrongCards = () => {
     if (wrongCards.length === 0) return;
@@ -259,6 +307,35 @@ export default function FlashcardGame() {
             {loading ? "Generating..." : "Generate Flashcards"}
           </Button>
         </section>
+
+        {cards.length > 0 && (
+  <div className="mt-5 rounded-[1.5rem] bg-[#f6f1ff] p-4">
+    <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+      Save Deck
+    </p>
+
+    <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+      <input
+        value={deckName}
+        onChange={(e) => setDeckName(e.target.value)}
+        placeholder="Name this deck, e.g. IELTS Week 1"
+        className="h-12 flex-1 rounded-2xl border border-[#eee8ff] bg-white px-4 font-bold text-primary outline-none"
+      />
+
+      <Button
+        onClick={saveDeck}
+        disabled={saving}
+        className="h-12 rounded-2xl bg-primary px-6 font-black text-white hover:bg-[#123A70]"
+      >
+        {saving ? "Saving..." : "Save Deck"}
+      </Button>
+    </div>
+
+    {saveMsg && (
+      <p className="mt-3 text-sm font-bold text-green-700">{saveMsg}</p>
+    )}
+  </div>
+)}
 
         {/* GAME */}
         {cards.length > 0 && currentCard && (
