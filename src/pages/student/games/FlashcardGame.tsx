@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
@@ -11,6 +11,7 @@ import {
   Wand2,
   XCircle,
 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -37,6 +38,8 @@ const languageOptions = [
 const difficultyOptions = ["Easy", "Medium", "Hard", "Advanced"];
 
 export default function FlashcardGame() {
+  const [searchParams] = useSearchParams();
+const deckId = searchParams.get("deck");
   const [wordsText, setWordsText] = useState("");
   const [wordLanguage, setWordLanguage] = useState("English");
   const [helperLanguage, setHelperLanguage] = useState("Chinese");
@@ -55,6 +58,37 @@ export default function FlashcardGame() {
   const [deckName, setDeckName] = useState("");
 const [saving, setSaving] = useState(false);
 const [saveMsg, setSaveMsg] = useState("");
+
+useEffect(() => {
+  if (!deckId) return;
+
+  const loadDeck = async () => {
+    const { data, error } = await supabase
+      .from("flashcard_decks")
+      .select("*")
+      .eq("id", deckId)
+      .single();
+
+    if (error) {
+      setErrorMsg(error.message);
+      return;
+    }
+
+    setCards(data.cards || []);
+    setDeckName(data.deck_name || "");
+    setWordLanguage(data.word_language || "English");
+    setHelperLanguage(data.helper_language || "Chinese");
+    setDifficulty(data.difficulty || "Easy");
+
+    setCurrentIndex(0);
+    setFlipped(false);
+    setWrongCards([]);
+    setSelectedAnswer("");
+    setShowQuizResult(false);
+  };
+
+  loadDeck();
+}, [deckId]);
   const words = useMemo(
     () =>
       wordsText
