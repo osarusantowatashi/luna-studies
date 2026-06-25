@@ -3,8 +3,7 @@ import type { ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Image, Languages, Sparkles } from "lucide-react";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { apiUrl } from "@/lib/api";
 
 const grades = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
 const languageOptions = [
@@ -90,7 +89,7 @@ export default function SharedVocabularyGenerator() {
         pageSize: "50",
       });
 
-      const res = await fetch(`${API_URL}/api/admin/game-vocabulary/items?${params}`, {
+      const res = await fetch(apiUrl(`/api/admin/game-vocabulary/items?${params}`), {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -124,7 +123,7 @@ export default function SharedVocabularyGenerator() {
     try {
       const token = await getToken();
 
-      const res = await fetch(`${API_URL}/api/admin/game-vocabulary/generate`, {
+      const res = await fetch(apiUrl("/api/admin/game-vocabulary/generate"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -171,7 +170,7 @@ export default function SharedVocabularyGenerator() {
 
     try {
       const token = await getToken();
-      const res = await fetch(`${API_URL}/api/admin/game-vocabulary/items/${itemId}`, {
+      const res = await fetch(apiUrl(`/api/admin/game-vocabulary/items/${itemId}`), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

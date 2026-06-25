@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { apiUrl } from "@/lib/api";
 
 const TARGET_LANGUAGES = ["English", "Japanese", "Chinese"] as const;
 const PROMPT_LANGUAGES = ["English", "Chinese", "Japanese"] as const;
@@ -224,7 +225,7 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
 
     try {
       const token = await getAdminToken();
-      const res = await fetch("http://localhost:3001/api/admin/questions/legacy-english-migration/preview", {
+      const res = await fetch(apiUrl("/api/admin/questions/legacy-english-migration/preview"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -253,7 +254,7 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
 
     try {
       const token = await getAdminToken();
-      const res = await fetch("http://localhost:3001/api/admin/questions/legacy-english-migration/apply", {
+      const res = await fetch(apiUrl("/api/admin/questions/legacy-english-migration/apply"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

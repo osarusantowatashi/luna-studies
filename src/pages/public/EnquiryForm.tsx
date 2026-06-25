@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { apiUrl } from "@/lib/api";
 
 import { motion } from "framer-motion";
 import {
@@ -101,10 +102,8 @@ const EnquiryForm = ({ subject }: { subject?: string }) => {
         return;
       }
 
-      const API_URL = import.meta.env.VITE_API_URL;
-
       try {
-        await fetch(`${API_URL}/api/send-admin-enquiry-email`, {
+        await fetch(apiUrl("/api/send-admin-enquiry-email"), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

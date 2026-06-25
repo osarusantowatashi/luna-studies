@@ -3,9 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Send } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { apiUrl } from "@/lib/api";
 
 let hasWarmedUpLunaChat = false;
 let lunaChatWarmupPromise: Promise<void> | null = null;
@@ -14,7 +12,7 @@ const warmUpLunaChat = () => {
   if (hasWarmedUpLunaChat) return Promise.resolve();
   if (lunaChatWarmupPromise) return lunaChatWarmupPromise;
 
-  lunaChatWarmupPromise = fetch(`${API_URL}/api/luna-chat/warmup`, {
+  lunaChatWarmupPromise = fetch(apiUrl("/api/luna-chat/warmup"), {
     method: "GET",
     cache: "no-store",
     keepalive: true,
@@ -180,7 +178,7 @@ const LunaMascotChat = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/luna-chat`, {
+      const res = await fetch(apiUrl("/api/luna-chat"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +223,7 @@ const LunaMascotChat = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/luna-chat`, {
+      const res = await fetch(apiUrl("/api/luna-chat"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -267,7 +265,7 @@ const LunaMascotChat = () => {
     setLeadSubmitting(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/send-admin-enquiry-email`, {
+      const res = await fetch(apiUrl("/api/send-admin-enquiry-email"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

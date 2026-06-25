@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { apiUrl } from "@/lib/api";
 import { ENGLISH_PATHWAY_KEYS, getEnglishPathway } from "@/lib/englishPathways";
 
 const GRADES = [
@@ -176,7 +177,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
         throw new Error("You must be logged in to generate questions.");
       }
 
-      const res = await fetch("http://localhost:3001/api/generate-questions", {
+      const res = await fetch(apiUrl("/api/generate-questions"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

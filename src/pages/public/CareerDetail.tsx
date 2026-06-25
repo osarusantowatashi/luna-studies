@@ -7,6 +7,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { apiUrl } from "@/lib/api";
 import {
     ArrowRight,
     Briefcase,
@@ -25,9 +26,6 @@ const CareerDetail = () => {
         returnObjects: true,
     }) as Record<string, string>;
 
-
-    const API_URL =
-        import.meta.env.VITE_API_URL || "https://luna-studies-api.onrender.com";
 
     const { slug } = useParams();
 
@@ -210,7 +208,7 @@ const CareerDetail = () => {
         try {
             const resumePath = await uploadFile(resumeFile, "resume");
             const coverPath = coverFile ? await uploadFile(coverFile, "cover") : null;
-            const emailRes = await fetch(`${API_URL}/api/submit-career-application`, {
+            const emailRes = await fetch(apiUrl("/api/submit-career-application"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

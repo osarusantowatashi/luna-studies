@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { apiUrl } from "@/lib/api";
 
 const statusLabel: Record<string, string> = {
   needs_review: "Needs Review",
@@ -49,7 +48,7 @@ export default function MemoryFlipManager() {
         search: searchText.trim(),
       });
 
-      const res = await fetch(`${API_URL}/api/admin/vocab-images?${params.toString()}`, {
+      const res = await fetch(apiUrl(`/api/admin/vocab-images?${params.toString()}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -80,7 +79,7 @@ export default function MemoryFlipManager() {
     try {
       const token = await getToken();
 
-      const res = await fetch(`${API_URL}/api/admin/vocab-images/${id}/${type}`, {
+      const res = await fetch(apiUrl(`/api/admin/vocab-images/${id}/${type}`), {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -106,7 +105,7 @@ export default function MemoryFlipManager() {
     try {
       const token = await getToken();
 
-      const res = await fetch(`${API_URL}/api/admin/vocab-images/${id}/change-keyword`, {
+      const res = await fetch(apiUrl(`/api/admin/vocab-images/${id}/change-keyword`), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +138,7 @@ export default function MemoryFlipManager() {
       const token = await getToken();
 
       const res = await fetch(
-        `${API_URL}/api/admin/vocab-images/${type}`,
+        apiUrl(`/api/admin/vocab-images/${type}`),
         {
           method: "POST",
           headers: {

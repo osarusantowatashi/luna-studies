@@ -12,8 +12,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { apiUrl } from "@/lib/api";
 
 type Flashcard = {
   word: string;
@@ -114,7 +113,7 @@ useEffect(() => {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30000);
 
-      const res = await fetch(`${API_URL}/api/generate-flashcards`, {
+      const res = await fetch(apiUrl("/api/generate-flashcards"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
