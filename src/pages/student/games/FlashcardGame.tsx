@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
+  ArrowRight,
   Brain,
   CheckCircle2,
   RotateCcw,
@@ -71,6 +73,9 @@ export default function FlashcardGame() {
     setErrorMsg("");
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+
       const res = await fetch(`${API_URL}/api/generate-flashcards`, {
         method: "POST",
         headers: {
@@ -82,7 +87,10 @@ export default function FlashcardGame() {
           helperLanguage,
           difficulty,
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeout);
 
       const data = await res.json();
 
@@ -97,18 +105,18 @@ export default function FlashcardGame() {
       setSelectedAnswer("");
       setShowQuizResult(false);
     } catch (err: any) {
-      setErrorMsg(err.message || "Failed to generate flashcards.");
+      setErrorMsg(
+        err.name === "AbortError"
+          ? "Generation took too long. Please try fewer words."
+          : err.message || "Failed to generate flashcards."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const nextCard = () => {
-    setCurrentIndex((prev) => {
-      if (prev + 1 >= cards.length) return 0;
-      return prev + 1;
-    });
-
+    setCurrentIndex((prev) => (prev + 1 >= cards.length ? 0 : prev + 1));
     setFlipped(false);
     setSelectedAnswer("");
     setShowQuizResult(false);
@@ -146,37 +154,64 @@ export default function FlashcardGame() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-accent">
-            Luna Flashcards
-          </p>
+    <div className="min-h-screen overflow-hidden bg-white px-4 py-6 sm:px-6 sm:py-14">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,#f0eaff_0%,transparent_28%),radial-gradient(circle_at_85%_75%,#fff1bd_0%,transparent_30%)]" />
 
-          <h1 className="mt-2 font-serif text-3xl text-primary sm:text-4xl">
-            AI Vocabulary Practice
-          </h1>
+      <div className="relative z-10 mx-auto max-w-[1180px] space-y-8">
+        {/* HERO */}
+        <section className="relative overflow-hidden rounded-[2rem] border border-[#eee8ff] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[3rem] sm:p-8">
+          <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#f0eaff]" />
+          <div className="absolute bottom-[-80px] left-[-80px] h-56 w-56 rounded-full bg-[#fff1bd]/70" />
 
-          <p className="mt-3 max-w-2xl text-muted-foreground">
-            Paste your own word list, choose a helper language, and let Luna create
-            smart flashcards with meanings, examples, memory hints, and mini quizzes.
-          </p>
-        </div>
+          <div className="relative z-10">
+            <p className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.25em] text-[#8d73ff]">
+              <Sparkles className="h-5 w-5" />
+              Luna Flashcards
+            </p>
+
+            <h1 className="mt-4 font-poppins text-[2.35rem] font-black leading-[1.04] tracking-[-0.025em] text-primary min-[390px]:text-[2.7rem] sm:text-[4rem] sm:leading-[0.95] lg:text-[4.6rem]">
+              Paste.
+              <br />
+              Flip.
+              <br />
+              Remember.
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg">
+              Create smart bilingual flashcards from your own word list, then
+              practise with flip cards, memory hints, and mini quizzes.
+            </p>
+          </div>
+        </section>
 
         {errorMsg && (
-          <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-700">
+          <div className="rounded-[1.6rem] border border-red-200 bg-red-50 p-5 font-bold text-red-700 shadow-[0_18px_55px_rgba(66,56,120,0.08)]">
             {errorMsg}
           </div>
         )}
 
-        <div className="rounded-[1.6rem] border bg-card p-5 shadow-soft sm:rounded-[2rem] sm:p-6">
-          <h2 className="text-xl font-bold text-primary">Create Flashcards</h2>
+        {/* CREATE */}
+        <section className="rounded-[2rem] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.8rem] sm:p-8">
+          <div className="mb-6">
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+              Create deck
+            </p>
 
-          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <h2 className="mt-3 font-poppins text-3xl font-black text-primary">
+              Turn any word list into practice.
+            </h2>
+
+            <p className="mt-3 text-sm leading-7 text-primary/55">
+              Choose the word language and helper language, then Luna will
+              generate meanings, examples, hints, and quiz questions.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
             <select
               value={wordLanguage}
               onChange={(e) => setWordLanguage(e.target.value)}
-              className="min-h-11 rounded-2xl border bg-white px-4 py-3"
+              className="min-h-12 rounded-2xl border border-[#eee8ff] bg-white px-4 py-3 font-bold text-primary outline-none"
             >
               {languageOptions.map((lang) => (
                 <option key={lang}>{lang}</option>
@@ -186,7 +221,7 @@ export default function FlashcardGame() {
             <select
               value={helperLanguage}
               onChange={(e) => setHelperLanguage(e.target.value)}
-              className="min-h-11 rounded-2xl border bg-white px-4 py-3"
+              className="min-h-12 rounded-2xl border border-[#eee8ff] bg-white px-4 py-3 font-bold text-primary outline-none"
             >
               {languageOptions.map((lang) => (
                 <option key={lang}>{lang}</option>
@@ -196,7 +231,7 @@ export default function FlashcardGame() {
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
-              className="min-h-11 rounded-2xl border bg-white px-4 py-3"
+              className="min-h-12 rounded-2xl border border-[#eee8ff] bg-white px-4 py-3 font-bold text-primary outline-none"
             >
               {difficultyOptions.map((level) => (
                 <option key={level}>{level}</option>
@@ -208,72 +243,87 @@ export default function FlashcardGame() {
             value={wordsText}
             onChange={(e) => setWordsText(e.target.value)}
             placeholder={"Enter words here...\nsincere\nenormous\nborrow"}
-            className="mt-4 min-h-40 w-full rounded-2xl border bg-white px-4 py-3 text-sm font-semibold text-primary outline-none"
+            className="mt-5 min-h-44 w-full rounded-[1.5rem] border border-[#eee8ff] bg-white px-5 py-4 text-base font-bold leading-8 text-primary outline-none transition focus:border-[#8d73ff]"
           />
 
-          <div className="mt-4 rounded-2xl bg-secondary/60 px-4 py-3 text-sm font-bold text-primary">
+          <div className="mt-5 rounded-2xl bg-[#f6f1ff] px-5 py-4 text-sm font-black text-primary">
             {words.length} words detected
           </div>
 
           <Button
             onClick={generateFlashcards}
             disabled={loading}
-            className="mt-5 h-12 w-full rounded-2xl"
+            className="mt-5 h-14 w-full rounded-2xl bg-primary text-sm font-black text-white hover:bg-[#123A70]"
           >
-            <Wand2 className="mr-2 h-4 w-4" />
+            <Wand2 className="mr-2 h-5 w-5" />
             {loading ? "Generating..." : "Generate Flashcards"}
           </Button>
-        </div>
+        </section>
 
+        {/* GAME */}
         {cards.length > 0 && currentCard && (
-          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-[2rem] border bg-card p-6 shadow-soft">
-              <div className="flex items-center justify-between">
+          <section className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+            {/* CARD */}
+            <motion.div
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-[2rem] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.8rem] sm:p-8"
+            >
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-bold uppercase tracking-widest text-accent">
+                  <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
                     Card {currentIndex + 1} / {cards.length}
                   </p>
-                  <h2 className="mt-2 text-xl font-bold text-primary">
-                    Tap to flip
+
+                  <h2 className="mt-3 font-poppins text-3xl font-black text-primary">
+                    Tap the card to flip.
                   </h2>
                 </div>
 
-                <div className="rounded-2xl bg-secondary px-4 py-2 text-sm font-bold text-primary">
-                  Review: {wrongCards.length}
+                <div className="rounded-full bg-[#fff1bd] px-4 py-2 text-sm font-black text-primary">
+                  Review {wrongCards.length}
                 </div>
               </div>
 
-              <button
+              <motion.button
                 onClick={() => setFlipped((prev) => !prev)}
-                className="mt-6 min-h-[320px] w-full rounded-[2rem] border bg-white p-8 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-soft"
+                whileHover={{ y: -8, rotate: currentIndex % 2 === 0 ? -1 : 1 }}
+                className="group mt-7 min-h-[360px] w-full overflow-hidden rounded-[2rem] bg-white text-left shadow-[0_18px_55px_rgba(66,56,120,0.10)] transition"
               >
                 {!flipped ? (
-                  <div className="flex min-h-[260px] flex-col items-center justify-center text-center">
-                    <Brain className="mb-5 h-12 w-12 text-accent" />
-                    <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="relative flex min-h-[360px] flex-col items-center justify-center overflow-hidden bg-[#f6f1ff] p-8 text-center">
+                    <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#fff1bd]" />
+                    <div className="absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-[#f0eaff]" />
+
+                    <Brain className="relative z-10 mb-5 h-14 w-14 text-[#8d73ff]" />
+
+                    <p className="relative z-10 text-sm font-black uppercase tracking-[0.25em] text-primary/45">
                       Word
                     </p>
-                    <h3 className="mt-4 text-5xl font-bold text-primary">
+
+                    <h3 className="relative z-10 mt-5 font-poppins text-5xl font-black text-primary sm:text-6xl">
                       {currentCard.word}
                     </h3>
-                    <p className="mt-6 text-muted-foreground">
-                      Click the card to reveal the answer.
+
+                    <p className="relative z-10 mt-8 text-sm font-bold text-primary/55">
+                      Click to reveal the meaning.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-5">
+                  <div className="min-h-[360px] space-y-5 bg-white p-7">
                     <div>
-                      <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
                         Meaning
                       </p>
-                      <h3 className="mt-2 text-3xl font-bold text-primary">
+
+                      <h3 className="mt-3 font-poppins text-4xl font-black text-primary">
                         {currentCard.meaning}
                       </h3>
                     </div>
 
                     {currentCard.pronunciation && (
-                      <div className="rounded-2xl bg-secondary p-4">
-                        <p className="text-sm font-bold text-muted-foreground">
+                      <div className="rounded-2xl bg-[#f6f1ff] p-4">
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-primary/45">
                           Pronunciation
                         </p>
                         <p className="mt-1 font-bold text-primary">
@@ -283,34 +333,34 @@ export default function FlashcardGame() {
                     )}
 
                     {currentCard.example && (
-                      <div className="rounded-2xl bg-secondary p-4">
-                        <p className="text-sm font-bold text-muted-foreground">
+                      <div className="rounded-2xl bg-[#fff1bd]/60 p-4">
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-primary/45">
                           Example
                         </p>
-                        <p className="mt-1 text-primary">
+                        <p className="mt-1 leading-7 text-primary">
                           {currentCard.example}
                         </p>
                       </div>
                     )}
 
                     {currentCard.memoryHint && (
-                      <div className="rounded-2xl border bg-[#FFFDF6] p-4">
-                        <p className="text-sm font-bold text-muted-foreground">
+                      <div className="rounded-2xl border border-[#eee8ff] bg-white p-4">
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-primary/45">
                           Memory Hint
                         </p>
-                        <p className="mt-1 text-primary">
+                        <p className="mt-1 leading-7 text-primary">
                           {currentCard.memoryHint}
                         </p>
                       </div>
                     )}
                   </div>
                 )}
-              </button>
+              </motion.button>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
                 <Button
                   onClick={() => markCard("know")}
-                  className="h-12 rounded-2xl bg-[#082A55]"
+                  className="h-13 rounded-2xl bg-primary font-black text-white hover:bg-[#123A70]"
                 >
                   <CheckCircle2 className="mr-2 h-4 w-4" />
                   I know it
@@ -319,7 +369,7 @@ export default function FlashcardGame() {
                 <Button
                   variant="outline"
                   onClick={() => markCard("unsure")}
-                  className="h-12 rounded-2xl bg-white"
+                  className="h-13 rounded-2xl border-[#eee8ff] bg-white font-black text-primary"
                 >
                   Not sure
                 </Button>
@@ -327,22 +377,27 @@ export default function FlashcardGame() {
                 <Button
                   variant="destructive"
                   onClick={() => markCard("forgot")}
-                  className="h-12 rounded-2xl"
+                  className="h-13 rounded-2xl font-black"
                 >
                   <XCircle className="mr-2 h-4 w-4" />
                   I forgot
                 </Button>
               </div>
-            </div>
+            </motion.div>
 
+            {/* SIDE PANEL */}
             <div className="space-y-6">
               {isQuizTurn && (
-                <div className="rounded-[2rem] border bg-card p-6 shadow-soft">
-                  <p className="text-sm font-bold uppercase tracking-widest text-accent">
+                <motion.div
+                  initial={{ opacity: 0, y: 28 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-[2rem] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.8rem] sm:p-6"
+                >
+                  <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
                     Mini Quiz
                   </p>
 
-                  <h2 className="mt-2 text-xl font-bold text-primary">
+                  <h2 className="mt-3 font-poppins text-2xl font-black text-primary">
                     {currentCard.quizQuestion}
                   </h2>
 
@@ -351,10 +406,10 @@ export default function FlashcardGame() {
                       <button
                         key={option}
                         onClick={() => setSelectedAnswer(option)}
-                        className={`w-full rounded-2xl border px-4 py-3 text-left font-semibold transition ${
+                        className={`w-full rounded-2xl px-4 py-3 text-left font-black transition ${
                           selectedAnswer === option
-                            ? "border-primary bg-secondary text-primary"
-                            : "bg-white text-muted-foreground hover:bg-secondary"
+                            ? "bg-[#8d73ff] text-white"
+                            : "bg-[#f6f1ff] text-primary hover:bg-[#eee8ff]"
                         }`}
                       >
                         {option}
@@ -365,17 +420,18 @@ export default function FlashcardGame() {
                   <Button
                     onClick={checkQuiz}
                     disabled={!selectedAnswer}
-                    className="mt-5 h-12 w-full rounded-2xl"
+                    className="mt-5 h-12 w-full rounded-2xl bg-primary font-black text-white hover:bg-[#123A70]"
                   >
                     Check Answer
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
 
                   {showQuizResult && (
                     <div
-                      className={`mt-4 rounded-2xl p-4 font-bold ${
+                      className={`mt-4 rounded-2xl p-4 font-black ${
                         selectedAnswer === currentCard.answer
-                          ? "bg-green-50 text-green-700"
-                          : "bg-red-50 text-red-700"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
                       }`}
                     >
                       {selectedAnswer === currentCard.answer
@@ -383,30 +439,34 @@ export default function FlashcardGame() {
                         : `Not quite. Correct answer: ${currentCard.answer}`}
                     </div>
                   )}
-                </div>
+                </motion.div>
               )}
 
-              <div className="rounded-[2rem] border bg-card p-6 shadow-soft">
-                <p className="text-sm font-bold uppercase tracking-widest text-accent">
+              <motion.div
+                initial={{ opacity: 0, y: 28 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-[2rem] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.8rem] sm:p-6"
+              >
+                <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8d73ff]">
                   Progress
                 </p>
 
-                <div className="mt-5 space-y-3">
-                  <div className="rounded-2xl bg-secondary p-4">
-                    <p className="text-sm text-muted-foreground">
+                <div className="mt-5 grid gap-3">
+                  <div className="rounded-2xl bg-[#f6f1ff] p-4">
+                    <p className="text-sm font-bold text-primary/50">
                       Current deck
                     </p>
-                    <p className="text-2xl font-bold text-primary">
-                      {cards.length} cards
+                    <p className="mt-1 font-poppins text-3xl font-black text-primary">
+                      {cards.length}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-secondary p-4">
-                    <p className="text-sm text-muted-foreground">
+                  <div className="rounded-2xl bg-[#fff1bd]/70 p-4">
+                    <p className="text-sm font-bold text-primary/50">
                       Need review
                     </p>
-                    <p className="text-2xl font-bold text-primary">
-                      {wrongCards.length} cards
+                    <p className="mt-1 font-poppins text-3xl font-black text-primary">
+                      {wrongCards.length}
                     </p>
                   </div>
                 </div>
@@ -415,25 +475,24 @@ export default function FlashcardGame() {
                   onClick={restartWrongCards}
                   disabled={wrongCards.length === 0}
                   variant="outline"
-                  className="mt-5 h-12 w-full rounded-2xl bg-white"
+                  className="mt-5 h-12 w-full rounded-2xl border-[#eee8ff] bg-white font-black text-primary"
                 >
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Review Wrong Cards
                 </Button>
 
-                <div className="mt-5 rounded-2xl bg-[#FFFDF6] p-4">
-                  <Sparkles className="mb-2 h-5 w-5 text-accent" />
-                  <p className="text-sm text-muted-foreground">
-                    Quiz appears every 5 cards. Words marked “Not sure” or “I
-                    forgot” will be saved for review.
+                <div className="mt-5 rounded-2xl bg-[#f6f1ff] p-4">
+                  <Sparkles className="mb-2 h-5 w-5 text-[#8d73ff]" />
+                  <p className="text-sm font-bold leading-6 text-primary/55">
+                    Mini quiz appears every 5 cards. Words marked “Not sure” or
+                    “I forgot” will be saved for review.
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </section>
         )}
       </div>
     </div>
   );
 }
-
