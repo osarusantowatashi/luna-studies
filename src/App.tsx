@@ -60,6 +60,8 @@ const WordSearch = lazy(() => import("./pages/student/games/WordSearch"));
 const LetterMatch = lazy(() => import("./pages/student/games/LetterMatch"));
 const Mistakes = lazy(() => import("./pages/student/Mistakes"));
 const FlashcardGame = lazy(() => import("./pages/student/games/FlashcardGame"));
+const SavedFlashcardDecks = lazy(() => import("./pages/student/games/SavedFlashcardDecks"));
+
 const Page = lazy(() => import("./pages/shared/Page"));
 const NotFound = lazy(() => import("./pages/shared/NotFound"));
 
@@ -269,7 +271,8 @@ const App = () => {
           <Route path="/practice" element={<StudentPage><Practice /></StudentPage>} />
           <Route path="/games" element={<StudentPage><GamesArcade /></StudentPage>} />
           <Route path="/flashcards" element={<StudentPage><FlashcardGame /></StudentPage>} />
-
+          <Route path="/flashcard-decks" element={<SavedFlashcardDecks />} />
+          
           <Route
             path="/memory-flip"
             element={
