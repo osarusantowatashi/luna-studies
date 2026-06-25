@@ -1388,33 +1388,6 @@ const getExampleFile = (examType, grade, skill) => {
   return "";
 };
 
-const passageRules = {
-  Vocabulary: {
-    short: "1–3 sentences (30–80 words)",
-    medium: "3–5 sentences (80–150 words)",
-    long: "5–8 sentences (150–250 words)",
-  },
-
-  "Main Idea": {
-    short: "4–6 sentences (120–200 words)",
-    medium: "6–10 sentences (200–350 words)",
-    long: "10–14 sentences (450–600 words)",
-  },
-
-  Inference: {
-    short: "4–6 sentences (120–200 words)",
-    medium: "6–10 sentences (200–350 words)",
-    long: "10–14 sentences (450–600 words)",
-  },
-
-  "Detail Questions": {
-    short: "3–6 sentences (100–200 words)",
-    medium: "6–10 sentences (200–350 words)",
-    long: "10–14 sentences (450–600 words)",
-  },
-
-};
-
 const examRules = {
   MAP: `
 - NWEA MAP Growth-aligned mock practice, not official copied material
@@ -1441,8 +1414,9 @@ const examRules = {
 - TOEFL-style mock practice, not official copied material
 - Academic English
 - Formal tone
-- Passage often informational (science, history, social studies)
-- Reading, listening-transcript, or writing-planning tasks only
+- Short TOEFL-aligned skill practice, not full test simulation
+- Reading, writing, vocabulary, and grammar micro-practice only
+- No listening audio, no listening transcripts, no speaking tasks
 - Distractors are subtle and tricky
 `,
 
@@ -1452,7 +1426,9 @@ const examRules = {
 - Real-world topics
 - Slightly formal but accessible
 - Focus on comprehension and reasoning
-- Reading, listening-transcript, or writing-planning tasks only
+- Short IELTS-aligned skill practice, not full test simulation
+- Reading, writing, vocabulary, and grammar micro-practice only
+- No listening audio, no listening transcripts, no speaking tasks
 `,
 
   WIDA: `
@@ -1461,7 +1437,8 @@ const examRules = {
 - Simplified instructions
 - Clear scaffolding
 - Emphasis on understanding rather than trickiness
-- Reading, listening, and writing domains only
+- Reading, writing, academic vocabulary, and grammar practice only
+- No listening or speaking tasks in Phase 1
 `,
 
   CAT4: `
@@ -1471,38 +1448,23 @@ const examRules = {
 - Abstract or pattern-based when possible
 `,
 };
-const getPassageLength = (skill, grade) => {
-  if (!structureRules[skill]?.needsPassage) return null;
-
-  if (["Grade 1", "Grade 2"].includes(grade)) {
-    return "100–200 words";
-  }
-
-  if (["Grade 3", "Grade 4"].includes(grade)) {
-    return "200-350 words";
-  }
-
-  if (["Grade 5", "Grade 6"].includes(grade)) {
-    return "400-600 words";
-  }
-
-  return "600-800 words"; // Grade 8+
-};
 const structureRules = {
   Reading: {
     needsPassage: true,
     format: `
-- Reading question with a passage.
+- Reading micro-practice with a concise passage.
 - Ask about meaning, reasoning, structure, detail, inference, or author's purpose based on the selected pathway.
+- Passage should normally be 40-120 words and must not exceed 180 words.
 `,
   },
 
   Vocabulary: {
-    needsPassage: true,
+    needsPassage: false,
     format: `
-- Vocabulary-in-context question. Passage must be at least 100 words
-- Passage should include the target word.
-- Question asks meaning in context or which word can replace the target word.
+- Vocabulary-in-context micro-practice.
+- Use one sentence of context inside the question when needed.
+- Question asks meaning in context, best replacement word, academic vocabulary usage, or precise word choice.
+- No separate passage.
 - Do NOT ask simple definition questions.
 `,
   },
@@ -1510,7 +1472,8 @@ const structureRules = {
   "Main Idea": {
     needsPassage: true,
     format: `
-- Passage must have a clear central idea. Passage must be at least 400 words
+- Short passage must have a clear central idea.
+- Passage should normally be 40-120 words and must not exceed 180 words.
 - Question asks for main idea, central message, or best summary.
 - Correct answer summarizes the whole passage.
 - Wrong answers are too specific, partially correct, or unrelated.
@@ -1520,7 +1483,8 @@ const structureRules = {
   Inference: {
     needsPassage: true,
     format: `
-- Passage must imply information without directly stating it. Passage must be at least 400 words
+- Short passage must imply information without directly stating it.
+- Passage should normally be 40-120 words and must not exceed 180 words.
 - Question asks what the reader can infer.
 - Correct answer must be supported by clues in the passage.
 - Wrong answers may sound possible but are not supported.
@@ -1530,7 +1494,8 @@ const structureRules = {
   "Detail Questions": {
     needsPassage: true,
     format: `
-- Passage must contain clear supporting details. Passage must be at least 400 words
+- Short passage must contain clear supporting details.
+- Passage should normally be 40-120 words and must not exceed 180 words.
 - Question asks about a specific detail from the passage.
 - Correct answer must be directly supported.
 - Wrong answers should be close but inaccurate.
@@ -1577,21 +1542,22 @@ const structureRules = {
     needsPassage: false,
     format: `
 - Automatically graded writing-preparation question.
-- Use planning, organization, thesis, topic sentence, transition, sentence improvement, or revision tasks.
+- Use essay planning, best thesis choice, weak argument identification, organization, topic sentence, transition, sentence improvement, or revision tasks.
 - Do not require a free-response essay as the answer.
 `,
   },
 
-  Listening: {
-    needsPassage: true,
+  "Academic Vocabulary": {
+    needsPassage: false,
     format: `
-- Listening-style question using a transcript as the passage.
-- The passage should be clearly labeled as a transcript or dialogue.
-- Ask about main idea, detail, speaker purpose, inference, or organization.
+- Academic vocabulary micro-practice.
+- Use one sentence of context inside the question when needed.
+- Test meaning, collocation, word family, register, or precise usage.
+- No separate passage.
 `,
   },
 
-  Verbal: {
+  "Verbal Reasoning": {
     needsPassage: false,
     format: `
 - CAT4 verbal battery style.
@@ -1599,7 +1565,7 @@ const structureRules = {
 `,
   },
 
-  Quantitative: {
+  "Quantitative Reasoning": {
     needsPassage: false,
     format: `
 - CAT4 quantitative battery style.
@@ -1607,7 +1573,7 @@ const structureRules = {
 `,
   },
 
-  "Non-verbal": {
+  "Non-verbal Reasoning": {
     needsPassage: false,
     format: `
 - CAT4 non-verbal battery style.
@@ -1615,7 +1581,7 @@ const structureRules = {
 `,
   },
 
-  Spatial: {
+  "Spatial Reasoning": {
     needsPassage: false,
     format: `
 - CAT4 spatial battery style.
@@ -1634,7 +1600,8 @@ const structureRules = {
   "Reading Comprehension": {
     needsPassage: true,
     format: `
-- Reading comprehension question with a passage.
+- Reading comprehension micro-practice with a concise passage.
+- Passage should normally be 40-120 words and must not exceed 180 words.
 - Test main idea, detail, inference, vocabulary in context, tone, or organization.
 `,
   },
@@ -1663,7 +1630,7 @@ const gradeRules = {
   "Grade 2": "- Simple vocabulary. Short sentences. Direct questions.",
   "Grade 3": "- Simple school-level vocabulary. Some reasoning allowed.",
   "Grade 4": "- Moderate vocabulary. Clear but slightly longer sentences.",
-  "Grade 5": "- Grade-level vocabulary. Passage can be 120–250 words if needed.",
+  "Grade 5": "- Grade-level vocabulary. Use concise passages only when needed.",
   "Grade 6": "- Upper primary level. More reasoning and stronger distractors.",
   "Grade 7": "- Middle school level. More nuanced vocabulary and reasoning.",
   "Grade 8": "- Middle school advanced. Longer passages and closer distractors.",
@@ -1822,15 +1789,16 @@ const normalizeLegacySkill = (question = {}, pathway = "") => {
 
   if (pathway === "WIDA") {
     if (source.includes("writing")) return "Writing";
-    if (source.includes("listening")) return "Listening";
+    if (source.includes("academic") || source.includes("vocab")) return "Academic Vocabulary";
+    if (source.includes("grammar")) return "Grammar";
     return "Reading";
   }
 
   if (pathway === "CAT4") {
-    if (source.includes("quant")) return "Quantitative";
-    if (source.includes("non")) return "Non-verbal";
-    if (source.includes("spatial")) return "Spatial";
-    return "Verbal";
+    if (source.includes("quant")) return "Quantitative Reasoning";
+    if (source.includes("non")) return "Non-verbal Reasoning";
+    if (source.includes("spatial")) return "Spatial Reasoning";
+    return "Verbal Reasoning";
   }
 
   if (pathway === "AEIS" || pathway === "O-Level English") {
@@ -1843,8 +1811,9 @@ const normalizeLegacySkill = (question = {}, pathway = "") => {
   }
 
   if (pathway === "TOEFL" || pathway === "IELTS") {
-    if (source.includes("listening")) return "Listening";
     if (source.includes("writing")) return "Writing";
+    if (source.includes("vocab")) return "Vocabulary";
+    if (source.includes("grammar")) return "Grammar";
     return "Reading";
   }
 
@@ -2023,11 +1992,11 @@ Allowed pathways and levels:
 - IELTS: 4.0-5.0, 5.5-6.0, 6.5-7.0, 7.5+
 
 Allowed skills:
-- MAP: Reading, Vocabulary, Language Usage, Literature, Informational Text
-- WIDA: Reading, Writing, Listening
-- CAT4: Verbal, Quantitative, Non-verbal, Spatial
+- MAP: Reading, Vocabulary, Language Usage
+- WIDA: Reading, Writing, Academic Vocabulary, Grammar
+- CAT4: Verbal Reasoning, Non-verbal Reasoning, Quantitative Reasoning, Spatial Reasoning
 - AEIS/O-Level English: Grammar, Vocabulary, Cloze, Reading Comprehension, Sentence Transformation, Composition Planning
-- TOEFL/IELTS: Reading, Listening, Writing
+- TOEFL/IELTS: Reading, Writing, Vocabulary, Grammar
 
 Rules:
 - Do NOT rewrite or regenerate questions.
@@ -4098,52 +4067,14 @@ app.post("/api/generate-questions", requireAdmin, async (req, res) => {
     };
 
 
-    let passageLength = "No passage needed.";
-
-    if (
-      skill === "Main Idea" ||
-      skill === "Inference" ||
-      skill === "Detail Questions"
-    ) {
-      if (difficulty === "Easy") {
-        passageLength = "Passage must be 200-380 words.";
-      }
-
-      else if (difficulty === "Medium") {
-        passageLength = "Passage must be 300-400 words.";
-      }
-
-      else if (difficulty === "Hard") {
-        passageLength = "Passage must be 550-700 words.";
-      }
-
-      else if (difficulty === "Advanced") {
-        passageLength = "Passage must be 600-800 words.";
-      }
-    }
-
-    if (skill === "Vocabulary") {
-      if (difficulty === "Easy") {
-        passageLength = "Passage must be 40-80 words.";
-      }
-
-      else if (difficulty === "Medium") {
-        passageLength = "Passage must be 80-120 words.";
-      }
-
-      else if (difficulty === "Hard") {
-        passageLength = "Passage must be 150-250 words.";
-      }
-
-      else if (difficulty === "Advanced") {
-        passageLength = "Passage must be 250-400 words.";
-      }
-    }
+    const shortPassageRule = selectedStructure.needsPassage
+      ? "Use a concise passage of 40-120 words when possible. The absolute maximum is 180 words."
+      : "No separate passage needed.";
 
 
 
     const prompt = `
-You are a professional exam question writer.
+You are a professional education content writer for concise exam-aligned skill practice.
 
 
 SELECTED SETTINGS:
@@ -4164,19 +4095,21 @@ ${targetLanguageFocusRules[targetLanguage] || targetLanguageFocusRules.English}
 - question_en, question_zh, and question_ja must ask the SAME question.
 - option_a/b/c/d en/zh/ja fields must represent the SAME answer choices across prompt languages.
 - explanation_en, explanation_zh, and explanation_ja must explain the SAME reasoning.
-- For reading skills, the passage should normally be in ${targetLanguage}; do not create three separate passages unless the skill specifically requires translation.
+- For reading skills, the passage should normally be in ${targetLanguage}; keep it short and focused.
 - Do not reduce the task to simple word-pair translation unless Skill = Vocabulary and that is appropriate for the selected grade.
 - Do not silently switch the target language. A ${targetLanguage} question must remain a ${targetLanguage} learning question.
-- If the selected pathway is TOEFL, IELTS, or WIDA, do not generate Speaking tasks. This bank is for automatically graded Reading, Listening transcript, and Writing preparation only.
+- Do not generate Listening tasks, audio scripts, listening transcripts, or Speaking tasks.
 - Generate realistic mock questions aligned with the selected pathway. Do not copy or reproduce official copyrighted exam questions.
+- This is daily skill practice, not a full exam simulation.
 
 STYLE EXAMPLES FROM FILE:
 ${examples || "No example file found. Use realistic exam style."}
 
 PASSAGE LENGTH RULES:
 ${structureRules[skill]?.needsPassage ? `
-- Passage MUST follow this length: ${passageLength}
-- Do NOT generate passages shorter or longer than this range
+- ${shortPassageRule}
+- Reading passages should usually be one short paragraph.
+- Never create full-test passages or long official-style reading sections.
 ` : `
 - No passage allowed. "passage" must be null
 `}
@@ -4217,16 +4150,16 @@ Before returning:
 - Check if output matches skill
 - Check if structure matches Needs passage
 - If not → fix it before returning
-- count the number of words in each passage. if it is below the required range, expand it! DO NOT return short passages
+- If passage is required, keep it concise: normally 40-120 words, never more than 180 words.
 5. EXAM ENFORCEMENT:
 - You MUST match the style of the selected exam
-- Do NOT generate generic questions
+- Do NOT generate generic questions, but keep the item short and focused
 - If the question could belong to any exam → it is WRONG
 - Adjust tone, difficulty, and structure based on exam type
 
 6. PASSAGE CONTROL:
-- If passage is required → MUST match the specified length range
-- If passage is too short → regenerate internally
+- If passage is required → include a concise short passage
+- If passage is longer than 180 words → shorten it internally
 - If no passage is required → MUST return "passage": null
 
 If you fail to follow these rules, your answer is incorrect.
@@ -4267,30 +4200,13 @@ Return ONLY valid JSON array in this exact format:
       text.replace(/```json/g, "").replace(/```/g, "").trim();
 
     const needsPassage = selectedStructure.needsPassage;
-    const getMinWords = (skill, difficulty) => {
-      if (!selectedStructure.needsPassage) return 0;
-
-      if (skill === "Vocabulary") {
-        if (difficulty === "Easy") return 50;
-        if (difficulty === "Medium") return 80;
-        if (difficulty === "Hard") return 100;
-        if (difficulty === "Advanced") return 120;
-      }
-
-      if (difficulty === "Easy") return 200;
-      if (difficulty === "Medium") return 300;
-      if (difficulty === "Hard") return 500;
-      if (difficulty === "Advanced") return 650;
-
-      return 250;
-    };
-
-    const minWords = getMinWords(skill, difficulty);
+    const minPassageWords = needsPassage ? 20 : 0;
+    const maxPassageWords = 180;
 
     let finalData = null;
     let retryPrompt = prompt;
 
-    for (let attempt = 0; attempt < 5; attempt++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
       console.log(`🧠 Attempt ${attempt + 1}`);
 
       const response = await client.responses.create({
@@ -4316,7 +4232,7 @@ Return ONLY valid JSON array in this exact format:
           const wc = countWords(q.passage || "");
           console.log("PASSAGE WORD COUNT:", wc);
 
-          if (wc < minWords) {
+          if (wc < minPassageWords || wc > maxPassageWords) {
             valid = false;
             break;
           }
@@ -4329,24 +4245,24 @@ Return ONLY valid JSON array in this exact format:
         break;
       }
 
-      console.log("❌ Too short. Retrying with stronger instruction.");
+      console.log("❌ Passage length invalid. Retrying with concise instruction.");
 
       retryPrompt = `
 ${prompt}
 
-YOUR LAST OUTPUT FAILED BECAUSE THE PASSAGE WAS TOO SHORT.
+YOUR LAST OUTPUT FAILED BECAUSE THE PASSAGE LENGTH WAS INVALID.
 
 MANDATORY:
-- Each passage must be at least ${minWords} words.
+- If passage is required, each passage must be concise: 40-120 words preferred, 180 words absolute maximum.
+- If no passage is required, use "passage": null.
 - Count the words before returning.
-- Do not return 1–3 sentence passages.
-- Expand with details, examples, transitions, and context.
+- Do not create full exam passages, transcripts, audio scripts, or speaking tasks.
 `;
     }
 
     if (!finalData) {
       return res.status(500).json({
-        error: `Failed to generate passages longer than ${minWords} words.`,
+        error: "Failed to generate concise exam-aligned practice questions. Please try a smaller count or a simpler topic.",
       });
     }
 

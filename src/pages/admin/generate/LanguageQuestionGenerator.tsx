@@ -206,7 +206,16 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
       const rawText = await res.text();
 
       if (!res.ok) {
-        throw new Error(`Backend error ${res.status}: ${rawText}`);
+        let serverMessage = rawText;
+
+        try {
+          const errorBody = JSON.parse(rawText);
+          serverMessage = errorBody.error || errorBody.message || rawText;
+        } catch {
+          serverMessage = rawText;
+        }
+
+        throw new Error(serverMessage || `Backend error ${res.status}`);
       }
 
       const data = JSON.parse(rawText);
