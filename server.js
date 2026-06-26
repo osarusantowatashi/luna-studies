@@ -1463,14 +1463,14 @@ const examRules = {
 `,
 };
 const structureRules = {
-  Reading: {
-    needsPassage: true,
-    format: `
-- Reading micro-practice with a concise passage.
-- Ask about meaning, reasoning, structure, detail, inference, or author's purpose based on the selected pathway.
-- Passage should normally be 40-120 words and must not exceed 180 words.
-`,
-  },
+	  Reading: {
+	    needsPassage: true,
+	    format: `
+- Passage-first reading comprehension practice.
+	- Ask about meaning, reasoning, structure, detail, inference, or author's purpose based on the selected pathway.
+	- Use one shared passage with a small mixed question set.
+	`,
+	  },
 
   Vocabulary: {
     needsPassage: false,
@@ -1483,35 +1483,32 @@ const structureRules = {
 `,
   },
 
-  "Main Idea": {
-    needsPassage: true,
-    format: `
-- Short passage must have a clear central idea.
-- Passage should normally be 40-120 words and must not exceed 180 words.
-- Question asks for main idea, central message, or best summary.
-- Correct answer summarizes the whole passage.
+	  "Main Idea": {
+	    needsPassage: true,
+	    format: `
+	- Shared passage must have a clear central idea.
+	- Question asks for main idea, central message, or best summary.
+	- Correct answer summarizes the whole passage.
 - Wrong answers are too specific, partially correct, or unrelated.
 `,
   },
 
-  Inference: {
-    needsPassage: true,
-    format: `
-- Short passage must imply information without directly stating it.
-- Passage should normally be 40-120 words and must not exceed 180 words.
-- Question asks what the reader can infer.
-- Correct answer must be supported by clues in the passage.
+	  Inference: {
+	    needsPassage: true,
+	    format: `
+	- Shared passage must imply information without directly stating it.
+	- Question asks what the reader can infer.
+	- Correct answer must be supported by clues in the passage.
 - Wrong answers may sound possible but are not supported.
 `,
   },
 
-  "Detail Questions": {
-    needsPassage: true,
-    format: `
-- Short passage must contain clear supporting details.
-- Passage should normally be 40-120 words and must not exceed 180 words.
-- Question asks about a specific detail from the passage.
-- Correct answer must be directly supported.
+	  "Detail Questions": {
+	    needsPassage: true,
+	    format: `
+	- Shared passage must contain clear supporting details.
+	- Question asks about a specific detail from the passage.
+	- Correct answer must be directly supported.
 - Wrong answers should be close but inaccurate.
 `,
   },
@@ -1647,13 +1644,12 @@ const structureRules = {
 `,
   },
 
-  "Reading Comprehension": {
-    needsPassage: true,
-    format: `
-- Reading comprehension micro-practice with a concise passage.
-- Passage should normally be 40-120 words and must not exceed 180 words.
-- Test main idea, detail, inference, vocabulary in context, tone, or organization.
-`,
+	  "Reading Comprehension": {
+	    needsPassage: true,
+	    format: `
+	- Passage-first reading comprehension practice.
+	- Test main idea, detail, inference, vocabulary in context, tone, or organization.
+	`,
   },
 
   "Sentence Transformation": {
@@ -1961,8 +1957,87 @@ const classifyLegacyEnglishQuestion = (question = {}) => {
       skill,
       category: getLegacyEnglishDefaultCategory(question, skill),
       status: confident ? question.status || "approved" : "needs_review",
-    },
+  },
+};
+
+const readingSkillSet = new Set([
+  "Reading",
+  "Reading Comprehension",
+  "Main Idea",
+  "Inference",
+  "Detail Questions",
+  "Literature",
+  "Informational Text",
+]);
+
+const getReadingPassagePlan = ({
+  examType = "",
+  level = "",
+  grade = "",
+  questionCount = 3,
+}) => {
+  const selectedLevel = String(level || grade || "");
+  const requestedCount = Number.parseInt(String(questionCount), 10) || 3;
+  const gradeMatch = selectedLevel.match(/Grade\s+(\d+)/i);
+  const gradeNumber = gradeMatch ? Number.parseInt(gradeMatch[1], 10) : null;
+  const isKindergarten = /kindergarten|^k$/i.test(selectedLevel);
+  const isIeltsLongReading =
+    examType === "IELTS" &&
+    (/5\.5\s*[–-]\s*6\.0|6\.5|7\.5|\+/.test(selectedLevel));
+  const isToeflLongReading =
+    examType === "TOEFL" && /Intermediate|Advanced/i.test(selectedLevel);
+  const isAdvancedJapanese = /N2|N1/.test(selectedLevel);
+  const isAdvancedChinese = /HSK\s*(5|6)/i.test(selectedLevel);
+
+  if (
+    (gradeNumber && gradeNumber >= 10) ||
+    isIeltsLongReading ||
+    isToeflLongReading ||
+    isAdvancedJapanese ||
+    isAdvancedChinese
+  ) {
+    return {
+      minWords: 220,
+      maxWords: 350,
+      questionTotal: Math.min(3, Math.max(2, requestedCount)),
+      label: "advanced reading passage",
+    };
+  }
+
+  if ((gradeNumber && gradeNumber >= 7) || /N3|HSK\s*4/i.test(selectedLevel)) {
+    return {
+      minWords: 150,
+      maxWords: 220,
+      questionTotal: Math.min(3, Math.max(2, requestedCount)),
+      label: "middle school reading passage",
+    };
+  }
+
+  if ((gradeNumber && gradeNumber >= 4) || /N4|HSK\s*(2|3)/i.test(selectedLevel)) {
+    return {
+      minWords: 100,
+      maxWords: 150,
+      questionTotal: Math.min(2, Math.max(2, requestedCount)),
+      label: "upper primary reading passage",
+    };
+  }
+
+  if (isKindergarten || (gradeNumber && gradeNumber <= 3) || /N5|HSK\s*1/i.test(selectedLevel)) {
+    return {
+      minWords: 60,
+      maxWords: 100,
+      questionTotal: 1,
+      label: "early reading passage",
+    };
+  }
+
+  return {
+    minWords: 100,
+    maxWords: 150,
+    questionTotal: Math.min(2, Math.max(1, requestedCount)),
+    label: "general reading passage",
   };
+};
 };
 
 const buildLegacyPromptBackfill = (question = {}) => {
@@ -4122,15 +4197,25 @@ app.post("/api/generate-questions", requireAdmin, async (req, res) => {
     };
 
     const examples = getExampleFile(examType, grade, skill);
-    const selectedStructure = structureRules[skill] || {
-      needsPassage: true,
-      format: "- Create realistic exam-style questions for the selected skill.",
-    };
+	    const selectedStructure = structureRules[skill] || {
+	      needsPassage: true,
+	      format: "- Create realistic exam-style questions for the selected skill.",
+	    };
+	    const isReadingPassagePractice =
+	      selectedStructure.needsPassage && readingSkillSet.has(skill);
+	    const passagePlan = getReadingPassagePlan({
+	      examType: pathway || examType,
+	      level: level || grade,
+	      grade,
+	      questionCount,
+	    });
 
 
-    const shortPassageRule = selectedStructure.needsPassage
-      ? "Use a concise passage of 40-120 words when possible. The absolute maximum is 180 words."
-      : "No separate passage needed.";
+	    const passageLengthRule = isReadingPassagePractice
+	      ? `Generate one ${passagePlan.label} of ${passagePlan.minWords}-${passagePlan.maxWords} words.`
+	      : selectedStructure.needsPassage
+	        ? "Use a concise passage of 40-120 words when possible. The absolute maximum is 180 words."
+	      : "No separate passage needed.";
 
 
 
@@ -4145,18 +4230,19 @@ ${pathwayVariant ? `${variantLabel || "Variant"}: ${pathwayVariant}` : ""}
 ${skillLabel}: ${skill}
 Category / Topic: ${category || "General"}
 ${difficulty ? `${difficultyLabel || "Difficulty"}: ${difficulty}` : "Difficulty / Band: Not used for this pathway"}
-Number of questions: ${questionCount}
-Target language being learned: ${targetLanguage}
+	Number of questions requested: ${questionCount}
+	${isReadingPassagePractice ? `Reading output: 1 passage with ${passagePlan.questionTotal} questions based on that passage.` : ""}
+	Target language being learned: ${targetLanguage}
 
 LANGUAGE RULES:
 ${targetLanguageFocusRules[targetLanguage] || targetLanguageFocusRules.English}
 - The target language determines the learning content, grammar scope, vocabulary scope, exam style, and skill type.
 - Use the selected category/topic as the content theme when it is provided.
-- Generate ONE logical question per item, but include prompt versions in English, Chinese, and Japanese.
-- question_en, question_zh, and question_ja must ask the SAME question.
+	- Generate ONE logical question per item, but include prompt versions in English, Chinese, and Japanese.
+	- question_en, question_zh, and question_ja must ask the SAME question.
 - option_a/b/c/d en/zh/ja fields must represent the SAME answer choices across prompt languages.
 - explanation_en, explanation_zh, and explanation_ja must explain the SAME reasoning.
-- For reading skills, the passage should normally be in ${targetLanguage}; keep it short and focused.
+	- For reading skills, the passage should normally be in ${targetLanguage} and should be the shared source text for all questions in that reading set.
 - Do not reduce the task to simple word-pair translation unless Skill = Vocabulary and that is appropriate for the selected grade.
 - Do not silently switch the target language. A ${targetLanguage} question must remain a ${targetLanguage} learning question.
 - Do not generate Listening tasks, audio scripts, listening transcripts, or Speaking tasks.
@@ -4166,13 +4252,21 @@ ${targetLanguageFocusRules[targetLanguage] || targetLanguageFocusRules.English}
 STYLE EXAMPLES FROM FILE:
 ${examples || "No example file found. Use realistic exam style."}
 
-PASSAGE LENGTH RULES:
-${structureRules[skill]?.needsPassage ? `
-- ${shortPassageRule}
-- Reading passages should usually be one short paragraph.
-- Never create full-test passages or long official-style reading sections.
-` : `
-- No passage allowed. "passage" must be null
+	PASSAGE LENGTH RULES:
+	${structureRules[skill]?.needsPassage ? `
+	- ${passageLengthRule}
+	${isReadingPassagePractice ? `
+	- Reading is passage-first. Generate ONE passage only.
+	- Generate ${passagePlan.questionTotal} question${passagePlan.questionTotal === 1 ? "" : "s"} from that same passage.
+	- Do not repeat or rewrite the passage for each question.
+	- Maximum 3 questions per passage.
+	- Use 2-4 short paragraphs when helpful for readability.
+	` : `
+	- Reading passages should usually be one short paragraph.
+	- Never create full-test passages or long official-style reading sections.
+	`}
+	` : `
+	- No passage allowed. "passage" must be null
 `}
 
 EXAM STYLE RULES:
@@ -4190,9 +4284,10 @@ ${difficultyRules[difficulty] || "- Match the selected difficulty appropriately.
 CRITICAL RULES (NON-NEGOTIABLE):
 
 1. STRUCTURE ENFORCEMENT
-- If Needs passage = true → EVERY question MUST include a passage
-- If Needs passage = false → ALL questions MUST have "passage": null
-- ANY violation = WRONG → regenerate internally before answering
+	- If Reading output is active → return exactly ONE reading object with one shared passage and a questions array
+	- If Needs passage = true and Reading output is not active → EVERY question MUST include a passage
+	- If Needs passage = false → ALL questions MUST have "passage": null
+	- ANY violation = WRONG → regenerate internally before answering
 
 2. SKILL ENFORCEMENT
 - You MUST follow the exact question type defined by the skill
@@ -4211,25 +4306,62 @@ Before returning:
 - Check if output matches skill
 - Check if structure matches Needs passage
 - If not → fix it before returning
-- If passage is required, keep it concise: normally 40-120 words, never more than 180 words.
+	- If Reading output is active, passage must be ${passagePlan.minWords}-${passagePlan.maxWords} words.
+	- If other passage practice is required, keep it concise: normally 40-120 words, never more than 180 words.
 5. EXAM ENFORCEMENT:
 - You MUST match the style of the selected exam
 - Do NOT generate generic questions, but keep the item short and focused
 - If the question could belong to any exam → it is WRONG
 - Adjust tone, difficulty, and structure based on exam type
 
-6. PASSAGE CONTROL:
-- If passage is required → include a concise short passage
-- If passage is longer than 180 words → shorten it internally
-- If no passage is required → MUST return "passage": null
+	6. PASSAGE CONTROL:
+	- If Reading output is active → include one shared passage and do not duplicate it inside each question
+	- If passage is required but Reading output is not active → include a concise short passage
+	- If non-reading passage is longer than 180 words → shorten it internally
+	- If no passage is required → MUST return "passage": null
 
 If you fail to follow these rules, your answer is incorrect.
 Extra instructions:
 ${extraPrompt || ""}
 
-Return ONLY valid JSON array in this exact format:
-[
-  {
+	${isReadingPassagePractice ? `
+	Return ONLY one valid JSON object in this exact format:
+	{
+	  "type": "reading",
+	  "passage": "...",
+	  "questions": [
+	    {
+	      "question_type": "Main Idea",
+	      "question_en": "...",
+	      "question_zh": "...",
+	      "question_ja": "...",
+	      "option_a_en": "...",
+	      "option_a_zh": "...",
+	      "option_a_ja": "...",
+	      "option_b_en": "...",
+	      "option_b_zh": "...",
+	      "option_b_ja": "...",
+	      "option_c_en": "...",
+	      "option_c_zh": "...",
+	      "option_c_ja": "...",
+	      "option_d_en": "...",
+	      "option_d_zh": "...",
+	      "option_d_ja": "...",
+	      "correct_answer": "option_a",
+	      "explanation_en": "...",
+	      "explanation_zh": "...",
+	      "explanation_ja": "..."
+	    }
+	  ]
+	}
+	Question type rules:
+	- Use a mix from: Main Idea, Vocabulary in Context, Inference, Detail Question, Reference Question.
+	- Do not repeat the same question_type within one passage unless only 1 question is required.
+	- All questions must be answerable from the passage.
+	` : `
+	Return ONLY valid JSON array in this exact format:
+	[
+	  {
     "passage": "... or null",
     "question_en": "...",
     "question_zh": "...",
@@ -4250,9 +4382,10 @@ Return ONLY valid JSON array in this exact format:
     "explanation_en": "...",
     "explanation_zh": "...",
     "explanation_ja": "..."
-  }
-]
-`;
+	  }
+	]
+	`}
+	`;
 
     const countWords = (text = "") =>
       text.trim().split(/\s+/).filter(Boolean).length;
@@ -4260,9 +4393,13 @@ Return ONLY valid JSON array in this exact format:
     const cleanJSON = (text) =>
       text.replace(/```json/g, "").replace(/```/g, "").trim();
 
-    const needsPassage = selectedStructure.needsPassage;
-    const minPassageWords = needsPassage ? 20 : 0;
-    const maxPassageWords = 180;
+	    const needsPassage = selectedStructure.needsPassage;
+	    const minPassageWords = isReadingPassagePractice
+	      ? passagePlan.minWords
+	      : needsPassage
+	        ? 20
+	        : 0;
+	    const maxPassageWords = isReadingPassagePractice ? passagePlan.maxWords : 180;
 
     let finalData = null;
     let retryPrompt = prompt;
@@ -4286,19 +4423,49 @@ Return ONLY valid JSON array in this exact format:
         continue;
       }
 
-      let valid = true;
+	      let valid = true;
 
-      if (needsPassage) {
-        for (const q of parsed) {
-          const wc = countWords(q.passage || "");
-          console.log("PASSAGE WORD COUNT:", wc);
+	      if (isReadingPassagePractice) {
+	        const wc = countWords(parsed?.passage || "");
+	        const readingQuestions = Array.isArray(parsed?.questions)
+	          ? parsed.questions
+	          : [];
+	        const questionTypes = readingQuestions
+	          .map((q) => q.question_type)
+	          .filter(Boolean);
+	        const uniqueQuestionTypes = new Set(questionTypes);
 
-          if (wc < minPassageWords || wc > maxPassageWords) {
-            valid = false;
-            break;
-          }
-        }
-      }
+	        console.log("READING PASSAGE WORD COUNT:", wc);
+	        console.log("READING QUESTION COUNT:", readingQuestions.length);
+
+	        if (
+	          parsed?.type !== "reading" ||
+	          wc < minPassageWords ||
+	          wc > maxPassageWords ||
+	          readingQuestions.length !== passagePlan.questionTotal ||
+	          (questionTypes.length > 1 && uniqueQuestionTypes.size !== questionTypes.length)
+	        ) {
+	          valid = false;
+	        }
+	      } else if (needsPassage) {
+	        const parsedItems = Array.isArray(parsed) ? parsed : [];
+
+	        if (parsedItems.length === 0) {
+	          valid = false;
+	        }
+
+	        for (const q of parsedItems) {
+	          const wc = countWords(q.passage || "");
+	          console.log("PASSAGE WORD COUNT:", wc);
+
+	          if (wc < minPassageWords || wc > maxPassageWords) {
+	            valid = false;
+	            break;
+	          }
+	        }
+	      } else if (!Array.isArray(parsed)) {
+	        valid = false;
+	      }
 
       if (valid) {
         finalData = parsed;
@@ -4306,18 +4473,25 @@ Return ONLY valid JSON array in this exact format:
         break;
       }
 
-      console.log("❌ Passage length invalid. Retrying with concise instruction.");
+	      console.log("❌ Generated structure invalid. Retrying with stricter instruction.");
 
       retryPrompt = `
 ${prompt}
 
-YOUR LAST OUTPUT FAILED BECAUSE THE PASSAGE LENGTH WAS INVALID.
+	YOUR LAST OUTPUT FAILED BECAUSE THE READING STRUCTURE OR PASSAGE LENGTH WAS INVALID.
 
-MANDATORY:
-- If passage is required, each passage must be concise: 40-120 words preferred, 180 words absolute maximum.
-- If no passage is required, use "passage": null.
-- Count the words before returning.
-- Do not create full exam passages, transcripts, audio scripts, or speaking tasks.
+	MANDATORY:
+	${isReadingPassagePractice ? `
+	- Return one JSON object with "type": "reading", one shared passage, and exactly ${passagePlan.questionTotal} questions.
+	- The shared passage must be ${passagePlan.minWords}-${passagePlan.maxWords} words.
+	- Do not duplicate the passage inside individual questions.
+	- Mix question_type values. Do not repeat question types.
+	` : `
+	- If passage is required, each passage must be concise: 40-120 words preferred, 180 words absolute maximum.
+	`}
+	- If no passage is required, use "passage": null.
+	- Count the words before returning.
+	- Do not create full exam passages, transcripts, audio scripts, or speaking tasks.
 `;
     }
 

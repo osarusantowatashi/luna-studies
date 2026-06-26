@@ -7,6 +7,16 @@ import { NON_ENGLISH_LANGUAGE_PATHWAYS } from "@/lib/languagePathways";
 
 const PROMPT_LANGUAGES = ["English", "Chinese", "Japanese"] as const;
 
+const READING_SKILLS = new Set([
+  "Reading",
+  "Reading Comprehension",
+  "Main Idea",
+  "Inference",
+  "Detail Questions",
+  "Literature",
+  "Informational Text",
+]);
+
 const languageSuffix = (language: string) =>
   language === "Chinese" ? "zh" : language === "Japanese" ? "ja" : "en";
 
@@ -127,6 +137,7 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
       ? englishPathway.difficulties || []
       : [];
   const activeVariants = targetLanguage === "English" ? englishPathway.variants || [] : [];
+  const isReadingGenerator = READING_SKILLS.has(skill);
 
   useEffect(() => {
     setExamType(config.defaultExam);
@@ -241,7 +252,18 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
       return;
     }
 
-    setQuestions((current) => current.filter((item) => item.id !== questionId));
+    setQuestions((current) =>
+      current
+        .map((item) =>
+          item.id === questionId
+            ? { ...item, status, updated_at: new Date().toISOString() }
+            : item
+        )
+        .filter((item) => {
+          const isReadingRow = item.passage && READING_SKILLS.has(item.skill || "");
+          return isReadingRow || item.status === "needs_review";
+        })
+    );
     if (editingQuestion?.id === questionId) {
       setEditingQuestion(null);
       setDraft(null);
@@ -447,6 +469,83 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
     return q.correct_answer;
   };
 
+  const reviewItems = useMemo(() => {
+    const grouped = new Map<string, any>();
+    const items: any[] = [];
+
+    questions.forEach((question) => {
+      const isReadingRow =
+        question.passage && READING_SKILLS.has(question.skill || "");
+
+      if (!isReadingRow) {
+        items.push(question);
+        return;
+      }
+
+      const key = [
+        question.target_language,
+        question.pathway || question.exam_type,
+        question.level || question.grade,
+        question.skill,
+        question.category,
+        question.passage,
+      ].join("::");
+
+      if (!grouped.has(key)) {
+        const group = {
+          ...question,
+          id: `reading-${question.id}`,
+          type: "reading_group",
+          questions: [],
+        };
+        grouped.set(key, group);
+        items.push(group);
+      }
+
+      grouped.get(key).questions.push(question);
+    });
+
+    return items.filter((item) => {
+      if (item.type === "reading_group") {
+        return item.questions.some((question: any) => (question.status || "needs_review") === "needs_review");
+      }
+
+      return (item.status || "needs_review") === "needs_review";
+    });
+  }, [questions]);
+
+  const updateReviewGroupStatus = async (questionIds: string[], status: "approved" | "rejected") => {
+    const { error } = await supabase
+      .from("questions")
+      .update({ status, updated_at: new Date().toISOString() })
+      .in("id", questionIds);
+
+    if (error) {
+      console.error("REVIEW GROUP UPDATE ERROR:", error);
+      setErrorMsg(`Failed to mark reading set ${status}: ${error.message}`);
+      return;
+    }
+
+    setQuestions((current) =>
+      current
+        .map((item) =>
+          questionIds.includes(item.id)
+            ? { ...item, status, updated_at: new Date().toISOString() }
+            : item
+        )
+        .filter((item) => item.status === "needs_review")
+    );
+  };
+
+  const getReadingSetStatus = (readingQuestions: any[]) => {
+    const statuses = readingQuestions.map((question) => question.status || "needs_review");
+
+    if (statuses.every((status) => status === "approved")) return "all approved";
+    if (statuses.every((status) => status === "rejected")) return "all rejected";
+    if (statuses.includes("approved") || statuses.includes("rejected")) return "partially reviewed";
+    return "needs_review";
+  };
+
   return (
     <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-5xl space-y-8">
@@ -528,8 +627,8 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
               </div>
             )}
 
-            {activeVariants.length > 0 && (
-              <select
+	            {activeVariants.length > 0 && (
+	              <select
                 className="w-full rounded-2xl border bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
                 value={pathwayVariant}
                 onChange={(e) => setPathwayVariant(e.target.value)}
@@ -537,11 +636,17 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                 {activeVariants.map((item) => (
                   <option key={item}>{item}</option>
                 ))}
-              </select>
-            )}
-          </div>
+	              </select>
+	            )}
+	          </div>
 
-          {targetLanguage === "English" && (
+	          {isReadingGenerator && (
+	            <div className="mt-4 rounded-2xl border border-[#eee8ff] bg-[#fbfaff] px-4 py-3 text-sm font-semibold leading-6 text-primary/65">
+	              Reading generation is passage-first: Luna creates one shared passage and automatically limits it to 1–3 mixed comprehension questions based on the selected level.
+	            </div>
+	          )}
+
+	          {targetLanguage === "English" && (
             <div className="mt-4 grid gap-3 rounded-2xl border bg-[#fbfaff] p-4 text-sm text-primary/65 sm:grid-cols-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-primary/40">
@@ -647,20 +752,56 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
         )}
 
         <div className="grid gap-6">
-          {questions.map((q, i) => {
-            if (q.type === "reading") {
+          {reviewItems.map((q, i) => {
+            if (q.type === "reading" || q.type === "reading_group") {
+              const readingQuestions = q.questions || [];
+              const questionIds = readingQuestions.map((item: any) => item.id).filter(Boolean);
+              const setStatus = getReadingSetStatus(readingQuestions);
+
               return (
                 <div key={q.id} className="rounded-[1.8rem] border bg-card p-5 shadow-soft sm:p-6">
-                  <div className="mb-4 flex flex-wrap gap-2 text-xs font-bold text-primary/60">
-                    {formatTags(q).map((tag) => (
-                      <span key={tag} className="rounded-full bg-secondary px-3 py-1">
-                        {tag}
+                  <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="flex flex-wrap gap-2 text-xs font-bold text-primary/60">
+                      {formatTags(q).map((tag) => (
+                        <span key={tag} className="rounded-full bg-secondary px-3 py-1">
+                          {tag}
+                        </span>
+                      ))}
+                      <span className="rounded-full bg-secondary px-3 py-1">EN / ZH / JA prompts</span>
+                      <span
+                        className={`rounded-full px-3 py-1 ${
+                          setStatus === "partially reviewed"
+                            ? "bg-blue-100 text-blue-800"
+                            : setStatus === "all approved"
+                              ? "bg-green-100 text-green-800"
+                              : setStatus === "all rejected"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-amber-100 text-amber-800"
+                        }`}
+                      >
+                        {setStatus}
                       </span>
-                    ))}
-                    <span className="rounded-full bg-secondary px-3 py-1">EN / ZH / JA prompts</span>
-                    <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">
-                      {q.status || "needs_review"}
-                    </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Button
+                        type="button"
+                        className="w-full rounded-2xl sm:w-auto"
+                        onClick={() => updateReviewGroupStatus(questionIds, "approved")}
+                        disabled={questionIds.length === 0}
+                      >
+                        Approve All
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full rounded-2xl border-red-200 text-red-700 sm:w-auto"
+                        onClick={() => updateReviewGroupStatus(questionIds, "rejected")}
+                        disabled={questionIds.length === 0}
+                      >
+                        Reject All
+                      </Button>
+                    </div>
                   </div>
 
                   <p className="mb-4 text-sm text-muted-foreground">Passage:</p>
@@ -668,11 +809,62 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                     {q.passage}
                   </p>
 
-                  {q.questions.map((subQ: any, idx: number) => (
+                  {readingQuestions.map((subQ: any, idx: number) => (
                     <div key={idx} className="mb-6 border-t pt-4">
-                      <p className="font-semibold">
-                        {idx + 1}. {subQ.question_en || subQ.question_text}
-                      </p>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <div className="mb-2 flex flex-wrap items-center gap-2">
+                            <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary/60">
+                              Question {idx + 1}
+                            </span>
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-bold ${
+                                (subQ.status || "needs_review") === "approved"
+                                  ? "bg-green-100 text-green-800"
+                                  : (subQ.status || "needs_review") === "rejected"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-amber-100 text-amber-800"
+                              }`}
+                            >
+                              {subQ.status || "needs_review"}
+                            </span>
+                          </div>
+                          <p className="font-semibold">
+                            {subQ.question_en || subQ.question_text}
+                          </p>
+                        </div>
+                        {subQ.id && (
+                          <div className="flex flex-col gap-2 sm:flex-row">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="h-10 rounded-2xl sm:w-auto"
+                              onClick={() => openEdit(subQ)}
+                            >
+                              Preview
+                            </Button>
+                            {(subQ.status || "needs_review") === "needs_review" && (
+                              <>
+                                <Button
+                                  type="button"
+                                  className="h-10 rounded-2xl sm:w-auto"
+                                  onClick={() => updateReviewStatus(subQ.id, "approved")}
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className="h-10 rounded-2xl border-red-200 text-red-700 sm:w-auto"
+                                  onClick={() => updateReviewStatus(subQ.id, "rejected")}
+                                >
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
 
                       <div className="mt-3 grid gap-3 text-sm leading-7 md:grid-cols-2">
                         <p>A. {subQ.option_a_en || subQ.option_a}</p>
@@ -689,31 +881,6 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                     </div>
                   ))}
 
-                  <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full rounded-2xl sm:w-auto"
-                      onClick={() => openEdit(q)}
-                    >
-                      Preview
-                    </Button>
-                    <Button
-                      type="button"
-                      className="w-full rounded-2xl sm:w-auto"
-                      onClick={() => updateReviewStatus(q.id, "approved")}
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full rounded-2xl border-red-200 text-red-700 sm:w-auto"
-                      onClick={() => updateReviewStatus(q.id, "rejected")}
-                    >
-                      Reject
-                    </Button>
-                  </div>
                 </div>
               );
             }

@@ -48,6 +48,16 @@ const TARGET_LANGUAGES = ["English", "Japanese", "Chinese"];
 
 const PROMPT_LANGUAGES = ["English", "Japanese", "Chinese"];
 
+const READING_SKILLS = new Set([
+  "Reading",
+  "Reading Comprehension",
+  "Main Idea",
+  "Inference",
+  "Detail Questions",
+  "Literature",
+  "Informational Text",
+]);
+
 const PASSAGE_TEXT_SIZE_KEY = "luna-practice-passage-text-size";
 
 const PASSAGE_TEXT_CLASSES = {
@@ -108,6 +118,45 @@ const sortByOrder = (items: string[], order: string[]) => {
   });
 };
 
+const isReadingQuestion = (question: any) =>
+  Boolean(question?.passage) && READING_SKILLS.has(question?.skill || "");
+
+const buildPracticeItems = (questionRows: any[]) => {
+  const grouped = new Map<string, any>();
+  const items: any[] = [];
+
+  questionRows.forEach((question) => {
+    if (!isReadingQuestion(question)) {
+      items.push(question);
+      return;
+    }
+
+    const key = [
+      question.target_language,
+      question.pathway || question.exam_type,
+      question.level || question.grade,
+      question.skill,
+      question.category,
+      question.passage,
+    ].join("::");
+
+    if (!grouped.has(key)) {
+      const group = {
+        ...question,
+        id: `reading-${question.id}`,
+        type: "reading_group",
+        questions: [],
+      };
+      grouped.set(key, group);
+      items.push(group);
+    }
+
+    grouped.get(key).questions.push(question);
+  });
+
+  return items;
+};
+
 const Practice = () => {
   const [allowedGrades, setAllowedGrades] = useState<string[]>([]);
   const [accessOptions, setAccessOptions] = useState<PracticeAccess[]>([]);
@@ -139,6 +188,7 @@ const Practice = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState("");
+  const [selectedGroupAnswers, setSelectedGroupAnswers] = useState<Record<string, string>>({});
   const [showFeedback, setShowFeedback] = useState(false);
 
   const [attemptedCount, setAttemptedCount] = useState(0);
@@ -446,20 +496,29 @@ const Practice = () => {
   };
 
   const current = questions[currentIndex];
+  const isReadingGroup = current?.type === "reading_group";
+  const currentQuestionList = isReadingGroup ? current.questions || [] : current ? [current] : [];
 
   const currentQuestionText =
     localizedField(current, "question", selectedPromptLanguage) || current?.question_text || "";
 
   const textSizeClasses = PASSAGE_TEXT_CLASSES[passageTextSize];
   const showTextSizeControl =
-    Boolean(current?.passage) || currentQuestionText.length > 160;
+    Boolean(current?.passage) || currentQuestionText.length > 160 || isReadingGroup;
 
   const correctText = useMemo(
     () => getCorrectAnswerText(current, selectedPromptLanguage),
     [current, selectedPromptLanguage]
   );
 
-  const isCorrect = selected === correctText;
+  const isCurrentQuestionCorrect = (question: any) => {
+    const chosen = isReadingGroup ? selectedGroupAnswers[question.id] : selected;
+    return chosen === getCorrectAnswerText(question, selectedPromptLanguage);
+  };
+
+  const isCorrect =
+    currentQuestionList.length > 0 &&
+    currentQuestionList.every((question: any) => isCurrentQuestionCorrect(question));
 
   const accuracy =
     attemptedCount === 0
@@ -599,7 +658,8 @@ const Practice = () => {
       (q) => !completedCorrectIds.has(q.id)
     );
 
-    const randomQuestions = shuffleArray(availableQuestions).slice(0, 20);
+    const practiceItems = buildPracticeItems(availableQuestions);
+    const randomQuestions = shuffleArray(practiceItems).slice(0, 20);
 
     if (randomQuestions.length === 0) {
       const reason =
@@ -618,6 +678,7 @@ const Practice = () => {
     setQuestions(randomQuestions);
     setCurrentIndex(0);
     setSelected("");
+    setSelectedGroupAnswers({});
     setShowFeedback(false);
     setPracticeNotice("");
     setStartBlockedReason("");
@@ -679,6 +740,7 @@ const Practice = () => {
     setStarted(false);
     setCurrentIndex(0);
     setSelected("");
+    setSelectedGroupAnswers({});
     setShowFeedback(false);
     await fetchStats(user.id);
 
@@ -700,8 +762,16 @@ const Practice = () => {
   };
 
   const handleSubmit = () => {
-    if (!selected) {
-      setQuestionNotice("Please choose an answer before submitting.");
+    const allAnswered = isReadingGroup
+      ? currentQuestionList.every((question: any) => selectedGroupAnswers[question.id])
+      : Boolean(selected);
+
+    if (!allAnswered) {
+      setQuestionNotice(
+        isReadingGroup
+          ? "Please answer every question for this passage before submitting."
+          : "Please choose an answer before submitting."
+      );
       return;
     }
 
@@ -715,16 +785,19 @@ const Practice = () => {
 
     if (!user || !current) return;
 
-    await supabase.from("attempts").insert({
+    const attemptsPayload = currentQuestionList.map((question: any) => ({
       user_id: user.id,
-      question_id: current.id,
-      selected_answer: selected,
-      is_correct: isCorrect,
-    });
+      question_id: question.id,
+      selected_answer: isReadingGroup ? selectedGroupAnswers[question.id] : selected,
+      is_correct: isCurrentQuestionCorrect(question),
+    }));
+
+    await supabase.from("attempts").insert(attemptsPayload);
 
     await fetchStats(user.id);
 
     setSelected("");
+    setSelectedGroupAnswers({});
     setShowFeedback(false);
 
     if (currentIndex < questions.length - 1) {
@@ -1041,7 +1114,7 @@ const Practice = () => {
                 ]
                   .filter(Boolean)
                   .join(" · ")}{" "}
-                · Question {currentIndex + 1} / {questions.length}
+	                · {isReadingGroup ? "Reading set" : "Question"} {currentIndex + 1} / {questions.length}
               </p>
             </div>
 
@@ -1134,71 +1207,103 @@ const Practice = () => {
                 )}
               </div>
 
-	              <p className={`mb-6 font-black text-primary ${textSizeClasses.question}`}>
-	                {currentQuestionText}
-	              </p>
+	              <div className="space-y-6">
+	                {currentQuestionList.map((question: any, questionIndex: number) => {
+	                  const questionText =
+	                    localizedField(question, "question", selectedPromptLanguage) ||
+	                    question.question_text;
+	                  const chosenAnswer = isReadingGroup
+	                    ? selectedGroupAnswers[question.id]
+	                    : selected;
+	                  const correctAnswerText = getCorrectAnswerText(question, selectedPromptLanguage);
 
-              <div className="space-y-3">
-                {[
-                  localizedField(current, "option_a", selectedPromptLanguage),
-                  localizedField(current, "option_b", selectedPromptLanguage),
-                  localizedField(current, "option_c", selectedPromptLanguage),
-                  localizedField(current, "option_d", selectedPromptLanguage),
-                ].map(
-                  (opt, i) => {
-                    const isSelected = selected === opt;
-                    const isCorrectOption = opt === correctText;
+	                  return (
+	                    <div
+	                      key={question.id || questionIndex}
+	                      className={isReadingGroup ? "rounded-[1.5rem] border border-[#eee8ff] bg-white/75 p-4 sm:p-5" : ""}
+	                    >
+	                      {isReadingGroup && (
+	                        <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-[#8d73ff]">
+	                          Question {questionIndex + 1} of {currentQuestionList.length}
+	                        </p>
+	                      )}
 
-                    let buttonClass =
-                      "group w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-5 py-4 text-left text-sm font-semibold leading-7 text-primary transition hover:-translate-y-1 hover:border-[#8d73ff]/40 hover:bg-[#f6f1ff] sm:text-base";
+	                      <p className={`mb-5 font-black text-primary ${textSizeClasses.question}`}>
+	                        {questionText}
+	                      </p>
 
-                    if (!showFeedback && isSelected) {
-                      buttonClass =
-                        "group w-full rounded-2xl border border-[#8d73ff] bg-[#f6f1ff] px-5 py-4 text-left text-sm font-black leading-7 text-primary shadow-[0_12px_30px_rgba(141,115,255,0.15)] transition sm:text-base";
-                    }
+	                      <div className="space-y-3">
+	                        {[
+	                          localizedField(question, "option_a", selectedPromptLanguage),
+	                          localizedField(question, "option_b", selectedPromptLanguage),
+	                          localizedField(question, "option_c", selectedPromptLanguage),
+	                          localizedField(question, "option_d", selectedPromptLanguage),
+	                        ].map((opt, i) => {
+	                          const isSelected = chosenAnswer === opt;
+	                          const isCorrectOption = opt === correctAnswerText;
 
-                    if (showFeedback && isSelected && isCorrectOption) {
-                      buttonClass =
-                        "group w-full rounded-2xl border border-green-300 bg-green-50 px-5 py-4 text-left text-sm font-black leading-7 text-green-800 transition sm:text-base";
-                    }
+	                          let buttonClass =
+	                            "group w-full rounded-2xl border border-primary/10 bg-[#fbfaff] px-5 py-4 text-left text-sm font-semibold leading-7 text-primary transition hover:-translate-y-1 hover:border-[#8d73ff]/40 hover:bg-[#f6f1ff] sm:text-base";
 
-                    if (showFeedback && isSelected && !isCorrectOption) {
-                      buttonClass =
-                        "group w-full rounded-2xl border border-red-300 bg-red-50 px-5 py-4 text-left text-sm font-black leading-7 text-red-800 transition sm:text-base";
-                    }
+	                          if (!showFeedback && isSelected) {
+	                            buttonClass =
+	                              "group w-full rounded-2xl border border-[#8d73ff] bg-[#f6f1ff] px-5 py-4 text-left text-sm font-black leading-7 text-primary shadow-[0_12px_30px_rgba(141,115,255,0.15)] transition sm:text-base";
+	                          }
 
-                    if (
-                      showFeedback &&
-                      canViewAnswers &&
-                      isCorrectOption &&
-                      !isSelected
-                    ) {
-                      buttonClass =
-                        "group w-full rounded-2xl border border-green-300 bg-green-50 px-5 py-4 text-left text-sm font-black leading-7 text-green-800 transition sm:text-base";
-                    }
+	                          if (showFeedback && isSelected && isCorrectOption) {
+	                            buttonClass =
+	                              "group w-full rounded-2xl border border-green-300 bg-green-50 px-5 py-4 text-left text-sm font-black leading-7 text-green-800 transition sm:text-base";
+	                          }
 
-                    return (
-                      <motion.button
-                        type="button"
-                        key={i}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={() => {
-                          if (showFeedback) return;
-                          setSelected(opt);
-                          setQuestionNotice("");
-                        }}
-                        className={buttonClass}
-                      >
-                        <span className="mr-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white font-black text-[#8d73ff]">
-                          {String.fromCharCode(65 + i)}
-                        </span>
-                        {opt}
-                      </motion.button>
-                    );
-                  }
-                )}
-              </div>
-            </div>
+	                          if (showFeedback && isSelected && !isCorrectOption) {
+	                            buttonClass =
+	                              "group w-full rounded-2xl border border-red-300 bg-red-50 px-5 py-4 text-left text-sm font-black leading-7 text-red-800 transition sm:text-base";
+	                          }
+
+	                          if (
+	                            showFeedback &&
+	                            canViewAnswers &&
+	                            isCorrectOption &&
+	                            !isSelected
+	                          ) {
+	                            buttonClass =
+	                              "group w-full rounded-2xl border border-green-300 bg-green-50 px-5 py-4 text-left text-sm font-black leading-7 text-green-800 transition sm:text-base";
+	                          }
+
+	                          return (
+	                            <motion.button
+	                              type="button"
+	                              key={i}
+	                              whileTap={{ scale: 0.99 }}
+	                              onClick={() => {
+	                                if (showFeedback) return;
+
+	                                if (isReadingGroup) {
+	                                  setSelectedGroupAnswers((currentAnswers) => ({
+	                                    ...currentAnswers,
+	                                    [question.id]: opt,
+	                                  }));
+	                                } else {
+	                                  setSelected(opt);
+	                                }
+
+	                                setQuestionNotice("");
+	                              }}
+	                              className={buttonClass}
+	                            >
+	                              <span className="mr-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white font-black text-[#8d73ff]">
+	                                {String.fromCharCode(65 + i)}
+	                              </span>
+	                              {opt}
+	                            </motion.button>
+	                          );
+	                        })}
+	                      </div>
+	                    </div>
+	                  );
+	                })}
+	              </div>
+	            </div>
           </motion.section>
         </AnimatePresence>
 
@@ -1228,24 +1333,53 @@ const Practice = () => {
                   <XCircle className="mt-1 h-6 w-6 shrink-0" />
                 )}
 
-                <div>
-                  <p className="font-poppins text-xl font-black">
-                    {isCorrect ? "Correct!" : "Incorrect"}
-                  </p>
+	                <div className="min-w-0 flex-1">
+	                  <p className="font-poppins text-xl font-black">
+	                    {isCorrect ? "Correct!" : isReadingGroup ? "Review your answers" : "Incorrect"}
+	                  </p>
 
-                  {!isCorrect && canViewAnswers && (
-                    <p className="mt-2 text-sm leading-6">
-                      Correct answer: <strong>{correctText}</strong>
-                    </p>
-                  )}
+	                  {canViewAnswers && isReadingGroup ? (
+	                    <div className="mt-3 space-y-3">
+	                      {currentQuestionList.map((question: any, index: number) => {
+	                        const explanation =
+	                          localizedField(question, "explanation", selectedPromptLanguage) ||
+	                          question.explanation;
+	                        const answerText = getCorrectAnswerText(question, selectedPromptLanguage);
+	                        const questionCorrect = isCurrentQuestionCorrect(question);
 
-                  {canViewAnswers &&
-                    (localizedField(current, "explanation", selectedPromptLanguage) || current.explanation) && (
-                    <p className="mt-3 text-sm leading-6">
-                      {localizedField(current, "explanation", selectedPromptLanguage) || current.explanation}
-                    </p>
-                  )}
-                </div>
+	                        return (
+	                          <div
+	                            key={question.id || index}
+	                            className="rounded-2xl bg-white/70 px-4 py-3 text-sm leading-6"
+	                          >
+	                            <p className="font-black">
+	                              Q{index + 1}: {questionCorrect ? "Correct" : "Correct answer"}{" "}
+	                              {!questionCorrect && <strong>{answerText}</strong>}
+	                            </p>
+	                            {explanation && (
+	                              <p className="mt-1 opacity-85">{explanation}</p>
+	                            )}
+	                          </div>
+	                        );
+	                      })}
+	                    </div>
+	                  ) : (
+	                    <>
+	                      {!isCorrect && canViewAnswers && (
+	                        <p className="mt-2 text-sm leading-6">
+	                          Correct answer: <strong>{correctText}</strong>
+	                        </p>
+	                      )}
+
+	                      {canViewAnswers &&
+	                        (localizedField(current, "explanation", selectedPromptLanguage) || current.explanation) && (
+	                        <p className="mt-3 text-sm leading-6">
+	                          {localizedField(current, "explanation", selectedPromptLanguage) || current.explanation}
+	                        </p>
+	                      )}
+	                    </>
+	                  )}
+	                </div>
               </div>
             </motion.div>
           )}

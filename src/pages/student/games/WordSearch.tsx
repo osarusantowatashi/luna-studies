@@ -773,6 +773,33 @@ export default function WordSearch({
   }, [finalResult]);
 
   useEffect(() => {
+    if (!visualFullscreenActive || !gameplayFrameActive) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyOverscroll = document.body.style.overscrollBehavior;
+    const previousBodyPosition = document.body.style.position;
+    const previousBodyWidth = document.body.style.width;
+    const previousRootOverflow = document.documentElement.style.overflow;
+    const previousRootOverscroll = document.documentElement.style.overscrollBehavior;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+    document.body.style.position = "relative";
+    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
+    document.documentElement.style.overscrollBehavior = "none";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.overscrollBehavior = previousBodyOverscroll;
+      document.body.style.position = previousBodyPosition;
+      document.body.style.width = previousBodyWidth;
+      document.documentElement.style.overflow = previousRootOverflow;
+      document.documentElement.style.overscrollBehavior = previousRootOverscroll;
+    };
+  }, [gameplayFrameActive, visualFullscreenActive]);
+
+  useEffect(() => {
     let active = true;
 
     const loadWords = async () => {
@@ -1352,6 +1379,8 @@ export default function WordSearch({
 
   const handleBoardMove = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!dragging) return;
+
+    event.preventDefault();
 
     const target = document.elementFromPoint(event.clientX, event.clientY);
     const cellElement = target?.closest("[data-word-search-cell]") as HTMLElement | null;
@@ -2162,6 +2191,10 @@ export default function WordSearch({
                         className="relative mx-auto grid touch-none select-none gap-1 rounded-[1.2rem] border border-white/10 bg-white/10 p-2 shadow-[inset_0_10px_28px_rgba(0,0,0,0.35)]"
                         style={{
                           gridTemplateColumns: `repeat(${config.size}, minmax(0, 1fr))`,
+                          touchAction: "none",
+                          overscrollBehavior: "contain",
+                          WebkitUserSelect: "none",
+                          userSelect: "none",
                           width: demoMode && demoFullscreenActive
                             ? "min(42vw, calc(100dvh - 300px), 620px)"
                             : visualFullscreenActive
@@ -2178,6 +2211,9 @@ export default function WordSearch({
                         onPointerCancel={finishSelection}
                         onPointerLeave={() => {
                           if (dragging) finishSelection();
+                        }}
+                        onTouchMove={(event) => {
+                          if (dragging) event.preventDefault();
                         }}
                       >
                         {cells.map((cell) => {

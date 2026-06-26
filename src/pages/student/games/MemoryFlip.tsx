@@ -2125,10 +2125,18 @@ export default function MemoryFlip({
             </AnimatePresence>
 
             {gameStarted && (
-              <div className={`relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#6D28D9] p-2 sm:p-4 ${demoMode && demoFullscreenActive ? "flex h-full min-h-0 flex-col" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[720px]"
-                }`}>
+              <div
+                className={`relative overflow-x-hidden overflow-y-auto overscroll-contain rounded-[2rem] bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#6D28D9] p-2 sm:p-4 ${demoMode && demoFullscreenActive ? "flex h-full min-h-0 flex-col" : fullscreenActive ? "min-h-[100dvh]" : "min-h-[720px]"
+                  }`}
+                style={{
+                  paddingBottom:
+                    fullscreenActive || (demoMode && demoFullscreenActive)
+                      ? "max(1rem, env(safe-area-inset-bottom))"
+                      : undefined,
+                }}
+              >
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(196,181,253,0.28),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.14),transparent_30%)]" />
-                <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "flex min-h-0 flex-1 flex-col" : ""}`}>
+                <div className={`relative z-10 ${demoMode && demoFullscreenActive ? "flex min-h-0 flex-1 flex-col" : fullscreenActive ? "flex min-h-[100dvh] flex-col" : ""}`}>
                   <div className="relative mb-3 overflow-hidden rounded-[1.7rem] border-4 border-[#FDE68A]/75 bg-[#3B0764]/45 p-3 shadow-[inset_0_8px_24px_rgba(0,0,0,0.22)] sm:p-4">
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,255,255,0.22),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(250,204,21,0.18),transparent_30%)]" />
                     <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
@@ -2253,7 +2261,7 @@ export default function MemoryFlip({
                   )}
 
                   {!loading && !errorMsg && !timeUp && (
-                    <div className={`relative mx-auto flex max-w-[980px] items-center justify-center ${demoMode && demoFullscreenActive ? "min-h-0 flex-1 py-2" : "min-h-[520px] py-6 sm:min-h-[600px]"}`}>
+                    <div className={`relative mx-auto flex w-full max-w-[980px] items-center justify-center overflow-visible ${demoMode && demoFullscreenActive ? "min-h-0 flex-1 py-3 pb-[max(1.5rem,env(safe-area-inset-bottom))]" : fullscreenActive ? "min-h-[calc(100dvh-220px)] py-4 pb-[max(2rem,env(safe-area-inset-bottom))] sm:py-6" : "min-h-[520px] py-6 sm:min-h-[600px]"}`}>
                       <AnimatePresence>
                         {comboPop && comboPop >= 2 && (
                           <motion.div
