@@ -48,6 +48,7 @@ const MathQuestionBank = lazy(() => import("./pages/admin/questions/MathQuestion
 
 const TutorDashboard = lazy(() => import("./pages/tutor/TutorDashboard"));
 const TutorLessons = lazy(() => import("./pages/tutor/TutorLessons"));
+const TutorPolicy = lazy(() => import("./pages/tutor/TutorPolicy"));
 
 const StudentOverview = lazy(() => import("./pages/student/StudentOverview"));
 const StudentLessons = lazy(() => import("./pages/student/StudentLessons"));
@@ -84,6 +85,12 @@ const StudentPage = ({ children }: { children: React.ReactNode }) => (
 
 const TutorPage = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute allowedRoles={["admin", "tutor"]}>
+    <Layout>{children}</Layout>
+  </ProtectedRoute>
+);
+
+const TutorOnlyPage = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute allowedRoles={["tutor"]}>
     <Layout>{children}</Layout>
   </ProtectedRoute>
 );
@@ -266,6 +273,7 @@ const App = () => {
           {/* Tutor */}
           <Route path="/dashboard" element={<TutorPage><TutorDashboard /></TutorPage>} />
           <Route path="/tutor/lessons" element={<TutorPage><TutorLessons /></TutorPage>} />
+          <Route path="/tutor/policy" element={<TutorOnlyPage><TutorPolicy /></TutorOnlyPage>} />
 
           {/* Student */}
           <Route path="/studentoverview" element={<StudentPage><StudentOverview /></StudentPage>} />

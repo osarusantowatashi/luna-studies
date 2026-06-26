@@ -118,13 +118,15 @@ export default function Footer() {
             {renderLinks(serviceSupport)}
           </nav>
 
-          <nav aria-label={t("footer.columns.additionalServices")}>
-            <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white">
-              {t("footer.columns.additionalServices")}
-            </h3>
+          <div className="space-y-8">
+            <nav aria-label={t("footer.columns.additionalServices")}>
+              <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white">
+                {t("footer.columns.additionalServices")}
+              </h3>
 
-            {renderLinks(additionalServices)}
-          </nav>
+              {renderLinks(additionalServices)}
+            </nav>
+          </div>
 
           <div>
             <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white">

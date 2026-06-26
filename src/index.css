@@ -268,6 +268,14 @@
     font-feature-settings: "ss01", "cv11";
   }
 
+  body.luna-mobile-menu-open {
+    overscroll-behavior: none;
+  }
+
+  body.luna-mobile-menu-open .luna-mascot-chat {
+    display: none !important;
+  }
+
   h1,
   h2,
   h3,

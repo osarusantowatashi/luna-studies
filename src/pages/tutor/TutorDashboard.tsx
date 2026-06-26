@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const TIME_FILTERS = [
   { label: "All", value: "all" },
@@ -287,6 +288,33 @@ const TutorDashboard = () => {
           Review student performance, identify weak areas, and send clear feedback after practice.
         </p>
       </motion.div>
+
+      <motion.section
+        initial={{ opacity: 0, y: 35 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08 }}
+        className="rounded-[1.7rem] border border-[#8d73ff]/12 bg-white/92 p-5 shadow-[0_18px_55px_rgba(66,56,120,0.09)] backdrop-blur-xl sm:rounded-[2.2rem] sm:p-6"
+      >
+        <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+              Tutor Resources
+            </p>
+            <h2 className="mt-3 font-poppins text-2xl font-black leading-tight text-primary sm:text-3xl">
+              Tutor Cancellation & Professional Conduct Policy
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-primary/60 sm:text-base">
+              Please review Luna Education’s tutor cancellation, lesson recording, feedback, and professional conduct requirements.
+            </p>
+          </div>
+
+          <Link to="/tutor/policy">
+            <Button className="h-12 w-full rounded-2xl px-7 font-bold shadow-elegant lg:w-auto">
+              View Policy
+            </Button>
+          </Link>
+        </div>
+      </motion.section>
 
       {/* STUDENT SELECT */}
       <motion.div

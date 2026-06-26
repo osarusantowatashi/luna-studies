@@ -101,7 +101,6 @@ const NavBar = () => {
     languageOptions.find((item) => item.value === currentLang) ||
     languageOptions[0];
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -123,10 +122,24 @@ const NavBar = () => {
     if (!mobileOpen) return;
 
     const previousOverflow = document.body.style.overflow;
+    const previousPosition = document.body.style.position;
+    const previousTop = document.body.style.top;
+    const previousWidth = document.body.style.width;
+    const scrollY = window.scrollY;
+
+    document.body.classList.add("luna-mobile-menu-open");
     document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
 
     return () => {
+      document.body.classList.remove("luna-mobile-menu-open");
       document.body.style.overflow = previousOverflow;
+      document.body.style.position = previousPosition;
+      document.body.style.top = previousTop;
+      document.body.style.width = previousWidth;
+      window.scrollTo(0, scrollY);
     };
   }, [mobileOpen]);
 
@@ -173,6 +186,15 @@ const NavBar = () => {
 
   const withLang = (path: string) =>
     `/${currentLang}${path === "/" ? "" : path}`;
+
+  const homePath = isApp
+    ? role === "admin"
+      ? "/admin/dashboard"
+      : role === "tutor"
+        ? "/dashboard"
+        : "/studentoverview"
+    : withLang("/");
+
   const links =
     role === "admin"
       ? [
@@ -293,18 +315,14 @@ const NavBar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/88 backdrop-blur-xl">
+    <header
+      className={`sticky top-0 border-b border-primary/10 bg-white/88 backdrop-blur-xl ${
+        mobileOpen ? "z-[10000]" : "z-50"
+      }`}
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-[72px] sm:px-6">
         <Link
-          to={
-            isApp
-              ? role === "admin"
-                ? "/admin/dashboard"
-                : role === "tutor"
-                  ? "/dashboard"
-                  : "/studentoverview"
-              : withLang("/")
-          }
+          to={homePath}
           className="flex min-w-0 items-center gap-2.5 sm:gap-3"
           onClick={() => setMobileOpen(false)}
         >
@@ -558,17 +576,23 @@ const NavBar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-[1000] bg-[#fbfaff] md:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            className="fixed inset-0 z-[10000] isolate overflow-hidden bg-[#fbfaff] md:hidden"
           >
-            <div className="flex h-[100dvh] flex-col overflow-hidden pt-[max(0.75rem,env(safe-area-inset-top))]">
-              <div className="flex items-center justify-between border-b border-primary/10 bg-white/90 px-4 py-3 backdrop-blur-xl">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,#f0eaff_0%,transparent_34%),radial-gradient(circle_at_88%_28%,#fff1bd_0%,transparent_30%),linear-gradient(180deg,#ffffff_0%,#fbfaff_100%)]" />
+
+            <div className="relative flex h-[100dvh] flex-col overflow-hidden">
+              <div className="shrink-0 border-b border-primary/10 bg-white px-4 pb-3 pt-[max(0.85rem,env(safe-area-inset-top))] shadow-[0_8px_30px_rgba(8,42,85,0.05)]">
+                <div className="flex min-h-14 items-center justify-between gap-3">
                 <Link
-                  to={isApp ? "/studentoverview" : withLang("/")}
+                  to={homePath}
                   onClick={() => setMobileOpen(false)}
                   className="flex min-w-0 items-center gap-2.5"
                 >
                   <img src="/lunalogo.png" className="h-9 w-9 shrink-0 object-contain" />
-                  <span className="truncate font-serif text-lg text-primary">
+                  <span className="truncate font-serif text-[1.35rem] text-primary">
                     {brandName}
                   </span>
                 </Link>
@@ -576,14 +600,15 @@ const NavBar = () => {
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary shadow-sm"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary shadow-[0_10px_28px_rgba(8,42,85,0.10)]"
                   aria-label="Close navigation menu"
                 >
                   <X className="h-5 w-5" />
                 </button>
+                </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-5">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 [-webkit-overflow-scrolling:touch]">
                 {isApp ? (
                   <div className="grid gap-2">
                     {links.map(([label, path]) => (
@@ -599,8 +624,8 @@ const NavBar = () => {
                   </div>
                 ) : (
                   <div className="space-y-5">
-                    <section className="rounded-[1.6rem] border border-primary/10 bg-white/86 p-3 shadow-[0_18px_50px_rgba(8,42,85,0.07)]">
-                      <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-primary/42">
+                    <section className="rounded-[1.6rem] border border-primary/10 bg-white p-3 shadow-[0_18px_50px_rgba(8,42,85,0.07)]">
+                      <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.2em] text-primary/42">
                         {t("nav.services")}
                       </p>
                       <div className="grid gap-1">
@@ -609,7 +634,7 @@ const NavBar = () => {
                             key={item.path}
                             to={item.path}
                             onClick={() => setMobileOpen(false)}
-                            className={`flex min-h-11 items-center rounded-2xl px-3 py-2.5 text-sm font-semibold leading-5 transition ${
+                            className={`flex min-h-11 items-center rounded-2xl px-3.5 py-2.5 text-sm font-semibold leading-5 transition ${
                               isItemActive(item.path)
                                 ? "bg-[#fff8e7] text-[#082A55]"
                                 : "text-[#082A55]/72 hover:bg-[#f8f6ff] hover:text-[#082A55]"
@@ -642,15 +667,15 @@ const NavBar = () => {
                 )}
               </div>
 
-              <div className="border-t border-primary/10 bg-white/92 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur-xl">
+              <div className="shrink-0 border-t border-primary/10 bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 shadow-[0_-14px_40px_rgba(8,42,85,0.06)]">
                 {!isApp && (
-                  <div className="mb-3 grid grid-cols-3 gap-2 rounded-2xl bg-[#f8f6ff] p-1">
+                  <div className="mb-3 grid grid-cols-3 gap-1.5 rounded-2xl bg-[#f8f6ff] p-1">
                     {languageOptions.map((item) => (
                       <button
                         key={item.value}
                         type="button"
                         onClick={() => changeLanguage(item.value)}
-                        className={`min-h-10 rounded-xl text-sm font-bold transition ${
+                        className={`min-h-11 rounded-xl text-sm font-bold transition ${
                           item.value === currentLang
                             ? "bg-white text-[#082A55] shadow-sm"
                             : "text-primary/55"
@@ -676,12 +701,12 @@ const NavBar = () => {
                 ) : (
                   <div className="grid gap-3">
                     <Link to={withLang("/enquiry")} onClick={() => setMobileOpen(false)}>
-                      <Button className="h-12 w-full rounded-2xl shadow-elegant">
+                      <Button className="h-12 w-full rounded-2xl text-base shadow-elegant">
                         {t("nav.getStarted")}
                       </Button>
                     </Link>
                     <Link to={withLang("/login")} onClick={() => setMobileOpen(false)}>
-                      <Button variant="outline" className="h-12 w-full rounded-2xl">
+                      <Button variant="outline" className="h-12 w-full rounded-2xl text-base">
                         {t("nav.login")}
                       </Button>
                     </Link>

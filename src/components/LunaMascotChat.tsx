@@ -319,7 +319,7 @@ const LunaMascotChat = () => {
 
   if (shouldHide) return null;
 
-  return (<div className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-0 z-[999] w-[88vw] max-w-[330px] sm:right-[-10px] sm:w-[92vw] sm:max-w-[360px] md:w-[360px]">
+  return (<div className="luna-mascot-chat fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-0 z-[999] w-[88vw] max-w-[330px] sm:right-[-10px] sm:w-[92vw] sm:max-w-[360px] md:w-[360px]">
     <AnimatePresence>
       {open && (
         <motion.div
