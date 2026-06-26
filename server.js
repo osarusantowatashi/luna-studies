@@ -1957,7 +1957,8 @@ const classifyLegacyEnglishQuestion = (question = {}) => {
       skill,
       category: getLegacyEnglishDefaultCategory(question, skill),
       status: confident ? question.status || "approved" : "needs_review",
-  },
+    },
+  };
 };
 
 const readingSkillSet = new Set([
@@ -2037,7 +2038,6 @@ const getReadingPassagePlan = ({
     questionTotal: Math.min(2, Math.max(1, requestedCount)),
     label: "general reading passage",
   };
-};
 };
 
 const buildLegacyPromptBackfill = (question = {}) => {
@@ -4260,7 +4260,8 @@ ${examples || "No example file found. Use realistic exam style."}
 	- Generate ${passagePlan.questionTotal} question${passagePlan.questionTotal === 1 ? "" : "s"} from that same passage.
 	- Do not repeat or rewrite the passage for each question.
 	- Maximum 3 questions per passage.
-	- Use 2-4 short paragraphs when helpful for readability.
+	- For passages of 220+ words, use 3-4 short paragraphs and aim for the middle of the allowed range so validation does not fail by being too short.
+	- Count the passage words before returning. Do not return a passage below ${passagePlan.minWords} words or above ${passagePlan.maxWords} words.
 	` : `
 	- Reading passages should usually be one short paragraph.
 	- Never create full-test passages or long official-style reading sections.
@@ -4400,6 +4401,12 @@ ${extraPrompt || ""}
 	        ? 20
 	        : 0;
 	    const maxPassageWords = isReadingPassagePractice ? passagePlan.maxWords : 180;
+	    const retryTargetMin = isReadingPassagePractice
+	      ? Math.min(passagePlan.maxWords, passagePlan.minWords + 40)
+	      : minPassageWords;
+	    const retryTargetMax = isReadingPassagePractice
+	      ? Math.max(retryTargetMin, passagePlan.maxWords - 40)
+	      : maxPassageWords;
 
     let finalData = null;
     let retryPrompt = prompt;
@@ -4484,6 +4491,8 @@ ${prompt}
 	${isReadingPassagePractice ? `
 	- Return one JSON object with "type": "reading", one shared passage, and exactly ${passagePlan.questionTotal} questions.
 	- The shared passage must be ${passagePlan.minWords}-${passagePlan.maxWords} words.
+	- Aim for ${retryTargetMin}-${retryTargetMax} words to avoid being just under the minimum.
+	- If the previous passage was too short, add another concrete paragraph with relevant details before returning.
 	- Do not duplicate the passage inside individual questions.
 	- Mix question_type values. Do not repeat question types.
 	` : `
