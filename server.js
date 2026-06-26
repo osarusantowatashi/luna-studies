@@ -1793,6 +1793,19 @@ const parseGradeNumber = (value = "") => {
   return match ? Number(match[1]) : null;
 };
 
+const normalizeLegacyGradeLevel = (value = "") => {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+  if (/kindergarten/i.test(raw) || /^k$/i.test(raw)) return "Kindergarten";
+
+  const gradeNumber = parseGradeNumber(raw) || Number.parseInt(raw, 10);
+  if (Number.isInteger(gradeNumber) && gradeNumber >= 1 && gradeNumber <= 12) {
+    return `Grade ${gradeNumber}`;
+  }
+
+  return raw;
+};
+
 const mapGradeToWidaBand = (grade = "") => {
   if (/^k|kindergarten/i.test(grade)) return "K";
   const gradeNumber = parseGradeNumber(grade);
@@ -1831,7 +1844,7 @@ const mapIeltsBand = (difficulty = "", grade = "") => {
 };
 
 const normalizeLegacySkill = (question = {}, pathway = "") => {
-  const skill = String(question.skill || question.skill_tag || "").trim();
+  const skill = String(question.skill || question.skill_tag || question.category || "").trim();
   const source = normalizePathwayText(skill);
 
   if (!skill) return null;
@@ -1901,7 +1914,9 @@ const getLegacyEnglishDefaultCategory = (question = {}, skill = "") => {
 };
 
 const classifyLegacyEnglishQuestion = (question = {}) => {
-  const pathway = detectLegacyEnglishPathway(question);
+  const detectedPathway = detectLegacyEnglishPathway(question);
+  const fallbackMapLevel = normalizeLegacyGradeLevel(question.grade || question.level);
+  const pathway = detectedPathway || (fallbackMapLevel ? "MAP" : null);
 
   if (!pathway || !LEGACY_ENGLISH_PATHWAYS.has(pathway)) {
     return {
@@ -1915,7 +1930,7 @@ const classifyLegacyEnglishQuestion = (question = {}) => {
   let pathwayVariant = null;
 
   if (pathway === "MAP" || pathway === "CAT4") {
-    level = question.level || question.grade || null;
+    level = normalizeLegacyGradeLevel(question.level || question.grade) || null;
   } else if (pathway === "WIDA") {
     level = question.level || mapGradeToWidaBand(question.grade);
   } else if (pathway === "AEIS") {
@@ -2100,7 +2115,7 @@ const fetchLegacyEnglishQuestionsForMigration = async () => {
   if (error) throw new Error(error.message);
 
   return (data || []).filter(
-    (question) => !question.pathway || !question.level || question.pathway === "Legacy Grade"
+    (question) => !question.pathway || question.pathway === "Legacy Grade"
   );
 };
 
@@ -2268,6 +2283,8 @@ app.post("/api/admin/questions/legacy-english-migration/preview", requireAdmin, 
         grade: question.grade || null,
         difficulty: question.difficulty || null,
         skill: question.skill || question.skill_tag || null,
+        current_pathway: question.pathway || null,
+        current_level: question.level || null,
         current_status: question.status || "approved",
         classification: finalClassification,
         migration_preview: buildLegacyEnglishMigrationPreview(question, finalClassification),
@@ -2277,9 +2294,15 @@ app.post("/api/admin/questions/legacy-english-migration/preview", requireAdmin, 
     const confidentlyMapped = results.filter((item) => item.classification.status === "mapped");
     const needsReview = results.filter((item) => item.classification.status === "needs_review");
     const unmapped = results.filter((item) => item.classification.status === "unmapped");
+    const nullPathwayResults = results.filter((item) => !item.current_pathway);
+    const nullPathwayMapped = nullPathwayResults.filter(
+      (item) => item.classification.status === "mapped"
+    );
 
     return res.json({
       total_old_english_questions_found: questions.length,
+      null_pathway_questions_found: nullPathwayResults.length,
+      null_pathway_mapped_count: nullPathwayMapped.length,
       confidently_mapped_count: confidentlyMapped.length,
       needs_ai_or_review_count: needsReview.length,
       cannot_map_count: unmapped.length,
@@ -2335,6 +2358,7 @@ app.post("/api/admin/questions/legacy-english-migration/apply", requireAdmin, as
 
     const failed = [];
     let updated = 0;
+    let nullPathwayUpdated = 0;
 
     for (const item of updates) {
       const payload = {
@@ -2343,21 +2367,30 @@ app.post("/api/admin/questions/legacy-english-migration/apply", requireAdmin, as
         updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabaseAdmin
+      const { data: updatedRows, error } = await supabaseAdmin
         .from("questions")
         .update(payload)
-        .eq("id", item.question.id);
+        .eq("id", item.question.id)
+        .select("id,pathway,level,skill,category,status");
 
       if (error) {
         failed.push({ id: item.question.id, error: error.message });
         continue;
       }
 
-      updated += 1;
+      if (!updatedRows || updatedRows.length === 0) {
+        failed.push({ id: item.question.id, error: "No row matched update." });
+        continue;
+      }
+
+      updated += updatedRows.length;
+      if (!item.question.pathway) nullPathwayUpdated += updatedRows.length;
     }
 
     return res.json({
       total_old_english_questions_found: questions.length,
+      null_pathway_questions_found: questions.filter((question) => !question.pathway).length,
+      null_pathway_updated_count: nullPathwayUpdated,
       updated_count: updated,
       skipped_count: skipped.length,
       failed_count: failed.length,

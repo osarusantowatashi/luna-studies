@@ -501,9 +501,11 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
 
             {migrationPreview && (
               <div className="mt-5 space-y-4">
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
                   {[
                     ["Old English", migrationPreview.total_old_english_questions_found],
+                    ["NULL Pathway", migrationPreview.null_pathway_questions_found],
+                    ["NULL → MAP", migrationPreview.null_pathway_mapped_count ?? migrationPreview.null_pathway_updated_count],
                     ["Mapped", migrationPreview.confidently_mapped_count ?? migrationPreview.updated_count],
                     ["Needs Review", migrationPreview.needs_ai_or_review_count ?? migrationPreview.skipped_count],
                     ["Cannot Map", migrationPreview.cannot_map_count ?? migrationPreview.failed_count],
