@@ -32,6 +32,7 @@ const MobileNavOverlay = ({
   links,
   serviceItems,
   publicLinks,
+  aboutLinks,
   languageOptions,
   currentLang,
   currentPath,
@@ -46,6 +47,7 @@ const MobileNavOverlay = ({
   getStartedLabel,
   loginLabel,
   servicesLabel,
+  aboutLabel,
 }: {
   isApp: boolean;
   brandName: string;
@@ -53,6 +55,7 @@ const MobileNavOverlay = ({
   links: NavLinkItem[];
   serviceItems: ServiceItem[];
   publicLinks: NavLinkItem[];
+  aboutLinks: NavLinkItem[];
   languageOptions: readonly LanguageOption[];
   currentLang: "en" | "zh" | "ja";
   currentPath: string;
@@ -67,10 +70,32 @@ const MobileNavOverlay = ({
   getStartedLabel: string;
   loginLabel: string;
   servicesLabel: string;
+  aboutLabel: string;
 }) => {
+  const [openSection, setOpenSection] = useState<"services" | "about" | null>(null);
+
   const isActive = (path: string) => currentPath === path;
   const isItemActive = (path: string) =>
     path.includes("#") ? currentPathWithHash === path : currentPath === path;
+  const servicesOpen = openSection === "services";
+  const aboutOpen = openSection === "about";
+  const servicesActive = serviceItems.some((item) => isItemActive(item.path));
+  const aboutActive = aboutLinks.some(([, path]) => isItemActive(path));
+  const toggleSection = (section: "services" | "about") => {
+    setOpenSection((current) => (current === section ? null : section));
+  };
+  const accordionButtonClass = (open: boolean, active: boolean) =>
+    `flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-base font-black leading-5 transition ${
+      open || active
+        ? "border-[#D4A12A]/35 bg-white text-[#082A55] shadow-[0_12px_34px_rgba(8,42,85,0.08)]"
+        : "border-primary/10 bg-white/82 text-primary/76 shadow-[0_10px_28px_rgba(8,42,85,0.04)] hover:bg-white hover:text-[#082A55]"
+    }`;
+  const childLinkClass = (active: boolean) =>
+    `flex min-h-11 items-center rounded-xl px-3.5 py-2.5 text-sm font-semibold leading-5 transition ${
+      active
+        ? "bg-[#fff8e7] text-[#082A55]"
+        : "bg-white/72 text-[#082A55]/70 hover:bg-white hover:text-[#082A55]"
+    }`;
 
   return (
     <motion.div
@@ -129,40 +154,102 @@ const MobileNavOverlay = ({
               ))}
             </div>
           ) : (
-            <div className="space-y-5">
-              <section className="rounded-[1.6rem] border border-primary/10 bg-white p-3 shadow-[0_18px_50px_rgba(8,42,85,0.07)]">
-                <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.2em] text-primary/42">
-                  {servicesLabel}
-                </p>
-                <div className="grid gap-1">
-                  {serviceItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={close}
-                      className={`flex min-h-11 items-center rounded-2xl px-3.5 py-2.5 text-sm font-semibold leading-5 transition ${
-                        isItemActive(item.path)
-                          ? "bg-[#fff8e7] text-[#082A55]"
-                          : "text-[#082A55]/72 hover:bg-[#f8f6ff] hover:text-[#082A55]"
-                      }`}
+            <div className="space-y-2.5">
+              <section className="overflow-hidden rounded-[1.35rem]">
+                <button
+                  type="button"
+                  onClick={() => toggleSection("services")}
+                  className={accordionButtonClass(servicesOpen, servicesActive)}
+                  aria-expanded={servicesOpen}
+                  aria-controls="mobile-services-menu"
+                >
+                  <span>{servicesLabel}</span>
+                  <ChevronDown
+                    className={`h-5 w-5 shrink-0 text-primary/50 transition-transform ${
+                      servicesOpen ? "rotate-180 text-[#D4A12A]" : ""
+                    }`}
+                  />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {servicesOpen && (
+                    <motion.div
+                      id="mobile-services-menu"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="overflow-hidden"
                     >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
+                      <div className="mt-2 grid gap-1 rounded-[1.35rem] border border-primary/8 bg-white/55 p-2.5 shadow-[0_12px_34px_rgba(8,42,85,0.05)]">
+                        {serviceItems.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            onClick={close}
+                            className={childLinkClass(isItemActive(item.path))}
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </section>
 
-              <section className="grid gap-2">
-                {publicLinks.map(([label, path]) => (
-                  <Link
-                    key={path}
-                    to={path}
-                    onClick={close}
-                    className={mobileLinkClass(isActive(path))}
-                  >
-                    {label}
-                  </Link>
-                ))}
+              {publicLinks.map(([label, path]) => (
+                <Link
+                  key={path}
+                  to={path}
+                  onClick={close}
+                  className={mobileLinkClass(isActive(path))}
+                >
+                  {label}
+                </Link>
+              ))}
+
+              <section className="overflow-hidden rounded-[1.35rem]">
+                <button
+                  type="button"
+                  onClick={() => toggleSection("about")}
+                  className={accordionButtonClass(aboutOpen, aboutActive)}
+                  aria-expanded={aboutOpen}
+                  aria-controls="mobile-about-menu"
+                >
+                  <span>{aboutLabel}</span>
+                  <ChevronDown
+                    className={`h-5 w-5 shrink-0 text-primary/50 transition-transform ${
+                      aboutOpen ? "rotate-180 text-[#D4A12A]" : ""
+                    }`}
+                  />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {aboutOpen && (
+                    <motion.div
+                      id="mobile-about-menu"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-2 grid gap-1 rounded-[1.35rem] border border-primary/8 bg-white/55 p-2.5 shadow-[0_12px_34px_rgba(8,42,85,0.05)]">
+                        {aboutLinks.map(([label, path]) => (
+                          <Link
+                            key={path}
+                            to={path}
+                            onClick={close}
+                            className={childLinkClass(isItemActive(path))}
+                          >
+                            {label}
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </section>
             </div>
           )}
@@ -479,8 +566,6 @@ const NavBar = () => {
   const publicLinks: NavLinkItem[] = [
     [t("nav.tutors"), withLang("/tutors")],
     [t("nav.arcade"), withLang("/arcade")],
-    [t("nav.whyLuna"), withLang("/whyluna")],
-    [t("nav.careers"), withLang("/careers")],
   ];
 
   const currentPathWithHash = `${location.pathname}${location.hash}`;
@@ -532,6 +617,7 @@ const NavBar = () => {
                 links={links}
                 serviceItems={serviceItems}
                 publicLinks={publicLinks}
+                aboutLinks={aboutLinks}
                 languageOptions={languageOptions}
                 currentLang={currentLang}
                 currentPath={location.pathname}
@@ -546,6 +632,7 @@ const NavBar = () => {
                 getStartedLabel={t("nav.getStarted")}
                 loginLabel={t("nav.login")}
                 servicesLabel={t("nav.services")}
+                aboutLabel={t("nav.aboutUs")}
               />
             )}
           </AnimatePresence>,
