@@ -218,6 +218,10 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
       "pathway_variant",
       "variant_label",
       "difficulty_label",
+      "estimated_cefr",
+      "difficulty_rationale",
+      "question_type",
+      "why_this_matches_level",
     ];
 
     const payload = fields.reduce((acc: Record<string, any>, field) => {
@@ -641,6 +645,13 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
                 <p className="mt-1 text-xs text-muted-foreground">
                   Updated {formatDate(q.updated_at || q.created_at)}
                 </p>
+                {(q.question_type || q.estimated_cefr) && (
+                  <p className="mt-1 text-xs font-semibold text-primary/50">
+                    {[q.question_type, q.estimated_cefr ? `CEFR ${q.estimated_cefr}` : null]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                )}
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {formatQuestionTags(q).map((tag) => (
                     <span
@@ -702,6 +713,13 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
               <p className="text-sm font-semibold leading-6 text-primary">
                 {localizedField(q, "question", previewPromptLanguage) || q.question_text}
               </p>
+              {(q.question_type || q.estimated_cefr) && (
+                <p className="mt-2 text-xs font-semibold text-primary/50">
+                  {[q.question_type, q.estimated_cefr ? `CEFR ${q.estimated_cefr}` : null]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              )}
             </button>
           ))}
         </div>
@@ -796,6 +814,41 @@ const LanguageQuestionBank = ({ targetLanguage: initialTargetLanguage = "English
                   </p>
                 </section>
               )}
+
+              <section className="rounded-[1.5rem] border bg-[#fbfaff] p-4">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+                  Difficulty Profile
+                </p>
+
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <input
+                    value={draft.estimated_cefr || ""}
+                    onChange={(e) => updateDraft("estimated_cefr", e.target.value)}
+                    placeholder="Estimated CEFR"
+                    className="min-h-11 rounded-2xl border bg-white px-4 py-3 text-sm"
+                  />
+                  <input
+                    value={draft.question_type || ""}
+                    onChange={(e) => updateDraft("question_type", e.target.value)}
+                    placeholder="Question type"
+                    className="min-h-11 rounded-2xl border bg-white px-4 py-3 text-sm"
+                  />
+                </div>
+
+                <textarea
+                  value={draft.difficulty_rationale || ""}
+                  onChange={(e) => updateDraft("difficulty_rationale", e.target.value)}
+                  placeholder="Difficulty rationale"
+                  className="mt-3 min-h-20 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
+                />
+
+                <textarea
+                  value={draft.why_this_matches_level || ""}
+                  onChange={(e) => updateDraft("why_this_matches_level", e.target.value)}
+                  placeholder="Why this matches the selected level"
+                  className="mt-3 min-h-20 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
+                />
+              </section>
 
               {PROMPT_LANGUAGES.map((language) => {
                 const suffix = languageSuffix(language);

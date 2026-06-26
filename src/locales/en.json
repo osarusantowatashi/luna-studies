@@ -289,6 +289,10 @@
       "kana": {
         "role": "Japanese Language Tutor",
         "desc": "Helps students build strong Japanese foundations through grammar, vocabulary, conversation, and JLPT practice."
+      },
+      "junichi": {
+        "role": "Math · English Tutor",
+        "desc": "Builds logical thinking, conceptual understanding, and structured problem-solving confidence."
       }
     },
     "enquiry": {
@@ -1844,6 +1848,30 @@
           "Real-Life Communication"
         ],
         "quote": "Kana helps learners use Japanese in real situations through clear grammar, practical speaking and supportive practice."
+      },
+      {
+        "name": "Junichi Ro",
+        "image": "/tutors/Junichi Ro.jpeg",
+        "role": "Mathematics & English Tutor",
+        "subjects": [
+          "Mathematics",
+          "English"
+        ],
+        "education": "Bachelor of Science in Mathematics, New York University",
+        "languages": "English / Japanese",
+        "bio": "Junichi is a native bilingual tutor in English and Japanese with a strong mathematics background. He supports students in Mathematics and English through clear reasoning, structured problem solving and confidence-building guidance.",
+        "experience": [
+          "Mathematics and English teaching experience with students across multiple countries, including Tanzania and Portugal",
+          "Former Student Leader at a high school Mathematics Learning Support Center",
+          "Support for analytical and quantitative reasoning in mathematics",
+          "Bilingual academic support in English and Japanese"
+        ],
+        "teachingStyle": [
+          "Logical Thinking",
+          "Conceptual Understanding",
+          "Structured Problem Solving"
+        ],
+        "quote": "Junichi helps students approach mathematics with clear logic, independent thinking and confidence."
       },
       {
         "name": "Ruth",

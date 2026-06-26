@@ -66,6 +66,10 @@ const toInsertPayload = (q: any, targetLanguage: TargetLanguage, category: strin
   pathway_variant: q.pathway_variant || null,
   variant_label: q.variant_label || null,
   difficulty_label: q.difficulty_label || null,
+  estimated_cefr: q.estimated_cefr || null,
+  difficulty_rationale: q.difficulty_rationale || null,
+  question_type: q.question_type || q.skill || null,
+  why_this_matches_level: q.why_this_matches_level || null,
   category: category || null,
   status: "needs_review",
   passage: q.passage || null,
@@ -312,6 +316,10 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
       explanation_ja: draft.explanation_ja || null,
       category: draft.category || null,
       passage: draft.passage || null,
+      estimated_cefr: draft.estimated_cefr || null,
+      difficulty_rationale: draft.difficulty_rationale || null,
+      question_type: draft.question_type || null,
+      why_this_matches_level: draft.why_this_matches_level || null,
       updated_at: new Date().toISOString(),
     };
 
@@ -878,6 +886,21 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                       </p>
 
                       <p className="text-sm text-muted-foreground">{subQ.explanation_en || subQ.explanation}</p>
+
+                      {(subQ.difficulty_rationale || subQ.why_this_matches_level || subQ.estimated_cefr || subQ.question_type) && (
+                        <div className="mt-3 rounded-2xl border bg-[#fbfaff] p-4 text-xs leading-6 text-primary/65">
+                          <p className="font-black uppercase tracking-[0.16em] text-primary/40">
+                            Difficulty Profile
+                          </p>
+                          <p className="mt-2">
+                            {[subQ.question_type, subQ.estimated_cefr ? `CEFR ${subQ.estimated_cefr}` : null]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </p>
+                          {subQ.difficulty_rationale && <p className="mt-1">{subQ.difficulty_rationale}</p>}
+                          {subQ.why_this_matches_level && <p className="mt-1">{subQ.why_this_matches_level}</p>}
+                        </div>
+                      )}
                     </div>
                   ))}
 
@@ -919,6 +942,21 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
 
                 <p className="mt-4 text-sm text-green-700">Correct: {getCorrectAnswerText(q)}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{q.explanation_en || q.explanation}</p>
+
+                {(q.difficulty_rationale || q.why_this_matches_level || q.estimated_cefr || q.question_type) && (
+                  <div className="mt-4 rounded-2xl border bg-[#fbfaff] p-4 text-xs leading-6 text-primary/65">
+                    <p className="font-black uppercase tracking-[0.16em] text-primary/40">
+                      Difficulty Profile
+                    </p>
+                    <p className="mt-2">
+                      {[q.question_type, q.estimated_cefr ? `CEFR ${q.estimated_cefr}` : null]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                    {q.difficulty_rationale && <p className="mt-1">{q.difficulty_rationale}</p>}
+                    {q.why_this_matches_level && <p className="mt-1">{q.why_this_matches_level}</p>}
+                  </div>
+                )}
 
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                   <Button
@@ -987,6 +1025,45 @@ const LanguageQuestionGenerator = ({ targetLanguage: fixedTargetLanguage }: Lang
                 readOnly={!previewEditing}
                 className="min-h-11 w-full rounded-2xl border bg-white px-4 py-3"
               />
+
+              <section className="rounded-[1.5rem] border bg-[#fbfaff] p-4">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">
+                  Difficulty Profile
+                </p>
+
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <input
+                    value={draft.estimated_cefr || ""}
+                    onChange={(e) => updateDraft("estimated_cefr", e.target.value)}
+                    placeholder="Estimated CEFR"
+                    readOnly={!previewEditing}
+                    className="min-h-11 rounded-2xl border bg-white px-4 py-3 text-sm"
+                  />
+                  <input
+                    value={draft.question_type || ""}
+                    onChange={(e) => updateDraft("question_type", e.target.value)}
+                    placeholder="Question type"
+                    readOnly={!previewEditing}
+                    className="min-h-11 rounded-2xl border bg-white px-4 py-3 text-sm"
+                  />
+                </div>
+
+                <textarea
+                  value={draft.difficulty_rationale || ""}
+                  onChange={(e) => updateDraft("difficulty_rationale", e.target.value)}
+                  placeholder="Difficulty rationale"
+                  readOnly={!previewEditing}
+                  className="mt-3 min-h-20 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
+                />
+
+                <textarea
+                  value={draft.why_this_matches_level || ""}
+                  onChange={(e) => updateDraft("why_this_matches_level", e.target.value)}
+                  placeholder="Why this matches the selected level"
+                  readOnly={!previewEditing}
+                  className="mt-3 min-h-20 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6"
+                />
+              </section>
 
               {draft.passage !== null && draft.passage !== undefined && (
                 <section className="rounded-[1.5rem] border bg-[#fbfaff] p-4">

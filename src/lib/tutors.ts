@@ -87,6 +87,16 @@ const fallbackTutors: Omit<Tutor, "slug">[] = [
     experience: [],
   },
   {
+    name: "Junichi Ro",
+    image: "/tutors/Junichi Ro.jpeg",
+    role: "Mathematics & English Tutor",
+    subjects: ["Mathematics", "English"],
+    education: "Bachelor of Science in Mathematics, New York University",
+    languages: "English / Japanese",
+    bio: "A native bilingual Mathematics and English tutor who helps students build logical thinking, conceptual understanding, and confident problem-solving skills.",
+    experience: [],
+  },
+  {
     name: "Siya",
     image: "/tutors/siya.jpeg",
     role: "Academic Tutor",

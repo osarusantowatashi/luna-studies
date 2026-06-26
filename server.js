@@ -1749,6 +1749,510 @@ const difficultyRules = {
   "7.5+": "- IELTS target band 7.5+: sophisticated language, subtle reasoning, and precise distinctions.",
 };
 
+const compactList = (items = []) => items.filter(Boolean).join("; ");
+
+const getGradeBand = (level = "", grade = "") => {
+  const source = String(level || grade || "");
+  if (/kindergarten|^k$/i.test(source)) return "K-2";
+  const match = source.match(/Grade\s*(\d+)/i);
+  const gradeNumber = match ? Number.parseInt(match[1], 10) : null;
+
+  if (!gradeNumber) return "general";
+  if (gradeNumber <= 2) return "K-2";
+  if (gradeNumber <= 5) return "3-5";
+  if (gradeNumber <= 8) return "6-8";
+  return "9-12";
+};
+
+const getDifficultyProfile = ({
+  targetLanguage = "English",
+  pathway = "",
+  level = "",
+  grade = "",
+  skill = "",
+  pathwayVariant = "",
+  difficulty = "",
+} = {}) => {
+  const selectedPathway = pathway || "General";
+  const selectedLevel = String(level || grade || difficulty || "");
+  const gradeBand = getGradeBand(selectedLevel, grade);
+
+  const base = {
+    pathway: selectedPathway,
+    level: selectedLevel || "General",
+    skill,
+    estimated_cefr: null,
+    learnerLevel: "Match the selected pathway and level.",
+    vocabularyRange: "Use level-appropriate vocabulary only.",
+    sentenceComplexity: "Use sentence complexity appropriate to the learner profile.",
+    passageComplexity: "Use concise passages only when the selected skill requires reading.",
+    cognitiveSkills: "Use reasoning appropriate to the selected level.",
+    questionTypes: "Use the selected skill and pathway format.",
+    distractorQuality: "Distractors should be plausible but fair.",
+    grammarComplexity: "Use grammar appropriate to the target level.",
+    academicStyle: "Keep the style aligned to the selected pathway.",
+    acceptableVocabularyExamples: [],
+    unacceptableVocabularyExamples: [],
+    stemStyleExamples: [],
+    distractorStyleExamples: [],
+    strictAvoidRules: [
+      "Do not copy or closely paraphrase official copyrighted exam questions.",
+      "Do not use Listening or Speaking tasks in Phase 1.",
+      "Do not exceed the selected level's grammar or vocabulary unless the question explicitly tests recognition.",
+    ],
+  };
+
+  const withSummary = (profile) => ({
+    ...profile,
+    difficultyRationale: compactList([
+      `Profile: ${profile.pathway} ${profile.level}`,
+      profile.estimated_cefr ? `CEFR: ${profile.estimated_cefr}` : "",
+      profile.vocabularyRange,
+      profile.cognitiveSkills,
+      profile.distractorQuality,
+    ]),
+    whyThisMatchesLevel: compactList([
+      `The item must match ${profile.pathway} ${profile.level}`,
+      `Skill focus: ${profile.skill || "selected skill"}`,
+      profile.sentenceComplexity,
+      profile.passageComplexity,
+    ]),
+  });
+
+  if (selectedPathway === "IELTS") {
+    const is75 = /7\.5\+/.test(selectedLevel);
+    const is65 = /6\.5/.test(selectedLevel);
+    const is55 = /5\.5/.test(selectedLevel);
+
+    return withSummary({
+      ...base,
+      estimated_cefr: is75 ? "C1" : is65 ? "B2-C1" : is55 ? "B1-B2" : "A2-B1",
+      learnerLevel: is75
+        ? "Advanced IELTS learner approaching university-level academic English."
+        : is65
+          ? "Upper-intermediate learner building academic precision."
+          : is55
+            ? "Intermediate learner who can manage familiar academic topics with support."
+            : "Lower-intermediate learner building IELTS foundations.",
+      vocabularyRange: is75
+        ? "Academic and semi-technical vocabulary, nuanced collocations, paraphrase-heavy wording."
+        : is65
+          ? "Common academic vocabulary, topic words, moderate paraphrasing."
+          : "Everyday and high-frequency academic vocabulary with transparent meaning.",
+      sentenceComplexity: is75
+        ? "Complex and compound-complex sentences, nominalisation, contrast/concession, dense reference."
+        : is65
+          ? "Moderately complex sentences with subordination and clear linking."
+          : "Short to medium sentences with clear connectors and limited embedding.",
+      passageComplexity: is75
+        ? "Abstract academic passage with implicit stance, layered evidence, and paraphrased relationships."
+        : is65
+          ? "Academic passage with some inference, contrast, and paraphrase."
+          : "Concrete passage with explicit evidence and familiar topic progression.",
+      cognitiveSkills: is75
+        ? "Multi-step inference, writer attitude, function of evidence, reference tracking, nuanced paraphrase."
+        : is65
+          ? "Inference, detail-location, vocabulary in context, and main idea with moderate traps."
+          : "Explicit detail, simple inference, main idea, and vocabulary in context.",
+      questionTypes: is75
+        ? "Inference, author's purpose, reference, paraphrase, tone/attitude, evidence function."
+        : "Main idea, detail, vocabulary in context, simple inference, sentence improvement.",
+      distractorQuality: is75
+        ? "Strong distractors should be partially true, use passage wording, but fail by scope, logic, or attitude."
+        : "Distractors should be clear but realistic: too broad, too narrow, opposite, or unsupported.",
+      grammarComplexity: is75
+        ? "Advanced clauses, cohesion, modality, hedging, passive voice, nominalisation."
+        : "Core tenses, articles, prepositions, linking words, basic complex sentences.",
+      academicStyle: `${pathwayVariant || "Academic"} IELTS-aligned micro practice, not a full test.`,
+      acceptableVocabularyExamples: is75
+        ? ["mitigate", "subsequent", "ambiguous", "sustainable", "constitute", "plausible"]
+        : ["increase", "reason", "public", "change", "important", "improve"],
+      unacceptableVocabularyExamples: is75
+        ? ["big", "good", "fast as the main target word", "happy", "go", "basic synonym-only items"]
+        : ["notwithstanding", "epistemological", "ameliorate", "ubiquitous as a target word"],
+      stemStyleExamples: is75
+        ? [
+            "Which option best captures the writer's implied attitude toward the policy?",
+            "What can be inferred from the contrast between the two findings?",
+          ]
+        : [
+            "According to the paragraph, why did the number increase?",
+            "Which word is closest in meaning to important in this context?",
+          ],
+      distractorStyleExamples: is75
+        ? [
+            "A choice that repeats a passage phrase but reverses the causal relationship.",
+            "A choice that is true in general but not supported by this paragraph.",
+          ]
+        : [
+            "A choice that is mentioned but does not answer the question.",
+            "A choice with the opposite meaning of the passage detail.",
+          ],
+      strictAvoidRules: [
+        ...base.strictAvoidRules,
+        ...(is75
+          ? [
+              "Avoid basic synonym questions like rapid -> swift.",
+              "Avoid one-sentence evidence questions.",
+              "Avoid obvious distractors.",
+              "Avoid everyday-only vocabulary.",
+              "Avoid simple recall questions.",
+            ]
+          : [
+              "Avoid dense university-level prose.",
+              "Avoid obscure academic vocabulary as the target.",
+              "Avoid distractors that require advanced outside knowledge.",
+            ]),
+      ],
+    });
+  }
+
+  if (selectedPathway === "TOEFL") {
+    const isAdvanced = /Advanced/i.test(selectedLevel);
+    const isIntermediate = /Intermediate/i.test(selectedLevel);
+
+    return withSummary({
+      ...base,
+      estimated_cefr: isAdvanced ? "C1" : isIntermediate ? "B2" : "A2-B1",
+      learnerLevel: isAdvanced
+        ? "Advanced learner ready for dense academic reading and precise reasoning."
+        : isIntermediate
+          ? "Intermediate-to-upper-intermediate learner building academic fluency."
+          : "Foundation learner developing TOEFL-style academic skills.",
+      vocabularyRange: isAdvanced
+        ? "Academic lecture/reading vocabulary, discipline-neutral terms, precise verbs and abstract nouns."
+        : "High-frequency academic and campus vocabulary with clear context support.",
+      sentenceComplexity: isAdvanced
+        ? "Longer academic sentences with apposition, concession, cause-effect, and reference chains."
+        : "Shorter academic sentences with clear signal words and limited embedding.",
+      passageComplexity: isAdvanced
+        ? "Short academic paragraph that compresses evidence, contrast, and implication."
+        : "Concrete academic paragraph with explicit organization.",
+      cognitiveSkills: isAdvanced
+        ? "Inference, rhetorical function, vocabulary in context, detail synthesis, reference."
+        : "Main idea, explicit detail, basic inference, vocabulary in context.",
+      questionTypes: isAdvanced
+        ? "TOEFL reading micro-items: rhetorical purpose, inference, vocabulary, reference, detail."
+        : "TOEFL foundation micro-items: vocabulary, main idea, detail, sentence simplification.",
+      distractorQuality: isAdvanced
+        ? "Distractors should borrow academic language and fail subtly by logic or scope."
+        : "Distractors should be plausible but easier to eliminate with passage evidence.",
+      grammarComplexity: isAdvanced
+        ? "Academic cohesion, relative clauses, passive constructions, nominalisation."
+        : "Core grammar, sentence clarity, connectors, subject-verb agreement.",
+      academicStyle: "TOEFL-aligned academic micro practice, no lectures/audio.",
+      acceptableVocabularyExamples: isAdvanced
+        ? ["hypothesis", "consequently", "derive", "contrast", "phenomenon", "substantial"]
+        : ["campus", "study", "reason", "process", "result", "important"],
+      unacceptableVocabularyExamples: isAdvanced
+        ? ["big/good/fast as target words", "simple picture-word matching"]
+        : ["esoteric", "ontological", "incommensurable", "arcane idioms"],
+      stemStyleExamples: isAdvanced
+        ? [
+            "Why does the author mention the second experiment?",
+            "The word substantial in the passage is closest in meaning to...",
+          ]
+        : [
+            "What is the paragraph mainly about?",
+            "According to the paragraph, what happened first?",
+          ],
+      distractorStyleExamples: isAdvanced
+        ? [
+            "A choice that states a true detail but misses the rhetorical function.",
+            "A choice that confuses cause and result.",
+          ]
+        : [
+            "A choice that uses a word from the passage but changes the meaning.",
+            "A choice that is too general.",
+          ],
+      strictAvoidRules: [
+        ...base.strictAvoidRules,
+        ...(isAdvanced
+          ? ["Avoid generic ESL vocabulary drills.", "Avoid simple recall if the skill is Reading."]
+          : ["Avoid advanced research-article density.", "Avoid idioms or cultural references that obscure the target skill."]),
+      ],
+    });
+  }
+
+  if (selectedPathway === "MAP") {
+    const isHigh = gradeBand === "9-12";
+    const isMid = gradeBand === "6-8";
+    const isElementary35 = gradeBand === "3-5";
+    const isLower = isElementary35 || gradeBand === "K-2";
+
+    return withSummary({
+      ...base,
+      estimated_cefr: null,
+      learnerLevel: isHigh
+        ? "High-school MAP learner working with academic and literary/informational reasoning."
+        : isMid
+          ? "Middle-school MAP learner developing inference and precise vocabulary."
+          : "Elementary MAP learner building grade-level comprehension and language usage.",
+      vocabularyRange: isHigh
+        ? "Academic and cross-curricular vocabulary suitable for Grades 9-12."
+        : isMid
+          ? "Grade-level school vocabulary, prefixes/suffixes, and common academic words."
+          : "Concrete school and story vocabulary; some age-appropriate academic words.",
+      sentenceComplexity: isHigh
+        ? "Complex sentences, embedded clauses, figurative language, and academic transitions."
+        : isMid
+          ? "Moderate sentences with clear subordination and varied structure."
+          : "Short to medium sentences with clear syntax.",
+      passageComplexity: isHigh
+        ? "Literary or informational passage with implied claims, tone, and structure."
+        : isMid
+          ? "Age-appropriate passage with inference and evidence."
+          : "Concrete narrative/informational passage, no adult abstract topics.",
+      cognitiveSkills: isHigh
+        ? "Inference, author's craft, evidence evaluation, theme, vocabulary nuance."
+        : isMid
+          ? "Main idea, detail, inference, vocabulary in context, language conventions."
+          : isElementary35
+            ? "Context-clue reasoning, grade-level word meaning, main idea, explicit detail, simple inference, grammar conventions."
+            : "Main idea, explicit detail, simple inference, word meaning, grammar conventions.",
+      questionTypes: "MAP Reading, Vocabulary, or Language Usage aligned to the selected skill.",
+      distractorQuality: isHigh
+        ? "Close distractors based on misread evidence or overgeneralized themes."
+        : "Age-appropriate distractors that are plausible but clearly resolvable.",
+      grammarComplexity: isHigh
+        ? "Conventions, punctuation, clauses, transitions, style, and revision."
+        : "Core grammar, usage, punctuation, and sentence clarity.",
+      academicStyle: "NWEA MAP-style adaptive growth practice, not IELTS/TOEFL prose.",
+      acceptableVocabularyExamples: isHigh
+        ? ["interpret", "contrast", "significant", "perspective", "symbolic"]
+        : isElementary35
+          ? ["cautious", "scarce", "observe", "investigate", "conclude", "fortunate"]
+          : ["compare", "detail", "character", "because", "predict"],
+      unacceptableVocabularyExamples: isLower
+        ? [
+            "epistemology",
+            "macroeconomic",
+            "notwithstanding",
+            "bureaucratic inertia",
+            ...(isElementary35 ? ["happy -> joyful", "big -> large", "fast -> quick"] : []),
+          ]
+        : ["university-only research jargon"],
+      stemStyleExamples: isHigh
+        ? [
+            "Which sentence best supports the author's central claim?",
+            "What does the phrase suggest about the narrator's perspective?",
+          ]
+        : [
+            "What is the main idea of the paragraph?",
+            "Which detail shows why the character changed her mind?",
+          ],
+      distractorStyleExamples: isHigh
+        ? ["A theme-like answer that is too broad.", "A claim that sounds academic but lacks evidence."]
+        : ["A detail from the text that does not answer the question.", "An opposite or unrelated idea."],
+      strictAvoidRules: [
+        ...base.strictAvoidRules,
+        ...(isLower
+          ? [
+              "Avoid adult abstract topics.",
+              "Avoid IELTS-style academic prose.",
+              "Avoid overly subtle writer-attitude questions.",
+              ...(isElementary35
+                ? [
+                    "Avoid K-2 synonym drills such as happy -> joyful or big -> large.",
+                    "For Grade 3-5 vocabulary, include a short context sentence and require context-clue reasoning.",
+                  ]
+                : []),
+            ]
+          : ["Avoid full IELTS/TOEFL style passages.", "Avoid content that requires adult background knowledge."]),
+      ],
+    });
+  }
+
+  if (selectedPathway === "JLPT" || targetLanguage === "Japanese") {
+    const isN1 = selectedLevel === "N1";
+    const isN2 = selectedLevel === "N2";
+    const isLow = selectedLevel === "N5" || selectedLevel === "N4";
+
+    return withSummary({
+      ...base,
+      pathway: "JLPT",
+      estimated_cefr: isN1 ? "B2-C1" : isN2 ? "B2" : selectedLevel === "N3" ? "B1" : "A1-A2",
+      learnerLevel: isN1
+        ? "Advanced Japanese learner handling abstract, nuanced written Japanese."
+        : isN2
+          ? "Upper-intermediate Japanese learner handling natural written Japanese."
+          : isLow
+            ? "Beginner Japanese learner building core forms, kana, basic kanji, and simple patterns."
+            : "Intermediate Japanese learner bridging daily and more formal language.",
+      vocabularyRange: isN1
+        ? "Advanced vocabulary, abstract nouns, nuanced verbs, idiomatic written expressions."
+        : isLow
+          ? "Core daily vocabulary, kana, basic kanji, common verbs/adjectives."
+          : "Intermediate daily/social vocabulary, more kanji compounds, common formal expressions.",
+      sentenceComplexity: isN1
+        ? "Complex embedded clauses, nuance, written-style grammar, implied relationships."
+        : isLow
+          ? "Very short sentences using core particles and basic verb/adjective forms."
+          : "Moderate sentences with connectors, relative clauses, and common patterns.",
+      passageComplexity: isN1
+        ? "Dense short Japanese passage with nuanced opinion or abstract relationship."
+        : isLow
+          ? "Short daily-life text, notice, or simple paragraph."
+          : "Practical passage with implied meaning and natural connectors.",
+      cognitiveSkills: isN1
+        ? "Nuance, implication, grammar function, reading between lines, register."
+        : isLow
+          ? "Recognition, meaning, simple completion, direct comprehension."
+          : "Grammar choice, kanji/vocabulary in context, practical inference.",
+      questionTypes: "JLPT-aligned vocabulary, grammar, kanji, reading, or sentence pattern items.",
+      distractorQuality: isN1
+        ? "Distractors should be grammatically plausible and differ by nuance, register, or collocation."
+        : "Distractors should be common learner confusions within the same JLPT level.",
+      grammarComplexity: isN1
+        ? "N1 written grammar, nuance, formal connectors, advanced patterns."
+        : isLow
+          ? "Particles は/が/を/に/で, です/ます, basic tense, simple adjectives."
+          : "N3-N2 patterns, conjunctions, relative clauses, honorific/formal basics when relevant.",
+      academicStyle: "JLPT-style Japanese practice, not translation-only unless vocabulary recognition is intended.",
+      acceptableVocabularyExamples: isN1
+        ? ["著しい", "促す", "踏まえる", "見解", "余儀なくされる"]
+        : ["食べます", "学校", "大きい", "行きます", "本"],
+      unacceptableVocabularyExamples: isLow
+        ? ["著しい", "概念", "踏まえる", "余儀なくされる"]
+        : ["N5-only kana drills as the main challenge"],
+      stemStyleExamples: isN1
+        ? ["筆者の考えに最も近いものはどれですか。", "文中の「それ」は何を指していますか。"]
+        : ["（　）に入ることばはどれですか。", "「たべます」の意味はどれですか。"],
+      distractorStyleExamples: isN1
+        ? ["A grammatically possible phrase with the wrong nuance.", "A synonym that does not match the register."]
+        : ["A particle confusion from the same level.", "A word with similar kana but different meaning."],
+      strictAvoidRules: [
+        ...base.strictAvoidRules,
+        "Avoid using grammar/vocabulary above the selected JLPT level unless explicitly testing recognition.",
+        ...(isLow ? ["Avoid long kanji-heavy passages.", "Avoid abstract adult topics."] : []),
+      ],
+    });
+  }
+
+  if (selectedPathway === "HSK" || targetLanguage === "Chinese") {
+    const isHsk6 = /HSK\s*6/i.test(selectedLevel);
+    const isHsk5 = /HSK\s*5/i.test(selectedLevel);
+    const isLow = /HSK\s*(1|2)/i.test(selectedLevel);
+
+    return withSummary({
+      ...base,
+      pathway: "HSK",
+      estimated_cefr: isHsk6 ? "C1" : isHsk5 ? "B2-C1" : /HSK\s*4/i.test(selectedLevel) ? "B1-B2" : "A1-A2",
+      learnerLevel: isHsk6
+        ? "Advanced Chinese learner handling abstract topics, idiomatic written Chinese, and nuanced argument."
+        : isLow
+          ? "Beginner Chinese learner building basic words, characters, pinyin-supported meaning, and simple sentences."
+          : "Developing Chinese learner building sentence structure, character recognition, and practical reading.",
+      vocabularyRange: isHsk6
+        ? "Advanced HSK vocabulary, formal verbs, abstract nouns, idiomatic phrases."
+        : isLow
+          ? "Basic daily vocabulary: family, numbers, time, food, school, simple verbs."
+          : "Common HSK vocabulary for daily/social topics, connectors, measure words, and common compounds.",
+      sentenceComplexity: isHsk6
+        ? "Longer written sentences with connectors, abstract relations, 把/被, complements, and formal style."
+        : isLow
+          ? "Short SVO sentences, 是/有, simple questions, basic time/place phrases."
+          : "Moderate sentences with aspect particles, complements, comparisons, and connectors.",
+      passageComplexity: isHsk6
+        ? "Compact advanced Chinese passage with argument, implication, or nuanced relationship."
+        : isLow
+          ? "Very short daily-life sentence or simple paragraph."
+          : "Practical paragraph with clear sequence, cause-effect, or comparison.",
+      cognitiveSkills: isHsk6
+        ? "Inference, nuance, character/word choice, cohesion, implied meaning."
+        : isLow
+          ? "Recognition, direct meaning, basic grammar choice, simple comprehension."
+          : "Sentence structure, vocabulary in context, detail, simple inference.",
+      questionTypes: "HSK-aligned vocabulary, grammar, characters, reading, or sentence structure items.",
+      distractorQuality: isHsk6
+        ? "Distractors should be semantically close and differ by collocation, register, or logic."
+        : "Distractors should reflect common same-level learner confusions.",
+      grammarComplexity: isHsk6
+        ? "Advanced connectors, 把/被, complements, formal written structures, nuanced aspect."
+        : isLow
+          ? "Basic word order, 是/有, 吗 questions, 的, simple time/place, common measure words."
+          : "了/过/着, comparison, complements, 把 basics, connectors.",
+      academicStyle: "HSK-aligned Chinese proficiency practice, not generic translation drills unless vocabulary recognition is intended.",
+      acceptableVocabularyExamples: isHsk6
+        ? ["因素", "促进", "显著", "趋势", "承担", "然而"]
+        : ["我", "喜欢", "学校", "苹果", "今天", "老师"],
+      unacceptableVocabularyExamples: isLow
+        ? ["因素", "显著", "趋势", "承担", "不可避免"]
+        : ["HSK 1-only words as the main challenge"],
+      stemStyleExamples: isHsk6
+        ? ["根据这段话，作者最可能同意哪一项？", "文中“这一现象”指的是什么？"]
+        : ["“苹果”的意思是什么？", "哪个词最适合填在括号里？"],
+      distractorStyleExamples: isHsk6
+        ? ["A near-synonym with wrong collocation.", "A statement that reverses the paragraph's causal logic."]
+        : ["A character/word from the same topic with different meaning.", "A grammar choice from a later level that should not be required."],
+      strictAvoidRules: [
+        ...base.strictAvoidRules,
+        "Avoid using grammar/vocabulary above the selected HSK level unless explicitly testing recognition.",
+        ...(isLow ? ["Avoid long character-heavy passages.", "Avoid abstract adult topics."] : []),
+      ],
+    });
+  }
+
+  const pathwayProfiles = {
+    WIDA: {
+      learnerLevel: "English language development learner in the selected grade band.",
+      vocabularyRange: "School and academic vocabulary with scaffolding.",
+      cognitiveSkills: "Comprehension, language function, evidence, classroom academic language.",
+      strictAvoidRules: ["Avoid trick questions; WIDA should assess language development with clarity."],
+    },
+    CAT4: {
+      learnerLevel: "Reasoning practice for the selected grade/year.",
+      vocabularyRange: "Minimal language load unless Verbal Reasoning is selected.",
+      cognitiveSkills: "Pattern recognition, analogy, classification, quantitative/spatial reasoning.",
+      strictAvoidRules: ["Avoid curriculum knowledge requirements; CAT4 should be reasoning-first."],
+    },
+    AEIS: {
+      learnerLevel: "Singapore school admissions English learner.",
+      vocabularyRange: "School-life and practical academic vocabulary.",
+      cognitiveSkills: "Grammar accuracy, cloze logic, comprehension, sentence transformation.",
+      strictAvoidRules: ["Avoid IELTS/TOEFL academic register; keep Singapore school admission style."],
+    },
+    "O-Level English": {
+      learnerLevel: "Secondary/O-Level English learner.",
+      vocabularyRange: "Formal school English, comprehension and composition vocabulary.",
+      cognitiveSkills: "Editing, cloze, comprehension, argument planning, sentence transformation.",
+      strictAvoidRules: ["Avoid primary-level simplicity; avoid full essay free-response items."],
+    },
+  };
+
+  const fallbackProfile = pathwayProfiles[selectedPathway] || {};
+
+  return withSummary({
+    ...base,
+    ...fallbackProfile,
+    strictAvoidRules: [...base.strictAvoidRules, ...(fallbackProfile.strictAvoidRules || [])],
+  });
+};
+
+const formatDifficultyProfileForPrompt = (profile = {}) => `
+DIFFICULTY PROFILE:
+- Pathway: ${profile.pathway}
+- Level: ${profile.level}
+- Skill: ${profile.skill}
+- Estimated CEFR: ${profile.estimated_cefr || "Not applicable"}
+- Expected learner level: ${profile.learnerLevel}
+- Vocabulary range: ${profile.vocabularyRange}
+- Sentence complexity: ${profile.sentenceComplexity}
+- Passage complexity: ${profile.passageComplexity}
+- Cognitive skills: ${profile.cognitiveSkills}
+- Question types: ${profile.questionTypes}
+- Distractor quality: ${profile.distractorQuality}
+- Grammar complexity: ${profile.grammarComplexity}
+- Academic/style register: ${profile.academicStyle}
+- Acceptable vocabulary examples: ${(profile.acceptableVocabularyExamples || []).join(", ") || "Use profile-appropriate words."}
+- Unacceptable vocabulary examples: ${(profile.unacceptableVocabularyExamples || []).join(", ") || "Avoid off-level words."}
+- Example question stem style: ${(profile.stemStyleExamples || []).join(" | ") || "Use the selected pathway's item style."}
+- Example distractor style: ${(profile.distractorStyleExamples || []).join(" | ") || "Use plausible but fair distractors."}
+
+STRICT AVOID RULES:
+${(profile.strictAvoidRules || []).map((rule) => `- ${rule}`).join("\n")}
+`;
+
 const LEGACY_ENGLISH_PATHWAYS = new Set([
   "MAP",
   "WIDA",
@@ -4210,6 +4714,18 @@ app.post("/api/generate-questions", requireAdmin, async (req, res) => {
     } = req.body;
 
     const targetLanguage = targetLanguageInput || targetLanguageSnake || "English";
+    const selectedPathway = pathway || examType;
+    const selectedLevel = level || grade;
+    const difficultyProfile = getDifficultyProfile({
+      targetLanguage,
+      pathway: selectedPathway,
+      level: selectedLevel,
+      grade,
+      skill,
+      pathwayVariant,
+      difficulty,
+    });
+    const difficultyProfilePrompt = formatDifficultyProfileForPrompt(difficultyProfile);
 
     const targetLanguageFocusRules = {
       English: `
@@ -4240,8 +4756,8 @@ app.post("/api/generate-questions", requireAdmin, async (req, res) => {
 	    const isReadingPassagePractice =
 	      selectedStructure.needsPassage && readingSkillSet.has(skill);
 	    const passagePlan = getReadingPassagePlan({
-	      examType: pathway || examType,
-	      level: level || grade,
+	      examType: selectedPathway,
+	      level: selectedLevel,
 	      grade,
 	      questionCount,
 	    });
@@ -4260,8 +4776,8 @@ You are a professional education content writer for concise exam-aligned skill p
 
 
 SELECTED SETTINGS:
-Exam / Pathway: ${pathway || examType}
-${levelLabel}: ${level || grade}
+Exam / Pathway: ${selectedPathway}
+${levelLabel}: ${selectedLevel}
 ${pathwayVariant ? `${variantLabel || "Variant"}: ${pathwayVariant}` : ""}
 ${skillLabel}: ${skill}
 Category / Topic: ${category || "General"}
@@ -4297,6 +4813,8 @@ EXPLANATION QUALITY RULES:
 
 STYLE EXAMPLES FROM FILE:
 ${examples || "No example file found. Use realistic exam style."}
+
+${difficultyProfilePrompt}
 
 	PASSAGE LENGTH RULES:
 	${structureRules[skill]?.needsPassage ? `
@@ -4350,8 +4868,15 @@ CRITICAL RULES (NON-NEGOTIABLE):
 
 4. SELF-CHECK (IMPORTANT)
 Before returning:
-- Check if output matches skill
+- Check if output matches the selected pathway: ${selectedPathway}
+- Check if output matches the selected level: ${selectedLevel}
+- Check if output matches skill: ${skill}
 - Check if structure matches Needs passage
+- Check if vocabulary, grammar, passage complexity, and cognitive demand match the Difficulty Profile
+- Check if distractors are plausible for the level
+- Check if the correct answer is clearly supported
+- Check if the explanation is useful and references evidence/rules where appropriate
+- Check if the question is too easy or too hard for the selected profile
 - If not → fix it before returning
 	- If Reading output is active, passage must be ${passagePlan.minWords}-${passagePlan.maxWords} words.
 	- If other passage practice is required, keep it concise: normally 40-120 words, never more than 180 words.
@@ -4397,7 +4922,13 @@ ${extraPrompt || ""}
 	      "correct_answer": "option_a",
 	      "explanation_en": "...",
 	      "explanation_zh": "...",
-	      "explanation_ja": "..."
+	      "explanation_ja": "...",
+	      "pathway": "${selectedPathway}",
+	      "level": "${selectedLevel}",
+	      "skill": "${skill}",
+	      "estimated_cefr": "${difficultyProfile.estimated_cefr || ""}",
+	      "difficulty_rationale": "...",
+	      "why_this_matches_level": "..."
 	    }
 	  ]
 	}
@@ -4428,7 +4959,14 @@ ${extraPrompt || ""}
     "correct_answer": "option_a",
     "explanation_en": "...",
     "explanation_zh": "...",
-    "explanation_ja": "..."
+    "explanation_ja": "...",
+    "pathway": "${selectedPathway}",
+    "level": "${selectedLevel}",
+    "skill": "${skill}",
+    "estimated_cefr": "${difficultyProfile.estimated_cefr || ""}",
+    "difficulty_rationale": "...",
+    "question_type": "${skill}",
+    "why_this_matches_level": "..."
 	  }
 	]
 	`}
@@ -4439,6 +4977,47 @@ ${extraPrompt || ""}
 
     const cleanJSON = (text) =>
       text.replace(/```json/g, "").replace(/```/g, "").trim();
+
+    const applyDifficultyMetadata = (item = {}, fallbackQuestionType = skill) => ({
+      ...item,
+      pathway: item.pathway || selectedPathway,
+      level: item.level || selectedLevel,
+      skill: item.skill || skill,
+      estimated_cefr:
+        item.estimated_cefr || difficultyProfile.estimated_cefr || null,
+      difficulty_rationale:
+        item.difficulty_rationale || difficultyProfile.difficultyRationale,
+      question_type:
+        item.question_type || fallbackQuestionType || skill || null,
+      why_this_matches_level:
+        item.why_this_matches_level || difficultyProfile.whyThisMatchesLevel,
+    });
+
+    const enrichGeneratedData = (parsed) => {
+      if (isReadingPassagePractice && parsed?.type === "reading") {
+        return {
+          ...parsed,
+          pathway: parsed.pathway || selectedPathway,
+          level: parsed.level || selectedLevel,
+          skill: parsed.skill || skill,
+          estimated_cefr:
+            parsed.estimated_cefr || difficultyProfile.estimated_cefr || null,
+          difficulty_rationale:
+            parsed.difficulty_rationale || difficultyProfile.difficultyRationale,
+          why_this_matches_level:
+            parsed.why_this_matches_level || difficultyProfile.whyThisMatchesLevel,
+          questions: (parsed.questions || []).map((question) =>
+            applyDifficultyMetadata(question, question.question_type || skill)
+          ),
+        };
+      }
+
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => applyDifficultyMetadata(item));
+      }
+
+      return parsed;
+    };
 
 	    const needsPassage = selectedStructure.needsPassage;
 	    const minPassageWords = isReadingPassagePractice
@@ -4521,7 +5100,7 @@ ${extraPrompt || ""}
 	      }
 
       if (valid) {
-        finalData = parsed;
+        finalData = enrichGeneratedData(parsed);
         console.log("✅ Passed validation");
         break;
       }

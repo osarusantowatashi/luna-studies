@@ -90,17 +90,19 @@ const Landing = () => {
   });
   const tutorCardY = [
 
-    useTransform(smoothTutorProgress, [0, 0.18], [0, 0]),
+    useTransform(smoothTutorProgress, [0, 0.14], [0, 0]),
 
-    useTransform(smoothTutorProgress, [0.14, 0.42], [680, 0]),
+    useTransform(smoothTutorProgress, [0.12, 0.32], [680, 0]),
 
-    useTransform(smoothTutorProgress, [0.34, 0.62], [680, 0]),
+    useTransform(smoothTutorProgress, [0.28, 0.48], [680, 0]),
 
-    useTransform(smoothTutorProgress, [0.54, 0.82], [680, 0]),
+    useTransform(smoothTutorProgress, [0.44, 0.64], [680, 0]),
 
-    useTransform(smoothTutorProgress, [0.74, 1.0], [680, 0]),
+    useTransform(smoothTutorProgress, [0.6, 0.78], [680, 0]),
 
-    useTransform(smoothTutorProgress, [0.76, 1.0], [680, 0]),
+    useTransform(smoothTutorProgress, [0.72, 0.9], [680, 0]),
+
+    useTransform(smoothTutorProgress, [0.82, 1.0], [680, 0]),
 
   ];
   const pathwayRef = useRef(null);
@@ -159,6 +161,21 @@ const Landing = () => {
       languages: t("landing.tutors.grace.languages"),
       subjects: t("landing.tutors.grace.subjects", { returnObjects: true }) as string[],
       experience: t("landing.tutors.grace.experience", { returnObjects: true }) as string[],
+    },
+    {
+      name: "Junichi Ro",
+      role: t("landing.tutors.junichi.role"),
+      image: "/tutors/Junichi Ro.jpeg",
+      tags: ["NYU Math", "English", "Japanese"],
+      desc: t("landing.tutors.junichi.desc"),
+      highlight: "Math · English · Reasoning",
+      education: "Bachelor of Science in Mathematics, New York University",
+      languages: "English / Japanese",
+      subjects: ["Mathematics", "English"],
+      experience: [
+        "Mathematics and English teaching across multiple countries",
+        "Former Student Leader at a Mathematics Learning Support Center",
+      ],
     },
   ];
 
@@ -1084,7 +1101,7 @@ const Landing = () => {
         {/* HEAD TUTORS */}
         <section
           ref={tutorScrollRef}
-          className="relative hidden h-[620vh] bg-[#fbfaff] lg:block">
+          className="relative hidden h-[720vh] bg-[#fbfaff] lg:block">
           <div className="sticky top-0 flex h-screen items-center overflow-hidden px-8">
             <div className="mx-auto grid w-full max-w-[1440px] grid-cols-[0.8fr_1.4fr] items-center gap-12">
 
@@ -1146,6 +1163,13 @@ const Landing = () => {
                       desc: t("landing.tutors.francis.desc"),
                     },
                     {
+                      name: "Junichi Ro",
+                      role: t("landing.tutors.junichi.role"),
+                      image: "/tutors/Junichi Ro.jpeg",
+                      tags: ["NYU Math", "English", "Japanese"],
+                      desc: t("landing.tutors.junichi.desc"),
+                    },
+                    {
                       name: "CJ",
                       role: t("landing.tutors.cj.role"),
                       image: "/tutors/cj_new.png",
@@ -1167,11 +1191,11 @@ const Landing = () => {
                       desc: t("landing.tutors.kana.desc"),
                     }
                   ].map((tutor, i) => (
-                    <motion.div
+                      <motion.div
                       key={tutor.name}
                       style={{
                         y: tutorCardY[i],
-                        rotate: [-4, 3.5, -3, 4, -2.5, 3][i],
+                        rotate: [-4, 3.5, -3, 2.5, 4, -2.5, 3][i],
                         zIndex: i + 10,
                       }}
                       whileHover={{ y: -8, scale: 1.015 }}
