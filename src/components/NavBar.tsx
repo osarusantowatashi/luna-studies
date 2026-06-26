@@ -19,10 +19,10 @@ type ServiceItem = {
 };
 
 const mobileLinkClass = (active: boolean) =>
-  `block min-h-11 rounded-xl border px-4 py-3 text-sm font-semibold leading-5 transition-colors ${
+  `flex min-h-14 items-center rounded-2xl border px-5 py-4 text-base font-semibold leading-5 transition-colors ${
     active
-      ? "border-[#D4A12A]/35 bg-white text-[#082A55] shadow-sm"
-      : "border-transparent bg-white/70 text-primary/70 hover:bg-white hover:text-[#082A55]"
+      ? "border-[#D4A12A]/35 bg-white text-[#082A55] shadow-[0_12px_34px_rgba(8,42,85,0.08)]"
+      : "border-primary/10 bg-white/86 text-primary/76 shadow-[0_10px_28px_rgba(8,42,85,0.04)] hover:bg-white hover:text-[#082A55]"
   }`;
 
 const MobileNavOverlay = ({
@@ -84,17 +84,23 @@ const MobileNavOverlay = ({
   const toggleSection = (section: "services" | "about") => {
     setOpenSection((current) => (current === section ? null : section));
   };
-  const accordionButtonClass = (open: boolean, active: boolean) =>
-    `flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-base font-black leading-5 transition ${
+  const accordionShellClass = (open: boolean, active: boolean) =>
+    `overflow-hidden rounded-2xl border transition-colors ${
       open || active
-        ? "border-[#D4A12A]/35 bg-white text-[#082A55] shadow-[0_12px_34px_rgba(8,42,85,0.08)]"
-        : "border-primary/10 bg-white/82 text-primary/76 shadow-[0_10px_28px_rgba(8,42,85,0.04)] hover:bg-white hover:text-[#082A55]"
+        ? "border-[#D4A12A]/35 bg-white shadow-[0_12px_34px_rgba(8,42,85,0.08)]"
+        : "border-primary/10 bg-white/86 shadow-[0_10px_28px_rgba(8,42,85,0.04)]"
+    }`;
+  const accordionButtonClass = (open: boolean, active: boolean) =>
+    `flex min-h-14 w-full items-center justify-between gap-3 px-5 py-4 text-left text-base font-semibold leading-5 transition ${
+      open || active
+        ? "text-[#082A55]"
+        : "text-primary/76 hover:text-[#082A55]"
     }`;
   const childLinkClass = (active: boolean) =>
-    `flex min-h-11 items-center rounded-xl px-3.5 py-2.5 text-sm font-semibold leading-5 transition ${
+    `flex min-h-11 items-center rounded-xl px-4 py-3 text-sm font-semibold leading-5 transition ${
       active
         ? "bg-[#fff8e7] text-[#082A55]"
-        : "bg-white/72 text-[#082A55]/70 hover:bg-white hover:text-[#082A55]"
+        : "bg-[#f8f6ff]/70 text-[#082A55]/70 hover:bg-white hover:text-[#082A55]"
     }`;
 
   return (
@@ -108,22 +114,22 @@ const MobileNavOverlay = ({
       aria-label="Mobile navigation"
       className="fixed inset-0 z-[99999] isolate h-[100dvh] overflow-hidden bg-[#fbfaff] md:hidden"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,#f0eaff_0%,transparent_34%),radial-gradient(circle_at_88%_28%,#fff1bd_0%,transparent_30%),linear-gradient(180deg,#ffffff_0%,#fbfaff_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_14%,rgba(240,234,255,0.72)_0%,transparent_34%),radial-gradient(circle_at_86%_24%,rgba(255,241,189,0.42)_0%,transparent_30%),linear-gradient(180deg,#ffffff_0%,#fbfaff_100%)]" />
 
       <div className="relative flex h-[100dvh] flex-col overflow-hidden">
-        <div className="shrink-0 border-b border-primary/10 bg-white px-4 pb-3 pt-[max(0.85rem,env(safe-area-inset-top))] shadow-[0_8px_30px_rgba(8,42,85,0.05)]">
-          <div className="flex min-h-14 items-center justify-between gap-3">
+        <div className="shrink-0 border-b border-primary/10 bg-white/94 shadow-[0_8px_30px_rgba(8,42,85,0.05)] backdrop-blur-xl">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:h-[72px] sm:px-6">
             <Link
               to={homePath}
               onClick={close}
-              className="flex min-w-0 items-center gap-2.5"
+              className="flex min-w-0 items-center gap-2.5 sm:gap-3"
             >
               <img
                 src="/lunalogo.png"
                 className="h-9 w-9 shrink-0 object-contain"
                 alt=""
               />
-              <span className="truncate font-serif text-[1.35rem] text-primary">
+              <span className="max-w-[190px] truncate font-serif text-lg tracking-wide text-primary min-[390px]:max-w-none sm:text-xl">
                 {brandName}
               </span>
             </Link>
@@ -131,7 +137,7 @@ const MobileNavOverlay = ({
             <button
               type="button"
               onClick={close}
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary shadow-[0_10px_28px_rgba(8,42,85,0.10)]"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/10 bg-white text-primary shadow-[0_8px_24px_rgba(8,42,85,0.06)]"
               aria-label="Close navigation menu"
             >
               <X className="h-5 w-5" />
@@ -139,7 +145,7 @@ const MobileNavOverlay = ({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 [-webkit-overflow-scrolling:touch]">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 [-webkit-overflow-scrolling:touch]">
           {isApp ? (
             <div className="grid gap-2">
               {links.map(([label, path]) => (
@@ -154,8 +160,8 @@ const MobileNavOverlay = ({
               ))}
             </div>
           ) : (
-            <div className="space-y-2.5">
-              <section className="overflow-hidden rounded-[1.35rem]">
+            <div className="space-y-3">
+              <section className={accordionShellClass(servicesOpen, servicesActive)}>
                 <button
                   type="button"
                   onClick={() => toggleSection("services")}
@@ -181,7 +187,7 @@ const MobileNavOverlay = ({
                       transition={{ duration: 0.2, ease: "easeOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="mt-2 grid gap-1 rounded-[1.35rem] border border-primary/8 bg-white/55 p-2.5 shadow-[0_12px_34px_rgba(8,42,85,0.05)]">
+                      <div className="grid gap-1 border-t border-primary/8 px-3 pb-3 pt-1">
                         {serviceItems.map((item) => (
                           <Link
                             key={item.path}
@@ -209,7 +215,7 @@ const MobileNavOverlay = ({
                 </Link>
               ))}
 
-              <section className="overflow-hidden rounded-[1.35rem]">
+              <section className={accordionShellClass(aboutOpen, aboutActive)}>
                 <button
                   type="button"
                   onClick={() => toggleSection("about")}
@@ -235,7 +241,7 @@ const MobileNavOverlay = ({
                       transition={{ duration: 0.2, ease: "easeOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="mt-2 grid gap-1 rounded-[1.35rem] border border-primary/8 bg-white/55 p-2.5 shadow-[0_12px_34px_rgba(8,42,85,0.05)]">
+                      <div className="grid gap-1 border-t border-primary/8 px-3 pb-3 pt-1">
                         {aboutLinks.map(([label, path]) => (
                           <Link
                             key={path}
