@@ -272,7 +272,9 @@
     overscroll-behavior: none;
   }
 
-  body.luna-mobile-menu-open .luna-mascot-chat {
+  body.luna-mobile-menu-open .chokina-widget,
+  body.luna-mobile-menu-open .luna-mascot-chat,
+  body.luna-mobile-menu-open [data-floating-widget="true"] {
     display: none !important;
   }
 

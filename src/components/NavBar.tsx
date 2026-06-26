@@ -1,10 +1,227 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { LogOut, Sparkles, Menu, X, Globe2, ChevronDown } from "lucide-react";
+
+type NavLinkItem = [string, string];
+type LanguageOption = {
+  value: "en" | "zh" | "ja";
+  label: string;
+  short: string;
+};
+type ServiceItem = {
+  label: string;
+  path: string;
+};
+
+const mobileLinkClass = (active: boolean) =>
+  `block min-h-11 rounded-xl border px-4 py-3 text-sm font-semibold leading-5 transition-colors ${
+    active
+      ? "border-[#D4A12A]/35 bg-white text-[#082A55] shadow-sm"
+      : "border-transparent bg-white/70 text-primary/70 hover:bg-white hover:text-[#082A55]"
+  }`;
+
+const MobileNavOverlay = ({
+  isApp,
+  brandName,
+  homePath,
+  links,
+  serviceItems,
+  publicLinks,
+  languageOptions,
+  currentLang,
+  currentPath,
+  currentPathWithHash,
+  role,
+  name,
+  close,
+  changeLanguage,
+  logout,
+  loginPath,
+  enquiryPath,
+  getStartedLabel,
+  loginLabel,
+  servicesLabel,
+}: {
+  isApp: boolean;
+  brandName: string;
+  homePath: string;
+  links: NavLinkItem[];
+  serviceItems: ServiceItem[];
+  publicLinks: NavLinkItem[];
+  languageOptions: readonly LanguageOption[];
+  currentLang: "en" | "zh" | "ja";
+  currentPath: string;
+  currentPathWithHash: string;
+  role: string | null;
+  name: string;
+  close: () => void;
+  changeLanguage: (nextLang: "en" | "zh" | "ja") => void;
+  logout: () => void;
+  loginPath: string;
+  enquiryPath: string;
+  getStartedLabel: string;
+  loginLabel: string;
+  servicesLabel: string;
+}) => {
+  const isActive = (path: string) => currentPath === path;
+  const isItemActive = (path: string) =>
+    path.includes("#") ? currentPathWithHash === path : currentPath === path;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Mobile navigation"
+      className="fixed inset-0 z-[99999] isolate h-[100dvh] overflow-hidden bg-[#fbfaff] md:hidden"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,#f0eaff_0%,transparent_34%),radial-gradient(circle_at_88%_28%,#fff1bd_0%,transparent_30%),linear-gradient(180deg,#ffffff_0%,#fbfaff_100%)]" />
+
+      <div className="relative flex h-[100dvh] flex-col overflow-hidden">
+        <div className="shrink-0 border-b border-primary/10 bg-white px-4 pb-3 pt-[max(0.85rem,env(safe-area-inset-top))] shadow-[0_8px_30px_rgba(8,42,85,0.05)]">
+          <div className="flex min-h-14 items-center justify-between gap-3">
+            <Link
+              to={homePath}
+              onClick={close}
+              className="flex min-w-0 items-center gap-2.5"
+            >
+              <img
+                src="/lunalogo.png"
+                className="h-9 w-9 shrink-0 object-contain"
+                alt=""
+              />
+              <span className="truncate font-serif text-[1.35rem] text-primary">
+                {brandName}
+              </span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={close}
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary shadow-[0_10px_28px_rgba(8,42,85,0.10)]"
+              aria-label="Close navigation menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 [-webkit-overflow-scrolling:touch]">
+          {isApp ? (
+            <div className="grid gap-2">
+              {links.map(([label, path]) => (
+                <Link
+                  key={path}
+                  to={path}
+                  onClick={close}
+                  className={mobileLinkClass(isActive(path))}
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-5">
+              <section className="rounded-[1.6rem] border border-primary/10 bg-white p-3 shadow-[0_18px_50px_rgba(8,42,85,0.07)]">
+                <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.2em] text-primary/42">
+                  {servicesLabel}
+                </p>
+                <div className="grid gap-1">
+                  {serviceItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={close}
+                      className={`flex min-h-11 items-center rounded-2xl px-3.5 py-2.5 text-sm font-semibold leading-5 transition ${
+                        isItemActive(item.path)
+                          ? "bg-[#fff8e7] text-[#082A55]"
+                          : "text-[#082A55]/72 hover:bg-[#f8f6ff] hover:text-[#082A55]"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+
+              <section className="grid gap-2">
+                {publicLinks.map(([label, path]) => (
+                  <Link
+                    key={path}
+                    to={path}
+                    onClick={close}
+                    className={mobileLinkClass(isActive(path))}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </section>
+            </div>
+          )}
+        </div>
+
+        <div className="shrink-0 border-t border-primary/10 bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 shadow-[0_-14px_40px_rgba(8,42,85,0.06)]">
+          {!isApp && (
+            <div className="mb-3 grid grid-cols-3 gap-1.5 rounded-2xl bg-[#f8f6ff] p-1">
+              {languageOptions.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => changeLanguage(item.value)}
+                  className={`min-h-11 rounded-xl text-sm font-bold transition ${
+                    item.value === currentLang
+                      ? "bg-white text-[#082A55] shadow-sm"
+                      : "text-primary/55"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {role ? (
+            <div className="grid gap-3">
+              <div className="rounded-2xl border bg-card px-4 py-3">
+                <p className="text-sm font-semibold text-primary">{name}</p>
+                <p className="text-xs capitalize text-muted-foreground">{role}</p>
+              </div>
+              <Button
+                variant="outline"
+                className="h-12 w-full rounded-2xl"
+                onClick={logout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              <Link to={enquiryPath} onClick={close}>
+                <Button className="h-12 w-full rounded-2xl text-base shadow-elegant">
+                  {getStartedLabel}
+                </Button>
+              </Link>
+              <Link to={loginPath} onClick={close}>
+                <Button variant="outline" className="h-12 w-full rounded-2xl text-base">
+                  {loginLabel}
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const NavBar = () => {
   const location = useLocation();
@@ -33,6 +250,7 @@ const NavBar = () => {
     "/games",
     "/memory-flip",
     "/tutor/lessons",
+    "/tutor/policy",
     "/student/lessons",
     "/admin/dashboard",
     "/admin/assign",
@@ -121,6 +339,8 @@ const NavBar = () => {
   useEffect(() => {
     if (!mobileOpen) return;
 
+    const root = document.documentElement;
+    const previousRootOverflow = root.style.overflow;
     const previousOverflow = document.body.style.overflow;
     const previousPosition = document.body.style.position;
     const previousTop = document.body.style.top;
@@ -128,6 +348,7 @@ const NavBar = () => {
     const scrollY = window.scrollY;
 
     document.body.classList.add("luna-mobile-menu-open");
+    root.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
@@ -135,6 +356,7 @@ const NavBar = () => {
 
     return () => {
       document.body.classList.remove("luna-mobile-menu-open");
+      root.style.overflow = previousRootOverflow;
       document.body.style.overflow = previousOverflow;
       document.body.style.position = previousPosition;
       document.body.style.top = previousTop;
@@ -149,15 +371,6 @@ const NavBar = () => {
       return;
     }
 
-    const detectBrowserLang = () => {
-      const lang = navigator.language.toLowerCase();
-
-      if (lang.startsWith("ja")) return "ja";
-      if (lang.startsWith("zh")) return "zh";
-
-      return "en";
-    };
-
     const hasLangPrefix = /^\/(en|zh|ja)(\/|$)/.test(location.pathname);
 
     if (!hasLangPrefix) {
@@ -165,7 +378,6 @@ const NavBar = () => {
       return;
     }
 
-    const i18nLang = currentLang === currentLang;
     i18n.changeLanguage(currentLang);
   }, [location.pathname, currentLang, i18n, isApp]);
 
@@ -195,7 +407,7 @@ const NavBar = () => {
         : "/studentoverview"
     : withLang("/");
 
-  const links =
+  const links: NavLinkItem[] =
     role === "admin"
       ? [
         ["Dashboard", "/admin/dashboard"],
@@ -224,12 +436,12 @@ const NavBar = () => {
             [t("nav.arcade"), withLang("/arcade")],
           ];
 
-  const aboutLinks = [
+  const aboutLinks: NavLinkItem[] = [
     [t("nav.whyLuna"), withLang("/whyluna")],
     [t("nav.careers"), withLang("/careers")],
   ];
 
-  const serviceItems = [
+  const serviceItems: ServiceItem[] = [
     {
       label: t("services.shortLabels.assessmentPreparation"),
       path: withLang("/subjects"),
@@ -264,6 +476,13 @@ const NavBar = () => {
     },
   ];
 
+  const publicLinks: NavLinkItem[] = [
+    [t("nav.tutors"), withLang("/tutors")],
+    [t("nav.arcade"), withLang("/arcade")],
+    [t("nav.whyLuna"), withLang("/whyluna")],
+    [t("nav.careers"), withLang("/careers")],
+  ];
+
   const currentPathWithHash = `${location.pathname}${location.hash}`;
   const isActive = (path: string) => location.pathname === path;
   const isItemActive = (path: string) =>
@@ -291,20 +510,6 @@ const NavBar = () => {
         : "text-[#082A55]/78 hover:bg-[#f8f6ff] hover:text-[#082A55]"
     }`;
 
-  const mobileLinkClass = (active: boolean) =>
-    `block min-h-11 rounded-xl border px-4 py-3 text-sm font-semibold leading-5 transition-colors ${
-      active
-        ? "border-[#D4A12A]/35 bg-white text-[#082A55] shadow-sm"
-        : "border-transparent bg-white/70 text-primary/70 hover:bg-white hover:text-[#082A55]"
-    }`;
-
-  const mobileSectionClass = (active: boolean) =>
-    `rounded-2xl border p-2 ${
-      active
-        ? "border-[#D4A12A]/30 bg-white"
-        : "border-primary/10 bg-white/75"
-    }`;
-
   const logout = async () => {
     await supabase.auth.signOut();
 
@@ -314,12 +519,42 @@ const NavBar = () => {
     window.location.href = "/en";
   };
 
+  const mobileOverlay =
+    typeof document === "undefined"
+      ? null
+      : createPortal(
+          <AnimatePresence>
+            {mobileOpen && (
+              <MobileNavOverlay
+                isApp={isApp}
+                brandName={brandName}
+                homePath={homePath}
+                links={links}
+                serviceItems={serviceItems}
+                publicLinks={publicLinks}
+                languageOptions={languageOptions}
+                currentLang={currentLang}
+                currentPath={location.pathname}
+                currentPathWithHash={currentPathWithHash}
+                role={role}
+                name={name}
+                close={() => setMobileOpen(false)}
+                changeLanguage={changeLanguage}
+                logout={logout}
+                loginPath={withLang("/login")}
+                enquiryPath={withLang("/enquiry")}
+                getStartedLabel={t("nav.getStarted")}
+                loginLabel={t("nav.login")}
+                servicesLabel={t("nav.services")}
+              />
+            )}
+          </AnimatePresence>,
+          document.body
+        );
+
   return (
-    <header
-      className={`sticky top-0 border-b border-primary/10 bg-white/88 backdrop-blur-xl ${
-        mobileOpen ? "z-[10000]" : "z-50"
-      }`}
-    >
+    <>
+    <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/88 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-[72px] sm:px-6">
         <Link
           to={homePath}
@@ -568,156 +803,9 @@ const NavBar = () => {
         </button>
       </div>
 
-      {/* MOBILE MENU */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile navigation"
-            className="fixed inset-0 z-[10000] isolate overflow-hidden bg-[#fbfaff] md:hidden"
-          >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,#f0eaff_0%,transparent_34%),radial-gradient(circle_at_88%_28%,#fff1bd_0%,transparent_30%),linear-gradient(180deg,#ffffff_0%,#fbfaff_100%)]" />
-
-            <div className="relative flex h-[100dvh] flex-col overflow-hidden">
-              <div className="shrink-0 border-b border-primary/10 bg-white px-4 pb-3 pt-[max(0.85rem,env(safe-area-inset-top))] shadow-[0_8px_30px_rgba(8,42,85,0.05)]">
-                <div className="flex min-h-14 items-center justify-between gap-3">
-                <Link
-                  to={homePath}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex min-w-0 items-center gap-2.5"
-                >
-                  <img src="/lunalogo.png" className="h-9 w-9 shrink-0 object-contain" />
-                  <span className="truncate font-serif text-[1.35rem] text-primary">
-                    {brandName}
-                  </span>
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary shadow-[0_10px_28px_rgba(8,42,85,0.10)]"
-                  aria-label="Close navigation menu"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-                </div>
-              </div>
-
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 [-webkit-overflow-scrolling:touch]">
-                {isApp ? (
-                  <div className="grid gap-2">
-                    {links.map(([label, path]) => (
-                      <Link
-                        key={path}
-                        to={path}
-                        onClick={() => setMobileOpen(false)}
-                        className={mobileLinkClass(isActive(path))}
-                      >
-                        {label}
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-5">
-                    <section className="rounded-[1.6rem] border border-primary/10 bg-white p-3 shadow-[0_18px_50px_rgba(8,42,85,0.07)]">
-                      <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.2em] text-primary/42">
-                        {t("nav.services")}
-                      </p>
-                      <div className="grid gap-1">
-                        {serviceItems.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            onClick={() => setMobileOpen(false)}
-                            className={`flex min-h-11 items-center rounded-2xl px-3.5 py-2.5 text-sm font-semibold leading-5 transition ${
-                              isItemActive(item.path)
-                                ? "bg-[#fff8e7] text-[#082A55]"
-                                : "text-[#082A55]/72 hover:bg-[#f8f6ff] hover:text-[#082A55]"
-                            }`}
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </section>
-
-                    <section className="grid gap-2">
-                      {[
-                        [t("nav.tutors"), withLang("/tutors")],
-                        [t("nav.arcade"), withLang("/arcade")],
-                        [t("nav.whyLuna"), withLang("/whyluna")],
-                        [t("nav.careers"), withLang("/careers")],
-                      ].map(([label, path]) => (
-                        <Link
-                          key={path}
-                          to={path}
-                          onClick={() => setMobileOpen(false)}
-                          className={mobileLinkClass(isActive(path))}
-                        >
-                          {label}
-                        </Link>
-                      ))}
-                    </section>
-                  </div>
-                )}
-              </div>
-
-              <div className="shrink-0 border-t border-primary/10 bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 shadow-[0_-14px_40px_rgba(8,42,85,0.06)]">
-                {!isApp && (
-                  <div className="mb-3 grid grid-cols-3 gap-1.5 rounded-2xl bg-[#f8f6ff] p-1">
-                    {languageOptions.map((item) => (
-                      <button
-                        key={item.value}
-                        type="button"
-                        onClick={() => changeLanguage(item.value)}
-                        className={`min-h-11 rounded-xl text-sm font-bold transition ${
-                          item.value === currentLang
-                            ? "bg-white text-[#082A55] shadow-sm"
-                            : "text-primary/55"
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {role ? (
-                  <div className="grid gap-3">
-                    <div className="rounded-2xl border bg-card px-4 py-3">
-                      <p className="text-sm font-semibold text-primary">{name}</p>
-                      <p className="text-xs capitalize text-muted-foreground">{role}</p>
-                    </div>
-                    <Button variant="outline" className="h-12 w-full rounded-2xl" onClick={logout}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Logout
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="grid gap-3">
-                    <Link to={withLang("/enquiry")} onClick={() => setMobileOpen(false)}>
-                      <Button className="h-12 w-full rounded-2xl text-base shadow-elegant">
-                        {t("nav.getStarted")}
-                      </Button>
-                    </Link>
-                    <Link to={withLang("/login")} onClick={() => setMobileOpen(false)}>
-                      <Button variant="outline" className="h-12 w-full rounded-2xl text-base">
-                        {t("nav.login")}
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
+    {mobileOverlay}
+    </>
   );
 };
 

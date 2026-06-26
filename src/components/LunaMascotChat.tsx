@@ -32,32 +32,39 @@ const warmUpLunaChat = () => {
 const LunaMascotChat = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const pathWithoutLang = location.pathname.replace(/^\/(en|zh|ja)/, "") || "/";
 
-  const hiddenRoutes = [
+  const internalRoutePrefixes = [
     "/admin",
+    "/dashboard",
+    "/student",
+    "/studentoverview",
+    "/tutor",
     "/generate",
+    "/generate-games",
     "/practice",
     "/mistakes",
-    "/studentoverview",
-    "/student/lessons",
-    "/dashboard",
-    "/tutor/lessons",
     "/games",
     "/memory-flip",
     "/word-search",
     "/word-match",
     "/letter-match",
-    "/games/word-match",
-    "/games/letter-match",
-    "/generate-games",
-  
-    "/en/careers",
-    "/zh/careers",
-    "/ja/careers",
+    "/flashcards",
+    "/flashcard-decks",
+    "/page",
+    "/auth",
+    "/login",
+    "/forgot-password",
+    "/reset-password",
+    "/tutor-policy",
   ];
 
-  const shouldHide = hiddenRoutes.some((route) =>
-    location.pathname.startsWith(route)
+  const hiddenPublicRoutePrefixes = [
+    "/careers",
+  ];
+
+  const shouldHide = [...internalRoutePrefixes, ...hiddenPublicRoutePrefixes].some(
+    (route) => pathWithoutLang === route || pathWithoutLang.startsWith(`${route}/`)
   );
 
   const [open, setOpen] = useState(false);
@@ -319,7 +326,7 @@ const LunaMascotChat = () => {
 
   if (shouldHide) return null;
 
-  return (<div className="luna-mascot-chat fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-0 z-[999] w-[88vw] max-w-[330px] sm:right-[-10px] sm:w-[92vw] sm:max-w-[360px] md:w-[360px]">
+  return (<div className="chokina-widget luna-mascot-chat fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-0 z-[999] w-[88vw] max-w-[330px] sm:right-[-10px] sm:w-[92vw] sm:max-w-[360px] md:w-[360px]" data-floating-widget="true">
     <AnimatePresence>
       {open && (
         <motion.div
