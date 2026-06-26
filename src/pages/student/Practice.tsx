@@ -46,7 +46,12 @@ const DAILY_GOAL = 30;
 
 const TARGET_LANGUAGES = ["English", "Japanese", "Chinese"];
 
-const PROMPT_LANGUAGES = ["English", "Japanese", "Chinese"];
+const EXPLANATION_LANGUAGES = ["English", "Chinese", "Japanese"];
+const EXPLANATION_LANGUAGE_LABELS: Record<string, string> = {
+  English: "English",
+  Chinese: "中文",
+  Japanese: "日本語",
+};
 
 const READING_SKILLS = new Set([
   "Reading",
@@ -165,10 +170,9 @@ const Practice = () => {
   const [selectedGrade, setSelectedGrade] = useState("");
   const [selectedPathway, setSelectedPathway] = useState("Legacy Grade");
   const [selectedPathwayVariant, setSelectedPathwayVariant] = useState("All");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("Medium");
   const [selectedSkill, setSelectedSkill] = useState("Mix");
   const [selectedTargetLanguage, setSelectedTargetLanguage] = useState("English");
-  const [selectedPromptLanguage, setSelectedPromptLanguage] = useState("English");
+  const [selectedExplanationLanguage, setSelectedExplanationLanguage] = useState("English");
 
   const [questions, setQuestions] = useState<any[]>([]);
   const [started, setStarted] = useState(false);
@@ -190,6 +194,7 @@ const Practice = () => {
   const [selected, setSelected] = useState("");
   const [selectedGroupAnswers, setSelectedGroupAnswers] = useState<Record<string, string>>({});
   const [showFeedback, setShowFeedback] = useState(false);
+  const [passageExpanded, setPassageExpanded] = useState(false);
 
   const [attemptedCount, setAttemptedCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -387,10 +392,6 @@ const Practice = () => {
     selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
       ? ["Mix", ...englishPathwayConfig.skills]
       : SKILLS_BY_LANGUAGE[selectedTargetLanguage] || SKILLS_BY_LANGUAGE.English;
-  const practiceDifficultyOptions =
-    selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
-      ? englishPathwayConfig.difficulties || []
-      : [];
   const practiceVariantOptions =
     selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
       ? englishPathwayConfig.variants || []
@@ -414,9 +415,7 @@ const Practice = () => {
     selectedPathway,
     selectedGrade,
     selectedPathwayVariant,
-    selectedDifficulty,
     selectedSkill,
-    selectedPromptLanguage,
   ]);
 
   useEffect(() => {
@@ -436,7 +435,6 @@ const Practice = () => {
         setSelectedGrade(levels[0]);
       }
 
-      setSelectedDifficulty("");
       setSelectedPathwayVariant("All");
       return;
     }
@@ -457,13 +455,6 @@ const Practice = () => {
     }
 
     if (
-      practiceDifficultyOptions.length > 0 &&
-      !practiceDifficultyOptions.includes(selectedDifficulty)
-    ) {
-      setSelectedDifficulty(practiceDifficultyOptions[0]);
-    }
-
-    if (
       practiceVariantOptions.length > 0 &&
       selectedPathwayVariant !== "All" &&
       !practiceVariantOptions.includes(selectedPathwayVariant)
@@ -474,8 +465,6 @@ const Practice = () => {
     availableEnglishLevels,
     availableEnglishPathways,
     availablePathways,
-    practiceDifficultyOptions,
-    selectedDifficulty,
     selectedGrade,
     selectedLanguageAccessOptions,
     selectedPathway,
@@ -484,7 +473,9 @@ const Practice = () => {
     practiceVariantOptions,
   ]);
 
-  const getCorrectAnswerText = (q: any, language = selectedPromptLanguage) => {
+  const questionDisplayLanguage = selectedTargetLanguage;
+
+  const getCorrectAnswerText = (q: any, language = questionDisplayLanguage) => {
     if (!q) return "";
 
     if (q.correct_answer === "option_a") return localizedField(q, "option_a", language);
@@ -499,21 +490,42 @@ const Practice = () => {
   const isReadingGroup = current?.type === "reading_group";
   const currentQuestionList = isReadingGroup ? current.questions || [] : current ? [current] : [];
 
+  useEffect(() => {
+    setPassageExpanded(false);
+  }, [currentIndex, current?.id]);
+
   const currentQuestionText =
-    localizedField(current, "question", selectedPromptLanguage) || current?.question_text || "";
+    localizedField(current, "question", questionDisplayLanguage) || current?.question_text || "";
 
   const textSizeClasses = PASSAGE_TEXT_CLASSES[passageTextSize];
   const showTextSizeControl =
     Boolean(current?.passage) || currentQuestionText.length > 160 || isReadingGroup;
+  const showPassageToggle =
+    Boolean(current?.passage) &&
+    (String(current.passage).length > 700 ||
+      String(current.passage).trim().split(/\s+/).filter(Boolean).length > 120);
 
   const correctText = useMemo(
-    () => getCorrectAnswerText(current, selectedPromptLanguage),
-    [current, selectedPromptLanguage]
+    () => getCorrectAnswerText(current, questionDisplayLanguage),
+    [current, questionDisplayLanguage]
   );
+
+  const getExplanationText = (question: any) => {
+    if (!question) return "";
+
+    const suffix = languageSuffix(selectedExplanationLanguage);
+
+    return (
+      question[`explanation_${suffix}`] ||
+      question.explanation_en ||
+      question.explanation ||
+      ""
+    );
+  };
 
   const isCurrentQuestionCorrect = (question: any) => {
     const chosen = isReadingGroup ? selectedGroupAnswers[question.id] : selected;
-    return chosen === getCorrectAnswerText(question, selectedPromptLanguage);
+    return chosen === getCorrectAnswerText(question, questionDisplayLanguage);
   };
 
   const isCorrect =
@@ -529,6 +541,11 @@ const Practice = () => {
     questions.length === 0
       ? 0
       : Math.round(((currentIndex + 1) / questions.length) * 100);
+
+  const logPracticeQueryDebug = (payload: Record<string, unknown>) => {
+    if (!import.meta.env.DEV) return;
+    console.info("[Practice query]", payload);
+  };
 
   const fetchMatchingQuestionsForSetup = async () => {
     let query = supabase
@@ -547,21 +564,13 @@ const Practice = () => {
 
       if (
         selectedTargetLanguage === "English" &&
-        selectedDifficulty &&
-        practiceDifficultyOptions.length > 0
-      ) {
-        query = query.eq("difficulty", selectedDifficulty);
-      }
-
-      if (
-        selectedTargetLanguage === "English" &&
         selectedPathwayVariant !== "All" &&
         practiceVariantOptions.length > 0
       ) {
         query = query.eq("pathway_variant", selectedPathwayVariant);
       }
     } else {
-      query = query.eq("grade", selectedGrade).eq("difficulty", selectedDifficulty);
+      query = query.eq("grade", selectedGrade);
     }
 
     if (selectedSkill !== "Mix") {
@@ -584,10 +593,6 @@ const Practice = () => {
         .eq("grade", selectedGrade)
         .limit(200);
 
-      if (selectedDifficulty && practiceDifficultyOptions.length > 0) {
-        fallbackQuery = fallbackQuery.eq("difficulty", selectedDifficulty);
-      }
-
       if (selectedSkill !== "Mix") {
         fallbackQuery = fallbackQuery.eq("skill", selectedSkill);
       }
@@ -597,7 +602,20 @@ const Practice = () => {
       error = fallback.error;
     }
 
-    return { data: data || [], error };
+    const matchingRows = data || [];
+
+    logPracticeQueryDebug({
+      selectedTargetLanguage,
+      selectedPathway,
+      selectedLevel: selectedGrade,
+      selectedSkill,
+      selectedPathwayVariant,
+      matchingRowCount: matchingRows.length,
+      finalAvailableQuestionCount: matchingRows.length,
+      mixSkillBypassesSkillFilter: selectedSkill === "Mix",
+    });
+
+    return { data: matchingRows, error };
   };
 
   const fetchCompletedCorrectIds = async (userId: string, questionIds: string[]) => {
@@ -657,6 +675,16 @@ const Practice = () => {
     const availableQuestions = (data || []).filter(
       (q) => !completedCorrectIds.has(q.id)
     );
+
+    logPracticeQueryDebug({
+      selectedTargetLanguage,
+      selectedPathway,
+      selectedLevel: selectedGrade,
+      selectedSkill,
+      matchingQuestionCount: (data || []).length,
+      completedCorrectCount: completedCorrectIds.size,
+      finalAvailableQuestionCount: availableQuestions.length,
+    });
 
     const practiceItems = buildPracticeItems(availableQuestions);
     const randomQuestions = shuffleArray(practiceItems).slice(0, 20);
@@ -864,8 +892,8 @@ const Practice = () => {
                 </h1>
 
                 <p className="mt-6 max-w-2xl text-base leading-8 text-primary/60 sm:text-lg">
-                  Select your learning language, assigned pathway, prompt language, and skill focus.
-                  Luna will give you a fresh practice set matched to your access.
+                  Select your learning language, assigned pathway, and skill focus.
+                  Luna will show questions in the language you are learning.
                 </p>
               </div>
 
@@ -952,7 +980,6 @@ const Practice = () => {
                     setSelectedPathway(nextPathway);
                     setSelectedGrade(nextLevel);
                     setSelectedPathwayVariant("All");
-                    setSelectedDifficulty("");
                   }
                 }}
                 options={availableTargetLanguages}
@@ -986,32 +1013,12 @@ const Practice = () => {
                 options={selectedLevelOptions}
               />
 
-              <SelectInput
-                label="Prompt Language"
-                value={selectedPromptLanguage}
-                onChange={setSelectedPromptLanguage}
-                options={PROMPT_LANGUAGES}
-              />
-
               {practiceVariantOptions.length > 0 && (
                 <SelectInput
                   label={englishPathwayConfig.variantLabel || "Variant"}
                   value={selectedPathwayVariant}
                   onChange={setSelectedPathwayVariant}
                   options={["All", ...practiceVariantOptions]}
-                />
-              )}
-
-              {practiceDifficultyOptions.length > 0 && (
-                <SelectInput
-                  label={
-                    selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
-                      ? englishPathwayConfig.difficultyLabel || "Difficulty"
-                      : "Difficulty"
-                  }
-                  value={selectedDifficulty}
-                  onChange={setSelectedDifficulty}
-                  options={practiceDifficultyOptions}
                 />
               )}
 
@@ -1089,42 +1096,35 @@ const Practice = () => {
   return (
     <Shell>
       <div className="mx-auto max-w-[900px] space-y-6">
-        {/* TOP BAR */}
-        <section className="rounded-[2rem] bg-white p-5 shadow-[0_25px_80px_rgba(66,56,120,0.10)] sm:rounded-[2.5rem] sm:p-6">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8d73ff]">
-                Learning {selectedTargetLanguage} · Prompt in {selectedPromptLanguage}
-              </p>
-
-              <h1 className="mt-3 font-poppins text-3xl font-black text-primary sm:text-4xl">
-                Practice
-              </h1>
-
-              <p className="mt-2 text-primary/55">
+        {/* COMPACT PROGRESS */}
+        <section className="rounded-[1.6rem] border border-[#eee8ff] bg-white/92 px-4 py-3 shadow-[0_14px_45px_rgba(66,56,120,0.08)] sm:px-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-black text-primary">
                 {[
                   selectedTargetLanguage === "English" && selectedPathway !== "Legacy Grade"
                     ? selectedPathway
                     : selectedTargetLanguage,
                   selectedGrade,
                   current?.pathway_variant,
-                  selectedDifficulty,
                   selectedSkill,
                   current?.category,
                 ]
                   .filter(Boolean)
-                  .join(" · ")}{" "}
-	                · {isReadingGroup ? "Reading set" : "Question"} {currentIndex + 1} / {questions.length}
+                  .join(" · ")}
+              </p>
+              <p className="mt-1 text-xs font-bold text-primary/45">
+                {isReadingGroup ? "Reading set" : "Question"} {currentIndex + 1} / {questions.length}
               </p>
             </div>
 
-            <div className="w-full sm:min-w-[180px]">
-              <div className="mb-2 flex justify-between text-xs font-bold text-primary/50">
-                <span>Session</span>
+            <div className="w-full sm:w-[220px]">
+              <div className="mb-1 flex justify-between text-[11px] font-black uppercase tracking-[0.14em] text-primary/40">
+                <span>Progress</span>
                 <span>{sessionProgress}%</span>
               </div>
 
-              <div className="h-3 overflow-hidden rounded-full bg-[#eee9ff]">
+              <div className="h-2.5 overflow-hidden rounded-full bg-[#eee9ff]">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.max(sessionProgress, 8)}%` }}
@@ -1149,47 +1149,77 @@ const Practice = () => {
 	            <div className="absolute -right-14 -top-14 h-44 w-44 rounded-full bg-[#f0eaff]" />
 
 	            <div className="relative z-10">
-	              {showTextSizeControl && (
-	                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[1.35rem] border border-[#eee8ff] bg-[#fbfaff] px-4 py-3">
-	                  <p className="text-xs font-black uppercase tracking-[0.18em] text-primary/45">
-	                    Reading size
-	                  </p>
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[1.35rem] border border-[#eee8ff] bg-[#fbfaff] px-4 py-3">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-primary/45">
+                    {showTextSizeControl ? "Reading size" : "Practice"}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-primary/50">
+                    Questions display in {questionDisplayLanguage}
+                  </p>
+                </div>
 
-	                  <div className="flex rounded-full bg-white p-1 shadow-[0_10px_28px_rgba(66,56,120,0.08)]">
-	                    {(["Small", "Normal", "Large"] as PassageTextSize[]).map((size) => (
-	                      <button
-	                        key={size}
-	                        type="button"
-	                        onClick={() => setPassageTextSize(size)}
-	                        className={`min-h-10 rounded-full px-4 text-sm font-black transition ${
-	                          passageTextSize === size
-	                            ? "bg-primary text-white shadow-[0_10px_24px_rgba(10,36,84,0.18)]"
-	                            : "text-primary/55 hover:bg-[#f6f1ff] hover:text-primary"
-	                        }`}
-	                      >
-	                        {size === "Small" ? "A-" : size === "Normal" ? "A" : "A+"}
-	                      </button>
-	                    ))}
-	                  </div>
-	                </div>
-	              )}
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  {showTextSizeControl && (
+                    <div className="flex rounded-full bg-white p-1 shadow-[0_10px_28px_rgba(66,56,120,0.08)]">
+                      {(["Small", "Normal", "Large"] as PassageTextSize[]).map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setPassageTextSize(size)}
+                          className={`min-h-10 rounded-full px-4 text-sm font-black transition ${
+                            passageTextSize === size
+                              ? "bg-primary text-white shadow-[0_10px_24px_rgba(10,36,84,0.18)]"
+                              : "text-primary/55 hover:bg-[#f6f1ff] hover:text-primary"
+                          }`}
+                        >
+                          {size === "Small" ? "A-" : size === "Normal" ? "A" : "A+"}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {!showFeedback && (
+                    <Button
+                      type="button"
+                      className="h-11 rounded-2xl bg-primary px-5 text-sm font-black shadow-[0_12px_30px_rgba(10,36,84,0.16)]"
+                      onClick={handleSubmit}
+                    >
+                      Submit
+                    </Button>
+                  )}
+                </div>
+              </div>
 
 	              {current?.passage && (
-	                <div className="mb-7 max-h-[45vh] overflow-y-auto rounded-[1.5rem] bg-[#fbfaff] p-4 sm:rounded-[2rem] sm:p-5">
-	                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff]">
-	                    Passage
-	                  </p>
+                <div className="mb-7 rounded-[1.5rem] bg-[#fbfaff] p-4 sm:rounded-[2rem] sm:p-5">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8d73ff]">
+                      Passage
+                    </p>
 
-	                  <p className={`whitespace-pre-line text-primary/70 ${textSizeClasses.passage}`}>
-	                    {current.passage}
-	                  </p>
-	                </div>
+                    {showPassageToggle && (
+                      <button
+                        type="button"
+                        onClick={() => setPassageExpanded((currentValue) => !currentValue)}
+                        className="rounded-full bg-white px-4 py-2 text-xs font-black text-primary/65 shadow-[0_10px_24px_rgba(66,56,120,0.08)] transition hover:text-primary"
+                      >
+                        {passageExpanded ? "Collapse passage" : "Expand passage"}
+                      </button>
+                    )}
+                  </div>
+
+                  <div className={passageExpanded ? "" : "max-h-[34vh] overflow-y-auto pr-1"}>
+                    <p className={`whitespace-pre-line text-primary/70 ${textSizeClasses.passage}`}>
+                      {current.passage}
+                    </p>
+                  </div>
+                </div>
 	              )}
 
               <div className="mb-5 flex flex-wrap gap-2 text-xs">
                 {[
                   current.target_language || selectedTargetLanguage,
-                  `Prompt: ${selectedPromptLanguage}`,
                   current.exam_type,
                   current.grade,
                   current.skill,
@@ -1210,12 +1240,12 @@ const Practice = () => {
 	              <div className="space-y-6">
 	                {currentQuestionList.map((question: any, questionIndex: number) => {
 	                  const questionText =
-	                    localizedField(question, "question", selectedPromptLanguage) ||
+	                    localizedField(question, "question", questionDisplayLanguage) ||
 	                    question.question_text;
 	                  const chosenAnswer = isReadingGroup
 	                    ? selectedGroupAnswers[question.id]
 	                    : selected;
-	                  const correctAnswerText = getCorrectAnswerText(question, selectedPromptLanguage);
+	                  const correctAnswerText = getCorrectAnswerText(question, questionDisplayLanguage);
 
 	                  return (
 	                    <div
@@ -1234,10 +1264,10 @@ const Practice = () => {
 
 	                      <div className="space-y-3">
 	                        {[
-	                          localizedField(question, "option_a", selectedPromptLanguage),
-	                          localizedField(question, "option_b", selectedPromptLanguage),
-	                          localizedField(question, "option_c", selectedPromptLanguage),
-	                          localizedField(question, "option_d", selectedPromptLanguage),
+	                          localizedField(question, "option_a", questionDisplayLanguage),
+	                          localizedField(question, "option_b", questionDisplayLanguage),
+	                          localizedField(question, "option_c", questionDisplayLanguage),
+	                          localizedField(question, "option_d", questionDisplayLanguage),
 	                        ].map((opt, i) => {
 	                          const isSelected = chosenAnswer === opt;
 	                          const isCorrectOption = opt === correctAnswerText;
@@ -1334,17 +1364,36 @@ const Practice = () => {
                 )}
 
 	                <div className="min-w-0 flex-1">
-	                  <p className="font-poppins text-xl font-black">
-	                    {isCorrect ? "Correct!" : isReadingGroup ? "Review your answers" : "Incorrect"}
-	                  </p>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <p className="font-poppins text-xl font-black">
+                      {isCorrect ? "Correct!" : isReadingGroup ? "Review your answers" : "Incorrect"}
+                    </p>
+
+                    {canViewAnswers && (
+                      <div className="flex shrink-0 rounded-full bg-white/70 p-1 shadow-[0_10px_24px_rgba(66,56,120,0.08)]">
+                        {EXPLANATION_LANGUAGES.map((language) => (
+                          <button
+                            key={language}
+                            type="button"
+                            onClick={() => setSelectedExplanationLanguage(language)}
+                            className={`min-h-9 rounded-full px-3 text-xs font-black transition ${
+                              selectedExplanationLanguage === language
+                                ? "bg-primary text-white"
+                                : "text-primary/60 hover:bg-white hover:text-primary"
+                            }`}
+                          >
+                            {EXPLANATION_LANGUAGE_LABELS[language]}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
 	                  {canViewAnswers && isReadingGroup ? (
 	                    <div className="mt-3 space-y-3">
 	                      {currentQuestionList.map((question: any, index: number) => {
-	                        const explanation =
-	                          localizedField(question, "explanation", selectedPromptLanguage) ||
-	                          question.explanation;
-	                        const answerText = getCorrectAnswerText(question, selectedPromptLanguage);
+	                        const explanation = getExplanationText(question);
+	                        const answerText = getCorrectAnswerText(question, questionDisplayLanguage);
 	                        const questionCorrect = isCurrentQuestionCorrect(question);
 
 	                        return (
@@ -1372,9 +1421,9 @@ const Practice = () => {
 	                      )}
 
 	                      {canViewAnswers &&
-	                        (localizedField(current, "explanation", selectedPromptLanguage) || current.explanation) && (
+	                        getExplanationText(current) && (
 	                        <p className="mt-3 text-sm leading-6">
-	                          {localizedField(current, "explanation", selectedPromptLanguage) || current.explanation}
+	                          {getExplanationText(current)}
 	                        </p>
 	                      )}
 	                    </>

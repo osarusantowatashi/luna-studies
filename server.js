@@ -4215,17 +4215,20 @@ app.post("/api/generate-questions", requireAdmin, async (req, res) => {
       English: `
 - Target-language goal: teach and assess English.
 - Focus areas may include vocabulary, grammar, reading, writing, sentence structure, school English, and exam preparation when selected.
-- Generate English, Chinese, and Japanese prompt versions of the same English-learning task.
+- The primary student-facing question, passage, options, and answer must be in English.
+- Also provide Chinese and Japanese support translations for admin review and explanation support.
 `,
       Japanese: `
 - Target-language goal: teach and assess Japanese.
 - Focus areas may include JLPT-style learning, hiragana, katakana, kanji, vocabulary, grammar, particles, reading, and sentence patterns.
-- Generate English, Chinese, and Japanese prompt versions of the same Japanese-learning task.
+- The primary student-facing question, passage, options, and answer must be in Japanese.
+- Also provide English and Chinese support translations for admin review and explanation support.
 `,
       Chinese: `
 - Target-language goal: teach and assess Chinese.
 - Focus areas may include Chinese vocabulary, pinyin, characters, reading, sentence structure, and HSK-style learning when selected.
-- Generate English, Chinese, and Japanese prompt versions of the same Chinese-learning task.
+- The primary student-facing question, passage, options, and answer must be in Chinese.
+- Also provide English and Japanese support translations for admin review and explanation support.
 `,
     };
 
@@ -4269,11 +4272,11 @@ ${difficulty ? `${difficultyLabel || "Difficulty"}: ${difficulty}` : "Difficulty
 
 LANGUAGE RULES:
 ${targetLanguageFocusRules[targetLanguage] || targetLanguageFocusRules.English}
-- The target language determines the learning content, grammar scope, vocabulary scope, exam style, and skill type.
+- The target language determines the learning content, grammar scope, vocabulary scope, exam style, skill type, and the language students see during practice.
 - Use the selected category/topic as the content theme when it is provided.
-	- Generate ONE logical question per item, but include prompt versions in English, Chinese, and Japanese.
+	- Generate ONE logical question per item, but include English, Chinese, and Japanese text fields for storage/review.
 	- question_en, question_zh, and question_ja must ask the SAME question.
-- option_a/b/c/d en/zh/ja fields must represent the SAME answer choices across prompt languages.
+- option_a/b/c/d en/zh/ja fields must represent the SAME answer choices across support languages.
 - explanation_en, explanation_zh, and explanation_ja must explain the SAME reasoning.
 	- For reading skills, the passage should normally be in ${targetLanguage} and should be the shared source text for all questions in that reading set.
 - Do not reduce the task to simple word-pair translation unless Skill = Vocabulary and that is appropriate for the selected grade.
@@ -4281,6 +4284,16 @@ ${targetLanguageFocusRules[targetLanguage] || targetLanguageFocusRules.English}
 - Do not generate Listening tasks, audio scripts, listening transcripts, or Speaking tasks.
 - Generate realistic mock questions aligned with the selected pathway. Do not copy or reproduce official copyrighted exam questions.
 - This is daily skill practice, not a full exam simulation.
+
+EXPLANATION QUALITY RULES:
+- Explanations must be useful teaching notes, not one-line answer keys.
+- Explain why the correct answer is correct.
+- Explain why a common wrong answer or tempting distractor is wrong when possible.
+- For reading, cite specific evidence, wording, or logic from the passage.
+- For vocabulary, explain the meaning in context and why distractors do not fit.
+- For grammar, name or describe the grammar rule in student-friendly language.
+- Keep explanations concise but substantial: usually 2-4 sentences per language.
+- explanation_en, explanation_zh, and explanation_ja should carry the same teaching value, not just a short label.
 
 STYLE EXAMPLES FROM FILE:
 ${examples || "No example file found. Use realistic exam style."}
