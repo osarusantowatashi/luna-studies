@@ -5,6 +5,7 @@ export type Tutor = {
   role: string;
   subjects: string[];
   education: string;
+  major?: string;
   languages: string;
   bio: string;
   desc?: string;
@@ -31,7 +32,8 @@ const fallbackTutors: Omit<Tutor, "slug">[] = [
     image: "/tutors/mimi_new.jpg",
     role: "Academic Tutor",
     subjects: ["Japanese", "English", "TOEFL", "IELTS", "SAT"],
-    education: "Waseda University, Japan",
+    education: "Waseda University",
+    major: "School of International Liberal Studies (SILS)",
     languages: "Japanese / English / Mandarin",
     bio: "Specialises in trilingual education, international school preparation, and personalised academic planning.",
     experience: [],
@@ -41,7 +43,8 @@ const fallbackTutors: Omit<Tutor, "slug">[] = [
     image: "/tutors/grace_new.jpg",
     role: "English Tutor",
     subjects: ["IB English", "TOEFL", "Academic Writing"],
-    education: "National University of Singapore, Singapore",
+    education: "National University of Singapore",
+    major: "Bachelor of Science (Hons) in Life Science; Master of Science in Applied Biomedicine",
     languages: "English / Mandarin",
     bio: "Experienced in bilingual education, IB preparation, and academic English.",
     experience: [],
@@ -51,7 +54,8 @@ const fallbackTutors: Omit<Tutor, "slug">[] = [
     image: "/tutors/francis_new.png",
     role: "Mathematics Tutor",
     subjects: ["IGCSE Math", "A Level Math", "AEIS Math"],
-    education: "University of Sydney, Australia",
+    education: "University of Sydney",
+    major: "Bachelor of Commerce",
     languages: "English / Mandarin",
     bio: "Focuses on mathematical logic, structured problem solving, and international curricula.",
     experience: [],
@@ -62,6 +66,7 @@ const fallbackTutors: Omit<Tutor, "slug">[] = [
     role: "Academic Tutor",
     subjects: ["AEIS", "A Level Math", "English"],
     education: "Nanyang Technological University, Singapore",
+    major: "Bachelor of Engineering in Electronic Engineering",
     languages: "English / Mandarin",
     bio: "Experienced in Singapore local education pathways and bilingual teaching.",
     experience: [],
@@ -71,7 +76,8 @@ const fallbackTutors: Omit<Tutor, "slug">[] = [
     image: "/tutors/christine_new.png",
     role: "English Tutor",
     subjects: ["English", "Grammar", "Writing"],
-    education: "University of Fuzhou, China",
+    education: "Fuzhou University",
+    major: "English Studies",
     languages: "English / Mandarin",
     bio: "Specialises in building strong English foundations through structured learning.",
     experience: [],
@@ -81,17 +87,19 @@ const fallbackTutors: Omit<Tutor, "slug">[] = [
     image: "/tutors/kana_new.png",
     role: "Japanese Tutor",
     subjects: ["Japanese Language", "Beginner Japanese", "JLPT Preparation"],
-    education: "Keio University, Japan",
+    education: "Keio University",
+    major: "Bachelor in Chinese Studies",
     languages: "Japanese / English / Mandarin",
     bio: "A patient and structured Japanese tutor who helps students build strong foundations.",
     experience: [],
   },
   {
-    name: "Junichi Ro",
+    name: "Junichi",
     image: "/tutors/Junichi Ro.jpeg",
     role: "Mathematics & English Tutor",
     subjects: ["Mathematics", "English"],
-    education: "Bachelor of Science in Mathematics, New York University",
+    education: "New York University, Tandon School of Engineering",
+    major: "Bachelor of Science in Mathematics",
     languages: "English / Japanese",
     bio: "A native bilingual Mathematics and English tutor who helps students build logical thinking, conceptual understanding, and confident problem-solving skills.",
     experience: [],
@@ -101,7 +109,8 @@ const fallbackTutors: Omit<Tutor, "slug">[] = [
     image: "/tutors/siya.jpeg",
     role: "Academic Tutor",
     subjects: ["Academic Research", "Essay Writing", "Critical Thinking"],
-    education: "Keio University, Japan",
+    education: "Keio University",
+    major: "Economics",
     languages: "English / Hindi / Japanese",
     bio: "Guides students in independent thinking, research habits and academic writing.",
     experience: [],
@@ -114,6 +123,6 @@ export const getTutors = (t: TranslationFn): Tutor[] => {
 
   return (tutors as Omit<Tutor, "slug">[]).map((tutor) => ({
     ...tutor,
-    slug: tutorSlug(tutor.name),
+    slug: tutor.image === "/tutors/Junichi Ro.jpeg" ? "junichi-ro" : tutorSlug(tutor.name),
   }));
 };

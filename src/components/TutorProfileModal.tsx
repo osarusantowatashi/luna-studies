@@ -10,6 +10,7 @@ type Tutor = {
   image?: string;
   subjects: string[];
   education: string;
+  major?: string;
   languages: string;
   bio?: string;
   desc?: string;
@@ -45,6 +46,13 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
 
   if (!tutor) return null;
 
+  const isJunichi = tutor.image === "/tutors/Junichi Ro.jpeg";
+  const imageClass = tutor.name === "Siya"
+    ? "object-contain"
+    : isJunichi
+      ? "object-cover object-[center_20%] scale-[0.92]"
+      : "object-cover object-top";
+
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-3 py-3 backdrop-blur-sm sm:p-6">
       <div className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-5xl flex-col overflow-y-auto rounded-[1.6rem] border bg-white shadow-[0_30px_100px_rgba(0,0,0,0.25)] md:grid md:max-h-[88vh] md:grid-cols-[0.42fr_0.58fr] md:rounded-[2rem]">
@@ -67,9 +75,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
               <img
                 src={tutor.image}
                 alt={tutor.name}
-                className={`h-full w-full object-center ${
-                  tutor.name === "Siya" ? "object-contain" : "object-cover object-top"
-                }`}
+                className={`h-full w-full object-center ${imageClass}`}
               />
             ) : (
               tutor.name[0]
@@ -93,6 +99,16 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
                 <p className="mt-1 leading-6 text-muted-foreground">
                   {tutor.education}
                 </p>
+                {tutor.major && (
+                  <>
+                    <p className="mt-3 font-semibold text-primary">
+                      {label("tutorsPage.labels.major", "Major")}
+                    </p>
+                    <p className="mt-1 leading-6 text-muted-foreground">
+                      {tutor.major}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
 
@@ -168,7 +184,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
                 key={subject}
                 className="rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-primary sm:px-4 sm:py-2"
               >
-                {subject}
+                {subject.replace(/^#/, "")}
               </span>
             ))}
           </div>

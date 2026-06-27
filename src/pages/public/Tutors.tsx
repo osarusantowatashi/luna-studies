@@ -100,7 +100,7 @@ const Tutors = () => {
           <div className="relative z-10 mx-auto max-w-[1280px]">
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">      {tutors.map((tutor, i) => (
               <motion.div
-                key={tutor.name}
+                key={tutor.slug}
                 initial={{ opacity: 0, y: 50, rotate: 0 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, amount: 0.25 }}
@@ -124,6 +124,8 @@ const Tutors = () => {
                     className={`h-full w-full object-center transition duration-500 ${
                       tutor.name === "Siya"
                         ? "object-contain"
+                        : tutor.image === "/tutors/Junichi Ro.jpeg"
+                          ? "scale-[0.92] object-cover object-[center_20%] group-hover:scale-[0.96]"
                         : "object-cover group-hover:scale-105"
                     }`}
                   />
@@ -157,6 +159,14 @@ const Tutors = () => {
                       {tutor.education}
                     </p>
 
+                    {tutor.major && (
+                      <p className="leading-6 text-primary/65">
+                        <span className="font-black text-primary">
+                          {label("tutorsPage.labels.major", "Major")}:                </span>{" "}
+                        {tutor.major}
+                      </p>
+                    )}
+
                     <p className="leading-6 text-primary/65">
                       <span className="font-black text-primary">
                         {label("tutorsPage.labels.languages", "Languages")}:                </span>{" "}
@@ -169,7 +179,7 @@ const Tutors = () => {
                       key={subject}
                       className="rounded-full bg-[#f6f2ff] px-3 py-1.5 text-[11px] font-black text-primary/70"
                     >
-                      #{subject}
+                      {subject.replace(/^#/, "")}
                     </span>
                     ))}
 

@@ -1678,6 +1678,7 @@
     },
     "labels": {
       "education": "教育背景",
+      "major": "专业 / 学位",
       "languages": "授课语言"
     },
     "popup": {
@@ -1700,7 +1701,8 @@
           "听力",
           "发音提升"
         ],
-        "education": "新加坡国立大学 (新加坡)",
+        "education": "新加坡国立大学",
+        "major": "生命科学荣誉理学学士；应用生物医学理学硕士",
         "languages": "英语 / 中文",
         "bio": "拥有双语教育与 IB 辅导经验，帮助学生建立学术英语能力与表达自信。",
         "experience": [
@@ -1728,7 +1730,8 @@
           "SAT",
           "O Level"
         ],
-        "education": "早稻田大学 (日本)",
+        "education": "早稻田大学",
+        "major": "国际教养学部 (SILS)",
         "languages": "日语 / 英语 / 中文",
         "bio": "专注三语教育、国际学校备考与个性化学术规划。",
         "experience": [
@@ -1754,7 +1757,8 @@
           "解题思维",
           "AEIS 数学"
         ],
-        "education": "悉尼大学 (澳大利亚)",
+        "education": "悉尼大学",
+        "major": "商学学士",
         "languages": "英语 / 中文",
         "bio": "注重数学逻辑、结构化解题能力，并帮助学生适应国际课程体系。",
         "experience": [
@@ -1782,6 +1786,7 @@
           "学术支持"
         ],
         "education": "南洋理工大学 (新加坡)",
+        "major": "电子工程工学学士",
         "languages": "英语 / 中文",
         "bio": "熟悉新加坡本地教育路径与双语教学，帮助学生适应英文学习环境，并建立 STEM 思维。",
         "experience": [
@@ -1808,7 +1813,8 @@
           "阅读",
           "口语"
         ],
-        "education": "福州大学 (中国)",
+        "education": "福州大学",
+        "major": "英语研究",
         "languages": "英语 / 中文",
         "bio": "专注英语基础建设，通过耐心引导与结构化语言训练帮助学生稳步提升。",
         "experience": [
@@ -1833,7 +1839,8 @@
           "初级日语",
           "JLPT考试辅导"
         ],
-        "education": "庆应义塾大学 (日本)",
+        "education": "庆应义塾大学",
+        "major": "中国学学士",
         "languages": "日语 / English / 中文",
         "bio": "以耐心且有条理的教学方式，帮助学生扎实建立日语基础，全面提升文法、词汇、会话与阅读能力。通过清晰易懂的讲解与实用的口语练习，让学生更有自信地使用日语。",
         "experience": [
@@ -1850,14 +1857,15 @@
         "quote": "Kana 通过清晰语法、实用会话和支持性练习，帮助学生在真实情境中使用日语。"
       },
       {
-        "name": "Junichi Ro",
+        "name": "Junichi",
         "image": "/tutors/Junichi Ro.jpeg",
         "role": "数学与英语导师",
         "subjects": [
           "数学",
           "英语"
         ],
-        "education": "纽约大学数学理学学士",
+        "education": "纽约大学坦登工程学院",
+        "major": "数学理学学士",
         "languages": "英语 / 日语",
         "bio": "Junichi 是英日双语导师，具备扎实数学背景，支持学生在数学与英语学习中建立清晰推理、结构化解题能力和学习自信。",
         "experience": [
@@ -1884,7 +1892,8 @@
           "自然拼读",
           "会话"
         ],
-        "education": "University of Lagos, Nigeria",
+        "education": "拉各斯大学；贝宁大学",
+        "major": "英语语言文学硕士；英语与文学文学学士",
         "languages": "英语",
         "bio": "Ruth 支持低龄学习者和双语学生建立自然英语表达、更清晰的发音、阅读信心和日常沟通能力，课堂温暖且互动性强。",
         "experience": [
@@ -1912,7 +1921,8 @@
           "全球视野",
           "英语"
         ],
-        "education": "Keio University, Japan",
+        "education": "庆应义塾大学",
+        "major": "经济学",
         "languages": "英语 / 印地语 / 日语",
         "bio": "Siya 引导学生发展独立思考、研究习惯、学术写作和全球议题讨论能力，帮助学生更清楚地组织观点并自信表达论证。",
         "experience": [

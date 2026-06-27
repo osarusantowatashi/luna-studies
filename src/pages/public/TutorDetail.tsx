@@ -90,6 +90,8 @@ const TutorDetail = () => {
                     className={`h-full w-full ${
                       tutor.name === "Siya"
                         ? "object-contain object-center p-5"
+                        : tutor.image === "/tutors/Junichi Ro.jpeg"
+                          ? "scale-[0.92] object-cover object-[center_20%]"
                         : "object-cover object-top"
                     }`}
                   />
@@ -126,6 +128,16 @@ const TutorDetail = () => {
                     <p className="mt-2 text-sm font-semibold leading-6 text-primary/75">
                       {tutor.education}
                     </p>
+                    {tutor.major && (
+                      <>
+                        <p className="mt-4 text-xs font-black uppercase tracking-[0.18em] text-primary/45">
+                          {label("tutorsPage.labels.major", "Major")}
+                        </p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-primary/75">
+                          {tutor.major}
+                        </p>
+                      </>
+                    )}
                   </div>
 
                   <div className="rounded-[1.4rem] border border-white/80 bg-white/90 p-5 shadow-[0_14px_40px_rgba(66,56,120,0.08)]">
@@ -205,7 +217,7 @@ const TutorDetail = () => {
                       key={subject}
                       className="rounded-full bg-[#f6f2ff] px-3 py-1.5 text-xs font-bold text-primary/70"
                     >
-                      {subject}
+                      {subject.replace(/^#/, "")}
                     </span>
                   ))}
                 </div>

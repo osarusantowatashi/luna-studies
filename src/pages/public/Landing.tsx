@@ -163,13 +163,14 @@ const Landing = () => {
       experience: t("landing.tutors.grace.experience", { returnObjects: true }) as string[],
     },
     {
-      name: "Junichi Ro",
+      name: "Junichi",
       role: t("landing.tutors.junichi.role"),
       image: "/tutors/Junichi Ro.jpeg",
       tags: ["NYU Math", "English", "Japanese"],
       desc: t("landing.tutors.junichi.desc"),
       highlight: "Math · English · Reasoning",
-      education: "Bachelor of Science in Mathematics, New York University",
+      education: "New York University, Tandon School of Engineering",
+      major: "Bachelor of Science in Mathematics",
       languages: "English / Japanese",
       subjects: ["Mathematics", "English"],
       experience: [
@@ -830,7 +831,7 @@ const Landing = () => {
                           key={tag}
                           className="rounded-full bg-[#f6f2ff] px-3 py-1 text-xs font-bold text-primary/70"
                         >
-                          #{tag}
+                          {tag.replace(/^#/, "")}
                         </span>
                       ))}
                     </div>
@@ -1163,7 +1164,7 @@ const Landing = () => {
                       desc: t("landing.tutors.francis.desc"),
                     },
                     {
-                      name: "Junichi Ro",
+                      name: "Junichi",
                       role: t("landing.tutors.junichi.role"),
                       image: "/tutors/Junichi Ro.jpeg",
                       tags: ["NYU Math", "English", "Japanese"],
@@ -1212,7 +1213,9 @@ const Landing = () => {
       h-full w-full transition duration-500
       ${tutor.name === "Kana"
                                 ? "object-cover object-[center_18%]"
-                                : "object-cover object-top"
+                                : tutor.image === "/tutors/Junichi Ro.jpeg"
+                                  ? "scale-[0.92] object-cover object-[center_20%]"
+                                  : "object-cover object-top"
                               }
     `}
                           />
@@ -1246,7 +1249,7 @@ const Landing = () => {
                                 key={tag}
                                 className="rounded-full bg-[#f6f2ff] px-3 py-1.5 text-xs font-bold text-primary/70 xl:px-4 xl:py-2 xl:text-sm"
                               >
-                                #{tag}
+                                {tag.replace(/^#/, "")}
                               </span>
                             ))}
                           </div>
@@ -1294,7 +1297,11 @@ const Landing = () => {
                       <img
                         src={tutor.image}
                         alt={tutor.name}
-                        className="h-full w-full object-cover object-top"
+                        className={`h-full w-full ${
+                          tutor.image === "/tutors/Junichi Ro.jpeg"
+                            ? "scale-[0.92] object-cover object-[center_20%]"
+                            : "object-cover object-top"
+                        }`}
                       />
                     </div>
 
@@ -1325,7 +1332,7 @@ const Landing = () => {
                             key={tag}
                             className="whitespace-nowrap rounded-full bg-[#f6f2ff] px-2.5 py-1 text-[10px] font-bold text-primary/70 sm:px-3 sm:py-1.5 sm:text-xs"
                           >
-                            #{tag}
+                            {tag.replace(/^#/, "")}
                           </span>
                         ))}
                       </div>

@@ -1678,6 +1678,7 @@
     },
     "labels": {
       "education": "Education",
+      "major": "Major",
       "languages": "Languages"
     },
     "popup": {
@@ -1700,7 +1701,8 @@
           "Listening",
           "Accent Reduction"
         ],
-        "education": "National University of Singapore, Singapore",
+        "education": "National University of Singapore",
+        "major": "Bachelor of Science (Hons) in Life Science; Master of Science in Applied Biomedicine",
         "languages": "English / Mandarin",
         "bio": "Experienced in bilingual education, IB preparation, and helping students build confidence in academic English.",
         "experience": [
@@ -1728,7 +1730,8 @@
           "SAT",
           "O Level"
         ],
-        "education": "Waseda University, Japan",
+        "education": "Waseda University",
+        "major": "School of International Liberal Studies (SILS)",
         "languages": "Japanese / English / Mandarin",
         "bio": "Specialises in trilingual education, international school preparation, and personalised academic planning.",
         "experience": [
@@ -1754,7 +1757,8 @@
           "Problem Solving",
           "AEIS Math"
         ],
-        "education": "University of Sydney, Australia",
+        "education": "University of Sydney",
+        "major": "Bachelor of Commerce",
         "languages": "English / Mandarin",
         "bio": "Focuses on mathematical logic, structured problem solving, and helping students adapt to international curricula.",
         "experience": [
@@ -1782,6 +1786,7 @@
           "Academic Support"
         ],
         "education": "Nanyang Technological University, Singapore",
+        "major": "Bachelor of Engineering in Electronic Engineering",
         "languages": "English / Mandarin",
         "bio": "Experienced in Singapore local education pathways and bilingual teaching, helping students adapt to English-based academic environments with structured guidance and STEM thinking.",
         "experience": [
@@ -1808,7 +1813,8 @@
           "Reading",
           "Speaking"
         ],
-        "education": "University of Fuzhou, China",
+        "education": "Fuzhou University",
+        "major": "English Studies",
         "languages": "English / Mandarin",
         "bio": "Specialises in building strong English foundations through patient guidance and structured language learning.",
         "experience": [
@@ -1833,7 +1839,8 @@
           "Beginner Japanese",
           "JLPT Preparation"
         ],
-        "education": "Keio University, Japan",
+        "education": "Keio University",
+        "major": "Bachelor in Chinese Studies",
         "languages": "Japanese / English / Mandarin",
         "bio": "A patient and structured Japanese tutor who helps students build strong foundations in grammar, vocabulary, speaking, and reading. She supports learners in gaining confidence through clear explanations and practical communication practice.",
         "experience": [
@@ -1850,14 +1857,15 @@
         "quote": "Kana helps learners use Japanese in real situations through clear grammar, practical speaking and supportive practice."
       },
       {
-        "name": "Junichi Ro",
+        "name": "Junichi",
         "image": "/tutors/Junichi Ro.jpeg",
         "role": "Mathematics & English Tutor",
         "subjects": [
           "Mathematics",
           "English"
         ],
-        "education": "Bachelor of Science in Mathematics, New York University",
+        "education": "New York University, Tandon School of Engineering",
+        "major": "Bachelor of Science in Mathematics",
         "languages": "English / Japanese",
         "bio": "Junichi is a native bilingual tutor in English and Japanese with a strong mathematics background. He supports students in Mathematics and English through clear reasoning, structured problem solving and confidence-building guidance.",
         "experience": [
@@ -1884,7 +1892,8 @@
           "Phonics",
           "Conversation"
         ],
-        "education": "University of Lagos, Nigeria",
+        "education": "University of Lagos; University of Benin",
+        "major": "Master of Arts in English Language; Bachelor of Arts in English & Literature",
         "languages": "English",
         "bio": "Ruth supports young learners and bilingual students in building natural English fluency, clearer pronunciation, reading confidence and everyday communication skills through warm, interactive lessons.",
         "experience": [
@@ -1912,7 +1921,8 @@
           "Global Perspectives",
           "English"
         ],
-        "education": "Keio University, Japan",
+        "education": "Keio University",
+        "major": "Economics",
         "languages": "English / Hindi / Japanese",
         "bio": "Siya guides students in independent thinking, research habits, academic writing and global-perspective discussions, helping learners organise ideas clearly and express arguments with confidence.",
         "experience": [
