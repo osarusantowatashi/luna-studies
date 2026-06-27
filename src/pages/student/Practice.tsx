@@ -235,15 +235,17 @@ const Practice = () => {
 
       setCanViewAnswers(profileData?.can_view_answers === true);
 
+      const accessSelect = "grade, target_language, pathway, level";
+
       let { data, error } = await supabase
         .from("student_grade_access")
-        .select("grade, target_language, pathway, level")
+        .select(accessSelect)
         .eq("student_id", user.id);
 
       if (error) {
         const fallback = await supabase
           .from("student_grade_access")
-          .select("grade")
+          .select(accessSelect)
           .eq("student_id", user.id);
 
         data = fallback.data;
