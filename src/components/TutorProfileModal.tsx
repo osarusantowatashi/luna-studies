@@ -48,7 +48,7 @@ const TutorProfileModal = ({ tutor, onClose }: TutorProfileModalProps) => {
 
   const isJunichi = tutor.image === "/tutors/Junichi Ro.jpeg";
   const imageClass = tutor.name === "Siya"
-    ? "object-contain"
+    ? "object-cover object-[center_8%]"
     : isJunichi
       ? "object-cover object-[center_20%] scale-[0.92]"
       : "object-cover object-top";

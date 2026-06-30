@@ -2,7 +2,7 @@ import Footer from "@/components/Footer";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CalendarDays } from "lucide-react";
 import { motion } from "framer-motion";
 import SeoHelmet from "@/components/SeoHelmet";
 import { getTutors } from "@/lib/tutors";
@@ -29,6 +29,9 @@ const Tutors = () => {
   };
 
   const tutors = getTutors(t);
+  const mainPointsLabel = label("tutorsPage.labels.mainPoints", "Main Points");
+  const languagesLabel = label("tutorsPage.labels.languages", "Languages");
+  const subjectsLabel = label("tutorsPage.popup.subjects", "Subjects");
 
   const baseUrl = "https://www.lunastudies.com";
   const canonicalUrl = `${baseUrl}/${currentLang}/tutors`;
@@ -41,7 +44,7 @@ const Tutors = () => {
 
     if (tutor.education) items.push(tutor.education);
     if (tutor.major) items.push(tutor.major);
-    if (tutor.languages) items.push(`Languages: ${tutor.languages}`);
+    if (tutor.languages) items.push(`${languagesLabel}: ${tutor.languages}`);
     if (tutor.bio) items.push(tutor.bio);
 
     return items.slice(0, 4);
@@ -131,10 +134,12 @@ const Tutors = () => {
                       <img
                         src={tutor.image}
                         alt={tutor.name}
-                        className={`h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.035] ${
-                          tutor.image === "/tutors/Junichi Ro.jpeg"
-                            ? "object-[center_20%]"
-                            : ""
+                        className={`h-full w-full object-center transition duration-500 ${
+                          tutor.name === "Siya"
+                            ? "object-cover object-[center_8%] group-hover:scale-[1.035]"
+                            : tutor.image === "/tutors/Junichi Ro.jpeg"
+                              ? "object-cover object-[center_20%] group-hover:scale-[1.035]"
+                              : "object-cover group-hover:scale-[1.035]"
                         }`}
                       />
                     </div>
@@ -151,7 +156,7 @@ const Tutors = () => {
                       {/* Main points */}
                       <div className="w-full max-w-[420px] text-left">
                         <h3 className="text-center text-xs font-black uppercase tracking-[0.18em] text-[#8d73ff]">
-                          Main Points
+                          {mainPointsLabel}
                         </h3>
 
                         <ul className="mt-4 min-h-[168px] space-y-2.5 text-sm leading-6 text-primary/70">
@@ -167,7 +172,7 @@ const Tutors = () => {
                       {/* Subjects */}
                       <div className="mt-6 w-full max-w-[420px]">
                         <h3 className="text-xs font-black uppercase tracking-[0.18em] text-[#8d73ff]">
-                          Subjects
+                          {subjectsLabel}
                         </h3>
 
                         <p className="mx-auto mt-3 min-h-[64px] max-w-[360px] text-sm leading-7 text-primary/65">
@@ -179,12 +184,15 @@ const Tutors = () => {
                       </div>
 
                       {/* Buttons */}
-                      <div className="mt-auto flex flex-wrap justify-center gap-3 pt-7">
+                      <div className="mt-auto grid w-full max-w-[420px] gap-3 pt-7 sm:grid-cols-2">
                         <Button
                           asChild
-                          className="h-11 rounded-full bg-primary px-5 text-sm font-bold shadow-none"
+                          className="h-12 rounded-2xl bg-primary px-5 text-sm font-black shadow-[0_14px_34px_rgba(8,42,85,0.16)] transition hover:-translate-y-0.5 hover:bg-primary/95"
                         >
-                          <Link to={withLang(`/tutors/${tutor.slug}`)}>
+                          <Link
+                            to={withLang(`/tutors/${tutor.slug}`)}
+                            className="inline-flex items-center justify-center"
+                          >
                             <span>{t("tutorsPage.buttons.viewProfile")}</span>
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>
@@ -192,10 +200,14 @@ const Tutors = () => {
 
                         <Button
                           asChild
-                          variant="ghost"
-                          className="h-11 rounded-full px-4 text-sm font-bold text-primary hover:bg-white/45"
+                          variant="outline"
+                          className="h-12 rounded-2xl border-primary/12 bg-white/86 px-5 text-sm font-black text-primary shadow-[0_12px_30px_rgba(8,42,85,0.08)] transition hover:-translate-y-0.5 hover:border-[#8d73ff]/28 hover:bg-white"
                         >
-                          <Link to={withLang("/enquiry")}>
+                          <Link
+                            to={withLang("/enquiry")}
+                            className="inline-flex items-center justify-center"
+                          >
+                            <CalendarDays className="mr-2 h-4 w-4 text-[#8d73ff]" />
                             {t("tutorsPage.buttons.book")}
                           </Link>
                         </Button>

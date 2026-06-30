@@ -89,7 +89,7 @@ const TutorDetail = () => {
                     alt={tutor.name}
                     className={`h-full w-full ${
                       tutor.name === "Siya"
-                        ? "object-contain object-center p-5"
+                        ? "object-cover object-[center_8%]"
                         : tutor.image === "/tutors/Junichi Ro.jpeg"
                           ? "scale-[0.92] object-cover object-[center_20%]"
                         : "object-cover object-top"

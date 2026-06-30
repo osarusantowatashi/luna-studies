@@ -1679,7 +1679,8 @@
     "labels": {
       "education": "Education",
       "major": "Major",
-      "languages": "Languages"
+      "languages": "Languages",
+      "mainPoints": "Main Points"
     },
     "popup": {
       "label": "Tutor Profile",
@@ -1692,14 +1693,13 @@
     "items": [
       {
         "name": "Grace",
-        "image": "/tutors/grace_new.jpg",
+        "image": "/tutors/grace.jpeg",
         "role": "English Tutor",
         "subjects": [
           "IB English",
           "TOEFL",
-          "Academic Writing",
-          "Listening",
-          "Accent Reduction"
+          "IELTS",
+          "Academic Writing"
         ],
         "education": "National University of Singapore",
         "major": "Bachelor of Science (Hons) in Life Science; Master of Science in Applied Biomedicine",
@@ -1723,12 +1723,13 @@
         "image": "/tutors/mimi_new.jpg",
         "role": "Academic Tutor",
         "subjects": [
-          "Japanese",
-          "English",
+          "IB English",
           "TOEFL",
           "IELTS",
-          "SAT",
-          "O Level"
+          "MAP",
+          "CAT4",
+          "JLPT",
+          "Japanese"
         ],
         "education": "Waseda University",
         "major": "School of International Liberal Studies (SILS)",
@@ -1749,13 +1750,13 @@
       },
       {
         "name": "Francis",
-        "image": "/tutors/francis_new.png",
+        "image": "/tutors/francis.jpeg",
         "role": "Mathematics Tutor",
         "subjects": [
+          "CIE Math",
           "IGCSE Math",
-          "A Level Math",
-          "Problem Solving",
-          "AEIS Math"
+          "A-Level Math",
+          "Mathematics"
         ],
         "education": "University of Sydney",
         "major": "Bachelor of Commerce",
@@ -1776,14 +1777,13 @@
       },
       {
         "name": "CJ",
-        "image": "/tutors/cj_new.png",
+        "image": "/tutors/cj.jpeg",
         "role": "Academic Tutor",
         "subjects": [
           "AEIS",
-          "A Level Math",
-          "English",
-          "Singapore Curriculum",
-          "Academic Support"
+          "O-Level Math",
+          "A-Level Math",
+          "Mathematics"
         ],
         "education": "Nanyang Technological University, Singapore",
         "major": "Bachelor of Engineering in Electronic Engineering",
@@ -1804,14 +1804,13 @@
       },
       {
         "name": "Christine",
-        "image": "/tutors/christine_new.png",
+        "image": "/tutors/christine.jpeg",
         "role": "English Tutor",
         "subjects": [
-          "English",
-          "Grammar",
-          "Writing",
-          "Reading",
-          "Speaking"
+          "English Language",
+          "English Literature",
+          "Academic Writing",
+          "ESL"
         ],
         "education": "Fuzhou University",
         "major": "English Studies",
@@ -1835,9 +1834,10 @@
         "image": "/tutors/kana_new.png",
         "role": "Japanese Tutor",
         "subjects": [
-          "Japanese Language",
-          "Beginner Japanese",
-          "JLPT Preparation"
+          "JLPT",
+          "O-Level Japanese",
+          "A-Level Japanese",
+          "Japanese Language"
         ],
         "education": "Keio University",
         "major": "Bachelor in Chinese Studies",
@@ -1861,10 +1861,12 @@
         "image": "/tutors/Junichi Ro.jpeg",
         "role": "Mathematics & English Tutor",
         "subjects": [
-          "Mathematics",
-          "English"
+          "IB Math",
+          "AP Math",
+          "Advanced Mathematics",
+          "Calculus"
         ],
-        "education": "New York University, Tandon School of Engineering",
+        "education": "New York University",
         "major": "Bachelor of Science in Mathematics",
         "languages": "English / Japanese",
         "bio": "Junichi is a native bilingual tutor in English and Japanese with a strong mathematics background. He supports students in Mathematics and English through clear reasoning, structured problem solving and confidence-building guidance.",
@@ -1886,11 +1888,10 @@
         "image": "/tutors/Ruth.png",
         "role": "English Tutor",
         "subjects": [
-          "English Speaking",
-          "Reading",
-          "Writing",
-          "Phonics",
-          "Conversation"
+          "English Language",
+          "English Literature",
+          "Academic Writing",
+          "ESL"
         ],
         "education": "University of Lagos; University of Benin",
         "major": "Master of Arts in English Language; Bachelor of Arts in English & Literature",
@@ -1915,11 +1916,10 @@
         "image": "/tutors/siya.jpeg",
         "role": "Academic Tutor",
         "subjects": [
-          "Academic Research",
-          "Essay Writing",
-          "Critical Thinking",
-          "Global Perspectives",
-          "English"
+          "Mathematics",
+          "Primary Math",
+          "Lower Secondary Math",
+          "Academic Support"
         ],
         "education": "Keio University",
         "major": "Economics",

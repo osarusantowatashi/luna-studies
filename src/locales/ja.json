@@ -1441,7 +1441,8 @@
     "labels": {
       "education": "学歴",
       "major": "専攻・学位",
-      "languages": "対応言語"
+      "languages": "対応言語",
+      "mainPoints": "講師情報"
     },
     "popup": {
       "label": "講師プロフィール",
@@ -1454,14 +1455,13 @@
     "items": [
       {
         "name": "Grace",
-        "image": "/tutors/grace_new.jpg",
-        "role": "English Tutor",
+        "image": "/tutors/grace.jpeg",
+        "role": "英語講師",
         "subjects": [
-          "IB English",
+          "IB英語",
           "TOEFL",
-          "Academic Writing",
-          "Listening",
-          "発音改善"
+          "IELTS",
+          "アカデミックライティング"
         ],
         "education": "シンガポール国立大学",
         "major": "生命科学（優等）理学士；応用バイオメディスン理学修士",
@@ -1483,14 +1483,15 @@
       {
         "name": "Mimi",
         "image": "/tutors/mimi_new.jpg",
-        "role": "Academic Tutor",
+        "role": "アカデミック講師",
         "subjects": [
-          "日本語",
-          "英語",
+          "IB英語",
           "TOEFL",
           "IELTS",
-          "SAT",
-          "O Level"
+          "MAP",
+          "CAT4",
+          "JLPT",
+          "日本語"
         ],
         "education": "早稲田大学",
         "major": "国際教養学部（SILS）",
@@ -1511,13 +1512,13 @@
       },
       {
         "name": "Francis",
-        "image": "/tutors/francis_new.png",
-        "role": "Mathematics Tutor",
+        "image": "/tutors/francis.jpeg",
+        "role": "数学講師",
         "subjects": [
-          "IGCSE 数学",
-          "A Level 数学",
-          "問題解決",
-          "AEIS 数学"
+          "CIE数学",
+          "IGCSE数学",
+          "A-Level数学",
+          "数学"
         ],
         "education": "シドニー大学",
         "major": "商学士",
@@ -1538,14 +1539,13 @@
       },
       {
         "name": "CJ",
-        "image": "/tutors/cj_new.png",
-        "role": "Academic Tutor",
+        "image": "/tutors/cj.jpeg",
+        "role": "アカデミック講師",
         "subjects": [
           "AEIS",
-          "A Level 数学",
-          "英語",
-          "シンガポールカリキュラム",
-          "学習サポート"
+          "O-Level数学",
+          "A-Level数学",
+          "数学"
         ],
         "education": "南洋理工大学（シンガポール）",
         "major": "電子工学 工学士",
@@ -1566,14 +1566,13 @@
       },
       {
         "name": "Christine",
-        "image": "/tutors/christine_new.png",
-        "role": "English Tutor",
+        "image": "/tutors/christine.jpeg",
+        "role": "英語講師",
         "subjects": [
           "英語",
-          "文法",
-          "ライティング",
-          "リーディング",
-          "スピーキング"
+          "英文学",
+          "アカデミックライティング",
+          "ESL"
         ],
         "education": "福州大学",
         "major": "英語研究",
@@ -1595,15 +1594,16 @@
       {
         "name": "Kana",
         "image": "/tutors/kana_new.png",
-        "role": "Japanese Tutor",
+        "role": "日本語講師",
         "subjects": [
-          "日本語",
-          "初級日本語",
-          "JLPT対策"
+          "JLPT",
+          "O-Level日本語",
+          "A-Level日本語",
+          "日本語"
         ],
         "education": "慶應義塾大学",
         "major": "中国学 学士",
-        "languages": "日本語 / English / 中文",
+        "languages": "日本語 / 英語 / 中国語",
         "bio": "文法・語彙・会話・読解をバランスよく指導し、生徒一人ひとりに合わせた丁寧なサポートを行います。わかりやすい説明と実践的な会話練習を通して、自信を持って日本語を使える力を育てます。",
         "experience": [
           "初級〜中級日本語指導",
@@ -1623,10 +1623,12 @@
         "image": "/tutors/Junichi Ro.jpeg",
         "role": "数学・英語講師",
         "subjects": [
-          "数学",
-          "英語"
+          "IB数学",
+          "AP数学",
+          "高度数学",
+          "微積分"
         ],
-        "education": "ニューヨーク大学 タンドン工学部",
+        "education": "ニューヨーク大学",
         "major": "数学 理学士",
         "languages": "英語 / 日本語",
         "bio": "Junichi は英語と日本語のネイティブバイリンガル講師で、数学の専門性を活かしながら、生徒の論理的思考、概念理解、構造的な問題解決力を育てます。",
@@ -1646,13 +1648,12 @@
       {
         "name": "Ruth",
         "image": "/tutors/Ruth.png",
-        "role": "English Tutor",
+        "role": "英語講師",
         "subjects": [
-          "英会話",
-          "読解",
-          "ライティング",
-          "フォニックス",
-          "会話"
+          "英語",
+          "英文学",
+          "アカデミックライティング",
+          "ESL"
         ],
         "education": "ラゴス大学；ベニン大学",
         "major": "英語学 修士；英語・文学 学士",
@@ -1675,13 +1676,12 @@
       {
         "name": "Siya",
         "image": "/tutors/siya.jpeg",
-        "role": "Academic Tutor",
+        "role": "アカデミック講師",
         "subjects": [
-          "アカデミック研究",
-          "エッセイライティング",
-          "批判的思考",
-          "グローバル視点",
-          "英語"
+          "数学",
+          "小学生数学",
+          "中学数学",
+          "学習サポート"
         ],
         "education": "慶應義塾大学",
         "major": "経済学",

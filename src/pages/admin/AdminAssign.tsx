@@ -8,6 +8,8 @@ import {
   parseLanguageAccessKey,
 } from "@/lib/languagePathways";
 
+const INVITE_CODE_TTL_MS = 24 * 60 * 60 * 1000;
+
 const AdminAssign = () => {
   const [activeTab, setActiveTab] = useState<"student" | "tutor" | "connect">(
     "student"
@@ -28,9 +30,22 @@ const AdminAssign = () => {
   const [tutorCode, setTutorCode] = useState("");
 
   useEffect(() => {
+    cleanupExpiredInviteCodes();
     fetchUsers();
     fetchLinks();
   }, []);
+
+  const cleanupExpiredInviteCodes = async () => {
+    const { error } = await supabase
+      .from("invite_codes")
+      .delete()
+      .eq("used", false)
+      .lt("expires_at", new Date().toISOString());
+
+    if (error) {
+      console.warn("Failed to clean expired invite codes", error);
+    }
+  };
 
   const fetchUsers = async () => {
     const { data: studentData, error: studentError } = await supabase
@@ -71,6 +86,8 @@ const AdminAssign = () => {
   };
 
   const generateInviteCode = async (role: "student" | "tutor") => {
+    await cleanupExpiredInviteCodes();
+
     const newCode = `LUNA-${Math.random()
       .toString(36)
       .substring(2, 8)
@@ -81,7 +98,7 @@ const AdminAssign = () => {
       role,
       used: false,
       is_active: true,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      expires_at: new Date(Date.now() + INVITE_CODE_TTL_MS).toISOString(),
     });
 
     if (error) {
@@ -92,7 +109,7 @@ const AdminAssign = () => {
     if (role === "student") setStudentCode(newCode);
     if (role === "tutor") setTutorCode(newCode);
 
-    alert(`${role} invite code created: ${newCode}`);
+    alert(`${role} invite code created: ${newCode}. It expires in 24 hours.`);
   };
 
   const copyCode = async (code: string) => {
@@ -388,7 +405,7 @@ const AdminAssign = () => {
             <>
               <InviteCodeCard
                 title="Student Invite Code"
-                description="Generate a one-time registration code for a student."
+                description="Generate a one-time registration code for a student. Unused codes expire and are cleaned after 24 hours."
                 code={studentCode}
                 onGenerate={() => generateInviteCode("student")}
                 onCopy={() => copyCode(studentCode)}
@@ -487,7 +504,7 @@ const AdminAssign = () => {
             <>
               <InviteCodeCard
                 title="Tutor Invite Code"
-                description="Generate a one-time registration code for a tutor."
+                description="Generate a one-time registration code for a tutor. Unused codes expire and are cleaned after 24 hours."
                 code={tutorCode}
                 onGenerate={() => generateInviteCode("tutor")}
                 onCopy={() => copyCode(tutorCode)}

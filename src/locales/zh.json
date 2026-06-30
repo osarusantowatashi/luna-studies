@@ -1679,7 +1679,8 @@
     "labels": {
       "education": "教育背景",
       "major": "专业 / 学位",
-      "languages": "授课语言"
+      "languages": "授课语言",
+      "mainPoints": "老师资料"
     },
     "popup": {
       "label": "导师资料",
@@ -1692,14 +1693,13 @@
     "items": [
       {
         "name": "Grace",
-        "image": "/tutors/grace_new.jpg",
-        "role": "English Tutor",
+        "image": "/tutors/grace.jpeg",
+        "role": "英语导师",
         "subjects": [
           "IB 英语",
           "TOEFL",
-          "学术写作",
-          "听力",
-          "发音提升"
+          "IELTS",
+          "学术写作"
         ],
         "education": "新加坡国立大学",
         "major": "生命科学荣誉理学学士；应用生物医学理学硕士",
@@ -1721,14 +1721,15 @@
       {
         "name": "Mimi",
         "image": "/tutors/mimi_new.jpg",
-        "role": "Academic Tutor",
+        "role": "学术导师",
         "subjects": [
-          "日语",
-          "英语",
+          "IB 英语",
           "TOEFL",
           "IELTS",
-          "SAT",
-          "O Level"
+          "MAP",
+          "CAT4",
+          "JLPT",
+          "日语"
         ],
         "education": "早稻田大学",
         "major": "国际教养学部 (SILS)",
@@ -1749,13 +1750,13 @@
       },
       {
         "name": "Francis",
-        "image": "/tutors/francis_new.png",
-        "role": "Mathematics Tutor",
+        "image": "/tutors/francis.jpeg",
+        "role": "数学导师",
         "subjects": [
+          "CIE 数学",
           "IGCSE 数学",
-          "A Level 数学",
-          "解题思维",
-          "AEIS 数学"
+          "A-Level 数学",
+          "数学"
         ],
         "education": "悉尼大学",
         "major": "商学学士",
@@ -1776,14 +1777,13 @@
       },
       {
         "name": "CJ",
-        "image": "/tutors/cj_new.png",
-        "role": "Academic Tutor",
+        "image": "/tutors/cj.jpeg",
+        "role": "学术导师",
         "subjects": [
           "AEIS",
-          "A Level 数学",
-          "英语",
-          "新加坡课程",
-          "学术支持"
+          "O-Level 数学",
+          "A-Level 数学",
+          "数学"
         ],
         "education": "南洋理工大学 (新加坡)",
         "major": "电子工程工学学士",
@@ -1804,14 +1804,13 @@
       },
       {
         "name": "Christine",
-        "image": "/tutors/christine_new.png",
-        "role": "English Tutor",
+        "image": "/tutors/christine.jpeg",
+        "role": "英语导师",
         "subjects": [
-          "英语",
-          "语法",
-          "写作",
-          "阅读",
-          "口语"
+          "英语语言",
+          "英语文学",
+          "学术写作",
+          "ESL"
         ],
         "education": "福州大学",
         "major": "英语研究",
@@ -1833,15 +1832,16 @@
       {
         "name": "Kana",
         "image": "/tutors/kana_new.png",
-        "role": "Japanese Tutor",
+        "role": "日语导师",
         "subjects": [
-          "日语",
-          "初级日语",
-          "JLPT考试辅导"
+          "JLPT",
+          "O-Level 日语",
+          "A-Level 日语",
+          "日语"
         ],
         "education": "庆应义塾大学",
         "major": "中国学学士",
-        "languages": "日语 / English / 中文",
+        "languages": "日语 / 英语 / 中文",
         "bio": "以耐心且有条理的教学方式，帮助学生扎实建立日语基础，全面提升文法、词汇、会话与阅读能力。通过清晰易懂的讲解与实用的口语练习，让学生更有自信地使用日语。",
         "experience": [
           "初级至中级日语教学",
@@ -1861,10 +1861,12 @@
         "image": "/tutors/Junichi Ro.jpeg",
         "role": "数学与英语导师",
         "subjects": [
-          "数学",
-          "英语"
+          "IB 数学",
+          "AP 数学",
+          "高阶数学",
+          "微积分"
         ],
-        "education": "纽约大学坦登工程学院",
+        "education": "纽约大学",
         "major": "数学理学学士",
         "languages": "英语 / 日语",
         "bio": "Junichi 是英日双语导师，具备扎实数学背景，支持学生在数学与英语学习中建立清晰推理、结构化解题能力和学习自信。",
@@ -1884,13 +1886,12 @@
       {
         "name": "Ruth",
         "image": "/tutors/Ruth.png",
-        "role": "English Tutor",
+        "role": "英语导师",
         "subjects": [
-          "英语口语",
-          "阅读",
-          "写作",
-          "自然拼读",
-          "会话"
+          "英语语言",
+          "英语文学",
+          "学术写作",
+          "ESL"
         ],
         "education": "拉各斯大学；贝宁大学",
         "major": "英语语言文学硕士；英语与文学文学学士",
@@ -1913,13 +1914,12 @@
       {
         "name": "Siya",
         "image": "/tutors/siya.jpeg",
-        "role": "Academic Tutor",
+        "role": "学术导师",
         "subjects": [
-          "学术研究",
-          "论文写作",
-          "批判思维",
-          "全球视野",
-          "英语"
+          "数学",
+          "小学数学",
+          "初中数学",
+          "学术支持"
         ],
         "education": "庆应义塾大学",
         "major": "经济学",
